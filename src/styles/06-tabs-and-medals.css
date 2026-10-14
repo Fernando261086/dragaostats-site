@@ -126,6 +126,5 @@
     .search-box.expanded{flex-basis:100%;}
     .search-box.expanded .search-icon-btn{display:none;}
     .search-box.expanded .search-input{flex-basis:auto;}
-    .filter-toggle{margin-top:10px;}
     .add-toggle{margin-top:10px;}
   }

@@ -21,6 +21,11 @@ const DAILY_FACTS_ = [
   "Em 2025/26, o FC Porto bateu o Sporting de Braga por 3-1 na final do playoff e tirou ao Benfica o título nacional de Voleibol feminino.",
   "Antes de competir sob o nome FC Porto, a equipa de Voleibol feminino já tinha sido 3 vezes campeã nacional como AJM/FC Porto, em parceria com a Academia José Moreira."
 ];
+// Fechado por defeito — é uma curiosidade simpática, não informação que se
+// precise de ver logo ao abrir o site, e só empurrava o calendário para baixo
+// sem necessidade. Uma seta abre-o, e fica aberto enquanto a pessoa estiver
+// no site (fecha-se de novo só ao recarregar) — mesmo padrão do "Forma recente".
+let dailyFactOpen = false;
 function renderDailyFact_(){
   const el = document.getElementById("dailyFactBox");
   if(currentCompMode() !== "matches" || activeSport !== "Todos"){ el.style.display = "none"; return; }
@@ -28,8 +33,13 @@ function renderDailyFact_(){
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
   const fact = DAILY_FACTS_[dayOfYear % DAILY_FACTS_.length];
   el.classList.add("daily-fact-box");
-  el.innerHTML = `<span class="dfb-badge">💡 Sabias que</span><div class="dfb-text">${fact}</div>`;
+  el.innerHTML = `<div class="dfb-title${dailyFactOpen ? ' open' : ''}"><span class="dfb-badge">💡 Sabias que</span><span class="fo-arrow">▾</span></div>` +
+    `<div class="dfb-text${dailyFactOpen ? '' : ' collapsed'}">${fact}</div>`;
   el.style.display = "flex";
+  el.querySelector('.dfb-title').onclick = ()=>{
+    dailyFactOpen = !dailyFactOpen;
+    renderDailyFact_();
+  };
 }
 
 // ===================== PERGUNTA LEVE DO DIA (6) — só para rir, sem pontos nem ranking,

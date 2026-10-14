@@ -131,17 +131,12 @@
   .filters{
     display:flex; gap:6px; flex-wrap:wrap; margin-top:20px; margin-bottom:4px;
   }
-  .filter-toggle{
-    display:none;
-    width:100%; margin-top:16px;
-    background:transparent; border:1px solid var(--line); color:var(--text-dim);
-    font-family:'Archivo Narrow',sans-serif; font-weight:600; font-size:13px;
-    padding:9px; border-radius:8px; cursor:pointer; text-align:left;
-  }
-  /* Em ecrãs de telemóvel, os filtros de modalidade ficam escondidos
-     atrás de um botão tipo "sanduíche", para não ocuparem tanto espaço */
+  /* Em telemóvel, junta-se aos outros botões da linha de pesquisa/filtros
+     (poupa uma linha inteira só para isto); em ecrã largo os filtros já
+     aparecem sempre abertos, por isso o botão nem é preciso. */
+  .filter-toggle{display:none;}
   @media (max-width: 480px){
-    .filter-toggle{display:block;}
+    .filter-toggle{display:inline-block;}
     .filters{display:none; margin-top:10px;}
     .filters.open{display:flex;}
   }
@@ -283,6 +278,11 @@
     border-left:3px solid var(--gold);
     padding:12px 14px 13px;
   }
+  .daily-fact-box .dfb-title{
+    display:flex; align-items:center; justify-content:space-between; cursor:pointer;
+  }
+  .daily-fact-box .dfb-title .fo-arrow{ font-size:11px; color:var(--text-dim); transition:transform .15s ease; }
+  .daily-fact-box .dfb-title.open .fo-arrow{ transform:rotate(180deg); }
   .daily-fact-box .dfb-badge{
     display:inline-flex; align-items:center; gap:5px; align-self:flex-start;
     font-family:'Archivo Narrow',sans-serif; font-weight:800; font-size:10px;
@@ -293,6 +293,7 @@
   .daily-fact-box .dfb-text{
     font-size:12.5px; font-style:italic; color:var(--text); line-height:1.55; padding-top:1px;
   }
+  .daily-fact-box .dfb-text.collapsed{ display:none; }
   .form-overview .form-dot{ width:14px; height:14px; font-size:8px; }
   .form-overview .form-strip{ gap:2px; }
 

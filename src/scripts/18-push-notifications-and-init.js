@@ -184,7 +184,7 @@ function showStaleDataBanner_(at){
   if(linkedEvId) goToEventCard(linkedEvId);
   // atualiza periodicamente para ver provas, marcações e competições feitas por outra pessoa,
   // sem nunca apagar uma marcação local mais recente
-  setInterval(async ()=>{
+  async function syncPoll_(){
     const typing = document.activeElement && (
       document.activeElement.classList.contains('result-input') ||
       document.activeElement.classList.contains('gate-input') ||
@@ -233,7 +233,22 @@ function showStaleDataBanner_(at){
         renderTodayAllView();
       }
     }
-  }, 6000);
+  }
+  // Enquanto a aba está em segundo plano (minimizada, noutro separador, ecrã
+  // bloqueado) não há ninguém a ver as atualizações — por isso a sincronização
+  // periódica pára nessa altura, para poupar bateria/dados e não sobrecarregar
+  // o servidor com pedidos inúteis. Assim que a pessoa volta a olhar para a
+  // aba, faz-se logo uma sincronização imediata (para apanhar o que mudou
+  // entretanto) e o ritmo normal de 6 em 6 segundos retoma.
+  let syncIntervalId = setInterval(syncPoll_, 6000);
+  document.addEventListener("visibilitychange", ()=>{
+    if(document.visibilityState === "hidden"){
+      if(syncIntervalId !== null){ clearInterval(syncIntervalId); syncIntervalId = null; }
+    }else if(syncIntervalId === null){
+      syncPoll_();
+      syncIntervalId = setInterval(syncPoll_, 6000);
+    }
+  });
 })();
 
 document.getElementById("loadErrorRetryBtn").onclick = async ()=>{

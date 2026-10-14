@@ -50,3 +50,34 @@
   @media (min-width: 740px){ .wrap{max-width:860px;} }
   @media (min-width: 1100px){ .wrap{max-width:1040px;} }
 
+  /* A partir daqui (computador de ecrã largo), a área principal (calendário/
+     histórico/marcadores) ganha mesmo uma segunda coluna lateral, em vez de só
+     alargar a coluna única — é o que faz o espaço extra servir para alguma
+     coisa, com o "Próximo jogo" e o "Sabias que" sempre à vista ao lado,
+     sem ter de rolar a página para os ver. Em telemóvel/tablet (.sidebar-col
+     sem grid à volta) estes mesmos elementos continuam só empilhados no
+     topo, exatamente como sempre estiveram. */
+  @media (min-width: 1200px){
+    .wrap-main{
+      max-width:1240px;
+      display:grid;
+      grid-template-columns: 1fr 340px;
+      align-items:start;
+      gap:32px;
+    }
+    .wrap-main > .main-col{ order:1; min-width:0; }
+    .wrap-main > .sidebar-col{
+      order:2;
+      position:sticky; top:20px;
+      display:flex; flex-direction:column; gap:16px;
+      max-height:calc(100vh - 40px);
+      overflow-y:auto;
+    }
+    .wrap-main > .sidebar-col:empty{ display:none; }
+    /* Dentro da barra lateral, cada widget já não precisa da margem de topo
+       pensada para ficar empilhado por baixo de outras coisas no cabeçalho —
+       aqui já está sozinho na sua coluna. */
+    .sidebar-col .next-match-banner{ margin-top:0; }
+    .sidebar-col .form-overview{ margin-top:0; }
+  }
+

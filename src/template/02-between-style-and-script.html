@@ -174,11 +174,6 @@
       </div>
     </div>
 
-    <div class="next-match-banner today-opponent-banner" id="todayOpponentBanner" style="display:none;"></div>
-    <div class="next-match-banner" id="nextMatchBanner" style="display:none;"></div>
-    <div class="next-match-banner pending-banner" id="pendingResultsBanner" style="display:none;"></div>
-    <div class="next-match-banner" id="personalPredictionBanner" style="display:none; cursor:pointer;"></div>
-    <div class="next-match-banner" id="weeklyTopPredictorBanner" style="display:none; cursor:pointer;"></div>
     <div class="day-tabs" id="dayTabs"></div>
     <div class="view-tabs" id="viewTabs">
       <button class="view-tab active" id="viewCalendarBtn">Calendário</button>
@@ -219,10 +214,6 @@
     </div>
     <button class="filter-toggle" id="filterToggleBtn">☰ Modalidades</button>
     <div class="filters" id="filters"></div>
-    <div class="form-overview" id="formOverview" style="display:none;"></div>
-    <div class="form-overview" id="dailyFactBox" style="display:none;"></div>
-    <div class="form-overview" id="trophyShelf" style="display:none;"></div>
-    <div class="form-overview" id="lightQuestionBox" style="display:none;"></div>
 
     <button class="add-toggle" id="addToggleBtn">+ Adicionar prova</button>
     <div class="add-panel" id="addPanel" style="display:none;">
@@ -267,7 +258,23 @@
     </div>
   </div>
 
-  <div class="wrap">
+  <div class="wrap wrap-main">
+    <!-- Em ecrã largo (computador), esta coluna vira uma barra lateral ao lado
+         do conteúdo principal, em vez de ficar tudo numa única coluna estreita
+         ao centro, com muito espaço vazio dos dois lados (ver .wrap-main no
+         CSS). Em telemóvel continua tudo empilhado, como sempre foi. -->
+    <div class="sidebar-col" id="sidebarCol">
+      <div class="next-match-banner today-opponent-banner" id="todayOpponentBanner" style="display:none;"></div>
+      <div class="next-match-banner" id="nextMatchBanner" style="display:none;"></div>
+      <div class="next-match-banner pending-banner" id="pendingResultsBanner" style="display:none;"></div>
+      <div class="next-match-banner" id="personalPredictionBanner" style="display:none; cursor:pointer;"></div>
+      <div class="next-match-banner" id="weeklyTopPredictorBanner" style="display:none; cursor:pointer;"></div>
+      <div class="form-overview" id="formOverview" style="display:none;"></div>
+      <div class="form-overview" id="dailyFactBox" style="display:none;"></div>
+      <div class="form-overview" id="trophyShelf" style="display:none;"></div>
+      <div class="form-overview" id="lightQuestionBox" style="display:none;"></div>
+    </div>
+    <div class="main-col">
     <div class="calendar-grid" id="calendarGrid" style="display:none;"></div>
     <div class="load-error-screen" id="loadErrorScreen" style="display:none;">
       <div class="lee-icon">📡</div>
@@ -329,6 +336,7 @@
       <button class="feedback-btn" id="privacyBtn" style="margin-top:8px;">🔒 Política de Privacidade</button>
       <button class="feedback-btn" id="termsBtn" style="margin-top:8px;">📄 Termos de Uso</button>
     </footer>
+    </div>
   </div>
 </div>
 

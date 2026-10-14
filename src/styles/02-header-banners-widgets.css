@@ -288,3 +288,19 @@
   .form-overview .form-dot{ width:14px; height:14px; font-size:8px; }
   .form-overview .form-strip{ gap:2px; }
 
+  /* Em ecrã largo há espaço de sobra para o emblema e o título terem mais
+     presença — hoje ficam do mesmo tamanho pequeno em qualquer ecrã, o que
+     faz o cabeçalho parecer sempre "de telemóvel" mesmo num monitor grande.
+     Usa a Bebas Neue (já usada nos separadores de dia e no "Sabias que") em
+     vez de inventar mais um tipo de letra novo. */
+  @media (min-width: 1200px){
+    header{ padding:28px 16px 20px; }
+    .brand-row{ gap:16px; }
+    .emblem{ width:52px; height:52px; }
+    .brand-title{
+      font-family:'Bebas Neue',sans-serif; font-weight:400;
+      font-size:26px; letter-spacing:0.02em; line-height:1;
+    }
+    .brand-sub{ font-size:12.5px; margin-top:3px; }
+  }
+

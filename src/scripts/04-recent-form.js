@@ -93,7 +93,10 @@ function updateMedalBadge(){
 // esquecer ao longo de uma época longa.
 function renderPendingResultsBanner(matchesMode){
   const banner = document.getElementById("pendingResultsBanner");
-  if(!matchesMode){ banner.style.display = "none"; return; }
+  // Isto é um lembrete para quem edita escrever o resultado em falta — não
+  // diz nada a quem só vê o site, e só lhe ocupava o lugar mais visível do
+  // ecrã com um aviso vermelho sem sentido nenhum para essa pessoa.
+  if(READONLY_MODE || !matchesMode){ banner.style.display = "none"; return; }
 
   const now = new Date();
   const pending = EVENTS.filter(ev=>{

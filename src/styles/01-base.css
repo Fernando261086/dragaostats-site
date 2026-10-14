@@ -49,6 +49,13 @@
      progressivamente a partir de tablet, sem mexer em nada no telemóvel. */
   @media (min-width: 740px){ .wrap{max-width:860px;} }
   @media (min-width: 1100px){ .wrap{max-width:1040px;} }
+  /* A partir daqui o cabeçalho segue a MESMA largura da zona de conteúdo
+     (coluna principal + barra lateral, ver .wrap-main abaixo) — antes ficava
+     mais estreito que o conteúdo, sem alinhar com ele por baixo. Em monitores
+     bem largos (1700px+) ganha ainda mais espaço útil, em vez de continuar a
+     deixar tanta margem vazia dos dois lados. */
+  @media (min-width: 1200px){ .wrap{max-width:1240px;} }
+  @media (min-width: 1700px){ .wrap{max-width:1500px;} }
 
   /* A partir daqui (computador de ecrã largo), a área principal (calendário/
      histórico/marcadores) ganha mesmo uma segunda coluna lateral, em vez de só
@@ -59,7 +66,6 @@
      topo, exatamente como sempre estiveram. */
   @media (min-width: 1200px){
     .wrap-main{
-      max-width:1240px;
       display:grid;
       grid-template-columns: 1fr 340px;
       align-items:start;

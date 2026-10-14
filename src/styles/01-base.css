@@ -68,9 +68,15 @@
     .wrap-main > .main-col{ order:1; min-width:0; }
     .wrap-main > .sidebar-col{
       order:2;
-      position:sticky; top:20px;
+      /* Um pequeno empurrão para baixo, para começar ao nível do 1º cartão em
+         vez de ficar ao nível do topo da coluna principal (onde só há abas e
+         filtros, sem cartão nenhum) — é uma aproximação (o espaço exato antes
+         do 1º cartão varia um pouco consoante a vista), não um alinhamento
+         perfeito ao pixel. */
+      margin-top:76px;
+      position:sticky; top:56px;
       display:flex; flex-direction:column; gap:16px;
-      max-height:calc(100vh - 40px);
+      max-height:calc(100vh - 76px);
       overflow-y:auto;
     }
     /* numa competição do Modo Medalhas, nenhum destes widgets se aplica — ver

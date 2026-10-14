@@ -1,0 +1,124 @@
+  /* LINHA COMPACTA */
+  .compact-line{
+    display:flex; flex-direction:column; gap:3px;
+    padding:9px 12px; border-radius:8px; background:var(--panel);
+    border:1px solid var(--line); border-left:3px solid var(--pending);
+    cursor:pointer; margin-bottom:2px;
+  }
+  .compact-line.status-yes{border-left-color:var(--green);}
+  .compact-line.status-no{border-left-color:var(--red);}
+  .compact-line.status-out{opacity:0.45; border-left-color:var(--red); border-left-style:dashed;}
+  .compact-line.upcoming{border-left-color:var(--gold); box-shadow:0 0 0 1px rgba(227,178,60,0.3);}
+  @keyframes jumpHighlightPulse{
+    0%{box-shadow:0 0 0 0 rgba(90,176,245,0.55);}
+    100%{box-shadow:0 0 0 14px rgba(90,176,245,0);}
+  }
+  .jump-highlight{animation:jumpHighlightPulse 1.1s ease-out 2;}
+  .compact-line .cl-row1{ display:flex; align-items:center; gap:10px; }
+  .compact-line .cl-row2{
+    display:flex; align-items:center; gap:8px; padding-left:50px;
+  }
+  .compact-line .c-time{
+    font-family:'Archivo Narrow',sans-serif; font-weight:600; font-size:12px;
+    color:var(--text-dim); min-width:40px; flex-shrink:0; font-variant-numeric:tabular-nums;
+  }
+  .compact-line .c-sport{
+    font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:9.5px;
+    text-transform:uppercase; padding:2px 6px; border-radius:5px; flex-shrink:0;
+    background:rgba(255,255,255,0.06); color:var(--sport-color, var(--gold));
+    white-space:nowrap;
+  }
+  .compact-line .c-athlete{
+    flex:1; min-width:0; font-weight:600; font-size:13px; color:var(--text);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .compact-line .c-detail{
+    flex:1; min-width:0; font-size:11px; color:var(--text-dim);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .compact-line .c-phase{
+    font-size:10.5px; color:var(--text-dim); flex-shrink:0; opacity:0.8;
+    max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .compact-line .c-phase.c-phase-datetime{ max-width:none; overflow:visible; } /* datas/horas completas (registo de acessos, subscritores) nunca devem ser cortadas */
+  .compact-line .c-medal{ flex-shrink:0; font-size:13px; }
+  .compact-line .c-result{
+    flex-shrink:0; font-size:10.5px; font-weight:600; color:var(--accent-bright);
+    background:rgba(227,178,60,0.12); padding:1px 7px; border-radius:6px;
+    max-width:70px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .chip{
+    font-family:'Archivo Narrow',sans-serif; font-weight:600;
+    font-size:12px; letter-spacing:0.02em;
+    padding:6px 12px; border-radius:20px;
+    border:1px solid var(--line); color:var(--text-dim);
+    background:transparent; cursor:pointer;
+    transition:all .15s ease;
+  }
+  .chip:hover{border-color:rgba(255,255,255,0.25); color:var(--text);}
+  .chip.active{background:var(--gold); border-color:var(--gold); color:var(--gold-text);}
+
+  /* TIMELINE */
+  /* Antes tinha um limite de largura próprio (720px), mais estreito do que o
+     cabeçalho acima (que já vai a 1040px em ecrãs largos) — os jogos ficavam
+     visivelmente mais apertados que o resto da página, com vazio à volta.
+     Agora segue sempre a largura do .wrap em que está, como o resto da página. */
+  .timeline{position:relative; padding:30px 0 0;}
+  /* esqueleto de carregamento — mostra-se só até os dados a sério chegarem e
+     substituírem o conteúdo do #timeline; mesma forma do cartão de jogo, para
+     a transição ser suave em vez de um salto de "vazio" para "cheio" */
+  .skeleton-row{display:grid; grid-template-columns:48px 20px 1fr; column-gap:10px; padding:10px 0;}
+  @keyframes skeletonPulse{ 0%,100%{opacity:0.45;} 50%{opacity:0.85;} }
+  .skeleton-bar{background:var(--line); border-radius:6px; animation:skeletonPulse 1.3s ease-in-out infinite;}
+  .timeline::before{
+    content:"";
+    position:absolute; left:57px; top:0; bottom:0; width:1px;
+    background:linear-gradient(to bottom, transparent, var(--line) 4%, var(--line) 96%, transparent);
+  }
+
+  .hour-group{position:relative;}
+  .hour-label{
+    font-family:'Bebas Neue',sans-serif;
+    color:var(--label-muted);
+    font-size:13px; letter-spacing:0.1em;
+    padding:18px 0 6px 0;
+    margin-left:0;
+  }
+
+  .event{
+    display:grid;
+    grid-template-columns:48px 20px 1fr;
+    column-gap:10px;
+    align-items:start;
+    padding:10px 0;
+  }
+  .event .time{
+    font-family:'Archivo Narrow',sans-serif;
+    font-weight:600; font-size:13px; color:var(--text-dim);
+    padding-top:4px; text-align:right; font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .event .time .approx{color:var(--gold-dim); font-weight:500;}
+  .event .time .time-date{font-size:13px; font-weight:700; color:var(--text); opacity:1;}
+  .dot-col{display:flex; justify-content:center; padding-top:7px;}
+  .dot{
+    width:11px; height:11px; border-radius:50%;
+    background:var(--panel); border:2px solid var(--pending);
+    transition:all .2s ease;
+  }
+  .event.status-yes .dot{background:var(--green); border-color:var(--green);}
+  .event.status-no .dot{background:var(--red); border-color:var(--red);}
+  .event.status-out{opacity:0.45;}
+  .event.status-out .dot{background:transparent; border-color:var(--red); border-style:dashed;}
+  .event.status-out .card{border-left-color:var(--red); border-style:dashed; background:transparent;}
+  .out-note{
+    font-family:'Archivo Narrow',sans-serif; font-size:12px; font-style:italic;
+    color:var(--red); margin-top:6px;
+  }
+  .watch-link{
+    display:inline-block; margin-top:8px; font-size:11.5px;
+    font-family:'Archivo Narrow',sans-serif; font-weight:600;
+    color:var(--text); text-decoration:none;
+  }
+  .watch-link:hover{text-decoration:underline;}
+

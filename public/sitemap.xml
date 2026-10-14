@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://dragaostats.pt/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url><loc>https://dragaostats.pt/andebol.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/basquetebol.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/hoquei-em-patins.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/voleibol.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/futebol-feminino.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/futsal.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/equipa-b.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/novidades.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+</urlset>

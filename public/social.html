@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dragão Stats — Tudo num só sítio</title>
+<meta name="description" content="Jogos, resultados e notificações do FC Porto em todas as modalidades. Segue-nos nas redes ou entra já no site.">
+<link rel="canonical" href="https://dragaostats.pt/social.html">
+<meta name="robots" content="noindex">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Dragão Stats — Tudo num só sítio">
+<meta property="og:description" content="Jogos, resultados e notificações do FC Porto em todas as modalidades.">
+<meta property="og:image" content="https://dragaostats.pt/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://dragaostats.pt/social.html">
+
+<meta name="theme-color" content="#0d1b2e">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Archivo+Narrow:wght@500;600;700;800&display=swap');
+:root{
+  --bg:#0d1b2e; --panel:#16294a; --line:rgba(255,255,255,0.09);
+  --gold:#e3b23c; --text:#eef2f8; --text-dim:#93a2bd;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; background:linear-gradient(180deg,#16294a 0%,#0d1b2e 60%);
+  color:var(--text); font-family:'Archivo',sans-serif;
+  min-height:100vh; display:flex; flex-direction:column; align-items:center;
+  padding:env(safe-area-inset-top,0px) 20px calc(env(safe-area-inset-bottom,0px) + 24px);
+}
+.wrap{max-width:420px; width:100%; margin:0 auto; padding-top:44px; text-align:center;}
+.emblem{width:76px; height:76px; border-radius:20px; margin-bottom:16px;}
+.brand-name{font-family:'Archivo Narrow',sans-serif; font-weight:800; font-size:20px; letter-spacing:0.5px; margin-bottom:4px;}
+.tagline{font-size:13.5px; color:var(--text-dim); margin-bottom:34px;}
+a.btn{
+  display:flex; align-items:center; gap:12px; text-align:left;
+  background:var(--panel); border:1px solid var(--line); color:var(--text);
+  font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:15.5px;
+  text-decoration:none; padding:16px 18px; border-radius:14px; margin-bottom:12px;
+}
+a.btn .ico{font-size:22px; flex-shrink:0;}
+a.btn.primary{background:var(--gold); color:#20140a; border-color:var(--gold);}
+footer{margin-top:28px; font-size:11.5px; color:var(--text-dim); text-align:center; opacity:0.8;}
+footer a{color:var(--text-dim);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img class="emblem" src="header-emblem.png" alt="Dragão Stats">
+  <div class="brand-name">DRAGÃO STATS</div>
+  <div class="tagline">Jogos e resultados do FC Porto, em todas as modalidades</div>
+
+  <a class="btn primary" href="./?filtro=proximos">
+    <span class="ico">📅</span> Ver próximos jogos
+  </a>
+  <a class="btn" href="./?filtro=resultados">
+    <span class="ico">🏆</span> Ver últimos resultados
+  </a>
+  <a class="btn" href="./">
+    <span class="ico">🔔</span> Ativar notificações
+  </a>
+  <a class="btn" href="https://www.instagram.com/dragaostats/" target="_blank" rel="noopener">
+    <span class="ico">📸</span> Seguir no Instagram
+  </a>
+  <a class="btn" href="https://www.facebook.com/profile.php?id=61594855463005" target="_blank" rel="noopener">
+    <span class="ico">📘</span> Seguir no Facebook
+  </a>
+
+  <footer>Dragão Stats — projeto de adeptos, sem ligação oficial ao FC Porto.<br><a href="./">dragaostats.pt</a></footer>
+</div>
+</body>
+</html>

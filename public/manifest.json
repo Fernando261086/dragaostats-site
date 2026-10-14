@@ -1,0 +1,33 @@
+{
+  "name": "Dragão Stats",
+  "short_name": "Dragão Stats",
+  "description": "Jogos, resultados e estatísticas das modalidades do FC Porto",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0d1b2e",
+  "theme_color": "#0d1b2e",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Próximos jogos",
+      "short_name": "Próximos",
+      "description": "Ver os próximos jogos do FC Porto",
+      "url": "./?filtro=proximos",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Resultados",
+      "short_name": "Resultados",
+      "description": "Ver os últimos resultados do FC Porto",
+      "url": "./?filtro=resultados",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}

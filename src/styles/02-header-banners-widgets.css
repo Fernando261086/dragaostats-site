@@ -1,0 +1,290 @@
+  /* HEADER */
+  header{
+    padding:20px 16px 16px;
+    border-bottom:1px solid var(--line);
+    background:rgba(13,27,46,0.94);
+    backdrop-filter:blur(10px);
+  }
+  .brand-row{display:flex; align-items:center; gap:10px;}
+  .comp-row{display:flex; gap:8px; margin-bottom:12px;}
+  .comp-select{
+    flex:1; background:rgba(255,255,255,0.04);
+    border:1px solid var(--line); border-radius:8px;
+    color:var(--text); font-family:'Archivo Narrow',sans-serif; font-weight:600; font-size:13px;
+    padding:8px 10px; outline:none;
+  }
+  .comp-select option{background:var(--ink-2); color:var(--text);}
+  .comp-new{
+    white-space:nowrap;
+    background:transparent; border:1px dashed var(--gold-dim); color:var(--text);
+    font-family:'Archivo Narrow',sans-serif; font-weight:600; font-size:12px;
+    padding:8px 12px; border-radius:8px; cursor:pointer;
+  }
+  .comp-new:hover{background:rgba(227,178,60,0.06);}
+  .comp-del{
+    white-space:nowrap;
+    background:transparent; border:1px solid var(--line); color:var(--text-dim);
+    font-size:14px; padding:8px 10px; border-radius:8px; cursor:pointer;
+  }
+  .comp-del:hover{border-color:var(--red); color:var(--red);}
+  .comp-del.active{background:rgba(227,178,60,0.12); border-color:var(--gold-dim); color:var(--gold);}
+  .comp-del.active:hover{border-color:var(--gold-dim); color:var(--gold);}
+  .emblem{width:32px; height:32px; flex-shrink:0; object-fit:contain;}
+  .brand-title{font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:13px; color:var(--text);}
+  .brand-sub{font-family:'Archivo Narrow',sans-serif; font-size:11px; color:var(--text-dim);}
+  .brand-disclaimer{font-family:'Archivo Narrow',sans-serif; font-size:9.5px; color:var(--text-dim); opacity:0.75; margin-top:1px;}
+  .brand-right{margin-left:auto; text-align:right;}
+  .medal-badge{
+    font-family:'Archivo Narrow',sans-serif; font-weight:600; font-size:13px;
+    color:var(--text-dim); white-space:nowrap;
+  }
+  .sync-label{
+    font-family:'Archivo Narrow',sans-serif; font-size:10px;
+    color:var(--text-dim); white-space:nowrap; opacity:0.75; margin-top:2px;
+  }
+
+  .progress-row{display:flex; align-items:center; gap:12px; margin-top:14px;}
+  .next-match-banner{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin-top:18px; padding:12px 16px; border-radius:10px;
+    background:rgba(11,61,145,0.12); border:1px solid var(--gold-dim);
+    box-shadow:0 3px 10px -3px rgba(0,0,0,0.4);
+  }
+  .next-match-banner .nmb-info{ font-size:13px; color:var(--text); }
+  .next-match-banner .nmb-info b{ color:var(--accent-bright); }
+  .next-match-banner .nmb-countdown{
+    font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:15px;
+    color:var(--text); white-space:nowrap; flex-shrink:0;
+  }
+  .pending-banner{ background:rgba(211,86,74,0.12); border-color:var(--red); cursor:pointer; }
+  .pending-banner .nmb-info{ color:var(--text); }
+  .pending-banner .nmb-countdown{ color:var(--red); }
+  @keyframes todayGlow{
+    0%,100%{ box-shadow:0 3px 10px -3px rgba(0,0,0,0.4), 0 0 0 0 rgba(227,178,60,0.25); }
+    50%{ box-shadow:0 3px 10px -3px rgba(0,0,0,0.4), 0 0 14px 2px rgba(227,178,60,0.22); }
+  }
+  .today-opponent-banner{
+    background:rgba(227,178,60,0.14); border-color:var(--gold);
+    align-items:flex-start;
+    animation:todayGlow 3s ease-in-out infinite;
+  }
+  .today-opponent-banner .tob-tag{
+    font-family:'Archivo Narrow',sans-serif; font-weight:800; font-size:12.5px;
+    color:var(--gold-text); background:var(--gold); padding:5px 10px; border-radius:6px;
+    letter-spacing:0.5px; flex-shrink:0; white-space:nowrap;
+  }
+  .today-opponent-banner .tob-info{ flex:1; min-width:0; }
+  .next-match-banner .tob-label{
+    font-family:'Archivo Narrow',sans-serif; font-size:10.5px; color:var(--text-dim);
+    text-transform:uppercase; letter-spacing:0.6px; margin-bottom:3px;
+  }
+  .today-opponent-banner .tob-match{ font-size:13px; color:var(--text); margin-top:2px; }
+  .today-opponent-banner .tob-match b{ color:var(--accent-bright); }
+  .today-opponent-banner .tob-meta{ font-size:11.5px; color:var(--text-dim); }
+  /* mais ênfase, num jogo só — reaproveita a Bebas Neue já usada nos separadores de dia */
+  .next-match-banner .tob-sport-hero{
+    font-family:'Bebas Neue',sans-serif; font-size:30px; line-height:0.95;
+    letter-spacing:0.02em; color:var(--text); margin:2px 0 4px;
+  }
+  .next-match-banner .tob-match-hero{
+    font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:16px;
+    color:var(--text);
+  }
+  .next-match-banner .tob-match-hero .tob-vs{ color:var(--gold); font-weight:600; margin:0 5px; }
+  .next-match-banner .nmb-meta-line{
+    font-family:'Archivo Narrow',sans-serif; font-size:11.5px; color:var(--text-dim); margin-top:6px;
+  }
+  /* ecrã de erro a sério (sem ligação ao servidor e sem nenhuma cópia guardada) */
+  .load-error-screen{
+    min-height:60vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:40px 24px; gap:14px;
+  }
+  .load-error-screen .lee-icon{ font-size:40px; }
+  .load-error-screen h2{ font-family:'Archivo Narrow',sans-serif; font-size:18px; margin:0; color:var(--text); }
+  .load-error-screen p{ font-size:13.5px; color:var(--text-dim); max-width:340px; margin:0; line-height:1.5; }
+  /* aviso de dados guardados (a mostrar a última cópia boa, servidor incontactável) */
+  .stale-data-banner{
+    display:flex; align-items:center; gap:10px; margin:0 0 14px; padding:10px 14px;
+    background:rgba(227,178,60,0.12); border:1px solid var(--gold-dim); border-radius:10px;
+    font-size:12.5px; color:var(--text);
+  }
+  .stale-data-banner button{
+    margin-left:auto; flex-shrink:0; background:none; border:1px solid var(--gold-dim); color:var(--gold);
+    border-radius:8px; padding:5px 10px; font-size:12px; cursor:pointer; font-family:'Archivo Narrow',sans-serif; font-weight:600;
+  }
+  .progress-track{
+    flex:1; height:6px; border-radius:4px; background:rgba(255,255,255,0.08); overflow:hidden;
+  }
+  .progress-fill{height:100%; background:linear-gradient(90deg,var(--gold-dim),var(--gold)); width:0%; transition:width .4s ease;}
+  .progress-label{font-size:12px; color:var(--text-dim); white-space:nowrap; font-variant-numeric:tabular-nums;}
+
+  .back-to-top{
+    position:fixed; left:18px; bottom:22px; z-index:30;
+    width:46px; height:46px; border-radius:50%;
+    background:var(--gold); color:var(--gold-text); border:none;
+    font-size:20px; font-weight:700;
+    display:none; align-items:center; justify-content:center;
+    box-shadow:0 4px 16px rgba(0,0,0,0.45); cursor:pointer;
+  }
+  .back-to-top.show{display:flex;}
+
+  .filters{
+    display:flex; gap:6px; flex-wrap:wrap; margin-top:20px; margin-bottom:4px;
+  }
+  .filter-toggle{
+    display:none;
+    width:100%; margin-top:16px;
+    background:transparent; border:1px solid var(--line); color:var(--text-dim);
+    font-family:'Archivo Narrow',sans-serif; font-weight:600; font-size:13px;
+    padding:9px; border-radius:8px; cursor:pointer; text-align:left;
+  }
+  /* Em ecrãs de telemóvel, os filtros de modalidade ficam escondidos
+     atrás de um botão tipo "sanduíche", para não ocuparem tanto espaço */
+  @media (max-width: 480px){
+    .filter-toggle{display:block;}
+    .filters{display:none; margin-top:10px;}
+    .filters.open{display:flex;}
+  }
+  .day-tabs{
+    display:flex; gap:6px; flex-wrap:wrap; margin-top:18px;
+  }
+  .day-tab{
+    font-family:'Bebas Neue',sans-serif; letter-spacing:0.03em;
+    font-size:16px; padding:6px 16px; border-radius:8px;
+    border:1px solid var(--line); color:var(--text-dim);
+    background:transparent; cursor:pointer;
+  }
+  .day-tab:hover{border-color:rgba(255,255,255,0.25); color:var(--text);}
+  .day-tab.active{background:var(--gold); border-color:var(--gold); color:var(--gold-text); box-shadow:0 2px 8px -2px rgba(0,0,0,0.4);}
+  .today-dot{
+    font-size:8px; font-family:'Archivo Narrow',sans-serif; font-weight:700;
+    vertical-align:2px; opacity:0.8;
+  }
+
+  .search-row{display:flex; gap:8px; margin-top:14px;}
+  .search-input{
+    flex:1; background:rgba(255,255,255,0.04);
+    border:1px solid var(--line); border-radius:8px;
+    color:var(--text); font-family:'Archivo',sans-serif; font-size:13px;
+    padding:8px 10px; outline:none;
+  }
+  .search-input::placeholder{color:var(--text-dim); opacity:0.7;}
+  .search-input:focus{border-color:var(--gold-dim);}
+  .hide-toggle{
+    font-family:'Archivo Narrow',sans-serif; font-weight:600; font-size:12px;
+    padding:8px 12px; border-radius:8px; border:1px solid var(--line);
+    background:transparent; color:var(--text-dim); cursor:pointer; white-space:nowrap;
+  }
+  /* uma resposta pequena ao tocar, em vez de tudo aparecer/mudar seco — só nos
+     botões e cartões mais usados, sem mexer em mais nada */
+  .hide-toggle, .view-tab, .day-tab, .add-save, .prediction-btn, .form-overview-row,
+  .social-icon-btn, .more-options-btn{
+    transition:background-color .15s ease, border-color .15s ease, color .15s ease, transform .1s ease, box-shadow .15s ease;
+  }
+  .hide-toggle:active, .view-tab:active, .day-tab:active, .add-save:active,
+  .prediction-btn:active, .form-overview-row:active, .social-icon-btn:active, .more-options-btn:active{
+    transform:scale(0.96);
+  }
+  .card:active{ transform:scale(0.995); }
+  .hide-toggle.active{background:rgba(227,178,60,0.12); border-color:var(--gold-dim); color:var(--gold);}
+  /* destaque discreto no botão de notificações, enquanto ainda não estão ativas —
+     um convite permanente, sem precisar de um popup para chamar a atenção */
+  @keyframes notifyPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(227,178,60,0.35); } 50%{ box-shadow:0 0 0 5px rgba(227,178,60,0); } }
+  /* estes dois botões são sempre dourado cheio (classe .primary-cta), por isso o
+     texto tem de continuar escuro (--gold-text) mesmo com "needs-attention" — já
+     aconteceu o texto ficar invisível por ficar da MESMA cor do fundo */
+  #notifyToggleBtn.needs-attention{
+    border-color:var(--gold-dim); color:var(--gold-text);
+    animation:notifyPulse 2.4s ease-in-out infinite;
+  }
+  #installAppBtn.needs-attention{
+    border-color:var(--gold-dim); color:var(--gold-text);
+    animation:notifyPulse 2.4s ease-in-out infinite;
+  }
+  /* Notificações e Instalar app — as duas ações mais importantes, com o mesmo peso */
+  .primary-cta{
+    background:var(--gold); border-color:var(--gold); color:var(--gold-text);
+    font-weight:700;
+  }
+  .primary-cta.needs-attention{ animation:none; } /* já se destaca por ser dourado cheio */
+  .primary-cta.active{ background:var(--panel); border-color:var(--line); color:var(--text-dim); font-weight:600; }
+  /* o resto dos botões fica atrás de "•••", para a barra não ficar uma lista de checkboxes */
+  .more-options-btn{
+    font-family:'Archivo Narrow',sans-serif; font-weight:800; font-size:16px; letter-spacing:1px;
+    padding:6px 14px; border-radius:20px; border:1px solid var(--line); color:var(--text-dim);
+    background:transparent;
+  }
+  .more-options-btn.open{ border-color:var(--gold-dim); color:var(--gold); }
+  .more-options-panel{
+    display:flex; flex-wrap:wrap; gap:8px; margin:0 0 14px; padding:12px;
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+  }
+  /* Facebook / Instagram — só o logo, a cores (não usa a classe hide-toggle para não esticar no telemóvel) */
+  .social-icon-btn{
+    display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;
+    width:34px; height:34px; padding:0; border:none; background:none;
+    border-radius:9px; cursor:pointer; transition:transform .15s;
+  }
+  .social-icon-btn svg{width:30px; height:30px; display:block;}
+  .social-icon-btn:hover{transform:scale(1.1);}
+  .social-icon-btn:focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
+  /* título entre os jogos do mês e os primeiros do mês seguinte ("Próximos jogos") */
+  .month-peek-divider{
+    display:flex; align-items:center; gap:12px; margin:26px 0 6px;
+    font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:13px;
+    letter-spacing:0.7px; text-transform:uppercase; color:var(--gold);
+  }
+  .month-peek-divider::before, .month-peek-divider::after{content:""; flex:1; height:1px; background:var(--line);}
+  /* "Forma recente" — bolinhas V/E/D dos últimos jogos de uma modalidade */
+  .form-dot{
+    display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+    width:19px; height:19px; border-radius:50%; font-size:10.5px; font-weight:800;
+    font-family:'Archivo Narrow',sans-serif; color:#0d1b2e;
+  }
+  .form-strip{ display:inline-flex; gap:4px; align-items:center; vertical-align:middle; }
+  #formBadge{ font-family:'Archivo Narrow',sans-serif; font-size:11px; color:var(--text-dim); margin-top:3px; }
+  .form-overview{
+    display:flex; flex-direction:column; gap:6px; margin:6px 0 18px; padding:10px 12px;
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+  }
+  .form-overview-title{
+    font-family:'Archivo Narrow',sans-serif; font-size:9.5px; font-weight:700; letter-spacing:0.5px;
+    text-transform:uppercase; color:var(--text-dim); cursor:pointer;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .form-overview-title .fo-arrow{ font-size:11px; transition:transform .15s ease; }
+  .form-overview-title.open .fo-arrow{ transform:rotate(180deg); }
+  .form-overview-chips{ display:flex; flex-wrap:wrap; gap:6px; }
+  .form-overview-chips.collapsed{ display:none; }
+  .form-overview-row{
+    display:inline-flex; align-items:center; gap:5px; cursor:pointer;
+    padding:4px 8px; border-radius:999px; background:rgba(255,255,255,0.04);
+    border:1px solid var(--line);
+  }
+  .form-overview-row .fo-sport{ font-size:10.5px; color:var(--text-dim); font-weight:600; white-space:nowrap; }
+  .form-overview-row:hover{ border-color:var(--gold-dim); }
+  .form-overview-row:hover .fo-sport{ color:var(--gold); }
+  /* "Sabias que" — identidade própria em vez do painel genérico: faixa dourada
+     à esquerda, selo em pílula (como o resto do site já usa noutros destaques)
+     e o texto em itálico ligeiro, para se ler como uma curiosidade, não como
+     mais uma linha de interface. */
+  .daily-fact-box{
+    position:relative; overflow:hidden;
+    background:linear-gradient(135deg, rgba(227,178,60,0.10), rgba(227,178,60,0.02) 60%), var(--panel);
+    border:1px solid var(--gold-dim);
+    border-left:3px solid var(--gold);
+    padding:12px 14px 13px;
+  }
+  .daily-fact-box .dfb-badge{
+    display:inline-flex; align-items:center; gap:5px; align-self:flex-start;
+    font-family:'Archivo Narrow',sans-serif; font-weight:800; font-size:10px;
+    letter-spacing:0.6px; text-transform:uppercase;
+    color:var(--gold-text); background:var(--gold);
+    padding:3px 9px; border-radius:999px;
+  }
+  .daily-fact-box .dfb-text{
+    font-size:12.5px; font-style:italic; color:var(--text); line-height:1.55; padding-top:1px;
+  }
+  .form-overview .form-dot{ width:14px; height:14px; font-size:8px; }
+  .form-overview .form-strip{ gap:2px; }
+

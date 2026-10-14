@@ -1,0 +1,52 @@
+  :root{
+    --ink:#0d1b2e;
+    --ink-2:#132540;
+    --panel:#16294a;
+    --line:rgba(255,255,255,0.09);
+    --gold:#e3b23c;
+    --gold-dim:#a9863a;
+    --gold-text:#20140a;
+    --accent-bright:#e3b23c;
+    --label-muted:#a9863a;
+    --text:#eef2f8;
+    --text-dim:#93a2bd;
+    --green:#4fae6f;
+    --green-dim:rgba(79,174,111,0.16);
+    --red:#d3564a;
+    --red-dim:rgba(211,86,74,0.16);
+    --pending:#5c6f92;
+  }
+  html.theme-light{
+    --ink:#f3f5fa;
+    --ink-2:#e7ebf3;
+    --panel:#ffffff;
+    --line:rgba(20,30,50,0.12);
+    --text:#182338;
+    --text-dim:#5b6b88;
+    --pending:#b7c1d6;
+  }
+  .theme-toggle{
+    background:transparent; border:1px solid var(--line); color:var(--text-dim);
+    font-size:16px; padding:6px 10px; border-radius:8px; cursor:pointer;
+    margin-left:10px; flex-shrink:0;
+  }
+  .theme-toggle:hover{color:var(--gold); border-color:var(--gold-dim);}
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(227,178,60,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 600px at 100% 100%, rgba(79,174,111,0.05), transparent 55%),
+      var(--ink);
+    color:var(--text);
+    font-family:'Archivo', sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:720px; margin:0 auto; padding:0 16px;}
+  /* em ecrãs de computador, 720px fica uma coluna estreita a meio de muito espaço
+     vazio — parece sempre uma app de telemóvel, mesmo num ecrã grande. Alarga-se
+     progressivamente a partir de tablet, sem mexer em nada no telemóvel. */
+  @media (min-width: 740px){ .wrap{max-width:860px;} }
+  @media (min-width: 1100px){ .wrap{max-width:1040px;} }
+

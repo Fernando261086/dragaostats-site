@@ -1,0 +1,43 @@
+  /* MODO SÓ VER — esconde tudo o que serve para editar */
+  body.readonly-mode .seg,
+  body.readonly-mode .dup-btn,
+  body.readonly-mode .edit-btn,
+  body.readonly-mode .del-btn,
+  body.readonly-mode .add-toggle,
+  body.readonly-mode .add-panel,
+  body.readonly-mode #newCompBtn,
+  body.readonly-mode #deleteCompBtn,
+  body.readonly-mode #archiveCompBtn,
+  body.readonly-mode #showArchivedBtn,
+  body.readonly-mode #restoreCompBtn,
+  body.readonly-mode #pinCompBtn,
+  body.readonly-mode #renameCompBtn,
+  body.readonly-mode #sportLinksBtn,
+  body.readonly-mode #accessManageBtn,
+  body.readonly-mode #visitsLogBtn,
+  body.readonly-mode #feedbackAdminBtn,
+  body.readonly-mode #announcementBtn,
+  body.readonly-mode #pushNowBtn,
+  body.readonly-mode #postTextBtn,
+  body.readonly-mode #installedListBtn,
+  body.readonly-mode [data-sharecard="1"],
+  body.readonly-mode #pollAdminBtn,
+  body.readonly-mode #newsletterSubsBtn,
+  body.readonly-mode #exportAllBtn,
+  body.readonly-mode #viewOnlyLinkBtn,
+  body.readonly-mode #globalSearchBtn,
+  body.readonly-mode .progress-track,
+  body.readonly-mode .progress-label,
+  body.readonly-mode #feedbackBadge,
+  body.readonly-mode .reset-btn,
+  body.readonly-mode #editHintText{ display:none !important; }
+  body.readonly-mode .result-input{ pointer-events:none; opacity:0.75; }
+  body.readonly-mode .medal-picker{ pointer-events:none; }
+  body.readonly-mode .medal-btn:not(.active){ opacity:0.35; }
+  .readonly-badge{
+    display:none;
+    background:rgba(227,178,60,0.14); border:1px solid var(--gold-dim); color:var(--gold);
+    font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:11px;
+    padding:4px 10px; border-radius:14px; margin-bottom:10px; width:fit-content;
+  }
+  body.readonly-mode .readonly-badge{ display:none; } /* já não faz falta a quem só vê */

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dragão Stats — FC Porto: Andebol, Basquetebol, Voleibol e mais</title>
+<meta name="description" content="Calendário, resultados e classificações do FC Porto em Andebol, Basquetebol, Hóquei em Patins, Voleibol, Futebol Feminino, Futsal e Equipa B, tudo num só sítio.">
+<meta name="google-site-verification" content="Dgq0qt0hBbD7lj-ayPFbtreFvEG918gAl26pKD-e8N0" />
+<meta property="og:type" content="website">
+<meta property="og:title" content="Dragão Stats — Competições e Resultados">
+<meta property="og:description" content="Calendário, resultados e estatísticas dos jogos do FC Porto em futebol feminino, futsal, basquetebol, andebol, hóquei em patins e voleibol.">
+<meta property="og:image" content="https://dragaostats.pt/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://dragaostats.pt">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dragão Stats — Competições e Resultados">
+<meta name="twitter:description" content="Calendário, resultados e estatísticas dos jogos do FC Porto em futebol feminino, futsal, basquetebol, andebol, hóquei em patins e voleibol.">
+<meta name="twitter:image" content="https://dragaostats.pt/og-image.png">
+
+<!-- PWA: permite "Instalar" a app no telemóvel/computador -->
+<link rel="manifest" href="manifest.json" id="pwaManifestLink">
+<script>
+  // Por defeito, o manifesto normal (manifest.json) já é o de "só ver" — é o que
+  // toda a gente vê ao instalar a partir da página principal. Só em /edicao (ou
+  // ?view=edit) é que troca para o manifesto de edição, para o ícone instalado
+  // dali abrir sempre a app completa, não o modo de leitura.
+  const onEditPathEarly = location.pathname.replace(/\/$/, "").toLowerCase().endsWith("/edicao")
+    || new URLSearchParams(location.search).get("view") === "edit";
+  if(onEditPathEarly){
+    document.getElementById("pwaManifestLink").setAttribute("href", "manifest-edit.json");
+  }
+</script>
+<meta name="theme-color" content="#0d1b2e">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Resultados">
+<link rel="icon" href="icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@500;600&display=swap" rel="stylesheet">
+<style>

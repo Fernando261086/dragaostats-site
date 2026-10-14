@@ -30,19 +30,38 @@ function maybeShowChangelog(){
 
 function ensureAdminAuthenticated(){
   return new Promise((resolve)=>{
+    // Confia numa entrada já feita antes neste aparelho, sem voltar a perguntar
+    // ao servidor — tal como o nome de quem só vê. Se a password tiver sido
+    // entretanto removida no painel de acessos, esta pessoa só dá por isso se
+    // algum dia limpar os dados do site ou mudar de aparelho.
     let saved = null;
     try{ saved = JSON.parse(localStorage.getItem("dia22-admin-auth") || "null"); }catch(e){}
-    if(saved && ADMIN_AUTH[saved.password] === saved.name){
+    if(saved && saved.password && saved.name){
       resolve();
       return;
     }
     const overlay = document.getElementById("adminGateOverlay");
     overlay.style.display = "flex";
-    const submit = ()=>{
+    const submit = async ()=>{
       const pwd = document.getElementById("adminPasswordInput").value.trim();
-      const name = ADMIN_AUTH[pwd];
-      if(name){
-        try{ localStorage.setItem("dia22-admin-auth", JSON.stringify({ password: pwd, name: name })); }catch(e){}
+      if(!pwd) return;
+      const btn = document.getElementById("adminGateSubmit");
+      btn.disabled = true;
+      // A password é confirmada no servidor (nunca localmente): o cliente não
+      // tem — nem pode ter — a lista toda de passwords de admin, só quem já
+      // estiver autenticado é que a pode voltar a pedir (ver renderAccessManagePanel).
+      let result = null;
+      try{
+        const r = await fetch(STORE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ adminLoginAttempt: pwd })
+        });
+        result = await r.json().catch(()=>null);
+      }catch(e){}
+      btn.disabled = false;
+      if(result && result.ok && result.valid && result.name){
+        try{ localStorage.setItem("dia22-admin-auth", JSON.stringify({ password: pwd, name: result.name })); }catch(e){}
         overlay.style.display = "none";
         resolve();
       }else{
@@ -127,11 +146,31 @@ function renderAccessManagePanel(){
   document.getElementById("closeAccessBtn").onclick = ()=>{ panel.style.display = "none"; };
 }
 
-document.getElementById("accessManageBtn").onclick = ()=>{
+document.getElementById("accessManageBtn").onclick = async ()=>{
   const panel = document.getElementById("accessManagePanel");
   const opening = panel.style.display === "none";
-  panel.style.display = opening ? "block" : "none";
-  if(opening) renderAccessManagePanel();
+  if(!opening){ panel.style.display = "none"; return; }
+  panel.style.display = "block";
+  // A lista de passwords só é pedida ao servidor neste momento (nunca antes),
+  // e só porque já temos a nossa própria password de admin validada para a
+  // pedir com ela — ver "getAdminAuth" no doPost, que exige exatamente isso.
+  panel.innerHTML = '<div class="medal-empty">A carregar...</div>';
+  try{
+    const r = await fetch(STORE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ getAdminAuth: true, adminPassword: getAdminPassword() })
+    });
+    const result = await r.json().catch(()=>null);
+    if(result && result.ok && result.adminAuth && typeof result.adminAuth === "object"){
+      ADMIN_AUTH = result.adminAuth;
+      renderAccessManagePanel();
+    }else{
+      panel.innerHTML = '<div class="medal-empty">⚠️ Não foi possível carregar a lista de acessos. Tenta fechar e abrir outra vez.</div>';
+    }
+  }catch(e){
+    panel.innerHTML = '<div class="medal-empty">⚠️ Erro de rede ao carregar os acessos.</div>';
+  }
 };
 
 // Formulário de reportar bug/sugestão — visível para toda a gente, incluindo

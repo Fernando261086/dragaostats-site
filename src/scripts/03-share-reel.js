@@ -402,11 +402,13 @@ async function fetchAll(){
         });
         STAT_TYPES = merged;
       }
-      if(raw.adminAuth && typeof raw.adminAuth === "object"){
-        const accessPanelOpen = document.getElementById("accessManagePanel")
-          && document.getElementById("accessManagePanel").style.display !== "none";
-        if(!accessPanelOpen) ADMIN_AUTH = raw.adminAuth;
-      }
+      // A lista de passwords de admin (ADMIN_AUTH) já não vem aqui — o servidor
+      // deixou de a mandar neste pedido geral (que qualquer visitante faz,
+      // incluindo quem só tem o link "só ver"). Ver ensureAdminAuthenticated()
+      // e renderAccessManagePanel(), que a tratam agora cada um à sua vez,
+      // sempre com a password já validada no servidor primeiro. hasAdminAuth é
+      // só o sim/não de "existe alguma password configurada" (ver init()).
+      if(typeof raw.hasAdminAuth === "boolean") HAS_ADMIN_AUTH = raw.hasAdminAuth;
       if(Array.isArray(raw.visitLog)) VISIT_LOG = raw.visitLog;
       if(Array.isArray(raw.feedback)){ FEEDBACK_LOG = raw.feedback; checkFeedbackUpdates(); checkMyFeedbackReplies(); }
       if(raw.reactions && typeof raw.reactions === "object") REACTIONS = raw.reactions;
@@ -758,6 +760,10 @@ let SPORT_LINKS = { ...DEFAULT_SPORT_LINKS };
 let COMPETITION_OPTIONS = {}; // { modalidade: ["Campeonato Nacional", "Amigável", ...] } — deixa a "Competição" de cada jogo de ser texto livre
 let VIEWER_AUTH = {}; // password -> nome, para quem só pode ver (sincronizado com o servidor) — já não é usado para bloquear, só ficou guardado de uma abordagem anterior
 let ADMIN_AUTH = {}; // password -> nome, para poder EDITAR (protege o link normal, fora do "só ver")
+                     // só é preenchido depois de login (ensureAdminAuthenticated) ou dentro do
+                     // painel de gerir acessos (renderAccessManagePanel) — nunca vem do fetch geral
+let HAS_ADMIN_AUTH = false; // só diz se existe ALGUMA password configurada (sim/não) — usado para
+                            // decidir se vale a pena sequer pedir login; nunca tem a lista em si
 let VISIT_LOG = []; // registo de acessos (só para consulta pela administração)
 let FEEDBACK_LOG = []; // bugs/sugestões reportados (só para consulta pela administração)
 let REACTIONS = {}; // reações rápidas (👏🔥😢) por prova — { compId: { eventId: { emoji: contagem } } } — vem numa linha reservada própria no Apps Script (v34), nunca mexe em EVENTS

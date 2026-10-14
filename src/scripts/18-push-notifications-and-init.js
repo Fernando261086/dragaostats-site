@@ -121,7 +121,7 @@ function showStaleDataBanner_(at){
     // link de "só ver": pede só o nome, uma vez — não é controlo de acesso, é para
     // saberes quem esteve a ver
     await ensureViewerRegistered();
-  }else if(Object.keys(ADMIN_AUTH).length > 0){
+  }else if(HAS_ADMIN_AUTH){
     // link normal (edição): exige a password de administração, sempre que houver
     // pelo menos uma configurada — é o que impede alguém de tirar o "?view=readonly"
     // do link e ficar com acesso total sem pedir nada

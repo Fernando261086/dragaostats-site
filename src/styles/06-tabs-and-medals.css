@@ -114,8 +114,18 @@
     .day-tabs{margin-top:10px;}
     .day-tab{padding:5px 12px; font-size:14px;}
     .search-row{margin-top:10px; flex-wrap:wrap;}
-    .search-input{flex-basis:100%;}
     .hide-toggle{flex:1; font-size:11px; padding:7px 6px;}
+    /* Em telemóvel a busca começa fechada (só a lupa) — poupa espaço na fila
+       de botões; toca na lupa para escrever, e fecha sozinha se ficar vazia. */
+    .search-box{flex:0 0 auto;}
+    .search-icon-btn{display:flex;}
+    .search-box:not(.expanded) .search-input{
+      width:0; min-width:0; padding:0; border:none; opacity:0;
+      position:absolute; pointer-events:none;
+    }
+    .search-box.expanded{flex-basis:100%;}
+    .search-box.expanded .search-icon-btn{display:none;}
+    .search-box.expanded .search-input{flex-basis:auto;}
     .filter-toggle{margin-top:10px;}
     .add-toggle{margin-top:10px;}
   }

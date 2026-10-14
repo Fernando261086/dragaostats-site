@@ -1,3 +1,15 @@
+// Fecha o menu "📤" de um cartão (estatísticas/partilha) ao tocar fora dele —
+// registado uma única vez aqui, fora de renderTimeline(), para não acumular
+// um listener novo em cada novo render da lista.
+document.addEventListener("click", (e)=>{
+  document.querySelectorAll('[data-cardshare-menu="1"][data-open="1"]').forEach(menu=>{
+    if(!menu.closest(".card-share-wrap").contains(e.target)){
+      menu.style.display = "none";
+      menu.removeAttribute("data-open");
+    }
+  });
+});
+
 // ===================== QUEM INSTALOU / TEM NOTIFICAÇÕES LIGADAS =====================
 async function renderInstalledListPanel(){
   const panel = document.getElementById("installedListPanel");
@@ -310,14 +322,14 @@ function renderTimeline(){
     }
 
     const body = matchesMode
-      ? `<div class="controls">
+      ? (READONLY_MODE ? renderReadonlyMatchResultHtml_(ev, st) : `<div class="controls">
           <input class="result-input${st.resultado && st.resultado.trim() ? ' has-result' : ''}" type="text" placeholder="Resultado (ex: 2-1)" value="${st.resultado ? st.resultado.replace(/"/g,'&quot;') : ''}">
         </div>
         <div class="medal-picker">
           <button class="medal-btn on-win ${st.resultTag==='win'?'active':''}" data-restag="win">✅ Vitória</button>
           <button class="medal-btn on-draw ${st.resultTag==='draw'?'active':''}" data-restag="draw">🟰 Empate</button>
           <button class="medal-btn on-loss ${st.resultTag==='loss'?'active':''}" data-restag="loss">❌ Derrota</button>
-        </div>`
+        </div>`)
       : eliminated
       ? `<div class="out-note">Não se apurou na fase anterior</div>`
       : `<div class="controls">
@@ -349,9 +361,15 @@ function renderTimeline(){
           ${isNext ? '<span class="upcoming-flag">A seguir</span>' : ''}
           ${ev.cond && !eliminated ? '<span class="final-flag">se apurar</span>' : ''}
           ${!matchesMode ? '<button class="dup-btn" data-share="1" title="Copiar link direto para esta prova">🔗</button>' : ''}
-          ${matchesMode ? '<button class="dup-btn" data-playerstats="1" title="Estatísticas dos jogadores">📊</button>' : ''}
-          ${matchesMode ? `<button class="dup-btn" data-sharecard="1" title="${st.resultado && st.resultado.trim() ? 'Gerar imagem do resultado para partilhar' : 'Gerar imagem para promover este jogo'}">🖼️</button>` : ''}
-          ${matchesMode ? `<button class="dup-btn" data-sharereel="1" title="${st.resultado && st.resultado.trim() ? 'Gerar Reel (vídeo) do resultado para partilhar' : 'Gerar Reel (vídeo) para promover este jogo'}">🎬</button>` : ''}
+          ${matchesMode ? `
+          <div class="card-share-wrap">
+            <button class="dup-btn" data-cardshare-toggle="1" title="Estatísticas e partilha" aria-label="Estatísticas e partilha" aria-expanded="false">📤</button>
+            <div class="card-share-menu" data-cardshare-menu="1" style="display:none;">
+              <button class="card-share-item" data-playerstats="1">📊 Estatísticas</button>
+              <button class="card-share-item" data-sharecard="1">🖼️ ${st.resultado && st.resultado.trim() ? 'Imagem do resultado' : 'Imagem para promover'}</button>
+              <button class="card-share-item" data-sharereel="1">🎬 ${st.resultado && st.resultado.trim() ? 'Reel do resultado' : 'Reel para promover'}</button>
+            </div>
+          </div>` : ''}
           ${matchesMode && !READONLY_MODE ? '<button class="dup-btn" data-choosequestion="1" title="Escolher pergunta de prognóstico">🎯</button>' : ''}
           <button class="dup-btn" data-dup="1" title="Duplicar prova">⧉</button>
           <button class="edit-btn" data-edit="1" title="Editar prova">✎</button>
@@ -402,7 +420,25 @@ function renderTimeline(){
     };
 
     if(matchesMode){
+      const cardShareMenu = row.querySelector('[data-cardshare-menu="1"]');
+      const closeCardShareMenu = ()=>{
+        if(!cardShareMenu) return;
+        cardShareMenu.style.display = "none";
+        cardShareMenu.removeAttribute("data-open");
+      };
+      const cardShareToggle = row.querySelector('[data-cardshare-toggle="1"]');
+      if(cardShareToggle && cardShareMenu) cardShareToggle.onclick = (e)=>{
+        e.stopPropagation();
+        const opening = cardShareMenu.style.display === "none" || !cardShareMenu.style.display;
+        // fecha qualquer outro cartão que tenha ficado aberto, antes de abrir este
+        document.querySelectorAll('[data-cardshare-menu="1"][data-open="1"]').forEach(m=>{
+          if(m !== cardShareMenu){ m.style.display = "none"; m.removeAttribute("data-open"); }
+        });
+        cardShareMenu.style.display = opening ? "flex" : "none";
+        if(opening) cardShareMenu.setAttribute("data-open", "1"); else cardShareMenu.removeAttribute("data-open");
+      };
       row.querySelector('[data-playerstats="1"]').onclick = ()=>{
+        closeCardShareMenu();
         statsOpenedFromWeekView = false; // aberto normalmente pelo calendário
         openPlayerStatsPanel(ev);
       };
@@ -414,9 +450,9 @@ function renderTimeline(){
         openPlayerStatsPanel(ev);
       };
       const shareCardBtn = row.querySelector('[data-sharecard="1"]');
-      if(shareCardBtn) shareCardBtn.onclick = ()=> generateShareCard(ev, st, color);
+      if(shareCardBtn) shareCardBtn.onclick = ()=>{ closeCardShareMenu(); generateShareCard(ev, st, color); };
       const shareReelBtn = row.querySelector('[data-sharereel="1"]');
-      if(shareReelBtn) shareReelBtn.onclick = ()=> generateShareReel(ev, st, color);
+      if(shareReelBtn) shareReelBtn.onclick = ()=>{ closeCardShareMenu(); generateShareReel(ev, st, color); };
     }
 
     row.querySelector('[data-athlete-link="1"]').onclick = ()=>{
@@ -472,8 +508,9 @@ function renderTimeline(){
       renderTimeline();
     };
 
-    if(matchesMode){
+    if(matchesMode && !READONLY_MODE){
       // no modo Modalidades: campo de resultado + botões de Vitória/Empate/Derrota
+      // (em modo só ver não existe nada disto no cartão — ver renderReadonlyMatchResultHtml_)
       row.querySelector('.result-input').addEventListener("input", (e)=>{
         setEvLocal(ev.id, {resultado:e.target.value});
         scheduleResultSave(ev.id);
@@ -488,7 +525,7 @@ function renderTimeline(){
           renderTimeline();
         };
       });
-    }else if(!eliminated){
+    }else if(!matchesMode && !eliminated){
       row.querySelector('[data-act="yes"]').onclick = ()=>{
         const cur = getEv(ev.id);
         setEv(ev.id, {passou: cur.passou==="yes" ? null : "yes"});

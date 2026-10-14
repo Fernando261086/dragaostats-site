@@ -400,6 +400,26 @@ document.getElementById("searchInput").addEventListener("input", (e)=>{
   }
 });
 
+// Em telemóvel a busca começa fechada (só a lupa) — isto só tem efeito visual
+// dentro dessa media query; em ecrãs largos o campo já está sempre "expanded".
+(function(){
+  const searchBox = document.getElementById("searchBox");
+  const searchToggleBtn = document.getElementById("searchToggleBtn");
+  const searchInput = document.getElementById("searchInput");
+  if(!searchBox || !searchToggleBtn || !searchInput) return;
+  searchToggleBtn.onclick = ()=>{
+    searchBox.classList.add("expanded");
+    searchToggleBtn.setAttribute("aria-expanded", "true");
+    searchInput.focus();
+  };
+  searchInput.addEventListener("blur", ()=>{
+    if(!searchInput.value.trim()){
+      searchBox.classList.remove("expanded");
+      searchToggleBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+})();
+
 document.getElementById("hideCompletedBtn").onclick = ()=>{
   hideCompleted = !hideCompleted;
   document.getElementById("hideCompletedBtn").classList.toggle("active", hideCompleted);

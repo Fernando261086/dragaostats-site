@@ -188,7 +188,10 @@
       <div class="progress-label" id="progressLabel">0 / 0 marcadas</div>
     </div>
     <div class="search-row">
-      <input type="text" id="searchInput" class="search-input" placeholder="🔎 Procurar atleta ou equipa...">
+      <div class="search-box" id="searchBox">
+        <button type="button" class="search-icon-btn" id="searchToggleBtn" title="Procurar" aria-label="Procurar atleta ou equipa" aria-expanded="false">🔎</button>
+        <input type="text" id="searchInput" class="search-input" placeholder="Procurar atleta ou equipa...">
+      </div>
       <button class="hide-toggle" id="matchesFilterTodosBtn" data-matches-filter="todos">Todos os jogos</button>
       <button class="hide-toggle active" id="matchesFilterProximosBtn" data-matches-filter="proximos">Próximos jogos</button>
       <button class="hide-toggle" id="matchesFilterResultadosBtn" data-matches-filter="resultados">Resultados</button>

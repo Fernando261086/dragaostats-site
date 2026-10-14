@@ -1050,3 +1050,16 @@ function getMatchResultTag(ev, st){
   return parseMatchResult(ev, st && st.resultado);
 }
 
+// Para quem só vê o site (Modo Modalidades): em vez de mostrar a caixa de
+// resultado e os botões Vitória/Empate/Derrota desativados (interface pensada
+// para quem edita), mostra só o resultado em texto, já com destaque de cor.
+// Sem resultado ainda, não mostra nada — o jogo aparece só como "por realizar".
+function renderReadonlyMatchResultHtml_(ev, st){
+  const tag = getMatchResultTag(ev, st);
+  const resultText = (st.resultado && st.resultado.trim()) || '';
+  if(!tag && !resultText) return '';
+  const label = tag === 'win' ? '✅ Vitória' : tag === 'loss' ? '❌ Derrota' : tag === 'draw' ? '🟰 Empate' : '';
+  const color = tag === 'win' ? 'var(--green)' : tag === 'loss' ? 'var(--red)' : 'var(--text-dim)';
+  return `<div class="result-display" style="color:${color};">${[label, resultText].filter(Boolean).join(' · ')}</div>`;
+}
+

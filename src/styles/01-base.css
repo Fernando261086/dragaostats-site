@@ -73,7 +73,14 @@
       max-height:calc(100vh - 40px);
       overflow-y:auto;
     }
-    .wrap-main > .sidebar-col:empty{ display:none; }
+    /* numa competição do Modo Medalhas, nenhum destes widgets se aplica — ver
+       o observador em 18-push-notifications-and-init.js, que acrescenta esta
+       classe quando não sobra nenhum visível, para a coluna não ficar
+       reservada e em branco. Nesse caso o conteúdo principal usa a largura
+       toda, como se não houvesse barra lateral nenhuma. */
+    .wrap-main > .sidebar-col.sidebar-col-empty{ display:none; }
+    .wrap-main:has(> .sidebar-col.sidebar-col-empty) > .main-col{ grid-column: 1 / -1; }
+    .wrap-main:has(> .sidebar-col.sidebar-col-empty){ grid-template-columns: 1fr; }
     /* Dentro da barra lateral, cada widget já não precisa da margem de topo
        pensada para ficar empilhado por baixo de outras coisas no cabeçalho —
        aqui já está sozinho na sua coluna. */

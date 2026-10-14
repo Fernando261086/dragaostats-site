@@ -29,6 +29,24 @@ if(!READONLY_MODE){
   document.title = "✏️ Edição — " + document.title;
 }
 
+// A barra lateral (ver .wrap-main no CSS) só mostra widgets que fazem sentido
+// no Modo Modalidades (próximo jogo, sabias que, etc.) — numa competição do
+// Modo Medalhas, nenhum deles aparece, e sem isto a coluna ficava reservada
+// na mesma, mas em branco (o mesmo problema de espaço vazio que a barra
+// lateral veio resolver, só que desta vez lá dentro). Em vez de alterar cada
+// função que mostra/esconde cada widget, só se observa se sobrou algum
+// visível, e esconde-se a coluna toda quando não sobra nenhum.
+(function(){
+  const sidebar = document.getElementById("sidebarCol");
+  if(!sidebar) return;
+  function updateSidebarEmptyState(){
+    const hasVisible = Array.prototype.some.call(sidebar.children, (el)=> el.style.display !== "none");
+    sidebar.classList.toggle("sidebar-col-empty", !hasVisible);
+  }
+  updateSidebarEmptyState();
+  new MutationObserver(updateSidebarEmptyState).observe(sidebar, { attributes:true, attributeFilter:["style"], subtree:true });
+})();
+
 document.getElementById("viewOnlyLinkBtn").onclick = async ()=>{
   const url = new URL(location.href.split('?')[0]);
   url.searchParams.set("comp", activeCompId);

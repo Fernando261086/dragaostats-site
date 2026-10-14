@@ -355,7 +355,7 @@ function renderPredictionBar(ev){
         <div style="display:flex; gap:6px; flex-wrap:wrap;">
           ${MARGEM_OPTIONS.map(o=>`<button class="prediction-btn" data-option="${o}" style="background:rgba(255,255,255,0.05); border:1px solid var(--line); border-radius:12px; padding:4px 10px; font-size:11.5px; cursor:pointer; color:var(--text-dim);">${margemOptionLabel(o)}</button>`).join("")}
         </div>
-        <div style="font-size:10px; color:var(--text-dim); opacity:0.75; margin-top:3px;">Acertares vencedor + margem vale 2 pontos · acertares só o vencedor vale 1 ponto — ver ranking em 🏆</div>
+        <div style="font-size:10px; color:var(--text-dim); opacity:0.75; margin-top:3px;">Acertares vencedor + margem vale 2 pontos · acertares só o vencedor vale 1 ponto — ver ranking em 🎯</div>
       </div>`;
     }
     if(question.type === "placar"){
@@ -367,7 +367,7 @@ function renderPredictionBar(ev){
           <input type="number" min="0" max="99" class="gate-input prediction-placar-away" data-event-id="${ev.id}" placeholder="${ev.athlete||'Adv.'}" style="width:56px; padding:5px 6px; font-size:13px; text-align:center;">
           <button class="prediction-placar-btn" data-event-id="${ev.id}" style="background:rgba(255,255,255,0.05); border:1px solid var(--line); border-radius:8px; padding:5px 12px; font-size:12px; color:var(--text); cursor:pointer; white-space:nowrap;">Enviar</button>
         </div>
-        <div style="font-size:10px; color:var(--text-dim); opacity:0.75; margin-top:3px;">Acertares em cheio vale 3 pontos · acertares só quem ganha vale 1 ponto — ver ranking em 🏆</div>
+        <div style="font-size:10px; color:var(--text-dim); opacity:0.75; margin-top:3px;">Acertares em cheio vale 3 pontos · acertares só quem ganha vale 1 ponto — ver ranking em 🎯</div>
       </div>`;
     }
     if(question.type === "livre"){

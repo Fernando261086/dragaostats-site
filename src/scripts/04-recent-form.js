@@ -28,9 +28,12 @@ function renderFormBadge(){
   el.style.display = "block";
 }
 // Lista geral, uma linha por modalidade, visível quando o filtro está em "Todos"
-// Fechado por defeito — poupa espaço antes do primeiro jogo; uma seta abre-o,
-// e fica aberto enquanto a pessoa estiver no site (fecha-se de novo só ao recarregar).
-let formOverviewOpen = false;
+// Fechado por defeito em telemóvel — poupa espaço antes do primeiro jogo; uma
+// seta abre-o, e fica aberto enquanto a pessoa estiver no site (fecha-se de
+// novo só ao recarregar). Em computador já há espaço de sobra (barra lateral
+// própria), por isso começa logo aberto — ver o mesmo critério em
+// 06-daily-fact-and-light-question.js.
+let formOverviewOpen = window.matchMedia("(min-width: 1200px)").matches;
 function renderFormOverview(){
   const el = document.getElementById("formOverview");
   if(currentCompMode()!=="matches" || activeSport!=="Todos"){ el.style.display = "none"; return; }

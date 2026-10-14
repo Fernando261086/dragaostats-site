@@ -21,11 +21,12 @@ const DAILY_FACTS_ = [
   "Em 2025/26, o FC Porto bateu o Sporting de Braga por 3-1 na final do playoff e tirou ao Benfica o título nacional de Voleibol feminino.",
   "Antes de competir sob o nome FC Porto, a equipa de Voleibol feminino já tinha sido 3 vezes campeã nacional como AJM/FC Porto, em parceria com a Academia José Moreira."
 ];
-// Fechado por defeito — é uma curiosidade simpática, não informação que se
-// precise de ver logo ao abrir o site, e só empurrava o calendário para baixo
-// sem necessidade. Uma seta abre-o, e fica aberto enquanto a pessoa estiver
-// no site (fecha-se de novo só ao recarregar) — mesmo padrão do "Forma recente".
-let dailyFactOpen = false;
+// Fechado por defeito em telemóvel — é uma curiosidade simpática, não
+// informação que se precise de ver logo ao abrir o site, e só empurrava o
+// calendário para baixo sem necessidade. Uma seta abre-o, e fica aberto
+// enquanto a pessoa estiver no site (fecha-se de novo só ao recarregar). Em
+// computador já há espaço de sobra, por isso começa logo aberto.
+let dailyFactOpen = window.matchMedia("(min-width: 1200px)").matches;
 function renderDailyFact_(){
   const el = document.getElementById("dailyFactBox");
   if(currentCompMode() !== "matches" || activeSport !== "Todos"){ el.style.display = "none"; return; }

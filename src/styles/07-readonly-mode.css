@@ -34,10 +34,20 @@
   body.readonly-mode .result-input{ pointer-events:none; opacity:0.75; }
   body.readonly-mode .medal-picker{ pointer-events:none; }
   body.readonly-mode .medal-btn:not(.active){ opacity:0.35; }
-  .readonly-badge{
-    display:none;
-    background:rgba(227,178,60,0.14); border:1px solid var(--gold-dim); color:var(--gold);
-    font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:11px;
-    padding:4px 10px; border-radius:14px; margin-bottom:10px; width:fit-content;
+  /* Faixa persistente no topo, só para quem está a editar (nunca para quem só
+     vê — essa pessoa não precisa de saber nada sobre "modos"). O objetivo é
+     dar-se por ela de relance, sem ter de ler o texto todo, para nunca
+     confundir este link com o de "só ver" e o partilhar por engano. */
+  .edit-mode-banner{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:center;
+    gap:6px; width:100%; box-sizing:border-box;
+    background:linear-gradient(135deg, var(--gold), #c99a2e);
+    color:#1a1200;
+    font-family:'Archivo Narrow',sans-serif; font-weight:800; font-size:12px;
+    letter-spacing:0.3px;
+    padding:7px 14px;
+    text-align:center;
+    box-shadow:0 2px 8px rgba(0,0,0,0.25);
   }
-  body.readonly-mode .readonly-badge{ display:none; } /* já não faz falta a quem só vê */
+  body.readonly-mode .edit-mode-banner{ display:none; }

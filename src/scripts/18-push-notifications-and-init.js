@@ -21,6 +21,13 @@ const ON_EDIT_PATH = location.pathname.replace(/\/$/, "").toLowerCase().endsWith
   || new URLSearchParams(location.search).get("view") === "edit";
 const READONLY_MODE = !ON_EDIT_PATH;
 if(READONLY_MODE) document.body.classList.add("readonly-mode");
+// Quem edita vê sempre um lembrete bem visível de que está em modo de edição
+// (faixa no topo + título do separador) — para nunca confundir este link com
+// o de "só ver" e partilhar o errado sem dar por isso. Quem só vê não precisa
+// de saber nada disto; para essa pessoa, o site é só o site normal.
+if(!READONLY_MODE){
+  document.title = "✏️ Edição — " + document.title;
+}
 
 document.getElementById("viewOnlyLinkBtn").onclick = async ()=>{
   const url = new URL(location.href.split('?')[0]);

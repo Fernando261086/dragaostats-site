@@ -174,6 +174,23 @@ function refreshPlayerNameSuggestions(){
   }
 }
 
+// Reúne todas as jogadoras do FC Porto já conhecidas numa modalidade (por terem
+// marcado golo nalgum jogo, ou por já terem sido marcadas como "presentes" nalgum
+// jogo), para a lista de presenças (👥 Quem jogou) — cresce sozinha, sem precisar
+// de um "plantel" à parte para manter.
+function getKnownFcpPlayers_(sport){
+  const names = new Set();
+  ALL.competitions.filter(c=>(c.mode||"medals")==="matches").forEach(c=>{
+    const compData = ALL.data[c.id] || { events: [] };
+    (compData.events || []).forEach(ev=>{
+      if(ev.sport !== sport) return;
+      (ev.playerStats || []).forEach(p=>{ if(p.team !== "adv" && p.name) names.add(p.name); });
+      (ev.presentes || []).forEach(n=>{ if(n) names.add(n); });
+    });
+  });
+  return Array.from(names).sort();
+}
+
 // Fecha o painel de estatísticas — se foi aberto a partir de "Esta semana",
 // volta para lá em vez de ficar preso no calendário
 function closePlayerStatsPanel(){
@@ -365,6 +382,8 @@ function renderGoalScorersPanel(ev, panel, headerHtml, teamLabel){
         </div>
       `).join("");
 
+    const temPresencas = Array.isArray(ev.presentes) && ev.presentes.length > 0;
+
     panel.innerHTML = `
       ${headerHtml}
       <div class="filters" style="margin-bottom:14px; display:flex;">
@@ -373,6 +392,7 @@ function renderGoalScorersPanel(ev, panel, headerHtml, teamLabel){
         <button class="chip${activeTab==='adv'?' active':''}" data-stats-tab="adv">${ev.athlete || 'Adversário'}</button>
       </div>
       ${listHtml}
+      ${temPresencas ? `<div style="font-size:12px; color:var(--text-dim); margin-top:10px;">👥 ${ev.presentes.length} jogadora${ev.presentes.length===1?'':'s'} em campo neste jogo</div>` : ''}
       <div class="add-btn-row" style="margin-top:14px;">
         ${!READONLY_MODE ? '<button class="add-save" id="editPlayerStatsBtn">✏️ Editar marcadores</button>' : ''}
         <button class="add-cancel" id="closePlayerStatsBtn">Fechar</button>
@@ -405,10 +425,38 @@ function renderGoalScorersPanel(ev, panel, headerHtml, teamLabel){
     </div>
   `).join("");
 
+  // 👥 QUEM JOGOU — lista de presenças, separada dos golos. Serve para o
+  // "Marcadores" da época conseguir contar jogos a sério (não só jogos em que se
+  // marcou). Se este jogo ainda não tem presenças guardadas, começa com quem já
+  // marcou golo pré-marcado (é o mínimo que já sabemos) — o resto acrescenta-se à mão.
+  if(!Array.isArray(ev.presentes)){
+    ev.presentes = Array.from(new Set(goals.filter(g=>g.team!=='adv' && g.name && g.name.trim()).map(g=>g.name.trim())));
+  }
+  const knownFcpPlayers = Array.from(new Set([...getKnownFcpPlayers_(ev.sport), ...ev.presentes])).sort();
+  const presentesSet = new Set(ev.presentes);
+
+  const presencasHtml = knownFcpPlayers.length === 0
+    ? `<div class="medal-empty">Ainda sem jogadoras conhecidas nesta modalidade — usa "+ Adicionar golo" ou o campo abaixo primeiro.</div>`
+    : `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+        ${knownFcpPlayers.map(n=>`
+          <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; cursor:pointer; ${presentesSet.has(n) ? 'background:rgba(227,178,60,0.18); border-color:var(--gold-dim);' : ''}">
+            <input type="checkbox" data-presente="${n.replace(/"/g,'&quot;')}" ${presentesSet.has(n) ? 'checked' : ''} style="margin:0;">
+            ${n}
+          </label>
+        `).join("")}
+      </div>`;
+
   panel.innerHTML = `
     ${headerHtml}
     ${rowsHtml || '<div class="medal-empty">Ainda sem golos adicionados.</div>'}
     <button class="add-save" id="addGoalRowBtn" style="width:100%; margin-bottom:14px;">+ Adicionar golo</button>
+    <div class="medal-section-title" style="margin-top:4px;">👥 Quem jogou</div>
+    <div style="font-size:11px; color:var(--text-dim); margin:4px 0 10px;">Marca quem esteve em campo neste jogo, mesmo quem não marcou golo — é o que faz o "jogos" do Marcadores ser real.</div>
+    ${presencasHtml}
+    <div style="display:flex; gap:8px; margin-bottom:14px;">
+      <input id="novoPresenteInput" class="gate-input" placeholder="Nome de quem não está na lista" list="playerNameSuggestions" style="flex:1;">
+      <button class="add-save" id="addPresenteBtn" style="white-space:nowrap;">+ Adicionar</button>
+    </div>
     <div class="add-btn-row">
       <button class="add-save" id="saveGoalsBtn">Guardar</button>
       <button class="add-cancel" id="backToTableBtn">← Ver marcadores</button>
@@ -436,6 +484,21 @@ function renderGoalScorersPanel(ev, panel, headerHtml, teamLabel){
     renderPlayerStatsPanel();
   };
 
+  panel.querySelectorAll('[data-presente]').forEach(cb=>{
+    cb.onchange = ()=>{
+      const nome = cb.getAttribute('data-presente');
+      if(cb.checked){ if(!ev.presentes.includes(nome)) ev.presentes.push(nome); }
+      else{ ev.presentes = ev.presentes.filter(n=>n!==nome); }
+    };
+  });
+  document.getElementById("addPresenteBtn").onclick = ()=>{
+    const input = document.getElementById("novoPresenteInput");
+    const nome = input.value.trim();
+    if(!nome) return;
+    if(!ev.presentes.includes(nome)) ev.presentes.push(nome);
+    renderPlayerStatsPanel();
+  };
+
   document.getElementById("saveGoalsBtn").onclick = async ()=>{
     ev.playerStats = goals
       .filter(g => g.name && g.name.trim())
@@ -445,6 +508,8 @@ function renderGoalScorersPanel(ev, panel, headerHtml, teamLabel){
         minute: (g.minute !== undefined && !isNaN(g.minute)) ? g.minute : undefined,
         stats: { Golos: 1 } // cada linha é sempre 1 golo — é o que faz o "Marcadores" da época somar sozinho
       }));
+    // limpa nomes vazios/repetidos na lista de presenças antes de guardar
+    ev.presentes = Array.from(new Set(ev.presentes.map(n=>n.trim()).filter(Boolean))).sort();
     await saveEvents();
     playerStatsEditMode = false;
     renderPlayerStatsPanel();

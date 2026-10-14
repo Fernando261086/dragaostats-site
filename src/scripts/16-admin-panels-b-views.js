@@ -211,23 +211,37 @@ function renderLeaderboardView(){
   ALL.competitions.filter(c=>(c.mode||"medals")==="matches").forEach(c=>{
     const compData = ALL.data[c.id] || { events: [] };
     (compData.events || []).forEach(ev=>{
-      if(ev.sport !== leaderboardSport || !Array.isArray(ev.playerStats)) return;
-      // Nalgumas modalidades (as de "Marcadores") cada golo é a sua própria linha em
-      // playerStats, por isso um jogador com 3 golos neste jogo aparece 3 vezes —
-      // sem este conjunto, "jogos" ficava a contar golos em vez de jogos (eram
-      // sempre o mesmo número). Cada jogador só soma 1 jogo por evento, não importa
-      // quantas linhas tenha nele.
-      const jaContadoNesteJogo = new Set();
-      ev.playerStats.forEach(p=>{
+      if(ev.sport !== leaderboardSport) return;
+
+      // soma do stat escolhido neste jogo, por jogadora (só FC Porto)
+      const statPorJogadora = {};
+      (ev.playerStats || []).forEach(p=>{
         if(p.team === "adv") return; // "Marcadores" da época é só sobre o FC Porto, não os adversários
         const val = p.stats && p.stats[leaderboardStat];
         if(val == null || isNaN(val)) return;
-        if(!totals[p.name]) totals[p.name] = { total: 0, games: 0 };
-        totals[p.name].total += Number(val);
-        if(!jaContadoNesteJogo.has(p.name)){
-          jaContadoNesteJogo.add(p.name);
-          totals[p.name].games += 1;
+        statPorJogadora[p.name] = (statPorJogadora[p.name] || 0) + Number(val);
+      });
+
+      // Quem "jogou" este jogo, para contar "jogos" a sério: usa a lista de
+      // presenças (👥 Quem jogou) quando já foi preenchida neste jogo. Jogos
+      // antigos, ainda sem presenças guardadas, continuam a assumir que só jogou
+      // quem marcou — é a única informação que existe para eles.
+      const presentesNesteJogo = (Array.isArray(ev.presentes) && ev.presentes.length > 0)
+        ? ev.presentes
+        : Object.keys(statPorJogadora);
+
+      const jaContadoNesteJogo = new Set();
+      const contaJogo = nome=>{
+        if(!totals[nome]) totals[nome] = { total: 0, games: 0 };
+        if(!jaContadoNesteJogo.has(nome)){
+          jaContadoNesteJogo.add(nome);
+          totals[nome].games += 1;
         }
+      };
+      presentesNesteJogo.forEach(contaJogo);
+      Object.keys(statPorJogadora).forEach(nome=>{
+        contaJogo(nome); // quem marcou conta sempre o jogo, mesmo que não estivesse na lista de presenças
+        totals[nome].total += statPorJogadora[nome];
       });
     });
   });

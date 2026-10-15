@@ -223,12 +223,20 @@ function renderLeaderboardView(){
       });
 
       // Quem "jogou" este jogo, para contar "jogos" a sério: usa a lista de
-      // presenças (👥 Quem jogou) quando já foi preenchida neste jogo. Jogos
-      // antigos, ainda sem presenças guardadas, continuam a assumir que só jogou
-      // quem marcou — é a única informação que existe para eles.
+      // presenças (👥 Quem jogou) quando já foi preenchida neste jogo. Sem isso,
+      // cai para quem tem ficha registada neste jogo (qualquer jogadora com uma
+      // linha em playerStats, não só quem tem a estatística que está a ver com
+      // valor preenchido) — nas modalidades de "Marcadores" dá o mesmo que antes
+      // (cada linha é sempre um golo), mas nas modalidades com fichas completas
+      // por jogadora (Andebol, Basquetebol, Hóquei em Patins) deixa de depender de
+      // qual estatística está selecionada: uma jogadora com ficha neste jogo mas
+      // sem, por exemplo, ressaltos registados, continua a contar o jogo.
+      const jogadoresComFichaNesteJogo = Array.from(new Set(
+        (ev.playerStats || []).filter(p=>p.team !== "adv" && p.name).map(p=>p.name)
+      ));
       const presentesNesteJogo = (Array.isArray(ev.presentes) && ev.presentes.length > 0)
         ? ev.presentes
-        : Object.keys(statPorJogadora);
+        : jogadoresComFichaNesteJogo;
 
       const jaContadoNesteJogo = new Set();
       const contaJogo = nome=>{

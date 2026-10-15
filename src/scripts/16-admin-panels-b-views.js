@@ -68,6 +68,7 @@ let leaderboardStat = null;
 // Ficha individual de um jogador — todos os jogos em que apareceu, com os números
 // de cada um. Funciona a partir de qualquer sítio onde o nome dele apareça.
 function formatPlayerGameLine(entries){
+  if(!entries.length) return "✅ Presente (sem estatísticas registadas)";
   const hasMinutes = entries.some(e => e.minute != null) || entries.length > 1;
   if(hasMinutes){
     const minutes = entries.map(e=>e.minute).filter(m=>m!=null);
@@ -83,10 +84,13 @@ function showPlayerProfile(name){
   ALL.competitions.filter(c=>(c.mode||"medals")==="matches").forEach(c=>{
     const compData = ALL.data[c.id] || { events: [] };
     (compData.events || []).forEach(ev=>{
-      if(!Array.isArray(ev.playerStats)) return;
-      const entries = ev.playerStats.filter(p => p.name === name);
-      if(entries.length === 0) return;
-      games.push({ ev, compName: c.name, entries, team: entries[0].team });
+      const entries = Array.isArray(ev.playerStats) ? ev.playerStats.filter(p => p.name === name) : [];
+      // conta também jogos em que a jogadora só está marcada como presente, sem
+      // estatísticas registadas (👥 Quem jogou) — senão o "jogos" aqui não batia
+      // certo com o "jogos" já corrigido no Marcadores
+      const presente = Array.isArray(ev.presentes) && ev.presentes.includes(name);
+      if(entries.length === 0 && !presente) return;
+      games.push({ ev, compName: c.name, entries, team: entries[0] ? entries[0].team : "fcp" });
     });
   });
 
@@ -126,17 +130,22 @@ function showPlayerProfile(name){
       });
     });
   });
-  const avgHtml = (games.length >= 2 && Object.keys(statTotals).length > 0)
-    ? `<div class="medal-section-title" style="margin-top:22px;">${isBasquete ? '📈 Médias por jogo' : '📊 Totais da época'}</div>
-       <div style="display:flex; flex-wrap:wrap; gap:10px;">
-         ${Object.keys(statTotals).map(k=>`
-           <div style="background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; text-align:center;">
-             <div style="font-size:11px; color:var(--text-dim);">${k.toUpperCase()}</div>
-             <div style="font-size:18px; font-weight:700; color:var(--text); font-family:'Archivo Narrow',sans-serif;">${isBasquete ? (statTotals[k]/games.length).toFixed(1) : statTotals[k]}</div>
-           </div>
-         `).join("")}
-       </div>`
-    : '';
+  // Resumo em destaque, logo no topo da ficha — jogos + estatísticas principais
+  // da época, em cartões grandes, para se ver de relance sem ter de percorrer a
+  // lista de jogos todos. Antes só aparecia mais abaixo, e só com 2+ jogos.
+  const heroStatsHtml = games.length === 0 ? '' : `
+    <div style="display:flex; flex-wrap:wrap; gap:10px; margin:2px 0 16px;">
+      <div style="background:var(--panel); border:1px solid var(--gold-dim); border-radius:8px; padding:10px 16px; text-align:center;">
+        <div style="font-size:22px; font-weight:700; color:var(--gold); font-family:'Archivo Narrow',sans-serif;">${games.length}</div>
+        <div style="font-size:10px; color:var(--text-dim); text-transform:uppercase;">jogo${games.length===1?'':'s'} esta época</div>
+      </div>
+      ${Object.keys(statTotals).map(k=>`
+        <div style="background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 16px; text-align:center;">
+          <div style="font-size:22px; font-weight:700; color:var(--text); font-family:'Archivo Narrow',sans-serif;">${isBasquete ? (statTotals[k]/games.length).toFixed(1) : statTotals[k]}</div>
+          <div style="font-size:10px; color:var(--text-dim); text-transform:uppercase;">${k}${isBasquete ? ' / jogo' : ''}</div>
+        </div>
+      `).join("")}
+    </div>`;
 
   // separa por competição (o texto de "Competição" escrito em cada jogo, ex: "Campeonato
   // Nacional", "Amigável") — só mostra a secção se houver mais do que uma competição
@@ -169,9 +178,8 @@ function showPlayerProfile(name){
 
   panel.innerHTML = `
     <div class="medal-section-title">👤 ${name}</div>
-    <div style="font-size:13px; color:var(--text-dim); margin-bottom:12px;">${games.length} jogo${games.length===1?'':'s'} registado${games.length===1?'':'s'}</div>
+    ${heroStatsHtml}
     ${rowsHtml || '<div class="medal-empty">Sem jogos registados para este jogador.</div>'}
-    ${avgHtml}
     ${byCompHtml}
     <div class="add-btn-row" style="margin-top:14px;">
       <button class="add-cancel" id="closePlayerProfileBtn">Fechar</button>

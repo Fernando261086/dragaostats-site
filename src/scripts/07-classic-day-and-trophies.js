@@ -52,3 +52,53 @@ function renderTrophyShelf_(){
   };
 }
 
+// ===================== RECORDES DA ÉPOCA — maior vitória por modalidade =====================
+// Reaproveita a mesma convenção "casa - fora" já usada em parseMatchResult (ver
+// 03-share-reel.js) para saber quantos golos/pontos fez o FC Porto e o adversário
+// em cada jogo já com resultado escrito. Um recorde por modalidade (não mistura
+// Andebol com Basquetebol — as escalas não são comparáveis). Fechado por defeito,
+// como os Troféus da época.
+let recordsShelfOpen = false;
+function parseOursTheirs_(ev, resultado){
+  if(!resultado) return null;
+  const m = resultado.match(/(\d+)\s*[-–:]\s*(\d+)/);
+  if(!m) return null;
+  const a = parseInt(m[1],10), b = parseInt(m[2],10);
+  const local = ev.local || "casa";
+  return { ours: local === "casa" ? a : b, theirs: local === "casa" ? b : a };
+}
+function getBiggestWinBySport_(){
+  const bySport = {}; // sport -> { ev, ours, theirs, diff }
+  EVENTS.forEach(ev=>{
+    const st = getEv(ev.id);
+    const score = parseOursTheirs_(ev, st && st.resultado);
+    if(!score || score.ours <= score.theirs) return; // só vitórias dão para "maior vitória"
+    const diff = score.ours - score.theirs;
+    const atual = bySport[ev.sport];
+    if(!atual || diff > atual.diff){
+      bySport[ev.sport] = { ev, ...score, diff };
+    }
+  });
+  return bySport;
+}
+function renderRecordsShelf_(){
+  const el = document.getElementById("recordsShelf");
+  if(currentCompMode() !== "matches" || activeSport !== "Todos"){ el.style.display = "none"; return; }
+  const bySport = getBiggestWinBySport_();
+  const sports = Object.keys(bySport).sort();
+  if(!sports.length){ el.style.display = "none"; return; }
+  el.innerHTML = `<div class="form-overview-title${recordsShelfOpen ? ' open' : ''}">📈 Recordes da época <span class="fo-arrow">▾</span></div>` +
+    `<div class="form-overview-chips${recordsShelfOpen ? '' : ' collapsed'}">` +
+    sports.map(sport=>{
+      const r = bySport[sport];
+      const local = r.ev.local || "casa"; // mesma regra de 'parseOursTheirs_', para não desalinhar o placar mostrado
+      const placar = local === "casa" ? `${r.ours}-${r.theirs}` : `${r.theirs}-${r.ours}`;
+      return `<div class="form-overview-row" style="cursor:default;"><span class="fo-sport">🏆 Maior vitória <span style="color:var(--text-dim); font-weight:500;">(${sport})</span>: ${placar} vs ${r.ev.athlete || 'Adversário'}</span></div>`;
+    }).join('') + '</div>';
+  el.style.display = "flex";
+  el.querySelector('.form-overview-title').onclick = ()=>{
+    recordsShelfOpen = !recordsShelfOpen;
+    renderRecordsShelf_();
+  };
+}
+

@@ -20,11 +20,50 @@ function formDotsHtml_(tags){
     return `<span class="form-dot" style="background:${color};">${letter}</span>`;
   }).join('') + '</span>';
 }
+// Sequência atual (últimos resultados seguidos do mesmo tipo, ou sem perder) — dá
+// um toque de emoção extra, tipo "4 jogos sem perder" ou "3 vitórias seguidas".
+// Olha para TODOS os jogos já com resultado desta modalidade, não só os últimos 5
+// do "Forma recente" — uma sequência pode ser mais comprida do que isso.
+function getCurrentStreak_(sport){
+  const tags = EVENTS
+    .filter(ev=>ev.sport===sport)
+    .map(ev=>({ ev, tag: getMatchResultTag(ev, getEv(ev.id)) }))
+    .filter(x=>x.tag)
+    .sort((a,b)=>((a.ev.day||"")+(a.ev.t||"")).localeCompare((b.ev.day||"")+(b.ev.t||"")))
+    .map(x=>x.tag);
+  if(!tags.length) return null;
+  const last = tags[tags.length-1];
+  if(last === "loss"){
+    let n = 0;
+    for(let i=tags.length-1; i>=0 && tags[i]==="loss"; i--) n++;
+    return n >= 2 ? { emoji: "😬", text: `${n} derrotas seguidas` } : null;
+  }
+  // sequência sem perder (vitórias e empates) — se forem todas vitórias, destaca isso
+  let n = 0, allWin = true;
+  for(let i=tags.length-1; i>=0 && tags[i]!=="loss"; i--){
+    n++;
+    if(tags[i]!=="win") allWin = false;
+  }
+  if(n < 2) return null;
+  return allWin ? { emoji: "🔥", text: `${n} vitórias seguidas` } : { emoji: "💪", text: `${n} jogos sem perder` };
+}
+function streakHtml_(sport){
+  const streak = getCurrentStreak_(sport);
+  if(!streak) return '';
+  return `<div style="font-size:11.5px; color:var(--text-dim); margin-top:3px;">${streak.emoji} ${streak.text}</div>`;
+}
+// Versão compacta (só o emoji + número), para caber dentro das pílulas estreitas
+// da lista "Forma recente" quando o filtro está em "Todos"
+function streakCompactHtml_(sport){
+  const streak = getCurrentStreak_(sport);
+  if(!streak) return '';
+  return ` <span title="${streak.text}" style="color:var(--gold); font-weight:700;">${streak.emoji}${streak.text.match(/\d+/)[0]}</span>`;
+}
 // Dentro do filtro de uma modalidade (ao lado do "medalBadge")
 function renderFormBadge(){
   const el = document.getElementById("formBadge");
   if(currentCompMode()!=="matches" || activeSport==="Todos"){ el.style.display = "none"; return; }
-  el.innerHTML = "Forma recente: " + formDotsHtml_(getRecentForm_(activeSport));
+  el.innerHTML = "Forma recente: " + formDotsHtml_(getRecentForm_(activeSport)) + streakHtml_(activeSport);
   el.style.display = "block";
 }
 // Lista geral, uma linha por modalidade, visível quando o filtro está em "Todos"
@@ -44,7 +83,7 @@ function renderFormOverview(){
     sports.map(sport=>`
       <div class="form-overview-row" data-form-sport="${sport.replace(/"/g,'&quot;')}">
         <span class="fo-sport">${sport}</span>
-        ${formDotsHtml_(getRecentForm_(sport))}
+        ${formDotsHtml_(getRecentForm_(sport))}${streakCompactHtml_(sport)}
       </div>
     `).join('') + '</div>';
   el.style.display = "flex";
@@ -65,6 +104,8 @@ function updateMedalBadge(){
   renderFormOverview();
   renderDailyFact_();
   renderTrophyShelf_();
+  renderRecordsShelf_();
+  renderPostGameReaction_();
   applyClassicoFlourish_();
   if(currentCompMode()==="matches"){
     if(activeSport === "Todos"){
@@ -120,6 +161,3 @@ function renderPendingResultsBanner(matchesMode){
   `;
   banner.onclick = ()=> setView("historico");
 }
-
-// Sequência atual (últimos resultados seguidos do mesmo tipo) — dá um toque de
-// emoção extra, tipo "4 jogos sem perder" ou "3 vitórias seguidas"

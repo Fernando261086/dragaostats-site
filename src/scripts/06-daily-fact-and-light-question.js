@@ -76,6 +76,39 @@ function renderLightQuestion_(){
   }
 }
 
+// ===================== REAÇÃO RÁPIDA PÓS-JOGO — só para desabafar depois de um
+// jogo de hoje terminar, sem pontos nem ranking, igual em espírito à pergunta leve
+// (nada enviado nem guardado no servidor, só localStorage neste telemóvel) =====
+function getTodaysFinishedGames_(){
+  return getTodaysGames_().filter(ev => !!getMatchResultTag(ev, getEv(ev.id)));
+}
+function renderPostGameReaction_(){
+  const el = document.getElementById("postGameReactionBox");
+  if(currentCompMode() !== "matches" || activeSport !== "Todos"){ el.style.display = "none"; return; }
+  const finished = getTodaysFinishedGames_();
+  if(finished.length === 0){ el.style.display = "none"; return; } // só quando já há resultado de hoje
+  const g = finished[0]; // havendo mais do que um jogo hoje já terminado, reage-se ao primeiro
+  const st = getEv(g.id);
+  const tag = getMatchResultTag(g, st);
+  const resultText = (st.resultado && st.resultado.trim()) || '';
+  let saved = null;
+  try{ saved = localStorage.getItem("dia22-postgame-reaction-"+g.id) || null; }catch(e){}
+  const opts = tag === "win" ? ["😍","🙂","😐"] : tag === "loss" ? ["😠","😞","😤"] : ["😐","🤝","😕"];
+  el.innerHTML = `<div class="form-overview-title" style="cursor:default;">Como foi o jogo de hoje? <span style="font-weight:400; color:var(--text-dim); font-size:11px;">(${g.sport}${resultText ? ' · '+resultText : ''})</span></div>` +
+    `<div class="form-overview-chips">` +
+    opts.map(o=>`<button type="button" class="form-overview-row" data-reaction="${o}" style="border:none; font-size:18px; padding:4px 12px;${saved===o ? ' background:rgba(227,178,60,0.18); border:1px solid var(--gold-dim);' : ''}">${o}</button>`).join('') +
+    '</div>';
+  el.style.display = "flex";
+  if(!saved){
+    el.querySelectorAll('[data-reaction]').forEach(btn=>{
+      btn.onclick = ()=>{
+        try{ localStorage.setItem("dia22-postgame-reaction-"+g.id, btn.getAttribute("data-reaction")); }catch(e){}
+        renderPostGameReaction_();
+      };
+    });
+  }
+}
+
 // ===================== HUMOR DO DRAGÃO (5) — um pequeno selo sobre o emblema =====
 // Não temos ilustrações novas do dragão, por isso é só um emoji pequeno no canto,
 // não o desenho em si. Consoante o último resultado jogado.

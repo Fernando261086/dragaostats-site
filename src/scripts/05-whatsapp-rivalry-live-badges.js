@@ -2,9 +2,10 @@
 function buildWhatsAppShareText_(ev, st){
   const dateLabel = formatFullDate(ev.day);
   const hasResult = !!(st && st.resultado && st.resultado.trim());
+  const t = postTeams_(ev); // mesma convenção casa/fora de 23-daily-post-text.js — fora, o FC Porto aparece em segundo
   const line = hasResult
-    ? `${ev.sport}: FC Porto vs ${ev.athlete} (${st.resultado.trim()}) — ${dateLabel}`
-    : `${ev.sport}: FC Porto vs ${ev.athlete} — ${dateLabel}${ev.t ? ', ' + ev.t : ''}`;
+    ? `${ev.sport}: ${t.home} vs ${t.away} (${st.resultado.trim()}) — ${dateLabel}`
+    : `${ev.sport}: ${t.home} vs ${t.away} — ${dateLabel}${ev.t ? ', ' + ev.t : ''}`;
   return encodeURIComponent(line + "\n\nSegue tudo em dragaostats.pt");
 }
 

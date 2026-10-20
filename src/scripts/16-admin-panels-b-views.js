@@ -297,6 +297,15 @@ function renderHistoryView(){
   const now = new Date();
   const sports = ["Todos", ...Array.from(new Set(EVENTS.map(e=>e.sport))).sort()];
 
+  // Resumo do mês (imagem + texto para publicar) — só para quem edita, nunca no
+  // link "só ver"; mesma ideia do botão da semana em "Esta semana" (28-week-share.js).
+  const monthShareHtml = !READONLY_MODE
+    ? `<div class="add-btn-row" style="margin-bottom:14px;">
+         <button class="chip" id="monthShareBtn">🖼️ Imagem + texto do resumo do mês</button>
+       </div>
+       <div id="monthShareBox" style="display:none;"></div>`
+    : "";
+
   const chipsHtml = `<div class="filters" style="margin-bottom:14px; display:flex;">
     ${sports.map(s=>`<button class="chip${s===historyFilterSport?' active':''}" data-hsport="${s.replace(/"/g,'&quot;')}">${s}</button>`).join('')}
   </div>`;
@@ -351,7 +360,16 @@ function renderHistoryView(){
     }).join("");
   }
 
-  container.innerHTML = chipsHtml + listHtml;
+  container.innerHTML = monthShareHtml + chipsHtml + listHtml;
+  const monthShareBtn = document.getElementById("monthShareBtn");
+  if(monthShareBtn){
+    monthShareBtn.onclick = ()=>{
+      const box = document.getElementById("monthShareBox");
+      const opening = box.style.display === "none";
+      box.style.display = opening ? "block" : "none";
+      if(opening) renderMonthShareBox_();
+    };
+  }
   container.querySelectorAll('[data-hsport]').forEach(btn=>{
     btn.onclick = ()=>{
       historyFilterSport = btn.getAttribute('data-hsport');

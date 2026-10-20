@@ -115,6 +115,12 @@ function renderTodayAllView(){
         <button class="hide-toggle" id="weekNextBtn">Seguinte ›</button>
       </div>
       <div id="weekListContainer"></div>
+      ${!READONLY_MODE ? `
+        <div class="add-btn-row" style="margin-top:14px;">
+          <button class="chip" id="weekShareBtn">🖼️ Imagem + texto para publicar</button>
+        </div>
+        <div id="weekShareBox" style="display:none;"></div>
+      ` : ''}
     `;
 
     renderCrossCompetitionList(
@@ -130,6 +136,15 @@ function renderTodayAllView(){
 
     document.getElementById("weekPrevBtn").onclick = ()=>{ weekOffset--; renderTodayAllView(); };
     document.getElementById("weekNextBtn").onclick = ()=>{ weekOffset++; renderTodayAllView(); };
+    const shareBtn = document.getElementById("weekShareBtn");
+    if(shareBtn){
+      shareBtn.onclick = ()=>{
+        const box = document.getElementById("weekShareBox");
+        const opening = box.style.display === "none";
+        box.style.display = opening ? "block" : "none";
+        if(opening) renderWeekShareBox_(weekStart, weekEnd, weekEndDisplay);
+      };
+    }
   }else{
     // dentro de uma competição normal (Medalhas): comportamento de sempre,
     // só entre competições desse mesmo modo

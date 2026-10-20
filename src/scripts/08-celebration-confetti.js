@@ -26,7 +26,35 @@ function maybeCelebrateWin_(){
   showConfetti_();
   return true;
 }
+// Som curto de celebração, sintetizado na hora (sem precisar de nenhum ficheiro de
+// áudio) — um pequeno arpejo ascendente. Os browsers só deixam tocar som depois de
+// a pessoa já ter interagido com a página (política de autoplay), por isso isto às
+// vezes não soa nada — sem problema, o confetti continua a aparecer na mesma.
+function playCelebrationSound_(){
+  try{
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if(!Ctx) return;
+    const ctx = new Ctx();
+    const notes = [523.25, 659.25, 783.99, 1046.5]; // Dó-Mi-Sol-Dó, um acorde maior a subir
+    notes.forEach((freq, i)=>{
+      const t0 = ctx.currentTime + i*0.09;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, t0);
+      gain.gain.linearRampToValueAtTime(0.18, t0+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0+0.35);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t0);
+      osc.stop(t0+0.4);
+    });
+    setTimeout(()=>{ try{ ctx.close(); }catch(e){} }, 900);
+  }catch(e){ /* política de autoplay ou browser sem Web Audio — sem som, sem problema */ }
+}
 function showConfetti_(message){
+  playCelebrationSound_();
   const colors = ["#e3b23c", "#4fae6f", "#eef2f8", "#93a2bd"];
   const box = document.createElement("div");
   box.style.cssText = "position:fixed; inset:0; z-index:95; pointer-events:none; overflow:hidden;";

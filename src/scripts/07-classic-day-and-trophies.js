@@ -18,6 +18,16 @@ function applyClassicoFlourish_(){
   }
 }
 
+// Brilho no emblema em QUALQUER dia de jogo (não só clássico) — o cabeçalho
+// "respira" devagar enquanto há jogo marcado para hoje, em qualquer modalidade.
+function applyGameDayGlow_(){
+  const wrap = document.getElementById("emblemWrap");
+  if(!wrap) return;
+  const hasGameToday = currentCompMode() === "matches" &&
+    (typeof getTodaysGames_ === "function" ? getTodaysGames_().length > 0 : false);
+  wrap.classList.toggle("game-day", hasGameToday);
+}
+
 // ===================== TROFÉUS DA ÉPOCA (3) — detetados a partir de finais vencidas =====
 // Não inventa nada: só conta o que já está na Sheet como "Final" (não "Meia-Final")
 // com resultado de vitória. Fica fechado por defeito, como o Forma Recente.
@@ -52,6 +62,56 @@ function renderTrophyShelf_(){
   };
 }
 
+// ===================== "NESTE DIA, HÁ X ANOS" — jogos com o mesmo dia/mês em anos
+// anteriores. Só compara dia+mês (não o ano), por isso só começa a aparecer coisa
+// quando houver épocas antigas na mesma competição/conta — com só a época atual
+// carregada ainda não há nada para mostrar, o que é o esperado. Percorre TODAS as
+// competições em modo "Modo Modalidades" (não só a aberta agora), tal como o
+// "Marcadores" já faz em renderLeaderboardView, para apanhar épocas passadas.
+function getOnThisDayGames_(){
+  const now = new Date();
+  const todayMonth = now.getMonth() + 1, todayDate = now.getDate(), thisYear = now.getFullYear();
+  const out = [];
+  ALL.competitions.filter(c=>(c.mode||"medals")==="matches").forEach(c=>{
+    const compData = ALL.data[c.id] || { events: [], status: {} };
+    (compData.events || []).forEach(ev=>{
+      if(!ev.day) return;
+      const parts = ev.day.split("-").map(Number);
+      const year = parts[0], month = parts[1], date = parts[2];
+      if(!year || !month || !date) return;
+      if(month !== todayMonth || date !== todayDate || year === thisYear) return;
+      const st = (compData.status && compData.status[ev.id]) || {};
+      const tag = getMatchResultTag(ev, st);
+      if(!tag) return; // só jogos já com resultado conhecido
+      out.push({ ev, st, tag, year, yearsAgo: thisYear - year });
+    });
+  });
+  // mais recente primeiro; um por modalidade, para não repetir a mesma data em anos diferentes
+  out.sort((a,b)=> a.yearsAgo - b.yearsAgo);
+  const seenSport = new Set();
+  return out.filter(x=>{
+    if(seenSport.has(x.ev.sport)) return false;
+    seenSport.add(x.ev.sport);
+    return true;
+  });
+}
+function renderOnThisDay_(){
+  const el = document.getElementById("onThisDayBox");
+  if(!el) return;
+  if(currentCompMode() !== "matches" || activeSport !== "Todos"){ el.style.display = "none"; return; }
+  const games = getOnThisDayGames_();
+  if(!games.length){ el.style.display = "none"; return; }
+  el.style.display = "flex";
+  el.innerHTML = `<div class="form-overview-title" style="cursor:default;">📅 Neste dia, há anos</div>` +
+    '<div class="form-overview-chips">' + games.map(g=>{
+    const label = g.tag === "win" ? "✅ Vitória" : g.tag === "loss" ? "❌ Derrota" : "🟰 Empate";
+    const color = g.tag === "win" ? "var(--green)" : g.tag === "loss" ? "var(--red)" : "var(--text-dim)";
+    const resultText = (g.st.resultado && g.st.resultado.trim()) || "";
+    const vsText = g.ev.athlete ? ` vs ${g.ev.athlete}` : "";
+    return `<div class="form-overview-row" style="cursor:default;"><span class="fo-sport">${g.yearsAgo} ano${g.yearsAgo===1?'':'s'} <span style="color:var(--text-dim); font-weight:500;">(${g.ev.sport})</span>: <span style="color:${color};">${label}</span>${resultText ? ' ' + resultText : ''}${vsText}</span></div>`;
+  }).join('') + '</div>';
+}
+
 // ===================== RECORDES DA ÉPOCA — maior vitória por modalidade =====================
 // Reaproveita a mesma convenção "casa - fora" já usada em parseMatchResult (ver
 // 03-share-reel.js) para saber quantos golos/pontos fez o FC Porto e o adversário
@@ -71,8 +131,19 @@ function getBiggestWinBySport_(){
   const bySport = {}; // sport -> { ev, ours, theirs, diff }
   EVENTS.forEach(ev=>{
     const st = getEv(ev.id);
+    // Fonte da verdade é sempre getMatchResultTag — a mesma função que o resto do
+    // site usa para saber se foi vitória/empate/derrota. Ela respeita o botão
+    // Vitória/Empate/Derrota escolhido à mão, só adivinhando a partir do texto do
+    // placar quando ninguém escolheu nada. ANTES, esta função calculava vitória/
+    // derrota só a partir do texto do placar, por conta própria — se o texto não
+    // batesse certo com o que tinha sido marcado à mão (por qualquer motivo),
+    // mostrava uma derrota como se fosse a "maior vitória" da modalidade.
+    if(getMatchResultTag(ev, st) !== "win") return;
     const score = parseOursTheirs_(ev, st && st.resultado);
-    if(!score || score.ours <= score.theirs) return; // só vitórias dão para "maior vitória"
+    // sem um placar numérico não há como calcular a diferença de golos/pontos —
+    // e se o placar escrito contradisser a vitória marcada à mão (diff <= 0),
+    // mais vale não entrar no recorde do que mostrar um número sem sentido
+    if(!score || score.ours <= score.theirs) return;
     const diff = score.ours - score.theirs;
     const atual = bySport[ev.sport];
     if(!atual || diff > atual.diff){

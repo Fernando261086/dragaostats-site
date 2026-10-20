@@ -20,6 +20,15 @@ function maybeCelebrateMilestone_(){
   showConfetti_(`🎉 Já somos ${hit.toLocaleString("pt-PT")}! Obrigado por nos acompanhares.`);
 }
 
+// Converte uma cor hex (#rrggbb) em rgba(...) com a opacidade pedida — usado para
+// pintar os banners de "Próximo jogo"/"Adversário do dia" com a cor da própria
+// modalidade (cartaz, não só texto), em vez do dourado genérico de sempre.
+function hexToRgba_(hex, alpha){
+  const h = (hex || "#e3b23c").replace("#", "");
+  const r = parseInt(h.substring(0,2), 16), g = parseInt(h.substring(2,4), 16), b = parseInt(h.substring(4,6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 function todayISO_(){
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
@@ -43,21 +52,25 @@ function getTodaysUpcomingGames_(){
 }
 function renderTodayOpponentBanner(matchesMode){
   const banner = document.getElementById("todayOpponentBanner");
-  if(!matchesMode){ banner.style.display = "none"; return; }
+  if(!matchesMode){ banner.style.display = "none"; if(typeof renderDayShareToggle_ === "function") renderDayShareToggle_(); return; }
 
   const todaysGames = getTodaysUpcomingGames_();
-  if(todaysGames.length===0){ banner.style.display="none"; return; }
+  if(todaysGames.length===0){ banner.style.display="none"; if(typeof renderDayShareToggle_ === "function") renderDayShareToggle_(); return; }
 
   banner.style.display = "flex";
   if(todaysGames.length===1){
     const g = todaysGames[0];
+    const t = postTeams_(g); // mesma convenção casa/fora de 23-daily-post-text.js — fora, o FC Porto aparece em segundo
+    const color = SPORT_COLORS[g.sport] || "#e3b23c";
+    banner.style.background = `linear-gradient(135deg, ${hexToRgba_(color,0.24)} 0%, rgba(10,22,38,0.55) 75%)`;
+    banner.style.borderColor = color;
     banner.innerHTML = `
       <div class="tob-tag">HOJE</div>
       ${isClassicoOpponent_(g.athlete) ? '<span class="tob-tag" style="background:#e07b2c; color:#fff; margin-left:6px;">🔥 CLÁSSICO</span>' : ''}
       <div class="tob-info">
         <div class="tob-label">Adversário do dia</div>
-        <div class="tob-sport-hero">${g.sport}</div>
-        <div class="tob-match-hero">FC Porto <span class="tob-vs">vs</span> ${g.athlete}</div>
+        <div class="tob-sport-hero" style="color:${color};">${g.sport}</div>
+        <div class="tob-match-hero">${t.home} <span class="tob-vs">vs</span> ${t.away}</div>
         <div class="tob-meta">${localLabel(g.local)} · ${g.t || 'hora por confirmar'}</div>
       </div>
     `;
@@ -65,17 +78,36 @@ function renderTodayOpponentBanner(matchesMode){
     banner.title = "Ver o cartão deste jogo";
     banner.onclick = ()=> goToEventCard(g.id);
   } else {
+    // vários jogos hoje — cada um tem direito ao mesmo tratamento de "cartaz" do
+    // jogo único: cor da própria modalidade e nomes em destaque, não uma lista
+    // de texto plano. A banner em si fica neutra (o destaque está em cada linha).
+    banner.style.background = "";
+    banner.style.borderColor = "";
     banner.innerHTML = `
       <div class="tob-tag">HOJE</div>
       <div class="tob-info">
         <div class="tob-label">Adversários do dia — ${todaysGames.length} jogos</div>
-        ${todaysGames.map(g=>`<div class="tob-match"><b>${g.sport}</b> · FC Porto vs ${g.athlete} <span class="tob-meta">— ${g.t || 'hora por confirmar'}</span></div>`).join("")}
+        <div class="tob-multi-list">
+          ${todaysGames.map(g=>{
+            const t = postTeams_(g);
+            const color = SPORT_COLORS[g.sport] || "#e3b23c";
+            return `<div class="tob-multi-row" data-ev-id="${g.id}" style="--sc:${color}; background:${hexToRgba_(color,0.16)};">
+              <span class="tob-multi-sport" style="color:${color};">${g.sport}</span>
+              <span class="tob-multi-match">${t.home} <span class="tob-vs">vs</span> ${t.away}</span>
+              <span class="tob-multi-time">${g.t || 'hora por confirmar'}</span>
+            </div>`;
+          }).join("")}
+        </div>
       </div>
     `;
     banner.style.cursor = "default";
     banner.removeAttribute("title");
     banner.onclick = null;
+    banner.querySelectorAll(".tob-multi-row").forEach(row=>{
+      row.onclick = ()=> goToEventCard(row.getAttribute("data-ev-id"));
+    });
   }
+  if(typeof renderDayShareToggle_ === "function") renderDayShareToggle_();
 }
 
 function renderNextMatchBanner(matchesMode){
@@ -105,15 +137,19 @@ function renderNextMatchBanner(matchesMode){
   const countdownPrecise = formatCountdownPrecise(nextDate, now);
   const local = localLabel(next.local);
   const streak = computeCurrentStreak(next.sport);
+  const t = postTeams_(next); // mesma convenção casa/fora de 23-daily-post-text.js — fora, o FC Porto aparece em segundo
+  const color = SPORT_COLORS[next.sport] || "#e3b23c";
 
   banner.style.display = "flex";
   banner.style.cursor = "pointer";
   banner.title = "Ver o cartão deste jogo";
+  banner.style.background = `linear-gradient(135deg, ${hexToRgba_(color,0.22)} 0%, rgba(10,22,38,0.55) 75%)`;
+  banner.style.borderColor = color;
   banner.innerHTML = `
     <div class="nmb-info">
       <div class="tob-label">Próximo jogo ${isClassicoOpponent_(next.athlete) ? '<span class="tob-tag" style="background:#e07b2c; color:#fff; margin-left:4px; font-size:9px;">🔥 CLÁSSICO</span>' : ''}</div>
-      <div class="tob-sport-hero">${next.sport}</div>
-      <div class="tob-match-hero">FC Porto <span class="tob-vs">vs</span> ${next.athlete}</div>
+      <div class="tob-sport-hero" style="color:${color};">${next.sport}</div>
+      <div class="tob-match-hero">${t.home} <span class="tob-vs">vs</span> ${t.away}</div>
       <div class="nmb-meta-line">${local} · ${formatFullDate(next.day)}, ${next.t}</div>
       ${streak ? `<div class="nmb-meta-line" style="color:var(--gold);">${streak}</div>` : ''}
     </div>
@@ -337,6 +373,18 @@ function computeMargemPoints(guess, tag, resultado){
   return parts[1] === margemBand_(diff) ? 2 : 1;
 }
 
+// O palpite de "placar" é sempre guardado como "FCP-adversário" (ver nota em
+// computePlacarPoints, em 10-prediction-ranking.js) — isso nunca muda. Esta
+// função só serve para MOSTRAR esse valor já guardado na ordem casa-fora que
+// o resto do site usa (fora, é o adversário que joga em casa e por isso
+// aparece primeiro). Não mexe no valor guardado nem na pontuação.
+function placarGuessDisplay_(guess, local){
+  if(local !== "fora") return guess;
+  const pair = parseScorePair(guess);
+  if(!pair) return guess;
+  return pair[1] + "-" + pair[0];
+}
+
 function renderPredictionBar(ev){
   const question = ev.predictionQuestion; // { type: "simnao"|"livre", text: "..." }
   if(!question) return "";
@@ -359,12 +407,17 @@ function renderPredictionBar(ev){
       </div>`;
     }
     if(question.type === "placar"){
+      const homeField = `<input type="number" min="0" max="99" class="gate-input prediction-placar-home" data-event-id="${ev.id}" placeholder="FCP" style="width:56px; padding:5px 6px; font-size:13px; text-align:center;">`;
+      const awayField = `<input type="number" min="0" max="99" class="gate-input prediction-placar-away" data-event-id="${ev.id}" placeholder="${ev.athlete||'Adv.'}" style="width:56px; padding:5px 6px; font-size:13px; text-align:center;">`;
+      const dash = `<span style="color:var(--text-dim); font-size:13px;">-</span>`;
+      // Mostra sempre primeiro quem joga em casa, tal como o resto do site — as
+      // classes/campos continuam os mesmos (prediction-placar-home guarda sempre o
+      // número do FCP), só a ORDEM visual é que troca em jogos fora.
+      const fieldsHtml = ev.local === "fora" ? (awayField + dash + homeField) : (homeField + dash + awayField);
       return `<div class="prediction-bar" style="margin-top:6px; padding-left:2px;">
         <div style="font-size:11px; color:var(--text); margin-bottom:4px;">${question.text}</div>
         <div style="display:flex; align-items:center; gap:6px;">
-          <input type="number" min="0" max="99" class="gate-input prediction-placar-home" data-event-id="${ev.id}" placeholder="FCP" style="width:56px; padding:5px 6px; font-size:13px; text-align:center;">
-          <span style="color:var(--text-dim); font-size:13px;">-</span>
-          <input type="number" min="0" max="99" class="gate-input prediction-placar-away" data-event-id="${ev.id}" placeholder="${ev.athlete||'Adv.'}" style="width:56px; padding:5px 6px; font-size:13px; text-align:center;">
+          ${fieldsHtml}
           <button class="prediction-placar-btn" data-event-id="${ev.id}" style="background:rgba(255,255,255,0.05); border:1px solid var(--line); border-radius:8px; padding:5px 12px; font-size:12px; color:var(--text); cursor:pointer; white-space:nowrap;">Enviar</button>
         </div>
         <div style="font-size:10px; color:var(--text-dim); opacity:0.75; margin-top:3px;">Acertares em cheio vale 3 pontos · acertares só quem ganha vale 1 ponto — ver ranking em 🎯</div>
@@ -392,7 +445,9 @@ function renderPredictionBar(ev){
   const isLivre = question.type === "livre" || question.type === "placar";
   const isMargem = question.type === "margem";
   const fixedOptions = isMargem ? MARGEM_OPTIONS : ["Sim","Não"];
-  const optLabel = isMargem ? margemOptionLabel : (o)=>o;
+  // Para "placar" o valor guardado é sempre "FCP-adversário" — para mostrar, converte
+  // para a ordem casa-fora do resto do site (ver placarGuessDisplay_ acima).
+  const optLabel = isMargem ? margemOptionLabel : (question.type === "placar" ? (g)=>placarGuessDisplay_(g, ev.local) : (o)=>o);
   const isAdminViewer = !READONLY_MODE;
   const total = isLivre
     ? Object.values(data).reduce((sum,v)=> sum + predictionCount(v), 0)
@@ -411,7 +466,7 @@ function renderPredictionBar(ev){
         const names = predictionNames(data[guess]);
         return `<div style="margin-bottom:3px;">
           <div style="display:flex; justify-content:space-between; font-size:11.5px; color:${isMine?'var(--gold)':'var(--text-dim)'};">
-            <span>${isMine?'✓ ':''}${guess}</span><span>${predictionCount(data[guess])}</span>
+            <span>${isMine?'✓ ':''}${optLabel(guess)}</span><span>${predictionCount(data[guess])}</span>
           </div>
           ${isAdminViewer && names.length ? `<div style="font-size:10.5px; color:var(--text-dim); opacity:0.8; padding-left:8px;">${names.join(", ")}</div>` : ''}
         </div>`;

@@ -105,8 +105,12 @@ function updateMedalBadge(){
   renderDailyFact_();
   renderTrophyShelf_();
   renderRecordsShelf_();
+  renderOnThisDay_();
+  renderVisitStreak_();
+  renderTodoPanelBadge_();
   renderPostGameReaction_();
   applyClassicoFlourish_();
+  applyGameDayGlow_();
   if(currentCompMode()==="matches"){
     if(activeSport === "Todos"){
       // misturar modalidades diferentes não diz grande coisa — só mostra quando se filtra uma

@@ -68,10 +68,13 @@
     <button id="quizCloseBtn" class="add-cancel" style="width:100%; margin-top:16px;">Fechar</button>
   </div>
 </div>
-<div id="introOverlay" style="display:none; position:fixed; inset:0; z-index:100; background:rgba(13,27,46,0.97); align-items:center; justify-content:center; padding:20px;">
-  <div style="max-width:420px; width:100%; max-height:85vh; overflow-y:auto; padding:4px;">
-    <div id="introContent" style="font-size:14px; color:var(--text); line-height:1.6;"></div>
-    <div class="add-btn-row" style="margin-top:16px;">
+<div id="introOverlay" class="intro-overlay" style="display:none;">
+  <div class="intro-ring intro-ring-a"></div>
+  <div class="intro-ring intro-ring-b"></div>
+  <div class="intro-card">
+    <img src="dragao-stats-logo.png" alt="Dragão Stats" class="intro-logo" id="introLogo">
+    <div id="introContent" class="intro-text"></div>
+    <div class="add-btn-row" style="margin-top:18px;">
       <button class="add-save" id="introCloseBtn" style="width:100%;">Ver os jogos</button>
     </div>
   </div>
@@ -100,7 +103,7 @@
 <div class="wrap">
   <header>
     <div class="brand-row">
-      <div style="position:relative; flex-shrink:0;">
+      <div id="emblemWrap" style="position:relative; flex-shrink:0;">
         <svg class="emblem" id="emblemSvg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
           <circle cx="24" cy="24" r="15" fill="none" stroke="var(--gold)" stroke-width="3"/>
           <circle cx="40" cy="24" r="15" fill="none" stroke="var(--text)" stroke-width="3"/>
@@ -132,6 +135,10 @@
         <button class="comp-del" id="feedbackAdminBtn" title="Ver bugs/sugestões reportados">💬</button>
         <span id="feedbackBadge" style="display:none; position:absolute; top:-4px; right:-4px; background:var(--red); color:#fff; font-size:10px; font-weight:700; border-radius:10px; padding:1px 5px; line-height:1.3; font-family:'Archivo Narrow',sans-serif;"></span>
       </span>
+      <span style="position:relative; display:inline-block;">
+        <button class="comp-del" id="todoPanelBtn" title="O que falta fazer (resultados por escrever + feedback por responder)">📋</button>
+        <span id="todoPanelBadge" style="display:none; position:absolute; top:-4px; right:-4px; background:var(--red); color:#fff; font-size:10px; font-weight:700; border-radius:10px; padding:1px 5px; line-height:1.3; font-family:'Archivo Narrow',sans-serif;"></span>
+      </span>
       <button class="comp-del" id="announcementBtn" title="Publicar aviso no topo da app">📢</button>
       <button class="comp-del" id="pushNowBtn" title="Enviar notificação a sério agora">📣</button>
       <button class="comp-del" id="postTextBtn" title="Gerar o texto do dia (Facebook/Instagram e Reddit)">📝</button>
@@ -153,6 +160,7 @@
     <div class="add-panel" id="accessManagePanel" style="display:none;"></div>
     <div class="add-panel" id="visitsLogPanel" style="display:none;"></div>
     <div class="add-panel" id="feedbackAdminPanel" style="display:none;"></div>
+    <div class="add-panel" id="todoPanel" style="display:none;"></div>
     <div class="add-panel" id="announcementPanel" style="display:none;"></div>
     <div class="add-panel" id="postTextPanel" style="display:none;"></div>
     <div class="add-panel" id="pushNowPanel" style="display:none;"></div>
@@ -275,6 +283,10 @@
          CSS). Em telemóvel continua tudo empilhado, como sempre foi. -->
     <div class="sidebar-col" id="sidebarCol">
       <div class="next-match-banner today-opponent-banner" id="todayOpponentBanner" style="display:none;"></div>
+      <div class="add-btn-row" id="dayShareToggleRow" style="display:none; margin:-4px 0 4px;">
+        <button class="chip" id="dayShareBtn">🖼️ Imagem + texto dos jogos de hoje</button>
+      </div>
+      <div id="dayShareBox" style="display:none;"></div>
       <div class="next-match-banner" id="nextMatchBanner" style="display:none;"></div>
       <div class="next-match-banner pending-banner" id="pendingResultsBanner" style="display:none;"></div>
       <div class="next-match-banner" id="personalPredictionBanner" style="display:none; cursor:pointer;"></div>
@@ -284,6 +296,8 @@
       <div class="form-overview" id="dailyFactBox" style="display:none;"></div>
       <div class="form-overview" id="trophyShelf" style="display:none;"></div>
       <div class="form-overview" id="recordsShelf" style="display:none;"></div>
+      <div class="form-overview" id="onThisDayBox" style="display:none;"></div>
+      <div class="form-overview" id="visitStreakBox" style="display:none;"></div>
       <div class="form-overview" id="lightQuestionBox" style="display:none;"></div>
     </div>
     <div class="main-col">
@@ -341,6 +355,8 @@
         </div>
         <div style="font-size:10.5px; color:var(--text-dim); opacity:0.75; margin-top:6px;">Ao inscreveres-te, aceitas receber este email semanal. Podes cancelar a qualquer momento. <span class="newsletter-privacy-link" style="color:var(--gold-dim); text-decoration:underline; cursor:pointer;">Política de Privacidade</span></div>
       </div>
+      <br>
+      <button class="feedback-btn" id="inviteFriendBtn" style="margin-top:8px;">📣 Convida um amigo adepto</button>
       <br>
       <button class="feedback-btn" id="feedbackBtn" style="margin-top:8px;">🐛 Reportar um bug ou sugestão</button>
       <br>

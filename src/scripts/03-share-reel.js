@@ -50,7 +50,7 @@ async function generateShareReel(ev, st, sportColor){
     ctx.fillRect(0, 0, W, H);
 
     // marca, no topo (fade-in)
-    const aBrand = phase(elapsed, 0, 0.5);
+    const aBrand = phase(elapsed, 0, 0.7);
     if(aBrand > 0){
       ctx.save();
       ctx.globalAlpha = aBrand;
@@ -72,7 +72,7 @@ async function generateShareReel(ev, st, sportColor){
     }
 
     // badge da modalidade (fade + leve zoom)
-    const aBadge = phase(elapsed, 0.35, 0.85);
+    const aBadge = phase(elapsed, 0.5, 1.2);
     if(aBadge > 0){
       ctx.save();
       ctx.globalAlpha = aBadge;
@@ -100,7 +100,7 @@ async function generateShareReel(ev, st, sportColor){
     }
 
     // nomes das equipas — entram de lados opostos
-    const aTop = phase(elapsed, 0.7, 1.3);
+    const aTop = phase(elapsed, 1.0, 1.8);
     if(aTop > 0){
       ctx.save();
       ctx.globalAlpha = aTop;
@@ -111,7 +111,7 @@ async function generateShareReel(ev, st, sportColor){
       wrapCenteredText(ctx, topName, W/2 + (1-aTop)*(-140), 650, W-160);
       ctx.restore();
     }
-    const aVs = phase(elapsed, 0.9, 1.3);
+    const aVs = phase(elapsed, 1.3, 1.8);
     if(aVs > 0){
       ctx.save();
       ctx.globalAlpha = aVs;
@@ -121,7 +121,7 @@ async function generateShareReel(ev, st, sportColor){
       ctx.fillText("vs", W/2, 720);
       ctx.restore();
     }
-    const aBottom = phase(elapsed, 1.0, 1.6);
+    const aBottom = phase(elapsed, 1.4, 2.2);
     if(aBottom > 0){
       ctx.save();
       ctx.globalAlpha = aBottom;
@@ -134,7 +134,7 @@ async function generateShareReel(ev, st, sportColor){
 
     if(hasResult){
       // placar — entra com um pequeno "pop" (escala a passar de 1.0)
-      const aScore = phase(elapsed, 2.2, 2.9);
+      const aScore = phase(elapsed, 3.1, 4.1);
       if(aScore > 0){
         ctx.save();
         const overshoot = 1 + Math.sin(aScore*Math.PI) * 0.12 * (1-aScore);
@@ -148,7 +148,7 @@ async function generateShareReel(ev, st, sportColor){
         ctx.fillText(st.resultado.trim(), W/2, 1010);
         ctx.restore();
       }
-      const aMeta = phase(elapsed, 2.9, 3.3);
+      const aMeta = phase(elapsed, 4.1, 4.6);
       if(aMeta > 0){
         ctx.save();
         ctx.globalAlpha = aMeta;
@@ -162,7 +162,7 @@ async function generateShareReel(ev, st, sportColor){
       }
     }else{
       // ainda não há resultado — data e hora, a promover o jogo
-      const aDate = phase(elapsed, 2.2, 2.7);
+      const aDate = phase(elapsed, 3.1, 3.8);
       if(aDate > 0){
         ctx.save();
         ctx.globalAlpha = aDate;
@@ -172,7 +172,7 @@ async function generateShareReel(ev, st, sportColor){
         ctx.fillText(formatFullDate(ev.day), W/2, 920);
         ctx.restore();
       }
-      const aTime = phase(elapsed, 2.5, 3.1);
+      const aTime = phase(elapsed, 3.5, 4.3);
       if(aTime > 0){
         ctx.save();
         ctx.globalAlpha = Math.min(1, aTime*1.4);
@@ -182,7 +182,7 @@ async function generateShareReel(ev, st, sportColor){
         ctx.fillText(ev.t || "", W/2, 1050);
         ctx.restore();
       }
-      const aMeta = phase(elapsed, 3.1, 3.5);
+      const aMeta = phase(elapsed, 4.3, 4.9);
       if(aMeta > 0){
         ctx.save();
         ctx.globalAlpha = aMeta;
@@ -195,7 +195,7 @@ async function generateShareReel(ev, st, sportColor){
     }
 
     // frase + QR — entram juntos, perto do fim
-    const aFooter = phase(elapsed, 3.8, 4.3);
+    const aFooter = phase(elapsed, 5.3, 6.0);
     if(aFooter > 0){
       ctx.save();
       ctx.globalAlpha = aFooter;
@@ -231,9 +231,11 @@ async function generateShareReel(ev, st, sportColor){
     }
   }
 
-  // grava o canvas durante a animação + uma pequena pausa no fim, para quem
-  // publicar o vídeo ter meio segundo de "respiro" antes de acabar
-  const ANIM_END = 4.3, HOLD = 0.7, TOTAL = ANIM_END + HOLD;
+  // grava o canvas durante a animação + uma pausa bem maior no fim, para quem
+  // vir o reel ter tempo de ler toda a informação antes de o vídeo acabar (e
+  // nas redes sociais, voltar a reiniciar sozinho) — pedido do Fernando, que
+  // achava a pausa antiga (0.7s) curta demais e a entrada dos elementos rápida
+  const ANIM_END = 6.0, HOLD = 4.0, TOTAL = ANIM_END + HOLD;
 
   const stream = canvas.captureStream(30);
   const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")

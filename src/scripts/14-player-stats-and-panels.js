@@ -428,6 +428,29 @@ function cleanupSportLinks(){
   return changed;
 }
 
+// Deteta browsers automáticos (robôs de monitorização/SEO, testes automatizados,
+// etc.) — nunca uma pessoa a sério. Isto evita que apareçam no registo de acessos
+// visitas "(sem nome)" exatamente à mesma hora todas as noites, de serviços que
+// verificam se o site está no ar a abrir a página com um browser a sério (por
+// isso executam o JavaScript todo, ao contrário de um pedido HTTP simples).
+// navigator.webdriver é o sinal mais fiável — fica a "true" em qualquer browser
+// controlado por automação (Selenium, Playwright, Puppeteer, e a maioria das
+// ferramentas de monitorização "com browser a sério"); o resto dos nomes é só
+// para apanhar os casos mais comuns que não o ligam.
+function isLikelyBot_(){
+  try{
+    if(navigator.webdriver) return true;
+    const ua = (navigator.userAgent || "").toLowerCase();
+    const BOT_UA_HINTS = [
+      "headless", "bot", "spider", "crawl", "slurp", "lighthouse", "pagespeed",
+      "pingdom", "uptimerobot", "statuscake", "site24x7", "gtmetrix",
+      "ahrefsbot", "semrushbot", "mj12bot", "dotbot", "petalbot", "bytespider",
+      "facebookexternalhit", "whatsapp", "telegrambot", "google-inspectiontool"
+    ];
+    return BOT_UA_HINTS.some(hint => ua.includes(hint));
+  }catch(e){ return false; }
+}
+
 // Regista um acesso (nome + hora) no servidor — com um pequeno "amortecedor" para
 // não repetir o registo se a mesma pessoa, no mesmo aparelho, abrir várias vezes
 // seguidas em pouco tempo.
@@ -435,6 +458,7 @@ function cleanupSportLinks(){
 // por causa do "amortecedor" de 30 min, e não contam como visitas nas contagens
 const CLICK_LOG_TYPES = ["support_click", "facebook_click", "instagram_click", "install_click"];
 function logVisit(name, type){
+  if(isLikelyBot_()) return; // nunca regista visitas de browsers automáticos
   // as instalações, o "aviso apareceu" e os cliques em "Apoiar o projeto" nunca
   // ficam de fora por causa do "amortecedor" de 30 min — isso só serve para não
   // repetir VISITAS seguidas; um clique no botão de apoio é sempre relevante

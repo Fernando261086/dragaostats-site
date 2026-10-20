@@ -14,7 +14,7 @@ firebase.initializeApp({
 });
 firebase.messaging(); // já trata sozinho de mostrar a notificação quando chega em segundo plano
 
-const CACHE_NAME = "dia22-cache-v191";
+const CACHE_NAME = "dia22-cache-v192";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -24,7 +24,8 @@ const ASSETS_TO_CACHE = [
   "./icon-512.png",
   "./icon-192-maskable.png",
   "./icon-512-maskable.png",
-  "./header-emblem.png"
+  "./header-emblem.png",
+  "./dragao-stats-logo.png"
 ];
 
 self.addEventListener("install", (event) => {

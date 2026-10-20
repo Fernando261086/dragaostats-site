@@ -29,7 +29,61 @@
   .comp-del:hover{border-color:var(--red); color:var(--red);}
   .comp-del.active{background:rgba(227,178,60,0.12); border-color:var(--gold-dim); color:var(--gold);}
   .comp-del.active:hover{border-color:var(--gold-dim); color:var(--gold);}
+  /* ABERTURA — ecrã de boas-vindas (1ª visita, por aparelho) com entrada em cena,
+     não um popup de texto simples: o emblema entra em grande, com brilho a girar
+     devagar ao fundo, e só depois aparece o texto. */
+  .intro-overlay{
+    display:none; position:fixed; inset:0; z-index:100; overflow:hidden;
+    align-items:center; justify-content:center; padding:20px;
+    background:radial-gradient(ellipse at 50% 30%, #16294a 0%, #0a1626 55%, #060f1c 100%);
+  }
+  .intro-ring{
+    position:absolute; border-radius:50%; border:1.5px solid rgba(227,178,60,0.12);
+    animation:introRingSpin 40s linear infinite;
+  }
+  .intro-ring-a{ width:520px; height:520px; top:50%; left:50%; margin:-260px 0 0 -260px; }
+  .intro-ring-b{
+    width:360px; height:360px; top:50%; left:50%; margin:-180px 0 0 -180px;
+    border-color:rgba(79,179,232,0.12); animation-duration:28s; animation-direction:reverse;
+  }
+  @keyframes introRingSpin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+  .intro-card{
+    position:relative; z-index:2; max-width:420px; width:100%; max-height:88vh;
+    overflow-y:auto; padding:4px; text-align:center;
+  }
+  .intro-logo{
+    width:190px; height:190px; border-radius:22px; margin:0 auto 18px;
+    display:block; box-shadow:0 0 0 2px rgba(227,178,60,0.35), 0 14px 44px -8px rgba(0,0,0,0.6);
+    animation:introLogoIn 0.7s cubic-bezier(.2,.9,.3,1.1) both;
+  }
+  @keyframes introLogoIn{
+    0%{ opacity:0; transform:scale(0.55); }
+    100%{ opacity:1; transform:scale(1); }
+  }
+  .intro-text{
+    font-size:14px; color:var(--text); line-height:1.6; text-align:left;
+    animation:introTextIn 0.6s ease 0.25s both;
+  }
+  @keyframes introTextIn{
+    0%{ opacity:0; transform:translateY(8px); }
+    100%{ opacity:1; transform:translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .intro-ring{ animation:none; }
+    .intro-logo, .intro-text{ animation:none; opacity:1; transform:none; }
+  }
+
   .emblem{width:32px; height:32px; flex-shrink:0; object-fit:contain;}
+  /* dia de jogo (qualquer modalidade, não só clássico) — o emblema "respira" devagar
+     com um brilho dourado, para o cabeçalho sentir-se vivo nos dias que importam */
+  @keyframes emblemGameDayPulse{
+    0%,100%{ filter:drop-shadow(0 0 0 rgba(227,178,60,0)); transform:scale(1); }
+    50%{ filter:drop-shadow(0 0 7px rgba(227,178,60,0.75)); transform:scale(1.045); }
+  }
+  #emblemWrap.game-day .emblem{
+    animation:emblemGameDayPulse 2.8s ease-in-out infinite;
+    border-radius:50%;
+  }
   .brand-title{font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:13px; color:var(--text);}
   .brand-sub{font-family:'Archivo Narrow',sans-serif; font-size:11px; color:var(--text-dim);}
   .brand-disclaimer{font-family:'Archivo Narrow',sans-serif; font-size:9.5px; color:var(--text-dim); opacity:0.75; margin-top:1px;}
@@ -46,9 +100,9 @@
   .progress-row{display:flex; align-items:center; gap:12px; margin-top:14px;}
   .next-match-banner{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
-    margin-top:18px; padding:12px 16px; border-radius:10px;
+    margin-top:18px; padding:16px 18px; border-radius:12px;
     background:rgba(11,61,145,0.12); border:1px solid var(--gold-dim);
-    box-shadow:0 3px 10px -3px rgba(0,0,0,0.4);
+    box-shadow:0 4px 16px -4px rgba(0,0,0,0.5);
   }
   .next-match-banner .nmb-info{ font-size:13px; color:var(--text); }
   .next-match-banner .nmb-info b{ color:var(--accent-bright); }
@@ -81,16 +135,43 @@
   .today-opponent-banner .tob-match{ font-size:13px; color:var(--text); margin-top:2px; }
   .today-opponent-banner .tob-match b{ color:var(--accent-bright); }
   .today-opponent-banner .tob-meta{ font-size:11.5px; color:var(--text-dim); }
-  /* mais ênfase, num jogo só — reaproveita a Bebas Neue já usada nos separadores de dia */
+  /* vários jogos no mesmo dia — cada um com o mesmo "cartaz" do caso de jogo único,
+     só que mais compacto, numa lista em vez de um só banner grande */
+  .tob-multi-list{ display:flex; flex-direction:column; gap:7px; margin-top:6px; }
+  .tob-multi-row{
+    display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
+    border-left:3px solid var(--sc); border-radius:7px; padding:7px 10px;
+    cursor:pointer; transition:filter 0.15s;
+  }
+  .tob-multi-row:hover{ filter:brightness(1.15); }
+  .tob-multi-sport{
+    font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:12px;
+    text-transform:uppercase; letter-spacing:0.03em; flex-shrink:0;
+  }
+  .tob-multi-match{
+    font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:15px;
+    color:var(--text); flex:1; min-width:0;
+  }
+  .tob-multi-match .tob-vs{ color:var(--gold); font-weight:600; font-size:12px; margin:0 4px; opacity:0.9; }
+  .tob-multi-time{ font-size:11px; color:var(--text-dim); white-space:nowrap; flex-shrink:0; }
+  /* mais ênfase, num jogo só — cartaz de jogo, não uma linha de agenda: reaproveita
+     a Bebas Neue já usada nos separadores de dia, mas em tamanho de destaque */
   .next-match-banner .tob-sport-hero{
-    font-family:'Bebas Neue',sans-serif; font-size:30px; line-height:0.95;
-    letter-spacing:0.02em; color:var(--text); margin:2px 0 4px;
+    font-family:'Bebas Neue',sans-serif; font-size:34px; line-height:0.95;
+    letter-spacing:0.03em; margin:2px 0 6px;
+    text-shadow:0 2px 10px rgba(0,0,0,0.35);
   }
   .next-match-banner .tob-match-hero{
-    font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:16px;
-    color:var(--text);
+    font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:22px;
+    color:var(--text); line-height:1.15;
   }
-  .next-match-banner .tob-match-hero .tob-vs{ color:var(--gold); font-weight:600; margin:0 5px; }
+  .next-match-banner .tob-match-hero .tob-vs{
+    color:var(--gold); font-weight:600; font-size:15px; margin:0 6px; opacity:0.9;
+  }
+  @media (max-width:480px){
+    .next-match-banner .tob-sport-hero{ font-size:27px; }
+    .next-match-banner .tob-match-hero{ font-size:18px; }
+  }
   .next-match-banner .nmb-meta-line{
     font-family:'Archivo Narrow',sans-serif; font-size:11.5px; color:var(--text-dim); margin-top:6px;
   }

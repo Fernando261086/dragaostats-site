@@ -1022,6 +1022,7 @@ function renderFilters(){
     };
     box.appendChild(b);
   });
+  if(typeof renderSportCards_ === "function") renderSportCards_(); // cartões por modalidade (35-sport-cards.js)
 }
 
 function renderProgress(){

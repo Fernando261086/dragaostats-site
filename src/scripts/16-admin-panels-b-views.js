@@ -492,6 +492,7 @@ function setView(view){
   document.getElementById("dayTabs").style.display = cal ? "flex" : "none";
   document.getElementById("filters").style.display = cal ? "flex" : "none";
   document.getElementById("addToggleBtn").style.display = cal ? "block" : "none";
+  if(typeof renderSportCards_ === "function") renderSportCards_(); // só aparecem no calendário
 
   if(!cal){
     document.getElementById("addPanel").style.display = "none";

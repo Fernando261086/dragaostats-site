@@ -24,15 +24,16 @@ function renderSportPage_(){
 
   const next = upcoming[0];
   const head = `<div class="sp-head" style="--sc:${color};">
-    <button type="button" class="hv-link" id="spBack">← Início</button>
-    <h2>${esc(sport)}</h2>
-    <div class="sp-stats">
-      <span><b>${evs.length}</b> jogos</span><span><b>${done.length}</b> com resultado</span>
-      ${done.length ? `<span class="sp-w"><b>${w}</b> V</span><span><b>${dr}</b> E</span><span class="sp-l"><b>${l}</b> D</span>` : ""}
+    <button type="button" class="sp-back" id="spBack" aria-label="Voltar ao Início">‹</button>
+    <div class="sp-titles"><h2>${esc(sport)}</h2>
+      <div class="sp-stats">
+        <span><b>${evs.length}</b> jogos</span><span><b>${done.length}</b> com resultado</span>
+        ${done.length ? `<span class="sp-w"><b>${w}</b> V</span><span><b>${dr}</b> E</span><span class="sp-l"><b>${l}</b> D</span>` : ""}
+      </div>
     </div>
-    ${next ? `<div class="sp-next">Próximo: <b>${esc(formatShortDate(next.ev.day))}${next.ev.t ? " · " + esc(next.ev.t) : ""}</b> vs ${esc(oppOf(next.ev))}</div>` : ""}
   </div>`;
   const tabs = `<div class="sp-tabs"><button type="button" class="${sportPageTab_ === "jogos" ? "active" : ""}" data-sptab="jogos">Jogos</button><button type="button" class="${sportPageTab_ === "marcadores" ? "active" : ""}" data-sptab="marcadores">Marcadores</button></div>`;
+  const heroHtml = (sportPageTab_ === "jogos" && typeof homeHeroHtml_ === "function") ? `<div class="sp-hero">${homeHeroHtml_(next)}</div>` : "";
 
   let body = "";
   if(sportPageTab_ === "jogos"){
@@ -46,7 +47,8 @@ function renderSportPage_(){
         ${res ? (tag[0] ? `<span class="hv-tag hv-tag-${tag[1]}">${tag[0]}</span>` : "") : `<span class="hv-row-time">${esc(ev.t || "")}</span>`}
       </button>`;
     };
-    body = `<div class="hv-panel"><div class="hv-panel-head"><h3>Próximos jogos</h3></div>${upcoming.length ? upcoming.map(row).join("") : '<div class="hv-empty">Sem jogos marcados.</div>'}</div>
+    const nextRest = upcoming.slice(1);
+    body = `<div class="hv-panel"><div class="hv-panel-head"><h3>Calendário</h3></div>${nextRest.length ? nextRest.map(row).join("") : '<div class="hv-empty">Sem mais jogos marcados.</div>'}</div>
       <div class="hv-panel"><div class="hv-panel-head"><h3>Resultados</h3></div>${done.length ? done.map(row).join("") : '<div class="hv-empty">Ainda sem resultados.</div>'}</div>`;
   }else{
     const stats = (typeof MARCADORES_LABEL_SPORTS !== "undefined" && MARCADORES_LABEL_SPORTS.has(sport)) ? ["Golos"] : getStatTypesFor(sport);
@@ -70,7 +72,7 @@ function renderSportPage_(){
     const chips = stats.length > 1 ? `<div class="filters" style="display:flex; margin-bottom:10px;">${stats.map(s=>`<button class="chip${s === sportPageStat_ ? " active" : ""}" data-spstat="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : "";
     body = `<div class="hv-panel"><div class="hv-panel-head"><h3>Marcadores · ${esc(sportPageStat_)}</h3></div>${chips}${ranked.length ? ranked.map((r, i)=>`<div class="hv-row" style="cursor:default; --sc:${color};"><span class="hv-tag">${i + 1}º</span><span class="hv-row-body"><span class="hv-row-match">${esc(r.n)}</span><span class="hv-sport-next">${r.games} jogo${r.games === 1 ? "" : "s"}</span></span><span class="hv-row-time">${r.total}</span></div>`).join("") : '<div class="hv-empty">Ainda sem estatísticas registadas nesta modalidade.</div>'}</div>`;
   }
-  host.innerHTML = head + tabs + body;
+  host.innerHTML = head + tabs + heroHtml + body;
   host.querySelector("#spBack").onclick = ()=>{ setView("inicio"); window.scrollTo(0, 0); };
   host.querySelectorAll("[data-sptab]").forEach(b=>{ b.onclick = ()=>{ sportPageTab_ = b.getAttribute("data-sptab"); renderSportPage_(); }; });
   host.querySelectorAll("[data-spstat]").forEach(b=>{ b.onclick = ()=>{ sportPageStat_ = b.getAttribute("data-spstat"); renderSportPage_(); }; });

@@ -618,12 +618,13 @@ function renderCompetitionSelector(){
   // diretamente no título, e esconde o seletor
   const compRow = document.getElementById("compSelect").closest(".comp-row");
   const brandTitleEl = document.querySelector(".brand-title");
+  const matchesTitle = !!(activeComp && (activeComp.mode||"medals") === "matches");
   if(READONLY_MODE && active.length === 1){
     if(compRow) compRow.style.display = "none";
-    if(brandTitleEl) brandTitleEl.textContent = active[0].name;
+    if(brandTitleEl) brandTitleEl.textContent = matchesTitle ? "Dragão Stats" : active[0].name;
   }else{
     if(compRow) compRow.style.display = "";
-    if(brandTitleEl) brandTitleEl.textContent = "Competições e Resultados";
+    if(brandTitleEl) brandTitleEl.textContent = matchesTitle ? "Dragão Stats" : "Competições e Resultados";
   }
 
   const archSel = document.getElementById("archivedSelect");

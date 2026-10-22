@@ -76,7 +76,7 @@ function renderLiveNowBanner_(){
       setsHtml = "<b>" + sets.length + ".º set: " + cur[0] + "-" + cur[1] + "</b>" + (prev ? " · " + liveEsc_(prev) : "");
     }
     return `<div class="live-now-card" data-live-ev="${liveEsc_(id)}">
-      <div class="live-now-top"><span class="live-flag">AO VIVO</span><span class="live-now-sport">${liveEsc_(j.sport || "")}</span><span class="live-now-upd">atualizado ${ago}</span></div>
+      <div class="live-now-top"><span class="live-flag">AO VIVO</span><span class="live-now-sport">${liveEsc_(j.sport || "")}${(()=>{ const e = (typeof EVENTS !== "undefined") ? EVENTS.find(x=>x.id===id) : null; return e && e.detail ? " · " + liveEsc_(e.detail) : ""; })()}</span><span class="live-now-upd">atualizado ${ago}</span></div>
       <div class="live-now-row">
         <span class="live-now-team">FC Porto</span>
         <span class="live-now-score">${(j.setsFcp||0)} – ${(j.setsAdv||0)}</span>

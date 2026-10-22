@@ -317,3 +317,33 @@ html.theme-light .compact-line .c-sport{ background:rgba(11,27,63,.06); color:co
 .event .card{ min-width:0; }
 .medal-picker{ flex-wrap:wrap; }
 .card-top{ flex-wrap:wrap; }
+
+/* ===================== AJUSTES FINAIS (alinhar com a proposta) ===================== */
+/* Destaque: "FC Porto" em cima e "vs adversário" por baixo; botão principal azul-claro */
+.hv-hero-match{ display:flex; flex-direction:column; font-size:36px; line-height:1.04; }
+.hv-hero-match .hm-b{ overflow-wrap:anywhere; }
+.hv-hero-match .hv-vs{ font-size:1em; color:#7db8ff; padding:0 4px 0 0; }
+.hv-hero-meta span{ display:flex; align-items:center; gap:8px; }
+.hv-hero-meta .hero-ico{ flex-shrink:0; color:#9cc6ff; }
+.hv-btn-main{ background:#5bb4f0; color:#0a1a30; }
+@media (min-width:900px){ .hv-hero-match{ font-size:34px; } }
+.hv-hero-actions .hv-btn{ flex:1 1 140px; }
+/* Filtro por modalidade dentro de "Esta semana" */
+.hv-pills{ display:flex; gap:8px; overflow-x:auto; padding:2px 0 12px; scrollbar-width:none; }
+.hv-pills::-webkit-scrollbar{ display:none; }
+.hv-pillbtn{ flex:0 0 auto; font:inherit; font-size:13px; font-weight:700; padding:7px 14px; border-radius:999px; border:1px solid var(--line); background:var(--ink-2); color:var(--text); cursor:pointer; white-space:nowrap; }
+.hv-pillbtn.active{ background:var(--gold); border-color:var(--gold); color:var(--gold-text); }
+/* Cartão ao vivo: nomes em duas linhas, nunca cortados */
+.live-now-team{ white-space:normal; overflow:visible; line-height:1.15; font-size:15px; }
+.live-now-score{ font-size:40px; }
+/* Página de modalidade: seta de voltar + título, separadores sublinhados */
+.sp-head{ display:flex; align-items:center; gap:10px; background:none; border:0; border-radius:0; padding:0 0 4px; margin-bottom:0; }
+.sp-back{ width:40px; height:40px; flex-shrink:0; border-radius:12px; border:1px solid var(--line); background:var(--panel); color:var(--text); font-size:26px; line-height:1; cursor:pointer; padding:0 0 3px; }
+.sp-titles{ min-width:0; }
+.sp-head h2{ margin:0; font-size:34px; }
+.sp-stats{ gap:12px; font-size:12px; }
+.sp-stats b{ font-size:13.5px; }
+.sp-tabs{ gap:0; margin:6px 0 14px; border-bottom:1px solid var(--line); }
+.sp-tabs button{ flex:1; background:none; border:0; border-bottom:3px solid transparent; border-radius:0; padding:12px 8px; color:var(--text-dim); margin-bottom:-1px; }
+.sp-tabs button.active{ background:none; color:var(--text); border-bottom-color:var(--gold); }
+.sp-hero{ margin-bottom:16px; }

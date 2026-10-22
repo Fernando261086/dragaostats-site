@@ -368,3 +368,20 @@ html.mode-matches.readonly-view #themeToggleBtn{ }
 .ms-ico{ width:26px; text-align:center; font-size:18px; }
 body.more-open{ overflow:hidden; }
 .hv-btn-main.is-on{ background:transparent; color:#fff; border-color:#5bb4f0; }
+
+/* ===================== CABEÇALHO COMO NA PROPOSTA ===================== */
+html.mode-matches header{ background:transparent; backdrop-filter:none; border-bottom:0; }
+html.mode-matches header .brand-row{ gap:12px; padding:14px 16px; }
+html.mode-matches .brand-title{ font-family:'Bebas Neue',sans-serif; font-weight:400; font-size:30px; letter-spacing:.02em; line-height:1; color:#fff; }
+html.mode-matches .brand-disclaimer{ font-size:11px; opacity:.85; margin-top:3px; color:#b9c6e4; line-height:1.25; }
+html.mode-matches .emblem{ width:48px; height:48px; }
+html.mode-matches #emblemImg{ border:2px solid rgba(91,180,240,.55); }
+html.mode-matches .header-bell{ width:44px; height:44px; padding:0; border-radius:14px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.22); color:#dce5f8; margin-left:auto; }
+html.mode-matches .header-bell.on{ color:#5bb4f0; border-color:#5bb4f0; }
+html:not(.theme-light).mode-matches header .brand-row{ background:#0a1628; border-bottom:1px solid #223a63; }
+@media (min-width:740px){
+  html.mode-matches .brand-title{ font-size:38px; }
+  html.mode-matches .emblem{ width:56px; height:56px; }
+  html.mode-matches .brand-disclaimer{ font-size:12.5px; }
+}
+@media (max-width:480px){ html.mode-matches .brand-title{ font-size:30px; } html.mode-matches .emblem{ width:46px; height:46px; } }

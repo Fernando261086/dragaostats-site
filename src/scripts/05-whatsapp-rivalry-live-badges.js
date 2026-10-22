@@ -52,6 +52,48 @@ function cevLiveText_(ev, j){
   }
   return txt;
 }
+// Cartão "Ao vivo agora" no topo de todas as vistas. Mostra todos os jogos que a CEV (ou, no
+// futuro, outra fonte) tem a decorrer, com dados frescos. Desaparece sozinho quando o jogo acaba
+// ou quando os dados deixam de chegar.
+function liveEsc_(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+function renderLiveNowBanner_(){
+  const host = document.getElementById("liveNowBanner");
+  if(!host) return;
+  const fresh = CEV_LIVE && CEV_LIVE.jogos && CEV_LIVE.updated && Math.abs(Date.now() - CEV_LIVE.updated) <= 5 * 60 * 1000;
+  const ids = fresh ? Object.keys(CEV_LIVE.jogos).filter(id => CEV_LIVE.jogos[id] && CEV_LIVE.jogos[id].estado === "vivo") : [];
+  if(!ids.length){ host.style.display = "none"; host.innerHTML = ""; return; }
+  const secs = Math.max(0, Math.round((Date.now() - CEV_LIVE.updated) / 1000));
+  const ago = secs < 90 ? ("há " + secs + " s") : ("há " + Math.round(secs / 60) + " min");
+  host.innerHTML = ids.map(id => {
+    const j = CEV_LIVE.jogos[id];
+    const sets = Array.isArray(j.sets) ? j.sets : [];
+    let setsHtml = "A começar";
+    if(sets.length){
+      const cur = sets[sets.length - 1];
+      const prev = sets.slice(0, -1).map((s, i) => (i + 1) + ".º " + s[0] + "-" + s[1]).join(" · ");
+      setsHtml = "<b>" + sets.length + ".º set: " + cur[0] + "-" + cur[1] + "</b>" + (prev ? " · " + liveEsc_(prev) : "");
+    }
+    return `<div class="live-now-card" data-live-ev="${liveEsc_(id)}">
+      <div class="live-now-top"><span class="live-flag">AO VIVO</span><span class="live-now-sport">${liveEsc_(j.sport || "")}</span><span class="live-now-upd">atualizado ${ago}</span></div>
+      <div class="live-now-row">
+        <span class="live-now-team">FC Porto</span>
+        <span class="live-now-score">${(j.setsFcp||0)} – ${(j.setsAdv||0)}</span>
+        <span class="live-now-team away">${liveEsc_(j.adv || "Adversário")}</span>
+      </div>
+      <div class="live-now-sets">${setsHtml}</div>
+    </div>`;
+  }).join("");
+  host.style.display = "block";
+  host.querySelectorAll("[data-live-ev]").forEach(el => {
+    el.onclick = () => {
+      const evId = el.getAttribute("data-live-ev");
+      if(typeof EVENTS !== "undefined" && EVENTS.some(e => e.id === evId)) goToEventCard(evId);
+    };
+  });
+}
+setInterval(renderLiveNowBanner_, 15000); // mantém o "atualizado há…" certo e faz o cartão sumir se os dados pararem
 function isLiveNow_(ev){
   if(!ev || !ev.day || !ev.t) return false;
   const start = new Date(ev.day + "T" + ev.t + ":00");

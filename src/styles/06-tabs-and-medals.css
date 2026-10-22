@@ -385,3 +385,11 @@ html:not(.theme-light).mode-matches header .brand-row{ background:#0a1628; borde
   html.mode-matches .brand-disclaimer{ font-size:12.5px; }
 }
 @media (max-width:480px){ html.mode-matches .brand-title{ font-size:30px; } html.mode-matches .emblem{ width:46px; height:46px; } }
+/* modo de edição (mais botões no cabeçalho): título um pouco mais pequeno e botões compactos */
+@media (max-width:480px){
+  html.mode-matches:not(.readonly-view) .brand-title{ font-size:24px; }
+  html.mode-matches:not(.readonly-view) .emblem{ width:38px; height:38px; }
+  html.mode-matches:not(.readonly-view) .header-bell{ width:38px; height:38px; }
+  html.mode-matches:not(.readonly-view) header .brand-row .theme-toggle{ padding:6px 8px; margin-left:4px; }
+  html.mode-matches:not(.readonly-view) .brand-row{ gap:8px; }
+}

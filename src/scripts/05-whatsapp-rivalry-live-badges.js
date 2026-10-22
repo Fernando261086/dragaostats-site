@@ -28,6 +28,30 @@ const SPORT_DURATION_MIN_ = {
   "Andebol": 75, "Basquetebol": 110, "Hóquei Patins": 70, "Voleibol": 110,
   "Futebol Feminino": 100, "Futsal": 70, "Equipa B": 100
 };
+// ===================== "AO VIVO" (1) — marcador a sério, vindo da CEV =====================
+// O Apps Script lê o site oficial da CEV de minuto a minuto durante os jogos de voleibol
+// e guarda o marcador; o site recebe-o junto com o resto, em cada sincronização.
+// (a variável CEV_LIVE está declarada em 03-share-reel.js, junto das outras como PREDICTIONS)
+// Devolve o marcador do jogo, ou null se não houver — ou se os dados já forem antigos,
+// para nunca mostrar como "ao vivo" algo que ficou parado.
+function cevLiveFor_(ev){
+  if(!ev || !CEV_LIVE || !CEV_LIVE.jogos || !CEV_LIVE.updated) return null;
+  if(Math.abs(Date.now() - CEV_LIVE.updated) > 5 * 60 * 1000) return null;
+  const j = CEV_LIVE.jogos[ev.id];
+  return (j && typeof j === "object") ? j : null;
+}
+// Texto do marcador, ex.: "FC Porto 1-0 Cajasol · 2.º set: 12-9"
+function cevLiveText_(ev, j){
+  if(!j) return "";
+  const adv = ev.athlete || "Adversário";
+  let txt = "FC Porto " + (j.setsFcp||0) + "-" + (j.setsAdv||0) + " " + adv;
+  const sets = Array.isArray(j.sets) ? j.sets : [];
+  if(sets.length){
+    const last = sets[sets.length - 1];
+    txt += " · " + sets.length + ".º set: " + last[0] + "-" + last[1];
+  }
+  return txt;
+}
 function isLiveNow_(ev){
   if(!ev || !ev.day || !ev.t) return false;
   const start = new Date(ev.day + "T" + ev.t + ":00");

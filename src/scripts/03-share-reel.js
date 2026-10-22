@@ -416,6 +416,8 @@ async function fetchAll(){
       if(raw.reactions && typeof raw.reactions === "object") REACTIONS = raw.reactions;
       if(raw.competitionOptions && typeof raw.competitionOptions === "object") COMPETITION_OPTIONS = raw.competitionOptions;
       if(raw.predictions && typeof raw.predictions === "object") PREDICTIONS = raw.predictions;
+      // marcador ao vivo da CEV (voleibol) — só existe quando o Apps Script o está a preencher
+      CEV_LIVE = (raw.cevLive && typeof raw.cevLive === "object") ? raw.cevLive : {};
       if(raw.questionTemplates && typeof raw.questionTemplates === "object"){
         const mergedQ = { ...DEFAULT_QUESTION_TEMPLATES };
         Object.keys(raw.questionTemplates).forEach(sport=>{
@@ -769,6 +771,7 @@ let HAS_ADMIN_AUTH = false; // só diz se existe ALGUMA password configurada (si
 let VISIT_LOG = []; // registo de acessos (só para consulta pela administração)
 let FEEDBACK_LOG = []; // bugs/sugestões reportados (só para consulta pela administração)
 let REACTIONS = {}; // reações rápidas (👏🔥😢) por prova — { compId: { eventId: { emoji: contagem } } } — vem numa linha reservada própria no Apps Script (v34), nunca mexe em EVENTS
+let CEV_LIVE = {}; // marcador ao vivo da CEV (voleibol): { updated: ms, jogos: { eventId: { estado, setsFcp, setsAdv, sets } } } — vem do Apps Script (v92), só leitura
 let PREDICTIONS = {}; // prognósticos (Vitória/Empate/Derrota) por prova — { compId: { eventId: { opção: contagem } } } — linha reservada própria (v37), nunca mexe em EVENTS
 let ANNOUNCEMENT = null; // aviso do admin no topo — { text, updatedAt } (v35)
 let POLL = null; // sondagem rápida do admin — { question, options:[...], votes:{}, updatedAt } (v35)

@@ -357,7 +357,12 @@ function renderTimeline(){
       <div class="card" style="--sport-color:${color}">
         <div class="card-top">
           <span class="sport">${ev.sport}</span>
-          ${matchesMode && isLiveNow_(ev) && !(st.resultado && st.resultado.trim()) ? '<span class="live-flag">AO VIVO</span>' : ''}
+          ${(() => {
+            if(!matchesMode || (st.resultado && st.resultado.trim())) return '';
+            const cev = cevLiveFor_(ev);
+            if(cev && cev.estado === "fim") return ''; // a CEV diz que acabou
+            return (cev && cev.estado === "vivo") || isLiveNow_(ev) ? '<span class="live-flag">AO VIVO</span>' : '';
+          })()}
           ${isNext ? '<span class="upcoming-flag">A seguir</span>' : ''}
           ${ev.cond && !eliminated ? '<span class="final-flag">se apurar</span>' : ''}
           ${!matchesMode ? '<button class="dup-btn" data-share="1" title="Copiar link direto para esta prova">🔗</button>' : ''}
@@ -378,6 +383,12 @@ function renderTimeline(){
         </div>
         <div class="athlete" data-athlete-link="1" title="Ver todas as provas de ${ev.athlete}">${athleteLabel}</div>
         <div class="meta">${metaLine}</div>
+        ${(() => {
+          if(!matchesMode || (st.resultado && st.resultado.trim())) return '';
+          const cev = cevLiveFor_(ev);
+          if(!cev || cev.estado !== "vivo") return '';
+          return `<div class="live-score">${cevLiveText_(ev, cev)}</div>`;
+        })()}
         ${(() => {
           if(!matchesMode) return '';
           const h2h = getHeadToHeadRecord_(ev.sport, ev.athlete, ev.id);

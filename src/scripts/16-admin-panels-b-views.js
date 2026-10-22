@@ -266,14 +266,13 @@ function renderLeaderboardView(){
 
   const listHtml = ranked.length === 0
     ? `<div class="medal-empty">Sem registos de "${leaderboardStat}" em ${leaderboardSport} ainda.</div>`
-    : ranked.map((r,idx)=>`
-      <div class="compact-line" style="cursor:default;">
-        <span class="c-time" style="width:26px;">${idx+1}º</span>
-        <span class="c-athlete" data-player-profile="${r.name.replace(/"/g,'&quot;')}" style="cursor:pointer; text-decoration:underline; text-decoration-style:dotted;">${r.name}</span>
-        <span class="c-phase">${r.games} jogo${r.games===1?'':'s'}</span>
-        <span class="c-result">${r.total}</span>
+    : `<div class="hv-panel">` + ranked.map((r,idx)=>`
+      <div class="hv-row" style="cursor:default;">
+        <span class="hv-tag">${idx+1}º</span>
+        <span class="hv-row-body"><span class="hv-row-match" data-player-profile="${r.name.replace(/"/g,'&quot;')}" style="cursor:pointer;">${r.name}</span><span class="hv-sport-next">${r.games} jogo${r.games===1?'':'s'}</span></span>
+        <span class="hv-row-time">${r.total}</span>
       </div>
-    `).join("");
+    `).join("") + `</div>`;
 
   container.innerHTML = `
     <div class="filters" style="margin-bottom:10px; display:flex;">${sportChips}</div>
@@ -338,26 +337,29 @@ function renderHistoryView(){
       else if(r==="loss"){ l++; if(local==="casa") lCasa++; else if(local==="fora") lFora++; }
       else semResultado++;
     });
-    const summary = `<div class="medal-empty" style="text-align:left; margin-bottom:12px;">
-      ✅ ${w} vitórias · 🟰 ${d} empates · ❌ ${l} derrotas${semResultado?` · ${semResultado} sem resultado registado`:''}
-      <div style="margin-top:6px; font-size:12px; opacity:0.85;">🏠 Casa: ${wCasa}V ${dCasa}E ${lCasa}D &nbsp;·&nbsp; 🚌 Fora: ${wFora}V ${dFora}E ${lFora}D${neutros?` &nbsp;·&nbsp; 🏳️ ${neutros} em campo neutro`:''}</div>
+    const summary = `<div class="hv-panel hist-summary">
+      <div class="hist-nums"><span class="hn-w"><b>${w}</b> vitórias</span><span><b>${d}</b> empates</span><span class="hn-l"><b>${l}</b> derrotas</span></div>
+      <div class="hist-sub">🏠 Casa: ${wCasa}V ${dCasa}E ${lCasa}D &nbsp;·&nbsp; 🚌 Fora: ${wFora}V ${dFora}E ${lFora}D${neutros?` &nbsp;·&nbsp; 🏳️ ${neutros} em campo neutro`:''}${semResultado?` &nbsp;·&nbsp; ${semResultado} sem resultado registado`:''}</div>
     </div>`;
 
-    listHtml = summary + past.map(ev=>{
+    const rowsHtml = past.map(ev=>{
       const st = getEv(ev.id);
       const r = getMatchResultTag(ev, st);
-      const badgeColor = r==='win' ? 'var(--green)' : r==='loss' ? 'var(--red)' : r==='draw' ? 'var(--text-dim)' : 'var(--text-dim)';
-      const badgeLabel = r==='win' ? 'V' : r==='loss' ? 'D' : r==='draw' ? 'E' : '—';
-      const color = SPORT_COLORS[ev.sport] || "#e3b23c";
+      const tag = r==='win' ? ["V","win"] : r==='loss' ? ["D","loss"] : r==='draw' ? ["E","draw"] : null;
+      const color = SPORT_COLORS[ev.sport] || "#5BB4F0";
       const local = localLabel(ev.local);
-      return `<div class="compact-line" data-ev-id="${ev.id}" style="cursor:pointer;">
-        <span class="c-time">${formatShortDate(ev.day)}</span>
-        <span class="c-sport" style="--sport-color:${color}">${ev.sport}</span>
-        <span class="c-athlete">vs ${ev.athlete} <span style="color:${badgeColor}; font-weight:700;">(${badgeLabel})</span></span>
-        <span class="c-phase">${local}${ev.phase ? ' · '+ev.phase : ''}</span>
-        <span class="c-result">${st.resultado ? st.resultado : 'sem resultado'}</span>
-      </div>`;
+      const dd = new Date(ev.day + "T00:00:00");
+      const wd = ["DOM","SEG","TER","QUA","QUI","SEX","SÁB"][dd.getDay()];
+      const tt = postTeams_(ev);
+      const res = st.resultado && String(st.resultado).trim();
+      const safe = x => String(x == null ? "" : x).replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+      return `<button type="button" class="hv-row" data-ev-id="${ev.id}" style="--sc:${color};">
+        <span class="hv-date"><b>${dd.getDate()}</b><i>${wd}</i></span>
+        <span class="hv-row-body"><span class="hv-row-sport">${safe(ev.sport)} · ${safe(local)}${ev.phase ? " · " + safe(ev.phase) : ""}</span><span class="hv-row-match">${res ? `${safe(tt.home)} <b>${safe(res)}</b> ${safe(tt.away)}` : `vs ${safe(ev.athlete)} <span class="hist-nores">sem resultado</span>`}</span></span>
+        ${tag ? `<span class="hv-tag hv-tag-${tag[1]}">${tag[0]}</span>` : ""}
+      </button>`;
     }).join("");
+    listHtml = summary + `<div class="hv-panel">${rowsHtml}</div>`;
   }
 
   container.innerHTML = monthShareHtml + chipsHtml + listHtml;

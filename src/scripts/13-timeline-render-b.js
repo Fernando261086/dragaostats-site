@@ -23,6 +23,8 @@ function renderCrossCompetitionList(container, filterFn, emptyMessage){
     return;
   }
 
+  const fullDates = rows.length && rows.every(r=>/^\d{4}-\d{2}-\d{2}$/.test(r.ev.day||""));
+  container.classList.toggle("hv-panel", !!fullDates);
   container.innerHTML = rows.map(r=>{
     const color = SPORT_COLORS[r.ev.sport] || "#e3b23c";
     const medalIcon = r.status.medal==='gold' ? '🥇' : r.status.medal==='silver' ? '🥈' : r.status.medal==='bronze' ? '🥉' : '';
@@ -33,6 +35,19 @@ function renderCrossCompetitionList(container, filterFn, emptyMessage){
     const dateLabel = isFullDate ? formatShortDate(r.ev.day) : '';
     const resTag = isFullDate ? getMatchResultTag(r.ev, r.status) : null;
     const resColor = resTag==='win' ? 'var(--green)' : resTag==='loss' ? 'var(--red)' : resTag==='draw' ? 'var(--text-dim)' : 'var(--accent-bright)';
+    if(isFullDate){
+      // Modo Modalidades: mesmo aspeto das listas do Início
+      const dd = new Date(r.ev.day + "T00:00:00");
+      const wd = ["DOM","SEG","TER","QUA","QUI","SEX","SÁB"][dd.getDay()];
+      const tt = (typeof postTeams_ === "function") ? postTeams_(r.ev) : { home: "FC Porto", away: r.ev.athlete };
+      const tagC = resTag==='win' ? ["V","win"] : resTag==='loss' ? ["D","loss"] : resTag==='draw' ? ["E","draw"] : null;
+      const safe = x => String(x == null ? "" : x).replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+      return `<button type="button" class="hv-row" data-comp="${r.compId}" data-day="${r.ev.day}" data-ev-id="${r.ev.id}" style="--sc:${color};">
+        <span class="hv-date"><b>${dd.getDate()}</b><i>${wd}</i></span>
+        <span class="hv-row-body"><span class="hv-row-sport">${safe(r.ev.sport)}${detail ? " · " + safe(detail) : ""}</span><span class="hv-row-match">${result ? `${safe(tt.home)} <b>${safe(result)}</b> ${safe(tt.away)}` : "vs " + safe(r.ev.athlete)}</span></span>
+        ${result ? (tagC ? `<span class="hv-tag hv-tag-${tagC[1]}">${tagC[0]}</span>` : "") : `<span class="hv-row-time">${safe(r.ev.t || "")}</span>`}
+      </button>`;
+    }
     return `<div class="compact-line ${st}" data-comp="${r.compId}" data-day="${r.ev.day}" data-ev-id="${r.ev.id}">
       <div class="cl-row1">
         <span class="c-time">${dateLabel ? dateLabel + ' · ' : ''}${r.ev.t}</span>

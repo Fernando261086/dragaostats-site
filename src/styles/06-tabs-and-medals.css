@@ -303,3 +303,17 @@ html.theme-light .compact-line .c-sport{ background:rgba(11,27,63,.06); color:co
 .sport-card-all{ padding:7px 16px; }
 .sport-card-all .sc-name{ font-size:17px; }
 .sport-card{ border-radius:14px; }
+
+/* Histórico, Esta semana, Marcadores — mesmo estilo do Início */
+.hist-nums{ display:flex; flex-wrap:wrap; gap:18px; font-size:13px; color:var(--text-dim); padding-bottom:4px; }
+.hist-nums b{ font-family:'Bebas Neue',sans-serif; font-weight:400; font-size:30px; color:var(--text); margin-right:4px; }
+.hist-nums .hn-w b{ color:var(--green); } .hist-nums .hn-l b{ color:var(--red); }
+.hist-sub{ font-size:12px; color:var(--text-dim); padding-bottom:8px; }
+.hist-nores{ font-size:11px; font-weight:600; color:var(--text-dim); background:var(--ink-2); border-radius:999px; padding:1px 8px; margin-left:4px; }
+.hv-row b{ font-weight:800; }
+#todayAllView .week-nav{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+#todayAllView .week-nav-label{ font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:.04em; color:var(--text); }
+#weekListContainer.hv-panel{ padding-bottom:6px; }
+.event .card{ min-width:0; }
+.medal-picker{ flex-wrap:wrap; }
+.card-top{ flex-wrap:wrap; }

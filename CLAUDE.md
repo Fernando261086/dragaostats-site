@@ -31,6 +31,53 @@ sequencialmente — exatamente como estava no ficheiro original. Nunca
 reordenar ficheiros só por "parecer mais lógico"; se for preciso mover
 código de um ficheiro para outro, mover o código a sério, não só renomear.
 
+## Redesenho de outubro de 2026 (versões v129–v140)
+
+Ao contrário da divisão em módulos, o redesenho **mudou** o aspeto e o
+comportamento. Segue a proposta de design do Fernando (tema escuro por
+defeito + tema claro). Onde está cada coisa:
+
+- **Início** (`src/scripts/36-home-view.js`): ecrã por defeito do público
+  (link "só ver", modo Modalidades). Herói do próximo jogo, "Esta semana",
+  "Últimos resultados". Abre por `openHomeByDefault_()`.
+- **Página de modalidade** (`37-sport-page.js`): `openSportPage_(sport)`;
+  separadores Jogos/Marcadores. Classificação e Plantel **ainda não existem**
+  (à espera das capturas de rede do Superportistas).
+- **Lembrar-me** (`38-game-reminders.js` + Apps Script v93): aviso 1 hora
+  antes. Guarda em `localStorage` (`dia22-reminders`) e envia
+  `{setGameReminder:{token,evId,on}}` ao `STORE_URL`. No Apps Script usa a
+  linha reservada `__game_reminders__` (tem de estar na lista de IDs
+  reservados do `readAll_`). Ficheiro: `apps-script-v93.gs` (não vive neste
+  repositório; é colado no Apps Script e a Web App é reimplantada).
+- **Menu "Mais" e sino** (`39-more-sheet.js`): folha inferior que reencaminha
+  cliques para os botões antigos (os IDs desses botões não podem mudar).
+- **Barra Gestão** (`40-admin-toolbar.js`): só em modo edição; recolhe as
+  ferramentas do editor (`tools-collapsed`).
+- **Navegação inferior** (`34-bottom-nav.js`) e **filtros por modalidade**
+  (`35-sport-cards.js`, agora pílulas).
+- **Calendário**: linhas modernas `match-row` em modo Modalidades
+  (`12-installed-list-and-timeline-a.js`, classe `tl-matches`); lista "Esta
+  semana" em `13-timeline-render-b.js`; Histórico e Marcadores em
+  `16-admin-panels-b-views.js`.
+- **Estilos**: tudo o que é novo está no fim de `06-tabs-and-medals.css`
+  (`.hv-*` Início, `.sp-*` modalidade, cabeçalho `html.mode-matches`).
+  Classes no `<html>`: `theme-light`, `mode-matches`, `readonly-view`.
+- **Páginas SEO** em `public/<modalidade>.html` usam o mesmo desenho, com
+  texto/meta intactos. `public/social.html` **não** foi redesenhada.
+- O título do cabeçalho é sempre "Dragão Stats" em modo Modalidades.
+- Vistas de `setView()`: calendario, inicio, modalidade, medalhas,
+  hoje-todas, estatisticas, historico, marcadores.
+
+**Cuidados aprendidos:** usar `minmax(0,1fr)` em grelhas (senão há deslize
+lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
+360/390/768px; subir a versão da cache em `public/sw.js` a cada publicação
+(atual `dia22-cache-v216`); em telemóvel os widgets laterais aparecem
+**depois** da lista de jogos.
+
+**Ainda por fazer:** Classificação e Plantel; ao vivo nas outras modalidades
+(só há CEV/voleibol); campo manual "link/ID do jogo"; testar em produção as
+fontes reais, o push do "Lembrar-me" e a edição de um resultado real.
+
 ## Build e deploy
 
 ```

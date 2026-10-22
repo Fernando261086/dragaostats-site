@@ -468,12 +468,18 @@ function renderMedals(){
 function setView(view){
   profileAthlete = null; // sair de qualquer vista fecha a ficha do atleta, se estiver aberta
   const cal = view === "calendario";
+  const inicio = view === "inicio";
   const medals = view === "medalhas";
   const todayAll = view === "hoje-todas";
   const stats = view === "estatisticas";
   const history = view === "historico";
   const leaderboard = view === "marcadores";
 
+  const hb = document.getElementById("viewHomeBtn");
+  if(hb) hb.classList.toggle("active", inicio);
+  const hv = document.getElementById("homeView");
+  if(hv) hv.style.display = inicio ? "block" : "none";
+  document.body.classList.toggle("view-inicio", inicio);
   document.getElementById("viewCalendarBtn").classList.toggle("active", cal);
   document.getElementById("viewMedalsBtn").classList.toggle("active", medals);
   document.getElementById("viewTodayAllBtn").classList.toggle("active", todayAll);
@@ -497,6 +503,7 @@ function setView(view){
   if(!cal){
     document.getElementById("addPanel").style.display = "none";
   }
+  if(inicio && typeof renderHomeView_ === "function") renderHomeView_(true);
   if(medals) renderMedals();
   if(todayAll) renderTodayAllView();
   if(stats) renderStatsView();
@@ -504,6 +511,7 @@ function setView(view){
   if(leaderboard) renderLeaderboardView();
 }
 document.getElementById("viewCalendarBtn").onclick = ()=>setView("calendario");
+if(document.getElementById("viewHomeBtn")) document.getElementById("viewHomeBtn").onclick = ()=>{ setView("inicio"); window.scrollTo(0, 0); };
 document.getElementById("viewMedalsBtn").onclick = ()=>setView("medalhas");
 document.getElementById("viewHistoryBtn").onclick = ()=>setView("historico");
 document.getElementById("viewLeaderboardBtn").onclick = ()=>setView("marcadores");

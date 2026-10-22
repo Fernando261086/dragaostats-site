@@ -207,3 +207,58 @@
      na mesma linha pesavam mais do que o próprio jogo */
   .primary-cta{ background:transparent; border-color:var(--gold-dim); color:var(--gold); }
   #notifyToggleBtn.needs-attention, #installAppBtn.needs-attention{ color:var(--gold); }
+
+/* ===================== ECRÃ "INÍCIO" ===================== */
+body.view-inicio .search-row,
+body.view-inicio #dayTabs,
+body.view-inicio #filters,
+body.view-inicio #filterToggleBtn,
+body.view-inicio #progressRow,
+body.view-inicio #addToggleBtn,
+body.view-inicio #sidebarCol{ display:none !important; }
+@media (min-width:1200px){ body.view-inicio .wrap-main{ display:block; } }
+.home-view{ display:none; padding:4px 0 24px; }
+.hv-top{ display:flex; flex-direction:column; gap:16px; margin-bottom:16px; }
+@media (min-width:900px){ .hv-top{ flex-direction:row; align-items:stretch; } .hv-top .hv-hero{ flex:999 1 560px; } .hv-top .hv-panel{ flex:1 1 340px; margin:0; } }
+.hv-hero{
+  background:linear-gradient(135deg,#15439b,#0e2b66); border:1px solid #2a5bc0; border-radius:18px;
+  padding:20px 20px 18px; color:#fff; display:flex; flex-direction:column; gap:8px; min-width:0;
+}
+.hv-hero.is-live{ border-color:#ff7a2e; }
+.hv-hero-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.hv-kicker{ font-size:11.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#9cc6ff; }
+.hv-pill{ font-size:12px; font-weight:700; background:rgba(255,255,255,.14); border-radius:999px; padding:4px 11px; }
+.hv-hero.is-live .hv-pill{ background:#ff7a2e; color:#fff; }
+.hv-hero-sport{ font-size:13px; font-weight:600; color:#cfe1ff; }
+.hv-hero-match{ font-family:'Bebas Neue',sans-serif; font-size:38px; line-height:1.02; letter-spacing:.01em; overflow-wrap:anywhere; }
+.hv-vs{ font-size:.55em; color:#9cc6ff; padding:0 2px; }
+.hv-hero-meta{ display:flex; flex-direction:column; gap:3px; font-size:14px; color:#dbe8ff; }
+.hv-hero-actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
+.hv-btn{ font:inherit; font-size:14px; font-weight:700; border-radius:12px; padding:11px 18px; cursor:pointer; text-decoration:none; text-align:center; border:1px solid transparent; }
+.hv-btn-main{ background:#fff; color:#0e2b66; }
+.hv-btn-ghost{ background:transparent; color:#fff; border-color:rgba(255,255,255,.4); }
+.hv-panel{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:14px 14px 8px; margin-bottom:16px; }
+html.theme-light .hv-panel{ box-shadow:0 1px 2px rgba(11,27,63,.06); }
+.hv-panel-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+.hv-panel-head h3{ margin:0; font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:.04em; color:var(--text); font-weight:400; }
+.hv-link{ background:none; border:0; color:var(--gold); font:inherit; font-size:13px; font-weight:600; cursor:pointer; padding:4px 0; }
+.hv-row{ display:flex; align-items:center; gap:12px; width:100%; background:none; border:0; border-top:1px solid var(--line); padding:11px 2px; color:var(--text); font:inherit; text-align:left; cursor:pointer; }
+.hv-row:first-of-type{ border-top:0; }
+.hv-date{ display:flex; flex-direction:column; align-items:center; justify-content:center; min-width:46px; height:46px; border-radius:10px; background:var(--ink-2); border-left:3px solid var(--sc,#5bb4f0); }
+.hv-date b{ font-family:'Bebas Neue',sans-serif; font-size:22px; line-height:1; font-weight:400; }
+.hv-date i{ font-style:normal; font-size:9.5px; letter-spacing:.08em; color:var(--text-dim); }
+.hv-row-body{ display:flex; flex-direction:column; flex:1; min-width:0; gap:2px; }
+.hv-row-sport{ font-size:11.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--sc,#5bb4f0); }
+html.theme-light .hv-row-sport{ color:color-mix(in srgb, var(--sc,#5bb4f0) 55%, #000); }
+.hv-row-match{ font-size:15px; font-weight:600; overflow-wrap:anywhere; }
+.hv-row-time{ font-family:'Bebas Neue',sans-serif; font-size:20px; color:var(--text-dim); }
+.hv-tag{ min-width:26px; height:26px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; background:var(--ink-2); color:var(--text-dim); }
+.hv-tag-win{ background:var(--green-dim); color:var(--green); }
+.hv-tag-loss{ background:var(--red-dim); color:var(--red); }
+.hv-tag-draw{ background:rgba(147,162,189,.2); color:var(--text-dim); }
+.hv-empty{ padding:12px 2px; color:var(--text-dim); font-size:14px; }
+.hv-sports{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; padding:4px 0 8px; }
+@media (min-width:740px){ .hv-sports{ grid-template-columns:repeat(4,1fr); } }
+.hv-sport{ display:flex; flex-direction:column; gap:3px; text-align:left; background:var(--ink-2); border:1px solid var(--line); border-left:3px solid var(--sc,#5bb4f0); border-radius:12px; padding:11px 12px; color:var(--text); font:inherit; cursor:pointer; }
+.hv-sport-name{ font-weight:700; font-size:14.5px; }
+.hv-sport-next{ font-size:12px; color:var(--text-dim); }

@@ -7,6 +7,7 @@
 (function(){
   const svg = d => `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
   const ITEMS = [
+    ["viewHomeBtn",        svg('<path d="M4 11 12 4l8 7"/><path d="M6 10v10h12V10"/>')],
     ["viewCalendarBtn",    svg('<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/>')],
     ["viewTodayAllBtn",    svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>')],
     ["viewMedalsBtn",      svg('<circle cx="12" cy="9" r="5"/><path d="m9 13.5-1.5 6.5 4.5-2.5 4.5 2.5L15 13.5"/>')],

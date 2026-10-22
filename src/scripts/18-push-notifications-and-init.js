@@ -207,6 +207,7 @@ function showStaleDataBanner_(at){
   // com o mesmo destaque a piscar que o banner do "Próximo jogo" usa
   const linkedEvId = params.get("jogo");
   if(linkedEvId) goToEventCard(linkedEvId);
+  else if(!linkedSport && typeof openHomeByDefault_ === "function") openHomeByDefault_();
   // atualiza periodicamente para ver provas, marcações e competições feitas por outra pessoa,
   // sem nunca apagar uma marcação local mais recente
   async function syncPoll_(){
@@ -238,6 +239,7 @@ function showStaleDataBanner_(at){
     renderFilters();
     renderProgress();
     renderTimeline();
+    if(typeof renderHomeView_ === "function") renderHomeView_();
     if(document.getElementById("medalsView").style.display !== "none"){
       renderMedals();
     }

@@ -946,6 +946,8 @@ function updateModeVisibleTabs(){
   const isPinned = pinnedCompId === activeCompId;
   document.getElementById("pinCompBtn").classList.toggle("active", isPinned);
   document.getElementById("pinCompBtn").title = isPinned ? "Já é a competição fixa (toca para desmarcar)" : "Abrir sempre nesta competição";
+  const hbtn = document.getElementById("viewHomeBtn");
+  if(hbtn) hbtn.style.display = matches ? "" : "none";
   document.getElementById("viewMedalsBtn").style.display = matches ? "none" : "";
   document.getElementById("viewStatsBtn").style.display = matches ? "none" : "";
   document.getElementById("viewHistoryBtn").style.display = matches ? "" : "none";
@@ -969,7 +971,7 @@ function updateModeVisibleTabs(){
   if(matches && (medalsVisible || statsVisible)){
     setView("calendario");
   }
-  if(!matches && historyVisible){
+  if(!matches && (historyVisible || document.body.classList.contains("view-inicio"))){
     setView("calendario");
   }
   if(todayAllVisible && !profileAthlete && !globalSearch){

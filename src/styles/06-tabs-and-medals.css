@@ -262,3 +262,17 @@ html.theme-light .hv-row-sport{ color:color-mix(in srgb, var(--sc,#5bb4f0) 55%, 
 .hv-sport{ display:flex; flex-direction:column; gap:3px; text-align:left; background:var(--ink-2); border:1px solid var(--line); border-left:3px solid var(--sc,#5bb4f0); border-radius:12px; padding:11px 12px; color:var(--text); font:inherit; cursor:pointer; }
 .hv-sport-name{ font-weight:700; font-size:14.5px; }
 .hv-sport-next{ font-size:12px; color:var(--text-dim); }
+
+/* No computador, o cartão "ao vivo" e o destaque do Início ficavam enormes — mais compactos */
+@media (min-width:900px){
+  .live-now-card{ padding:10px 16px; }
+  .live-now-row{ grid-template-columns:1fr auto 1fr; max-width:760px; margin:0 auto; }
+  .live-now-team{ font-size:15px; }
+  .live-now-score{ font-size:30px; }
+  .live-now-sets{ margin-top:4px; }
+  .hv-top{ align-items:flex-start; }
+  .hv-hero{ padding:16px 18px 14px; gap:5px; }
+  .hv-hero-match{ font-size:30px; }
+  .hv-hero-actions{ margin-top:6px; }
+  .hv-btn{ padding:8px 16px; font-size:13.5px; }
+}

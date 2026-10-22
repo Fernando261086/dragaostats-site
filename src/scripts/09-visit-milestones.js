@@ -62,16 +62,20 @@ function renderTodayOpponentBanner(matchesMode){
     const g = todaysGames[0];
     const t = postTeams_(g); // mesma convenção casa/fora de 23-daily-post-text.js — fora, o FC Porto aparece em segundo
     const color = SPORT_COLORS[g.sport] || "#e3b23c";
-    banner.style.background = `linear-gradient(135deg, ${hexToRgba_(color,0.24)} 0%, rgba(10,22,38,0.55) 75%)`;
-    banner.style.borderColor = color;
+    banner.style.background = "";
+    banner.style.borderColor = "";
+    const gDetail = [g.detail, g.phase].filter(Boolean).join(" · ");
+    const gPlace = [localLabel(g.local), g.venue].filter(Boolean).join(" · ");
     banner.innerHTML = `
-      <div class="tob-tag">HOJE</div>
-      ${isClassicoOpponent_(g.athlete) ? '<span class="tob-tag" style="background:#e07b2c; color:#fff; margin-left:6px;">🔥 CLÁSSICO</span>' : ''}
       <div class="tob-info">
-        <div class="tob-label">Adversário do dia</div>
-        <div class="tob-sport-hero" style="color:${color};">${g.sport}</div>
+        <div class="nmb-top">
+          <div class="tob-label">Adversário do dia ${isClassicoOpponent_(g.athlete) ? '<span class="tob-tag" style="background:#e07b2c; color:#fff; margin-left:4px; font-size:9px;">🔥 CLÁSSICO</span>' : ''}</div>
+          <div class="tob-tag">HOJE</div>
+        </div>
+        <div class="tob-sport-hero" style="color:${color};">${g.sport}${gDetail ? ' · ' + gDetail : ''}</div>
         <div class="tob-match-hero">${t.home} <span class="tob-vs">vs</span> ${t.away}</div>
-        <div class="tob-meta">${localLabel(g.local)} · ${g.t || 'hora por confirmar'}</div>
+        <div class="nmb-meta-line">${HERO_ICON_CLOCK_}${g.t || 'hora por confirmar'}</div>
+        <div class="nmb-meta-line">${HERO_ICON_PIN_}${gPlace}</div>
       </div>
     `;
     banner.style.cursor = "pointer";
@@ -110,6 +114,12 @@ function renderTodayOpponentBanner(matchesMode){
   if(typeof renderDayShareToggle_ === "function") renderDayShareToggle_();
 }
 
+// Ícones pequenos (traço, sem emoji) para as linhas de detalhe do cartão de destaque
+const HERO_SVG_ = d => `<svg class="hero-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const HERO_ICON_CAL_ = HERO_SVG_('<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/>');
+const HERO_ICON_PIN_ = HERO_SVG_('<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>');
+const HERO_ICON_CLOCK_ = HERO_SVG_('<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>');
+
 function renderNextMatchBanner(matchesMode){
   const banner = document.getElementById("nextMatchBanner");
   if(!matchesMode){ banner.style.display = "none"; return; }
@@ -143,19 +153,24 @@ function renderNextMatchBanner(matchesMode){
   banner.style.display = "flex";
   banner.style.cursor = "pointer";
   banner.title = "Ver o cartão deste jogo";
-  banner.style.background = `linear-gradient(135deg, ${hexToRgba_(color,0.22)} 0%, rgba(10,22,38,0.55) 75%)`;
-  banner.style.borderColor = color;
+  // o fundo e a borda vêm agora do CSS (cartão azul igual nos dois temas) — a cor da
+  // modalidade fica só na linha da modalidade, como na proposta de design
+  banner.style.background = "";
+  banner.style.borderColor = "";
+  const detailLine = [next.detail, next.phase].filter(Boolean).join(" · ");
+  const placeLine = [local, next.venue].filter(Boolean).join(" · ");
   banner.innerHTML = `
     <div class="nmb-info">
-      <div class="tob-label">Próximo jogo ${isClassicoOpponent_(next.athlete) ? '<span class="tob-tag" style="background:#e07b2c; color:#fff; margin-left:4px; font-size:9px;">🔥 CLÁSSICO</span>' : ''}</div>
-      <div class="tob-sport-hero" style="color:${color};">${next.sport}</div>
+      <div class="nmb-top">
+        <div class="tob-label">Próximo jogo ${isClassicoOpponent_(next.athlete) ? '<span class="tob-tag" style="background:#e07b2c; color:#fff; margin-left:4px; font-size:9px;">🔥 CLÁSSICO</span>' : ''}</div>
+        <div class="nmb-countdown">${countdownMain}</div>
+      </div>
+      <div class="tob-sport-hero" style="color:${color};">${next.sport}${detailLine ? ' · ' + detailLine : ''}</div>
       <div class="tob-match-hero">${t.home} <span class="tob-vs">vs</span> ${t.away}</div>
-      <div class="nmb-meta-line">${local} · ${formatFullDate(next.day)}, ${next.t}</div>
-      ${streak ? `<div class="nmb-meta-line" style="color:var(--gold);">${streak}</div>` : ''}
-    </div>
-    <div class="nmb-countdown">
-      ${countdownMain}
-      ${countdownPrecise ? `<div style="font-size:11px; font-weight:400; opacity:0.8; margin-top:2px;">${countdownPrecise}</div>` : ''}
+      <div class="nmb-meta-line">${HERO_ICON_CAL_}${formatFullDate(next.day)}${next.t ? ' · ' + next.t : ''}</div>
+      <div class="nmb-meta-line">${HERO_ICON_PIN_}${placeLine}</div>
+      ${countdownPrecise ? `<div class="nmb-meta-line">${HERO_ICON_CLOCK_}${countdownPrecise}</div>` : ''}
+      ${streak ? `<div class="nmb-meta-line nmb-streak">${streak}</div>` : ''}
     </div>
   `;
   banner.onclick = ()=> goToEventCard(next.id);

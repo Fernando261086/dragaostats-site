@@ -15,6 +15,8 @@
     --red:#d3564a;
     --red-dim:rgba(211,86,74,0.16);
     --pending:#5c6f92;
+    --header-bg:rgba(7,17,34,0.94);
+    --bn-h:0px; /* altura da barra inferior (só no telemóvel, ver 06-tabs-and-medals.css) */
   }
   html.theme-light{
     --ink:#f3f5fa;
@@ -24,6 +26,18 @@
     --text:#182338;
     --text-dim:#5b6b88;
     --pending:#b7c1d6;
+    --header-bg:rgba(243,245,250,0.94);
+  }
+  /* Tema claro no Modo Modalidades: o azul-claro usado como destaque no tema escuro
+     (#4fb3e8) quase não se lê sobre branco, por isso passa a um azul mais fundo.
+     O !important é preciso porque 03-share-reel.js define estas cores diretamente
+     no <html>, que de outra forma ganhavam sempre. */
+  html.theme-light.mode-matches{
+    --gold:#0a3fa8 !important;
+    --gold-dim:#5f7fc4 !important;
+    --gold-text:#ffffff !important;
+    --accent-bright:#0a3fa8 !important;
+    --label-muted:#5b6b88 !important;
   }
   .theme-toggle{
     background:transparent; border:1px solid var(--line); color:var(--text-dim);

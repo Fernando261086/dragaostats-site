@@ -568,7 +568,7 @@ document.getElementById("introCloseBtn").onclick = ()=>{
 function showToast(msg){
   const toast = document.createElement("div");
   toast.textContent = msg;
-  toast.style.cssText = "position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--panel); border:1px solid var(--gold-dim); color:var(--text); padding:10px 18px; border-radius:10px; font-size:13px; z-index:9999; box-shadow:0 4px 16px rgba(0,0,0,0.3); max-width:90%; text-align:center;";
+  toast.style.cssText = "position:fixed; bottom:calc(20px + var(--bn-h, 0px)); left:50%; transform:translateX(-50%); background:var(--panel); border:1px solid var(--gold-dim); color:var(--text); padding:10px 18px; border-radius:10px; font-size:13px; z-index:9999; box-shadow:0 4px 16px rgba(0,0,0,0.3); max-width:90%; text-align:center;";
   document.body.appendChild(toast);
   setTimeout(()=>{
     toast.style.transition = "opacity 0.5s";

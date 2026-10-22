@@ -883,6 +883,7 @@ function applyCompTheme(id){
   const img = document.getElementById("emblemImg");
   const subEl = document.querySelector(".brand-sub");
   const disclaimerEl = document.getElementById("brandDisclaimer");
+  document.documentElement.classList.toggle("mode-matches", !!(comp && comp.mode === "matches")); // usado pelo tema claro (01-base.css)
   if(comp && comp.mode === "matches"){
     // Modo Modalidades tem sempre o mesmo emblema/cores próprias, não varia por posição
     document.documentElement.style.setProperty("--gold", "#4fb3e8"); // azul claro, legível como texto e como fundo (com --gold-text escuro por cima) — antes era um azul quase preto (#0b3d91), ilegível sobre o fundo dos painéis, que também é escuro

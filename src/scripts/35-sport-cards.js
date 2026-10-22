@@ -42,29 +42,9 @@ function renderSportCards_(){
   sportCardsSig_ = sig;
 
   const esc = s => (typeof liveEsc_ === "function") ? liveEsc_(s) : String(s == null ? "" : s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  const all = `<button type="button" class="sport-card sport-card-all${activeSport === "Todos" ? " active" : ""}" data-sport="Todos" aria-pressed="${activeSport === "Todos"}">
-      <span class="sc-name">Todas</span>
-      <span class="sc-when">todas as modalidades</span>
-    </button>`;
-  const cards = list.map(s=>{
-    const color = (typeof SPORT_COLORS !== "undefined" && SPORT_COLORS[s.sport]) || "#e3b23c";
-    const active = activeSport === s.sport;
-    let body = '<span class="sc-when">Sem jogos marcados</span>';
-    let live = "";
-    if(s.next){
-      const t = postTeams_(s.next);
-      const opp = (t.home === "FC Porto") ? t.away : t.home;
-      const when = formatShortDate(s.next.day) + (s.next.t ? " · " + s.next.t : "");
-      const detail = [s.next.detail, s.next.phase].filter(Boolean).join(" · ");
-      body = `<span class="sc-when">${esc(when)}</span><span class="sc-match">vs ${esc(opp)}</span>${detail ? `<span class="sc-detail">${esc(detail)}</span>` : ""}`;
-      if(isLive(s.next)) live = '<span class="sc-live">AO VIVO</span>';
-    }
-    return `<button type="button" class="sport-card${active ? " active" : ""}" data-sport="${esc(s.sport)}" aria-pressed="${active}" style="--sc:${color};">
-      <span class="sc-top"><span class="sc-name">${esc(s.sport)}</span>${live}</span>${body}
-    </button>`;
-  }).join("");
-  host.innerHTML = all + cards;
-  host.querySelectorAll(".sport-card").forEach(btn=>{
+  const pill = (sport, label, live) => `<button type="button" class="hv-pillbtn${activeSport === sport ? " active" : ""}" data-sport="${esc(sport)}" aria-pressed="${activeSport === sport}">${esc(label)}${live ? '<span class="pill-live" title="Ao vivo"></span>' : ""}</button>`;
+  host.innerHTML = pill("Todos", "Todas", false) + list.map(s=>pill(s.sport, s.sport, !!(s.next && isLive(s.next)))).join("");
+  host.querySelectorAll(".hv-pillbtn").forEach(btn=>{
     btn.onclick = ()=>{
       const sport = btn.getAttribute("data-sport");
       const item = by[sport];

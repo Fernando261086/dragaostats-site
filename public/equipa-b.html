@@ -15,45 +15,45 @@
 <meta property="og:image:height" content="630">
 <meta property="og:url" content="https://dragaostats.pt/equipa-b.html">
 
-<meta name="theme-color" content="#0d1b2e">
+<meta name="theme-color" content="#0a1628">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Archivo+Narrow:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Bebas+Neue&display=swap');
 :root{
-  --bg:#0d1b2e; --panel:#16294a; --line:rgba(255,255,255,0.09);
-  --gold:#e3b23c; --text:#eef2f8; --text-dim:#93a2bd;
+  --bg:#0a1628; --panel:#12243f; --line:#223a63;
+  --accent:#5bb4f0; --text:#eaf0fb; --text-dim:#93a2bd;
 }
 *{box-sizing:border-box;}
 body{
-  margin:0; background:linear-gradient(180deg,#16294a 0%,#0d1b2e 60%);
+  margin:0; background:var(--bg);
   color:var(--text); font-family:'Archivo',sans-serif;
   min-height:100vh; display:flex; flex-direction:column; align-items:center;
   padding:env(safe-area-inset-top,0px) 20px calc(env(safe-area-inset-bottom,0px) + 24px);
 }
-.wrap{max-width:560px; width:100%; margin:0 auto; padding-top:40px;}
-.brand{display:flex; align-items:center; gap:12px; margin-bottom:32px; flex-wrap:nowrap;}
-.brand img{width:44px; height:44px; border-radius:12px; flex-shrink:0;}
-.brand-name{font-family:'Archivo Narrow',sans-serif; font-weight:800; font-size:17px; letter-spacing:0.5px; white-space:nowrap;}
-.emoji{font-size:44px; line-height:1; margin-bottom:14px;}
-h1{font-family:'Archivo Narrow',sans-serif; font-weight:800; font-size:30px; line-height:1.15; margin:0 0 14px;}
-h1 b{color:var(--gold);}
+.wrap{max-width:560px; width:100%; margin:0 auto; padding-top:28px;}
+.brand{display:flex; align-items:center; gap:12px; margin-bottom:28px; flex-wrap:nowrap; padding-bottom:16px; border-bottom:1px solid var(--line);}
+.brand img{width:48px; height:48px; border-radius:50%; flex-shrink:0; border:2px solid rgba(91,180,240,.55);}
+.brand-name{font-family:'Bebas Neue',sans-serif; font-weight:400; font-size:28px; letter-spacing:0.02em; white-space:nowrap;}
+.emoji{font-size:40px; line-height:1; margin-bottom:12px;}
+h1{font-family:'Bebas Neue',sans-serif; font-weight:400; font-size:44px; line-height:1.02; letter-spacing:0.01em; margin:0 0 14px;}
+h1 b{color:var(--accent); font-weight:400;}
 p{font-size:15px; line-height:1.65; color:var(--text-dim); margin:0 0 26px;}
 .cta{
-  display:block; text-align:center; background:var(--gold); color:#20140a;
-  font-family:'Archivo Narrow',sans-serif; font-weight:800; font-size:16px;
-  text-decoration:none; padding:16px 20px; border-radius:12px; margin-bottom:14px;
+  display:block; text-align:center; background:var(--accent); color:#0a1a30;
+  font-family:'Archivo',sans-serif; font-weight:700; font-size:16px;
+  text-decoration:none; padding:16px 20px; border-radius:14px; margin-bottom:14px;
 }
 .cta-sub{font-size:12.5px; color:var(--text-dim); text-align:center; margin:0 0 36px;}
 .other{border-top:1px solid var(--line); padding-top:20px;}
-.other-title{font-family:'Archivo Narrow',sans-serif; font-weight:700; font-size:12.5px; letter-spacing:0.5px; text-transform:uppercase; color:var(--text-dim); margin-bottom:12px;}
+.other-title{font-weight:700; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:12px;}
 .other-grid{display:flex; flex-wrap:wrap; gap:8px;}
 .other-grid a{
-  color:var(--text); text-decoration:none; font-size:13px; font-family:'Archivo Narrow',sans-serif; font-weight:600;
+  color:var(--text); text-decoration:none; font-size:13px; font-weight:600;
   background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:8px 14px;
 }
-.other-grid a.current{border-color:var(--gold); color:var(--gold);}
+.other-grid a.current{background:var(--accent); border-color:var(--accent); color:#0a1a30;}
 footer{margin-top:36px; font-size:11.5px; color:var(--text-dim); text-align:center; opacity:0.8;}
 footer a{color:var(--text-dim);}
 </style>

@@ -436,3 +436,56 @@ html.theme-light .edit-mode-banner{ background:#fff4d6 !important; color:#7a5a00
 .match-row .mr-main{ display:flex; align-items:center; gap:12px; }
 .match-row .hv-row-match{ font-size:15px; }
 .match-row .live-flag{ flex-shrink:0; }
+
+/* ===================== ARRUMAR O CALENDÁRIO E O INÍCIO ===================== */
+/* filtro de modalidades em botões (em vez de cartões grandes) */
+.sport-cards, .sport-cards{ display:flex !important; flex-wrap:nowrap; gap:8px; overflow-x:auto; padding:2px 0 12px; margin:0 0 6px; }
+.sport-cards[style*="display: none"]{ display:none !important; }
+.sport-cards .hv-pillbtn{ position:relative; }
+.pill-live{ display:inline-block; width:7px; height:7px; border-radius:50%; background:#ff7a2e; margin-left:7px; vertical-align:middle; }
+@media (min-width:740px){ .sport-cards{ flex-wrap:wrap; overflow:visible; } }
+/* o destaque azul já está no Início — nas outras vistas, em ecrã pequeno, só atrapalha */
+@media (max-width:1199px){
+  #nextMatchBanner, #todayOpponentBanner{ display:none !important; }
+  .wrap-main{ display:flex; flex-direction:column; }
+  .wrap-main > .main-col{ order:1; min-width:0; }
+  .wrap-main > .sidebar-col{ order:2; margin-top:18px; }
+}
+/* no Início, os blocos laterais (Sabias que, etc.) passam para o fim da página */
+body.view-inicio #sidebarCol{ display:flex !important; flex-direction:column; gap:16px; position:static; max-height:none; overflow:visible; margin-top:8px; }
+body.view-inicio #nextMatchBanner, body.view-inicio #todayOpponentBanner{ display:none !important; }
+@media (min-width:1200px){ body.view-inicio .wrap-main{ display:flex; flex-direction:column; } body.view-inicio .wrap-main > .main-col{ order:1; } body.view-inicio .wrap-main > .sidebar-col{ order:2; } }
+/* Início: destaque e resultados na coluna da esquerda, "Esta semana" na direita */
+@media (min-width:900px){
+  .hv-top{ display:grid; grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr); grid-template-areas:"hero week" "res week"; gap:16px; align-items:start; }
+  .hv-top > .hv-hero{ grid-area:hero; flex:none; }
+  .hv-top > .hv-week{ grid-area:week; margin:0; }
+  .hv-top > .hv-results{ grid-area:res; margin:0; }
+}
+.hv-hero-match.hm-long{ font-size:30px; }
+@media (min-width:900px){ .hv-hero-match.hm-long{ font-size:28px; } }
+/* esqueleto de carregamento com o novo desenho */
+.timeline:has(.skeleton-row)::before{ display:none; }
+.skeleton-row{ display:block; padding:0 0 8px; }
+.skel-row{ display:flex; align-items:center; gap:12px; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:12px 14px; }
+.skel-date{ width:46px; height:46px; border-radius:10px; flex-shrink:0; }
+.skel-body{ flex:1; display:flex; flex-direction:column; gap:8px; }
+.skel-time{ width:44px; height:18px; }
+@media (min-width:900px){ .hv-pills{ flex-wrap:wrap; overflow:visible; } }
+
+/* ===================== PAINÉIS E FORMULÁRIOS NO NOVO DESENHO ===================== */
+.add-panel, .stats-panel{ border-radius:16px; padding:16px; }
+.add-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; }
+.add-grid input, .add-grid select, .add-panel textarea, .stats-panel input, .stats-panel select, .stats-panel textarea{
+  min-width:0; width:100%; background:var(--ink-2); border:1px solid var(--line); border-radius:12px;
+  color:var(--text); font-family:'Archivo',sans-serif; font-size:14px; padding:11px 12px; outline:none;
+  -webkit-appearance:none; appearance:none;
+}
+.add-grid select{ background-image:linear-gradient(45deg,transparent 50%,var(--text-dim) 50%),linear-gradient(135deg,var(--text-dim) 50%,transparent 50%); background-position:calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size:5px 5px,5px 5px; background-repeat:no-repeat; padding-right:30px; }
+.add-grid input:focus, .add-grid select:focus, .stats-panel input:focus, .stats-panel select:focus{ border-color:var(--gold); }
+.add-save{ border-radius:12px; padding:12px; font-family:'Archivo',sans-serif; font-size:14px; }
+.add-cancel{ border-radius:12px; font-family:'Archivo',sans-serif; }
+.add-toggle{ border-radius:14px; }
+.chip{ border-radius:999px; }
+.medal-row, .form-overview, .poll-card{ border-radius:16px; }
+#announcementBanner, .announcement-banner{ border-radius:16px; }

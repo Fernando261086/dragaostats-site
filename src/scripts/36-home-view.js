@@ -26,7 +26,7 @@ function homeHeroHtml_(item, label){
   return `<div class="hv-hero${live ? " is-live" : ""}">
     <div class="hv-hero-top"><span class="hv-kicker">${live ? "A decorrer" : esc(label || "Próximo jogo")}</span><span class="hv-pill">${esc(pill)}</span></div>
     <div class="hv-hero-sport">${esc(ev.sport)}${detail ? " · " + esc(detail) : ""}</div>
-    <div class="hv-hero-match"><span class="hm-a">FC Porto</span><span class="hm-b"><span class="hv-vs">vs</span> ${esc(homeOpp_(ev))}</span></div>
+    <div class="hv-hero-match${homeOpp_(ev).length > 16 ? " hm-long" : ""}"><span class="hm-a">FC Porto</span><span class="hm-b"><span class="hv-vs">vs</span> ${esc(homeOpp_(ev))}</span></div>
     <div class="hv-hero-meta">
       <span>${ico(typeof HERO_ICON_CAL_ !== "undefined" ? HERO_ICON_CAL_ : "")}${esc(homeLongDate_(d))}${ev.t ? " · " + esc(ev.t) : ""}</span>
       <span>${ico(typeof HERO_ICON_PIN_ !== "undefined" ? HERO_ICON_PIN_ : "")}${esc(place)}</span>
@@ -84,13 +84,13 @@ function renderHomeView_(force){
   const link = homeSport_ === "Todas"
     ? `<button type="button" class="hv-link" data-cal="1">Ver calendário</button>`
     : `<button type="button" class="hv-link" data-sportpage="${esc(homeSport_)}">Página de ${esc(homeSport_)} ›</button>`;
-  const week = `<div class="hv-panel">
+  const week = `<div class="hv-panel hv-week">
     <div class="hv-pills">${pills}</div>
     <div class="hv-panel-head"><h3>${weekTitle}</h3>${link}</div>
     ${rows || '<div class="hv-empty">Sem mais jogos marcados.</div>'}
   </div>`;
 
-  let html = `<div class="hv-top">${homeHeroHtml_(hero)}${week}</div>`;
+  let resultsHtml = "";
 
   // ---- Últimos resultados
   if(done.length){
@@ -103,9 +103,10 @@ function renderHomeView_(force){
         <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)} · ${esc(formatShortDate(ev.day))}</span><span class="hv-row-match">${esc(t.home)} <b>${esc(String(st.resultado).trim())}</b> ${esc(t.away)}</span></span>
       </button>`;
     }).join("");
-    html += `<div class="hv-panel"><div class="hv-panel-head"><h3>Últimos resultados</h3><button type="button" class="hv-link" data-hist="1">Ver histórico</button></div>${res}</div>`;
+    resultsHtml = `<div class="hv-panel hv-results"><div class="hv-panel-head"><h3>Últimos resultados</h3><button type="button" class="hv-link" data-hist="1">Ver histórico</button></div>${res}</div>`;
   }
 
+  const html = `<div class="hv-top">${homeHeroHtml_(hero)}${week}${resultsHtml}</div>`;
   host.innerHTML = html;
   host.querySelectorAll("[data-go]").forEach(b=>{ b.onclick = ()=>goToEventCard(b.getAttribute("data-go")); });
   host.querySelectorAll("[data-remind]").forEach(b=>{ b.onclick = ()=>toggleGameReminder_(b.getAttribute("data-remind"), b); });

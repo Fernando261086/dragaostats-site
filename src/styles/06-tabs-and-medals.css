@@ -265,11 +265,13 @@ html.theme-light .hv-row-sport{ color:color-mix(in srgb, var(--sc,#5bb4f0) 55%, 
 
 /* No computador, o cartão "ao vivo" e o destaque do Início ficavam enormes — mais compactos */
 @media (min-width:900px){
-  .live-now-card{ padding:10px 16px; }
-  .live-now-row{ grid-template-columns:1fr auto 1fr; max-width:760px; margin:0 auto; }
-  .live-now-team{ font-size:15px; }
-  .live-now-score{ font-size:30px; }
-  .live-now-sets{ margin-top:4px; }
+  /* placard compacto e centrado, em vez de uma barra de ponta a ponta */
+  #liveNowBanner .live-now-card{ max-width:680px; margin-left:auto; margin-right:auto; padding:12px 18px; }
+  .live-now-team{ white-space:normal; overflow:visible; line-height:1.15; }
+  .live-now-row{ grid-template-columns:1fr auto 1fr; gap:16px; }
+  .live-now-team{ font-size:18px; }
+  .live-now-score{ font-size:46px; }
+  .live-now-sets{ margin-top:4px; font-size:13px; }
   .hv-top{ align-items:flex-start; }
   .hv-hero{ padding:16px 18px 14px; gap:5px; }
   .hv-hero-match{ font-size:30px; }

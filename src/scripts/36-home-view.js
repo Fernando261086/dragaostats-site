@@ -32,8 +32,9 @@ function homeHeroHtml_(item, label){
       <span>${ico(typeof HERO_ICON_PIN_ !== "undefined" ? HERO_ICON_PIN_ : "")}${esc(place)}</span>
     </div>
     <div class="hv-hero-actions">
-      <button type="button" class="hv-btn hv-btn-main" data-go="${esc(ev.id)}">Ver jogo</button>
-      ${ev.watchUrl ? `<a class="hv-btn hv-btn-ghost" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">Ver transmissão</a>` : ""}
+      ${live ? `<button type="button" class="hv-btn hv-btn-main" data-go="${esc(ev.id)}">Ver jogo</button>`
+             : `<button type="button" class="hv-btn hv-btn-main${(typeof hasGameReminder_ === "function" && hasGameReminder_(ev.id)) ? " is-on" : ""}" data-remind="${esc(ev.id)}">${(typeof hasGameReminder_ === "function" && hasGameReminder_(ev.id)) ? "✓ Lembrete ativo" : "Lembrar-me"}</button>`}
+      ${ev.watchUrl ? `<a class="hv-btn hv-btn-ghost" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">Ver transmissão</a>` : (live ? "" : `<button type="button" class="hv-btn hv-btn-ghost" data-go="${esc(ev.id)}">Ver jogo</button>`)}
     </div>
   </div>`;
 }
@@ -107,6 +108,7 @@ function renderHomeView_(force){
 
   host.innerHTML = html;
   host.querySelectorAll("[data-go]").forEach(b=>{ b.onclick = ()=>goToEventCard(b.getAttribute("data-go")); });
+  host.querySelectorAll("[data-remind]").forEach(b=>{ b.onclick = ()=>toggleGameReminder_(b.getAttribute("data-remind"), b); });
   host.querySelectorAll("[data-cal]").forEach(b=>{ b.onclick = ()=>{ activeSport = "Todos"; setView("calendario"); renderFilters(); renderProgress(); renderTimeline(); window.scrollTo(0, 0); }; });
   host.querySelectorAll("[data-hist]").forEach(b=>{ b.onclick = ()=>{ setView("historico"); window.scrollTo(0, 0); }; });
   host.querySelectorAll("[data-sportpage]").forEach(b=>{ b.onclick = ()=>openSportPage_(b.getAttribute("data-sportpage")); });

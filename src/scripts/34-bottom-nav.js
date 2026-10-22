@@ -31,6 +31,7 @@
     nav.appendChild(btn);
     items.push({ src, btn, label: btn.querySelector(".bn-label") });
   });
+  function modeMatches_(){ try{ return currentCompMode() === "matches"; }catch(e){ return false; } }
   function cleanLabel_(txt){
     // tira o emoji do início e encurta "Esta semana" para caber na barra
     const t = String(txt || "").replace(/[^\p{L}\p{N} ]/gu, "").trim();
@@ -41,11 +42,18 @@
       const active = src.classList.contains("active");
       btn.classList.toggle("active", active);
       if(active) btn.setAttribute("aria-current", "page"); else btn.removeAttribute("aria-current");
-      btn.style.display = (src.style.display === "none") ? "none" : "";
-      const txt = cleanLabel_(src.textContent);
+      btn.style.display = (src.style.display === "none" || (src.id === "viewTodayAllBtn" && modeMatches_())) ? "none" : "";
+      let txt = cleanLabel_(src.textContent);
+      if(src.id === "viewHistoryBtn") txt = "Resultados"; // como na proposta
       if(label.textContent !== txt) label.textContent = txt;
     });
   }
+  // 5.º botão: "Mais" (abre a folha com as restantes opções — ver 39-more-sheet.js)
+  const moreBtn = document.createElement("button");
+  moreBtn.type = "button"; moreBtn.className = "bn-item";
+  moreBtn.innerHTML = svg('<circle cx="5.5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="18.5" cy="12" r="1.4"/>') + '<span class="bn-label">Mais</span>';
+  moreBtn.onclick = ()=>{ if(window.openMoreSheet_) window.openMoreSheet_(); };
+  nav.appendChild(moreBtn);
   const mo = new MutationObserver(sync_);
   items.forEach(({src})=> mo.observe(src, { attributes:true, attributeFilter:["class","style"], childList:true, characterData:true, subtree:true }));
   document.body.appendChild(nav);

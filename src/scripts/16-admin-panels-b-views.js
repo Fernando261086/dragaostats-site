@@ -469,6 +469,7 @@ function setView(view){
   profileAthlete = null; // sair de qualquer vista fecha a ficha do atleta, se estiver aberta
   const cal = view === "calendario";
   const inicio = view === "inicio";
+  const sportpg = view === "modalidade";
   const medals = view === "medalhas";
   const todayAll = view === "hoje-todas";
   const stats = view === "estatisticas";
@@ -476,10 +477,12 @@ function setView(view){
   const leaderboard = view === "marcadores";
 
   const hb = document.getElementById("viewHomeBtn");
-  if(hb) hb.classList.toggle("active", inicio);
+  if(hb) hb.classList.toggle("active", inicio || sportpg);
   const hv = document.getElementById("homeView");
   if(hv) hv.style.display = inicio ? "block" : "none";
-  document.body.classList.toggle("view-inicio", inicio);
+  const sv = document.getElementById("sportView");
+  if(sv) sv.style.display = sportpg ? "block" : "none";
+  document.body.classList.toggle("view-inicio", inicio || sportpg);
   document.getElementById("viewCalendarBtn").classList.toggle("active", cal);
   document.getElementById("viewMedalsBtn").classList.toggle("active", medals);
   document.getElementById("viewTodayAllBtn").classList.toggle("active", todayAll);
@@ -503,6 +506,7 @@ function setView(view){
   if(!cal){
     document.getElementById("addPanel").style.display = "none";
   }
+  if(sportpg && typeof renderSportPage_ === "function") renderSportPage_();
   if(inicio && typeof renderHomeView_ === "function") renderHomeView_(true);
   if(medals) renderMedals();
   if(todayAll) renderTodayAllView();

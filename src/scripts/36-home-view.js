@@ -105,22 +105,7 @@ function renderHomeView_(force){
   host.querySelectorAll("[data-go]").forEach(b=>{ b.onclick = ()=>goToEventCard(b.getAttribute("data-go")); });
   host.querySelectorAll("[data-cal]").forEach(b=>{ b.onclick = ()=>{ activeSport = "Todos"; setView("calendario"); renderFilters(); renderProgress(); renderTimeline(); window.scrollTo(0, 0); }; });
   host.querySelectorAll("[data-hist]").forEach(b=>{ b.onclick = ()=>{ setView("historico"); window.scrollTo(0, 0); }; });
-  host.querySelectorAll(".hv-sport").forEach(b=>{
-    b.onclick = ()=>{
-      const sport = b.getAttribute("data-sport");
-      const it = sports[sport];
-      activeSport = sport;
-      if(it && it.next){
-        const month = (it.next.ev.day || "").slice(0, 7);
-        if(month && month !== activeDay){
-          activeDay = month; gridSelectedDay = null;
-          document.getElementById("dayNum").textContent = activeDay;
-          if(typeof renderDayTabs === "function") renderDayTabs();
-        }
-      }
-      setView("calendario"); renderFilters(); renderProgress(); renderTimeline(); window.scrollTo(0, 0);
-    };
-  });
+  host.querySelectorAll(".hv-sport").forEach(b=>{ b.onclick = ()=>openSportPage_(b.getAttribute("data-sport")); });
 }
 setInterval(()=>{ try{ renderHomeView_(); }catch(e){} }, 15000);
 

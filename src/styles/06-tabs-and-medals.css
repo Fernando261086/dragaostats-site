@@ -278,3 +278,15 @@ html.theme-light .hv-row-sport{ color:color-mix(in srgb, var(--sc,#5bb4f0) 55%, 
   .hv-hero-actions{ margin-top:6px; }
   .hv-btn{ padding:8px 16px; font-size:13.5px; }
 }
+
+/* ===================== PÁGINA DE MODALIDADE ===================== */
+#sportView{ display:none; }
+.sp-head{ border-left:4px solid var(--sc,#5bb4f0); background:var(--panel); border:1px solid var(--line); border-left-width:4px; border-left-color:var(--sc,#5bb4f0); border-radius:16px; padding:12px 16px 14px; margin-bottom:12px; }
+.sp-head h2{ margin:2px 0 6px; font-family:'Bebas Neue',sans-serif; font-weight:400; font-size:38px; letter-spacing:.03em; color:var(--text); }
+.sp-stats{ display:flex; flex-wrap:wrap; gap:14px; font-size:13px; color:var(--text-dim); }
+.sp-stats b{ color:var(--text); font-size:15px; }
+.sp-w b{ color:var(--green); } .sp-l b{ color:var(--red); }
+.sp-next{ margin-top:8px; font-size:14px; color:var(--text); }
+.sp-tabs{ display:flex; gap:8px; margin-bottom:12px; }
+.sp-tabs button{ flex:1; font:inherit; font-weight:700; font-size:14px; padding:10px; border-radius:12px; background:var(--panel); border:1px solid var(--line); color:var(--text-dim); cursor:pointer; }
+.sp-tabs button.active{ background:var(--gold); border-color:var(--gold); color:var(--gold-text); }

@@ -423,3 +423,16 @@ html.theme-light .edit-mode-banner{ background:#fff4d6 !important; color:#7a5a00
 .card-top > .sport{ order:0; }
 .card-top .dup-btn, .card-top .edit-btn, .card-top .del-btn, .card-share-wrap .dup-btn{ width:30px; height:30px; }
 .card-top{ gap:6px; }
+
+/* ===================== CARTÕES DO CALENDÁRIO (Modo Modalidades) — linhas modernas ===================== */
+.timeline.tl-matches{ padding-top:6px; }
+.timeline.tl-matches::before{ display:none; }
+.timeline.tl-matches .hour-label{ font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:.04em; color:var(--text); padding:16px 2px 8px; text-transform:none; }
+.event.ev-matches{ display:block; padding:0 0 10px; }
+.event.ev-matches > .time, .event.ev-matches > .dot-col{ display:none; }
+.compact-line.match-row{ padding:10px 14px 10px 10px; border-left-width:1px; border-radius:16px; margin-bottom:8px; flex-direction:column; gap:6px; }
+.compact-line.match-row.upcoming{ border-color:var(--gold); box-shadow:0 0 0 1px var(--gold); }
+.compact-line.match-row.status-out{ opacity:1; }
+.match-row .mr-main{ display:flex; align-items:center; gap:12px; }
+.match-row .hv-row-match{ font-size:15px; }
+.match-row .live-flag{ flex-shrink:0; }

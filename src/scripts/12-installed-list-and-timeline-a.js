@@ -151,6 +151,7 @@ function renderTimeline(){
   const container = document.getElementById("timeline");
   container.innerHTML = "";
   const matchesMode = currentCompMode()==="matches";
+  container.classList.toggle("tl-matches", matchesMode);
   renderTodayOpponentBanner(matchesMode);
   renderNextMatchBanner(matchesMode);
   renderPersonalPredictionBanner(matchesMode);
@@ -267,7 +268,7 @@ function renderTimeline(){
     if(groupKey !== lastGroupKey){
       const hl = document.createElement("div");
       hl.className = "hour-label";
-      hl.style.marginLeft = "58px";
+      hl.style.marginLeft = matchesMode ? "0" : "58px";
       hl.textContent = matchesMode ? formatFullDate(ev.day) : groupKey;
       container.appendChild(hl);
       lastGroupKey = groupKey;
@@ -278,14 +279,16 @@ function renderTimeline(){
     const isNext = ev.id === nextUpId;
     const row = document.createElement("div");
     row.id = "ev-card-" + ev.id;
-    row.className = "event"
+    row.className = "event" + (matchesMode ? " ev-matches" : "")
       + (eliminated ? " status-out" : st.passou==="yes" ? " status-yes" : st.passou==="no" ? " status-no" : "")
       + (isNext ? " upcoming" : "");
 
     const color = SPORT_COLORS[ev.sport] || "#e3b23c";
 
-    // MODO COMPACTO: linha densa (duas linhas), que expande ao tocar
-    if(compactMode && !expandedIds.has(ev.id)){
+    // MODO COMPACTO: linha densa (duas linhas), que expande ao tocar.
+    // No Modo Modalidades é sempre assim (linha moderna que abre ao tocar, como no Início).
+    const useCompact = compactMode || matchesMode;
+    if(useCompact && !expandedIds.has(ev.id)){
       const line = document.createElement("div");
       line.id = "ev-card-" + ev.id;
       line.className = "compact-line"
@@ -297,6 +300,38 @@ function renderTimeline(){
       const resTag = matchesMode ? getMatchResultTag(ev, st) : null;
       const resColor = resTag==='win' ? 'var(--green)' : resTag==='loss' ? 'var(--red)' : resTag==='draw' ? 'var(--text-dim)' : 'var(--accent-bright)';
       const timeLabel = matchesMode ? `${formatShortDate(ev.day)} · ${ev.t}` : ev.t;
+      if(matchesMode){
+        // linha moderna (igual às listas do Início); tocar abre o cartão completo
+        const dd = new Date(ev.day + "T00:00:00");
+        const wd = isNaN(dd) ? "" : ["DOM","SEG","TER","QUA","QUI","SEX","SÁB"][dd.getDay()];
+        const tt = postTeams_(ev);
+        const mesc = x => String(x == null ? "" : x).replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+        const cevj = cevLiveFor_(ev);
+        const liveNow = !result && ((cevj && cevj.estado === "vivo") || (!(cevj && cevj.estado === "fim") && isLiveNow_(ev)));
+        const tagTxt = resTag==='win' ? ["V","win"] : resTag==='loss' ? ["D","loss"] : resTag==='draw' ? ["E","draw"] : null;
+        const sub = [ev.detail, ev.phase].filter(Boolean).join(" · ");
+        line.classList.add("match-row");
+        line.style.setProperty("--sc", color);
+        line.innerHTML = `
+          <div class="mr-main">
+            <span class="hv-date"><b>${isNaN(dd) ? "" : dd.getDate()}</b><i>${wd}</i></span>
+            <span class="hv-row-body"><span class="hv-row-sport">${mesc(ev.sport)}${sub ? " · " + mesc(sub) : ""}</span>
+              <span class="hv-row-match">${result ? `${mesc(tt.home)} <b>${mesc(result)}</b> ${mesc(tt.away)}` : "vs " + mesc(ev.athlete)}</span>${(!result && cevj && cevj.estado === "vivo") ? `<span class="live-score">${cevLiveText_(ev, cevj)}</span>` : ""}</span>
+            ${liveNow ? '<span class="live-flag">AO VIVO</span>' : (result ? (tagTxt ? `<span class="hv-tag hv-tag-${tagTxt[1]}">${tagTxt[0]}</span>` : "") : `<span class="hv-row-time">${mesc(ev.t || "")}</span>`)}
+          </div>
+          ${result ? renderReactionBar(ev.id) : ''}
+          ${(ev.day && ev.t) ? renderPredictionBar(ev) : ''}
+        `;
+        line.onclick = (e)=>{
+          if(e.target.closest("button, a, input, select, textarea, .reaction-bar, [class*=prediction]")) return; // não abre ao tocar nas reações/palpite
+          expandedIds.add(ev.id);
+          renderTimeline();
+        };
+        container.appendChild(line);
+        if(result) wireReactionBar(line, ev.id);
+        if(ev.day && ev.t) wirePredictionBar(line, ev);
+        return;
+      }
       line.innerHTML = `
         <div class="cl-row1">
           <span class="c-time">${timeLabel}</span>
@@ -379,7 +414,7 @@ function renderTimeline(){
           <button class="dup-btn" data-dup="1" title="Duplicar prova">⧉</button>
           <button class="edit-btn" data-edit="1" title="Editar prova">✎</button>
           <button class="del-btn" data-del="1" title="Eliminar prova">✕</button>
-          ${compactMode ? '<button class="del-btn" data-collapse="1" title="Recolher">▲</button>' : ''}
+          ${(compactMode || matchesMode) ? '<button class="del-btn" data-collapse="1" title="Recolher">▲</button>' : ''}
         </div>
         <div class="athlete" data-athlete-link="1" title="Ver todas as provas de ${ev.athlete}">${athleteLabel}</div>
         <div class="meta">${metaLine}</div>
@@ -474,7 +509,7 @@ function renderTimeline(){
       openDuplicateForm(ev);
     };
 
-    if(compactMode){
+    if(compactMode || matchesMode){
       row.querySelector('[data-collapse="1"]').onclick = ()=>{
         expandedIds.delete(ev.id);
         renderTimeline();

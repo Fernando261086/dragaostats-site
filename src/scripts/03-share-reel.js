@@ -958,6 +958,8 @@ function updateModeVisibleTabs(){
   document.getElementById("gridToggleBtn").style.display = matches ? "" : "none";
   document.getElementById("predictionRankingBtn").style.display = matches ? "" : "none";
   document.getElementById("hideCompletedBtn").style.display = matches ? "none" : "";
+  const compactBtn_ = document.getElementById("compactToggleBtn");
+  if(compactBtn_) compactBtn_.style.display = matches ? "none" : ""; // no Modo Modalidades a lista já é sempre compacta
   document.getElementById("matchesFilterTodosBtn").style.display = matches ? "" : "none";
   document.getElementById("matchesFilterProximosBtn").style.display = matches ? "" : "none";
   document.getElementById("matchesFilterResultadosBtn").style.display = matches ? "" : "none";

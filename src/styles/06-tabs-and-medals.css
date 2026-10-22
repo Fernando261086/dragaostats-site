@@ -393,3 +393,33 @@ html:not(.theme-light).mode-matches header .brand-row{ background:#0a1628; borde
   html.mode-matches:not(.readonly-view) header .brand-row .theme-toggle{ padding:6px 8px; margin-left:4px; }
   html.mode-matches:not(.readonly-view) .brand-row{ gap:8px; }
 }
+
+/* ===================== MODO EDIÇÃO COM O NOVO DESENHO ===================== */
+.comp-row{ align-items:center; }
+.admin-tools-toggle{ position:relative; font:inherit; font-size:13px; font-weight:700; padding:9px 14px; border-radius:12px; border:1px solid var(--line); background:var(--panel); color:var(--text); cursor:pointer; white-space:nowrap; }
+.admin-tools-toggle .att-dot{ position:absolute; top:-6px; right:-6px; background:var(--red); color:#fff; font-size:10px; font-weight:800; border-radius:10px; padding:1px 6px; }
+.comp-row.tools-collapsed > :not(.comp-select):not(.admin-tools-toggle){ display:none !important; }
+.comp-row.tools-collapsed .comp-select{ flex:1 1 0; min-width:0; }
+.comp-row:not(.tools-collapsed) .comp-del{ width:42px; height:42px; padding:0; border-radius:12px; background:var(--panel); border:1px solid var(--line); font-size:16px; display:inline-flex; align-items:center; justify-content:center; }
+.comp-select{ border-radius:12px; background:var(--panel); border:1px solid var(--line); color:var(--text); }
+/* faixa "Estás a editar": discreta, nas cores do site */
+.edit-mode-banner{ background:#2b2108 !important; color:#f3d98a !important; border-bottom:1px solid #5a4410; font-size:12px; padding:6px 12px; font-weight:700 !important; }
+html.theme-light .edit-mode-banner{ background:#fff4d6 !important; color:#7a5a00 !important; border-bottom-color:#ecd28a; }
+/* botões de cada cartão: quadrados uniformes, a passar para a linha de baixo se não couberem */
+.card-top{ flex-wrap:wrap; align-items:center; row-gap:8px; }
+.card-top .sport{ margin-right:auto; }
+.card-top .dup-btn, .card-top .edit-btn, .card-top .del-btn, .card-share-wrap .dup-btn{
+  width:32px; height:32px; padding:0; margin:0; border-radius:10px; border:1px solid var(--line); background:var(--ink-2);
+  display:inline-flex; align-items:center; justify-content:center; font-size:14px; color:var(--text);
+}
+.card-top .card-share-wrap{ margin-left:0; }
+/* cartões laterais ("Próximo jogo" / "Adversário do dia") com nomes compridos */
+@media (min-width:1200px){ .sidebar-col #nextMatchBanner .tob-match-hero, .sidebar-col #todayOpponentBanner .tob-match-hero{ font-size:28px; line-height:1.05; } }
+.card-top{ justify-content:flex-end; gap:4px; }
+.card-top .dup-btn, .card-top .edit-btn, .card-top .del-btn, .card-share-wrap .dup-btn{ width:28px; height:28px; border-radius:9px; font-size:13px; }
+/* linha 1: modalidade e etiquetas; linha 2: botões de ação, alinhados à direita */
+.card-top::after{ content:""; flex-basis:100%; height:0; order:1; }
+.card-top > .dup-btn, .card-top > .edit-btn, .card-top > .del-btn, .card-top > .card-share-wrap{ order:2; }
+.card-top > .sport{ order:0; }
+.card-top .dup-btn, .card-top .edit-btn, .card-top .del-btn, .card-share-wrap .dup-btn{ width:30px; height:30px; }
+.card-top{ gap:6px; }

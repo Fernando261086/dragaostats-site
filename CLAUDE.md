@@ -69,6 +69,12 @@ defeito + tema claro). Onde está cada coisa:
   fcporto.pt carregam por JavaScript (não servem). Se uma fonte mudar o HTML, só essa
   modalidade pára (fica a última boa) — correr `atualizarClassificacoesAgora` no Apps Script
   para ver qual falha.
+- **Ao vivo** (`05-whatsapp-rivalry-live-badges.js` + Apps Script **v95**): cartão "AO VIVO" e
+  marcador nas linhas. Voleibol = CEV (`cevLive`, sets). Hóquei = `live.hoqueipatins.pt/api/updates`
+  (JSON com `games[{id,score,time,part,ended,teams:["3584_230",..]}]`; FC Porto = id 3584), lido
+  de minuto a minuto no gatilho `atualizarAoVivoCev_`. O `doGet` junta os dois em `cevLive`
+  (`readAoVivoTodos_`); jogos por golos trazem `golosFcp/golosAdv/tempo/parte`. Andebol (FPA),
+  basquetebol (FPB) e futebol feminino/Equipa B ainda **não** têm ao vivo.
 - **Estilos**: tudo o que é novo está no fim de `06-tabs-and-medals.css`
   (`.hv-*` Início, `.sp-*` modalidade, cabeçalho `html.mode-matches`).
   Classes no `<html>`: `theme-light`, `mode-matches`, `readonly-view`.

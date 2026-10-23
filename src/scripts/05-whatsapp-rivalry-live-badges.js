@@ -44,6 +44,10 @@ function cevLiveFor_(ev){
 function cevLiveText_(ev, j){
   if(!j) return "";
   const adv = ev.athlete || "Adversário";
+  if(j.golosFcp !== undefined){ // jogos de golos/pontos (ex.: hóquei): "FC Porto 3-2 Adversário · 1.ª parte 12:30"
+    const t = [j.parte, j.tempo].filter(Boolean).join(" ");
+    return "FC Porto " + (j.golosFcp||0) + "-" + (j.golosAdv||0) + " " + adv + (t ? " · " + t : "");
+  }
   let txt = "FC Porto " + (j.setsFcp||0) + "-" + (j.setsAdv||0) + " " + adv;
   const sets = Array.isArray(j.sets) ? j.sets : [];
   if(sets.length){
@@ -52,8 +56,8 @@ function cevLiveText_(ev, j){
   }
   return txt;
 }
-// Cartão "Ao vivo agora" no topo de todas as vistas. Mostra todos os jogos que a CEV (ou, no
-// futuro, outra fonte) tem a decorrer, com dados frescos. Desaparece sozinho quando o jogo acaba
+// Cartão "Ao vivo agora" no topo de todas as vistas. Mostra todos os jogos que a CEV (voleibol) ou o
+// hoqueipatins.pt (hóquei, v95) tem a decorrer, com dados frescos. Desaparece sozinho quando o jogo acaba
 // ou quando os dados deixam de chegar.
 function liveEsc_(s){
   return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
@@ -70,7 +74,11 @@ function renderLiveNowBanner_(){
     const j = CEV_LIVE.jogos[id];
     const sets = Array.isArray(j.sets) ? j.sets : [];
     let setsHtml = "A começar";
-    if(sets.length){
+    const porGolos = j.golosFcp !== undefined;
+    if(porGolos){
+      const t = [j.parte, j.tempo].filter(Boolean).join(" ");
+      setsHtml = t ? "<b>" + liveEsc_(t) + "</b>" : "A decorrer";
+    } else if(sets.length){
       const cur = sets[sets.length - 1];
       const prev = sets.slice(0, -1).map((s, i) => (i + 1) + ".º " + s[0] + "-" + s[1]).join(" · ");
       setsHtml = "<b>" + sets.length + ".º set: " + cur[0] + "-" + cur[1] + "</b>" + (prev ? " · " + liveEsc_(prev) : "");
@@ -79,7 +87,7 @@ function renderLiveNowBanner_(){
       <div class="live-now-top"><span class="live-flag">AO VIVO</span><span class="live-now-sport">${liveEsc_(j.sport || "")}${(()=>{ const e = (typeof EVENTS !== "undefined") ? EVENTS.find(x=>x.id===id) : null; return e && e.detail ? " · " + liveEsc_(e.detail) : ""; })()}</span><span class="live-now-upd">atualizado ${ago}</span></div>
       <div class="live-now-row">
         <span class="live-now-team">FC Porto</span>
-        <span class="live-now-score">${(j.setsFcp||0)} – ${(j.setsAdv||0)}</span>
+        <span class="live-now-score">${porGolos ? (j.golosFcp||0) : (j.setsFcp||0)} – ${porGolos ? (j.golosAdv||0) : (j.setsAdv||0)}</span>
         <span class="live-now-team away">${liveEsc_(j.adv || "Adversário")}</span>
       </div>
       <div class="live-now-sets">${setsHtml}</div>

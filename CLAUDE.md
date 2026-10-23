@@ -69,13 +69,15 @@ defeito + tema claro). Onde está cada coisa:
   modalidade pára (fica a última boa) — correr `atualizarClassificacoesAgora` no Apps Script
   para ver qual falha.
 - **Ao vivo** (`05-whatsapp-rivalry-live-badges.js` + Apps Script **v95**): cartão "AO VIVO" e
-  marcador nas linhas. Voleibol = CEV (`cevLive`, sets). Hóquei = `live.hoqueipatins.pt/api/updates`
+  marcador nas linhas. Voleibol = CEV (`cevLive`, sets). Hóquei (visto num jogo real: a decorrer = `status:true, ended:false, time:"1ªP - 10'"`; terminado = `time:"Resultado final"`) = `live.hoqueipatins.pt/api/updates`
   (JSON com `games[{id,score,time,part,ended,teams:["3584_230",..]}]`; FC Porto = id 3584), lido
   de minuto a minuto no gatilho `atualizarAoVivoCev_`. O `doGet` junta os dois em `cevLive`
-  (`readAoVivoTodos_`); jogos por golos trazem `golosFcp/golosAdv/tempo/parte`. Andebol (FPA),
-  basquetebol (FPB) e futebol feminino/Equipa B ainda **não** têm ao vivo.
+  (`readAoVivoTodos_`); jogos por golos trazem `golosFcp/golosAdv/tempo/parte`. A página da FPA (andebol) **não** atualiza ao vivo (testado com Portugal–Guiné); basquetebol (FPB) e futebol feminino ainda **não** têm ao vivo.
   **Voleibol campeonato (Apps Script v97)**: `portugalvoleibol.com/classificacao/api/live.php?status=all` (JSON; `status` DRAFT/IN_PROGRESS/COMPLETED,
   `resultado_a/b` = sets, `sets[{pontosA,pontosB}]`, `equipa_a/b.cod_clube`; FC Porto = `FCPORTO`; o campo `live` não é fiável). Mesmo formato do CEV. Teste: `testarAoVivoVoleiNacAgora`.
+  **Equipa B (Apps Script v99)**: calendário iCal `ligaportugal.pt/calendars-ics/fc_porto_b.ics` (URL de cada jogo) + página do jogo
+  (`/match/20262027/ligaportugalmeusuper/<jornada>/<jogo>`) com `__NUXT_DATA__` (devalue) → `homeTeamGoals/awayTeamGoals/status/subStatus`.
+  Valores de `status` num jogo a decorrer AINDA DESCONHECIDOS (afinar `eqbEstado_` após o 1.º jogo real; guardados em `codigo`). Teste: `testarAoVivoEquipaBAgora`.
   **Andebol (Apps Script v96)**: lê a página `portal.fpa.pt/prova/10016/` (JSON embutido: `JOG_GOLOS_CASA/FORA`,
   `JOGO_ESTADO_CODIGO`, "50" = terminado; o código de "a decorrer" ainda é desconhecido) no mesmo gatilho de 1 min;
   vivo = jogo do FC Porto, já na hora e código ≠ 50. Teste: `testarAoVivoAndebolAgora`. Basquetebol: o FIBA LiveStats

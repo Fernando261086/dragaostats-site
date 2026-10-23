@@ -1,6 +1,6 @@
 // ===================== PÁGINA DE MODALIDADE (a partir do Início) =====================
 // Cabeçalho da modalidade + separadores "Jogos" e "Marcadores". Só lê dados que já existem.
-// (Classificação e Plantel ficam para quando houver esses dados no backend.)
+// Classificação vem do Apps Script v94 (ver 41-standings.js). O Plantel ainda não existe.
 let sportPageSport_ = null, sportPageTab_ = "jogos", sportPageStat_ = null;
 function openSportPage_(sport){
   sportPageSport_ = sport; sportPageTab_ = "jogos"; sportPageStat_ = null;
@@ -32,7 +32,7 @@ function renderSportPage_(){
       </div>
     </div>
   </div>`;
-  const tabs = `<div class="sp-tabs"><button type="button" class="${sportPageTab_ === "jogos" ? "active" : ""}" data-sptab="jogos">Jogos</button><button type="button" class="${sportPageTab_ === "marcadores" ? "active" : ""}" data-sptab="marcadores">Marcadores</button></div>`;
+  const tabs = `<div class="sp-tabs"><button type="button" class="${sportPageTab_ === "jogos" ? "active" : ""}" data-sptab="jogos">Jogos</button><button type="button" class="${sportPageTab_ === "classificacao" ? "active" : ""}" data-sptab="classificacao">Classificação</button><button type="button" class="${sportPageTab_ === "marcadores" ? "active" : ""}" data-sptab="marcadores">Marcadores</button></div>`;
   const heroHtml = (sportPageTab_ === "jogos" && typeof homeHeroHtml_ === "function") ? `<div class="sp-hero">${homeHeroHtml_(next)}</div>` : "";
 
   let body = "";
@@ -50,6 +50,8 @@ function renderSportPage_(){
     const nextRest = upcoming.slice(1);
     body = `<div class="hv-panel"><div class="hv-panel-head"><h3>Calendário</h3></div>${nextRest.length ? nextRest.map(row).join("") : '<div class="hv-empty">Sem mais jogos marcados.</div>'}</div>
       <div class="hv-panel"><div class="hv-panel-head"><h3>Resultados</h3></div>${done.length ? done.map(row).join("") : '<div class="hv-empty">Ainda sem resultados.</div>'}</div>`;
+  }else if(sportPageTab_ === "classificacao"){
+    body = (typeof standingsPanelHtml_ === "function") ? standingsPanelHtml_(sport) : "";
   }else{
     const stats = (typeof MARCADORES_LABEL_SPORTS !== "undefined" && MARCADORES_LABEL_SPORTS.has(sport)) ? ["Golos"] : getStatTypesFor(sport);
     if(!sportPageStat_ || !stats.includes(sportPageStat_)) sportPageStat_ = stats[0];
@@ -77,5 +79,6 @@ function renderSportPage_(){
   host.querySelectorAll("[data-sptab]").forEach(b=>{ b.onclick = ()=>{ sportPageTab_ = b.getAttribute("data-sptab"); renderSportPage_(); }; });
   host.querySelectorAll("[data-spstat]").forEach(b=>{ b.onclick = ()=>{ sportPageStat_ = b.getAttribute("data-spstat"); renderSportPage_(); }; });
   host.querySelectorAll("[data-go]").forEach(b=>{ b.onclick = ()=>goToEventCard(b.getAttribute("data-go")); });
+  if(sportPageTab_ === "classificacao" && typeof wireStandingsPanel_ === "function") wireStandingsPanel_(host, sport);
   host.querySelectorAll("[data-remind]").forEach(b=>{ b.onclick = ()=>toggleGameReminder_(b.getAttribute("data-remind"), b); });
 }

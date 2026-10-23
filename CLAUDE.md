@@ -59,6 +59,16 @@ defeito + tema claro). Onde está cada coisa:
   (`12-installed-list-and-timeline-a.js`, classe `tl-matches`); lista "Esta
   semana" em `13-timeline-render-b.js`; Histórico e Marcadores em
   `16-admin-panels-b-views.js`.
+- **Classificação** (`41-standings.js` + Apps Script **v94**): separador "Classificação" na
+  página de modalidade, lê `STANDINGS` (campo `standings` do `doGet`). O Apps Script lê de hora
+  a hora (no gatilho de 5 min, `updateStandingsIfDue_`) e guarda na linha reservada
+  `__classificacoes__` (tem de estar na lista do `readAll_`). Fontes: Andebol=FPA
+  (JSON dentro da página), Voleibol=FPV, Basquetebol=FPB, Hóquei=hoqueipatins.pt,
+  Futebol Feminino e Equipa B=fcporto.pt. **Futsal é manual** (modo edição, `setManualStandings`).
+  zerozero.pt e resultados.fpf.pt bloqueiam o Google (403). As páginas de modalidade do
+  fcporto.pt carregam por JavaScript (não servem). Se uma fonte mudar o HTML, só essa
+  modalidade pára (fica a última boa) — correr `atualizarClassificacoesAgora` no Apps Script
+  para ver qual falha.
 - **Estilos**: tudo o que é novo está no fim de `06-tabs-and-medals.css`
   (`.hv-*` Início, `.sp-*` modalidade, cabeçalho `html.mode-matches`).
   Classes no `<html>`: `theme-light`, `mode-matches`, `readonly-view`.
@@ -74,7 +84,7 @@ lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 (atual `dia22-cache-v216`); em telemóvel os widgets laterais aparecem
 **depois** da lista de jogos.
 
-**Ainda por fazer:** Classificação e Plantel; ao vivo nas outras modalidades
+**Ainda por fazer:** Plantel; ao vivo nas outras modalidades
 (só há CEV/voleibol); campo manual "link/ID do jogo"; testar em produção as
 fontes reais, o push do "Lembrar-me" e a edição de um resultado real.
 

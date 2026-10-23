@@ -68,6 +68,7 @@ const SPORT_COLORS = {
   "Equipa B":"#8c5ce3"
 };
 
+let STANDINGS = {}; // classificações por modalidade (vêm do Apps Script v94): { "Andebol": { comp, fase, source, updated, manual, cols:[], rows:[{p,t,c:[],me}] } }
 const STORE_URL = "https://script.google.com/macros/s/AKfycbzsPW_XhIwE-fq9GGd9rn_wPQkkOoH__dbJ6MBvRIW3mZE_kiw2JT3HszxUqCIcgOC9pw/exec";
 
 // ALL guarda TODAS as competições: { competitions:[{id,name}], data:{ [id]:{events:[...], status:{...}} } }

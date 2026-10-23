@@ -504,3 +504,32 @@ body.view-inicio #nextMatchBanner, body.view-inicio #todayOpponentBanner{ displa
 .match-row .mr-stats{ align-self:flex-start; margin-left:58px; padding:5px 12px; border-radius:999px; border:1px solid var(--line); background:transparent;
   color:var(--gold); font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; cursor:pointer; }
 .match-row .mr-stats:active{ background:var(--panel-2, rgba(91,180,240,.12)); }
+
+/* CLASSIFICAÇÃO (ver 41-standings.js) */
+.sp-tabs button{ white-space:nowrap; }
+.st-sub{ padding:0 4px 8px; color:var(--text-dim); font-size:13px; }
+.st-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.st-table{ width:100%; border-collapse:collapse; font-family:'Archivo',sans-serif; font-size:13px; }
+.st-table th{ padding:8px 6px; color:var(--text-dim); font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; text-align:center; border-bottom:1px solid var(--line); white-space:nowrap; }
+.st-table td{ padding:9px 6px; text-align:center; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
+.st-table tr:last-child td{ border-bottom:none; }
+.st-table .st-pos{ width:26px; color:var(--text-dim); }
+.st-table .st-team{ text-align:left; font-weight:600; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.st-table .st-pts{ font-weight:800; color:var(--text); }
+.st-table tr.is-me td{ background:rgba(91,180,240,.14); }
+.st-table tr.is-me .st-team, .st-table tr.is-me .st-pts{ color:var(--gold); }
+.st-foot{ padding:10px 4px 2px; color:var(--text-dim); font-size:12px; }
+.st-edit{ margin-left:auto; padding:5px 12px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--gold); font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; cursor:pointer; }
+@media (max-width:520px){ .st-table .st-opt{ display:none; } .st-table .st-team{ max-width:120px; } }
+.st-editor{ position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.6); display:flex; align-items:flex-end; justify-content:center; }
+.st-editor-box{ width:100%; max-width:560px; max-height:92vh; overflow:auto; box-sizing:border-box; background:var(--panel); border:1px solid var(--line); border-radius:18px 18px 0 0; padding:18px 16px 22px; color:var(--text); }
+.st-editor-box h3{ margin:0 0 6px; font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:.04em; font-weight:400; }
+.st-help{ margin:0 0 12px; color:var(--text-dim); font-size:13px; line-height:1.4; }
+.st-editor-box label{ display:block; margin:0 0 10px; font-size:12px; font-weight:700; color:var(--text-dim); }
+.st-editor-box input, .st-editor-box select, .st-editor-box textarea{ display:block; width:100%; box-sizing:border-box; margin-top:4px; }
+.st-editor-box textarea{ font-family:ui-monospace,Menlo,monospace; font-size:12px; margin-bottom:10px; }
+.st-preview{ overflow-x:auto; margin-bottom:10px; }
+.st-actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.st-actions .st-danger{ margin-left:auto; color:var(--red); }
+.st-msg{ margin-top:8px; min-height:16px; font-size:12px; color:var(--text-dim); }
+@media (min-width:700px){ .st-editor{ align-items:center; } .st-editor-box{ border-radius:18px; } }

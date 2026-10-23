@@ -41,8 +41,7 @@ defeito + tema claro). Onde está cada coisa:
   (link "só ver", modo Modalidades). Herói do próximo jogo, "Esta semana",
   "Últimos resultados". Abre por `openHomeByDefault_()`.
 - **Página de modalidade** (`37-sport-page.js`): `openSportPage_(sport)`;
-  separadores Jogos/Marcadores. Classificação e Plantel **ainda não existem**
-  (à espera das capturas de rede do Superportistas).
+  separadores Jogos/Classificação/Marcadores. Plantel **ainda não existe**.
 - **Lembrar-me** (`38-game-reminders.js` + Apps Script v93): aviso 1 hora
   antes. Guarda em `localStorage` (`dia22-reminders`) e envia
   `{setGameReminder:{token,evId,on}}` ao `STORE_URL`. No Apps Script usa a
@@ -75,6 +74,10 @@ defeito + tema claro). Onde está cada coisa:
   de minuto a minuto no gatilho `atualizarAoVivoCev_`. O `doGet` junta os dois em `cevLive`
   (`readAoVivoTodos_`); jogos por golos trazem `golosFcp/golosAdv/tempo/parte`. Andebol (FPA),
   basquetebol (FPB) e futebol feminino/Equipa B ainda **não** têm ao vivo.
+  **Andebol (Apps Script v96)**: lê a página `portal.fpa.pt/prova/10016/` (JSON embutido: `JOG_GOLOS_CASA/FORA`,
+  `JOGO_ESTADO_CODIGO`, "50" = terminado; o código de "a decorrer" ainda é desconhecido) no mesmo gatilho de 1 min;
+  vivo = jogo do FC Porto, já na hora e código ≠ 50. Teste: `testarAoVivoAndebolAgora`. Basquetebol: o FIBA LiveStats
+  (`/data/<id>/data.json`) é legível pelo Google, mas falta descobrir o id do jogo a partir da FPB (ficha tem `data-live`).
 - **Estilos**: tudo o que é novo está no fim de `06-tabs-and-medals.css`
   (`.hv-*` Início, `.sp-*` modalidade, cabeçalho `html.mode-matches`).
   Classes no `<html>`: `theme-light`, `mode-matches`, `readonly-view`.
@@ -87,7 +90,7 @@ defeito + tema claro). Onde está cada coisa:
 **Cuidados aprendidos:** usar `minmax(0,1fr)` em grelhas (senão há deslize
 lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 360/390/768px; subir a versão da cache em `public/sw.js` a cada publicação
-(atual `dia22-cache-v216`); em telemóvel os widgets laterais aparecem
+(atual `dia22-cache-v223`); em telemóvel os widgets laterais aparecem
 **depois** da lista de jogos.
 
 **Ainda por fazer:** Plantel; ao vivo nas outras modalidades

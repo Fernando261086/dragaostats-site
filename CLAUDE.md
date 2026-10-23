@@ -72,12 +72,15 @@ defeito + tema claro). Onde está cada coisa:
   marcador nas linhas. Voleibol = CEV (`cevLive`, sets). Hóquei (visto num jogo real: a decorrer = `status:true, ended:false, time:"1ªP - 10'"`; terminado = `time:"Resultado final"`) = `live.hoqueipatins.pt/api/updates`
   (JSON com `games[{id,score,time,part,ended,teams:["3584_230",..]}]`; FC Porto = id 3584), lido
   de minuto a minuto no gatilho `atualizarAoVivoCev_`. O `doGet` junta os dois em `cevLive`
-  (`readAoVivoTodos_`); jogos por golos trazem `golosFcp/golosAdv/tempo/parte`. A página da FPA (andebol) **não** atualiza ao vivo (testado com Portugal–Guiné); basquetebol (FPB) e futebol feminino ainda **não** têm ao vivo.
+  (`readAoVivoTodos_`); jogos por golos trazem `golosFcp/golosAdv/tempo/parte`. A página da FPA (andebol) **não** atualiza ao vivo (testado com Portugal–Guiné); futebol feminino e futsal ainda **não** têm ao vivo.
   **Voleibol campeonato (Apps Script v97)**: `portugalvoleibol.com/classificacao/api/live.php?status=all` (JSON; `status` DRAFT/IN_PROGRESS/COMPLETED,
   `resultado_a/b` = sets, `sets[{pontosA,pontosB}]`, `equipa_a/b.cod_clube`; FC Porto = `FCPORTO`; o campo `live` não é fiável). Mesmo formato do CEV. Teste: `testarAoVivoVoleiNacAgora`.
   **Equipa B (Apps Script v99)**: calendário iCal `ligaportugal.pt/calendars-ics/fc_porto_b.ics` (URL de cada jogo) + página do jogo
   (`/match/20262027/ligaportugalmeusuper/<jornada>/<jogo>`) com `__NUXT_DATA__` (devalue) → `homeTeamGoals/awayTeamGoals/status/subStatus`.
   Valores de `status` num jogo a decorrer AINDA DESCONHECIDOS (afinar `eqbEstado_` após o 1.º jogo real; guardados em `codigo`). Teste: `testarAoVivoEquipaBAgora`.
+  **Basquetebol (Apps Script v100)**: campo `liveId` em cada jogo (editor: "ID do jogo ao vivo", aceita o número ou o endereço do FIBA LiveStats) →
+  `fibalivestats.dcd.shared.geniussports.com/data/<liveId>/data.json` (`clock`, `period`, `tm.1/2.name/score`; sem campo de estado: fim = último período, relógio 00:00, resultado desigual).
+  Os IDs do FIBA são globais (vizinhos são jogos ucranianos): não há forma de os descobrir sozinhos; a FPB só preenche `data-id` na ficha (ao vivo?) — por confirmar.
   **Andebol (Apps Script v96)**: lê a página `portal.fpa.pt/prova/10016/` (JSON embutido: `JOG_GOLOS_CASA/FORA`,
   `JOGO_ESTADO_CODIGO`, "50" = terminado; o código de "a decorrer" ainda é desconhecido) no mesmo gatilho de 1 min;
   vivo = jogo do FC Porto, já na hora e código ≠ 50. Teste: `testarAoVivoAndebolAgora`. Basquetebol: o FIBA LiveStats
@@ -94,7 +97,7 @@ defeito + tema claro). Onde está cada coisa:
 **Cuidados aprendidos:** usar `minmax(0,1fr)` em grelhas (senão há deslize
 lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 360/390/768px; subir a versão da cache em `public/sw.js` a cada publicação
-(atual `dia22-cache-v223`); em telemóvel os widgets laterais aparecem
+(atual `dia22-cache-v224`); em telemóvel os widgets laterais aparecem
 **depois** da lista de jogos.
 
 **Ainda por fazer:** Plantel; ao vivo nas outras modalidades

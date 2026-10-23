@@ -109,6 +109,7 @@ function applyFormModeUI(){
   document.getElementById("fLocal").style.display = matches ? "block" : "none";
   document.getElementById("fNotes").style.display = matches ? "block" : "none";
   document.getElementById("fClassLink").style.display = matches ? "block" : "none";
+  document.getElementById("fLiveId").style.display = matches ? "block" : "none";
   document.getElementById("addChecksRow").style.display = matches ? "none" : "flex";
   document.getElementById("addHintText").style.display = matches ? "none" : "block";
 
@@ -285,6 +286,15 @@ document.getElementById("fAtleta").addEventListener("input", (e)=>{
   }
 });
 
+// "ID do jogo ao vivo": aceita só o número ("2090796") ou um endereço do FIBA LiveStats
+// (".../u/FPDB/2090796/...") e guarda apenas o número.
+function liveIdFromText_(txt){
+  const t = String(txt || "").trim();
+  if(!t) return "";
+  const m = t.match(/\/u\/[A-Za-z0-9]+\/(\d+)/) || t.match(/(\d{4,})/);
+  return m ? m[1] : "";
+}
+
 function openEditForm(ev){
   document.getElementById("fDia").value = ev.day || "";
   document.getElementById("fHora").value = ev.t || "";
@@ -295,6 +305,7 @@ function openEditForm(ev){
   document.getElementById("fWatch").value = ev.watchUrl || "";
   document.getElementById("fLocal").value = ev.local || "casa";
   document.getElementById("fVenue").value = ev.venue || "";
+  document.getElementById("fLiveId").value = ev.liveId || "";
   document.getElementById("fNotes").value = ev.notes || "";
   document.getElementById("fClassLink").value = ev.classLink || "";
   document.getElementById("fApprox").checked = !!ev.approx;
@@ -319,6 +330,7 @@ function openDuplicateForm(ev){
   document.getElementById("fWatch").value = ev.watchUrl || "";
   document.getElementById("fLocal").value = ev.local || "casa";
   document.getElementById("fVenue").value = ev.venue || "";
+  document.getElementById("fLiveId").value = ""; // cada jogo tem o seu ID: não se copia ao duplicar
   document.getElementById("fNotes").value = ev.notes || "";
   document.getElementById("fClassLink").value = ev.classLink || "";
   document.getElementById("fApprox").checked = !!ev.approx;
@@ -338,7 +350,7 @@ function closeEditForm(){
   editingId = null;
   document.getElementById("addSaveBtn").textContent = "Guardar prova";
   document.getElementById("addCancelBtn").style.display = "none";
-  ["fDia","fHora","fSport","fAtleta","fDetalhe","fFase","fWatch","fVenue","fNotes","fClassLink"].forEach(id=>document.getElementById(id).value = "");
+  ["fDia","fHora","fSport","fAtleta","fDetalhe","fFase","fWatch","fLiveId","fVenue","fNotes","fClassLink"].forEach(id=>document.getElementById(id).value = "");
   document.getElementById("fApprox").checked = false;
   document.getElementById("fCond").checked = false;
   document.getElementById("addPanel").style.display = "none";
@@ -365,6 +377,7 @@ document.getElementById("addSaveBtn").onclick = async ()=>{
     watchUrl: document.getElementById("fWatch").value.trim(),
     local: document.getElementById("fLocal").value,
     venue: document.getElementById("fVenue").value.trim(),
+    liveId: liveIdFromText_(document.getElementById("fLiveId").value),
     notes: document.getElementById("fNotes").value.trim(),
     classLink: document.getElementById("fClassLink").value.trim(),
     approx: document.getElementById("fApprox").checked,

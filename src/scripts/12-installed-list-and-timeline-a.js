@@ -316,7 +316,7 @@ function renderTimeline(){
           <div class="mr-main">
             <span class="hv-date"><b>${isNaN(dd) ? "" : dd.getDate()}</b><i>${wd}</i></span>
             <span class="hv-row-body"><span class="hv-row-sport">${mesc(ev.sport)}${sub ? " · " + mesc(sub) : ""}</span>
-              <span class="hv-row-match">${result ? `${mesc(tt.home)} <b>${mesc(result)}</b> ${mesc(tt.away)}` : "vs " + mesc(ev.athlete)}</span>${(!result && cevj && cevj.estado === "vivo") ? `<span class="live-score">${cevLiveText_(ev, cevj)}</span>` : ""}</span>
+              <span class="hv-row-match">${result ? `${fcpNameHtml_(tt.home)} <b>${mesc(result)}</b> ${fcpNameHtml_(tt.away)}` : matchTitleHtml_(ev) + matchNeutralTag_(ev)}</span>${(!result && cevj && cevj.estado === "vivo") ? `<span class="live-score">${cevLiveText_(ev, cevj)}</span>` : ""}</span>
             ${liveNow ? '<span class="live-flag">AO VIVO</span>' : (result ? (tagTxt ? `<span class="hv-tag hv-tag-${tagTxt[1]}">${tagTxt[0]}</span>` : "") : `<span class="hv-row-time">${mesc(ev.t || "")}</span>`)}
           </div>
           ${result ? renderReactionBar(ev.id) : ''}
@@ -384,7 +384,7 @@ function renderTimeline(){
       ? [localLabel(ev.local,'short'), ev.venue, ev.detail, ev.phase].filter(Boolean).join(" · ")
       : [ev.detail, ev.phase].filter(Boolean).join(" · ");
     const notesLine = (matchesMode && ev.notes) ? `<div class="out-note" style="color:var(--text-dim);">${ev.notes}</div>` : '';
-    const athleteLabel = matchesMode ? ("vs " + ev.athlete) : ev.athlete;
+    const athleteLabel = matchesMode ? matchTitleText_(ev) : ev.athlete;
 
     row.innerHTML = `
       <div class="time">${matchesMode ? `<span class="time-date">${formatShortDate(ev.day)}</span><br>` : ''}${ev.t}${ev.approx ? '<span class="approx"> ~</span>' : ''}</div>

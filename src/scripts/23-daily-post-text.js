@@ -38,6 +38,17 @@ function postTeams_(ev){
   const away = ev.local === "fora";
   return { home: away ? (ev.athlete||"") : "FC Porto", away: away ? "FC Porto" : (ev.athlete||"") };
 }
+// Título do jogo pela ordem em que se joga: "FC Porto vs X" em casa, "X vs FC Porto" fora.
+function matchTitleText_(ev){ const t = postTeams_(ev); return t.home + " vs " + t.away; }
+// Versão HTML (já escapada) com "FC Porto" marcado: se o título passar para duas linhas,
+// fitMatchTitles_() troca "FC Porto" por "FCP" (ver 41-fit-match-titles.js)
+function fcpNameHtml_(name){
+  const e = String(name == null ? "" : name).replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+  return name === "FC Porto" ? '<span class="fcp-name">FC Porto</span>' : e;
+}
+function matchTitleHtml_(ev){ const t = postTeams_(ev); return fcpNameHtml_(t.home) + " vs " + fcpNameHtml_(t.away); }
+// Etiqueta "Neutro" (em campo neutro a ordem não diz onde se joga)
+function matchNeutralTag_(ev){ return ev && ev.local === "neutro" ? ' <span class="neutro-tag">Neutro</span>' : ""; }
 function buildPostTexts_(iso, mode){
   const games = EVENTS.filter(ev=>ev.day===iso).sort((a,b)=>(a.t||"99:99").localeCompare(b.t||"99:99"));
   const items = games.map(ev=>({ ev, st: getEv(ev.id) || {} }));

@@ -43,7 +43,7 @@ function renderSportPage_(){
       const detail = [ev.detail, ev.phase].filter(Boolean).join(" · ");
       return `<button type="button" class="hv-row" data-go="${esc(ev.id)}" style="--sc:${color};">
         <span class="hv-date"><b>${x.d.getDate()}</b><i>${WD[x.d.getDay()]}</i></span>
-        <span class="hv-row-body"><span class="hv-row-sport">${esc(detail || sport)}</span><span class="hv-row-match">${res ? `${esc(t.home)} <b>${esc(String(x.st.resultado).trim())}</b> ${esc(t.away)}` : "vs " + esc(oppOf(ev))}</span></span>
+        <span class="hv-row-body"><span class="hv-row-sport">${esc(detail || sport)}</span><span class="hv-row-match">${res ? `${fcpNameHtml_(t.home)} <b>${esc(String(x.st.resultado).trim())}</b> ${fcpNameHtml_(t.away)}` : matchTitleHtml_(ev) + matchNeutralTag_(ev)}</span></span>
         ${res ? (tag[0] ? `<span class="hv-tag hv-tag-${tag[1]}">${tag[0]}</span>` : "") : `<span class="hv-row-time">${esc(ev.t || "")}</span>`}
       </button>`;
     };

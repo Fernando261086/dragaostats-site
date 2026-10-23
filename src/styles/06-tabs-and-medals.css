@@ -495,3 +495,7 @@ body.view-inicio #nextMatchBanner, body.view-inicio #todayOpponentBanner{ displa
 .chip{ border-radius:999px; }
 .medal-row, .form-overview, .poll-card{ border-radius:16px; }
 #announcementBanner, .announcement-banner{ border-radius:16px; }
+
+/* etiqueta "Neutro" ao lado do título do jogo */
+.neutro-tag{ display:inline-block; margin-left:6px; padding:1px 7px; border-radius:999px; border:1px solid var(--line); color:var(--text-dim);
+  font-family:'Archivo',sans-serif; font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; vertical-align:middle; }

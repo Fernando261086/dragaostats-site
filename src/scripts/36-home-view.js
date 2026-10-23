@@ -26,7 +26,7 @@ function homeHeroHtml_(item, label){
   return `<div class="hv-hero${live ? " is-live" : ""}">
     <div class="hv-hero-top"><span class="hv-kicker">${live ? "A decorrer" : esc(label || "Próximo jogo")}</span><span class="hv-pill">${esc(pill)}</span></div>
     <div class="hv-hero-sport">${esc(ev.sport)}${detail ? " · " + esc(detail) : ""}</div>
-    <div class="hv-hero-match${homeOpp_(ev).length > 16 ? " hm-long" : ""}"><span class="hm-a">FC Porto</span><span class="hm-b"><span class="hv-vs">vs</span> ${esc(homeOpp_(ev))}</span></div>
+    <div class="hv-hero-match${homeOpp_(ev).length > 16 ? " hm-long" : ""}"><span class="hm-a">${esc(postTeams_(ev).home)}</span><span class="hm-b"><span class="hv-vs">vs</span> ${esc(postTeams_(ev).away)}</span></div>
     <div class="hv-hero-meta">
       <span>${ico(typeof HERO_ICON_CAL_ !== "undefined" ? HERO_ICON_CAL_ : "")}${esc(homeLongDate_(d))}${ev.t ? " · " + esc(ev.t) : ""}</span>
       <span>${ico(typeof HERO_ICON_PIN_ !== "undefined" ? HERO_ICON_PIN_ : "")}${esc(place)}</span>
@@ -77,7 +77,7 @@ function renderHomeView_(force){
     const ev = x.ev;
     return `<button type="button" class="hv-row" data-go="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};">
       <span class="hv-date"><b>${x.d.getDate()}</b><i>${HOME_WD_[x.d.getDay()]}</i></span>
-      <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)}</span><span class="hv-row-match">vs ${esc(homeOpp_(ev))}</span></span>
+      <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)}</span><span class="hv-row-match">${matchTitleHtml_(ev)}${matchNeutralTag_(ev)}</span></span>
       <span class="hv-row-time">${esc(ev.t || "")}</span>
     </button>`;
   }).join("");

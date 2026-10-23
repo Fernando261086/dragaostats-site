@@ -320,12 +320,14 @@ function renderTimeline(){
               <span class="hv-row-match">${result ? `${fcpNameHtml_(tt.home)} <b>${mesc(result)}</b> ${fcpNameHtml_(tt.away)}` : matchTitleHtml_(ev) + matchNeutralTag_(ev)}</span>${(!result && cevj && cevj.estado === "vivo") ? `<span class="live-score">${cevLiveText_(ev, cevj)}</span>` : ""}</span>
             ${liveNow ? '<span class="live-flag">AO VIVO</span>' : (result ? (tagTxt ? `<span class="hv-tag hv-tag-${tagTxt[1]}">${tagTxt[0]}</span>` : "") : `<span class="hv-row-time">${mesc(ev.t || "")}</span>`)}
           </div>
-          ${hasGameStats ? `<button type="button" class="mr-stats" data-mrstats="1">${playerStatsCardLabel(ev.sport)}</button>` : ''}
+          <div class="mr-foot">${hasGameStats ? `<button type="button" class="mr-stats" data-mrstats="1">${playerStatsCardLabel(ev.sport)}</button>` : '<span></span>'}<button type="button" class="mr-more" data-mrmore="1">Ver detalhes ›</button></div>
           ${result ? renderReactionBar(ev.id) : ''}
           ${(ev.day && ev.t) ? renderPredictionBar(ev) : ''}
         `;
         const mrStatsBtn = line.querySelector('[data-mrstats="1"]');
         if(mrStatsBtn) mrStatsBtn.onclick = (e)=>{ e.stopPropagation(); statsOpenedFromWeekView = false; openPlayerStatsPanel(ev); };
+        const mrMoreBtn = line.querySelector('[data-mrmore="1"]');
+        if(mrMoreBtn) mrMoreBtn.onclick = (e)=>{ e.stopPropagation(); expandedIds.add(ev.id); renderTimeline(); };
         line.onclick = (e)=>{
           if(e.target.closest("button, a, input, select, textarea, .reaction-bar, [class*=prediction]")) return; // não abre ao tocar nas reações/palpite
           expandedIds.add(ev.id);

@@ -550,3 +550,9 @@ body.view-inicio #nextMatchBanner, body.view-inicio #todayOpponentBanner{ displa
 .hv-cls-sub b{ font-weight:800; }
 .hv-cls-of{ font-size:11px; color:var(--text-dim); }
 @media (max-width:520px){ .hv-cls-hint{ display:none; } }
+
+/* "Ver detalhes ›" no canto inferior direito dos cartões de jogo */
+.match-row .mr-foot{ display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:0; }
+.match-row .mr-foot .mr-stats{ margin-left:58px; }
+.match-row .mr-more{ margin-left:auto; padding:5px 2px 5px 10px; border:0; background:transparent; color:var(--accent-bright); font:inherit; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; }
+.match-row .mr-more:active{ opacity:.6; }

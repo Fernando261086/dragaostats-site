@@ -309,6 +309,7 @@ function renderTimeline(){
         const cevj = cevLiveFor_(ev);
         const liveNow = !result && ((cevj && cevj.estado === "vivo") || (!(cevj && cevj.estado === "fim") && isLiveNow_(ev)));
         const tagTxt = resTag==='win' ? ["V","win"] : resTag==='loss' ? ["D","loss"] : resTag==='draw' ? ["E","draw"] : null;
+        const hasGameStats = (Array.isArray(ev.playerStats) && ev.playerStats.length > 0) || (Array.isArray(ev.setScores) && ev.setScores.some(x=>x && String(x).trim()));
         const sub = [ev.detail, ev.phase].filter(Boolean).join(" · ");
         line.classList.add("match-row");
         line.style.setProperty("--sc", color);
@@ -319,9 +320,12 @@ function renderTimeline(){
               <span class="hv-row-match">${result ? `${fcpNameHtml_(tt.home)} <b>${mesc(result)}</b> ${fcpNameHtml_(tt.away)}` : matchTitleHtml_(ev) + matchNeutralTag_(ev)}</span>${(!result && cevj && cevj.estado === "vivo") ? `<span class="live-score">${cevLiveText_(ev, cevj)}</span>` : ""}</span>
             ${liveNow ? '<span class="live-flag">AO VIVO</span>' : (result ? (tagTxt ? `<span class="hv-tag hv-tag-${tagTxt[1]}">${tagTxt[0]}</span>` : "") : `<span class="hv-row-time">${mesc(ev.t || "")}</span>`)}
           </div>
+          ${hasGameStats ? `<button type="button" class="mr-stats" data-mrstats="1">${playerStatsCardLabel(ev.sport)}</button>` : ''}
           ${result ? renderReactionBar(ev.id) : ''}
           ${(ev.day && ev.t) ? renderPredictionBar(ev) : ''}
         `;
+        const mrStatsBtn = line.querySelector('[data-mrstats="1"]');
+        if(mrStatsBtn) mrStatsBtn.onclick = (e)=>{ e.stopPropagation(); statsOpenedFromWeekView = false; openPlayerStatsPanel(ev); };
         line.onclick = (e)=>{
           if(e.target.closest("button, a, input, select, textarea, .reaction-bar, [class*=prediction]")) return; // não abre ao tocar nas reações/palpite
           expandedIds.add(ev.id);

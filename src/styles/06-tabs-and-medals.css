@@ -499,3 +499,8 @@ body.view-inicio #nextMatchBanner, body.view-inicio #todayOpponentBanner{ displa
 /* etiqueta "Neutro" ao lado do título do jogo */
 .neutro-tag{ display:inline-block; margin-left:6px; padding:1px 7px; border-radius:999px; border:1px solid var(--line); color:var(--text-dim);
   font-family:'Archivo',sans-serif; font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; vertical-align:middle; }
+
+/* botão "Marcadores / Estatísticas do jogo" no cartão compacto de um resultado */
+.match-row .mr-stats{ align-self:flex-start; margin-left:58px; padding:5px 12px; border-radius:999px; border:1px solid var(--line); background:transparent;
+  color:var(--gold); font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; cursor:pointer; }
+.match-row .mr-stats:active{ background:var(--panel-2, rgba(91,180,240,.12)); }

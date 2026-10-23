@@ -74,6 +74,8 @@ defeito + tema claro). Onde está cada coisa:
   de minuto a minuto no gatilho `atualizarAoVivoCev_`. O `doGet` junta os dois em `cevLive`
   (`readAoVivoTodos_`); jogos por golos trazem `golosFcp/golosAdv/tempo/parte`. Andebol (FPA),
   basquetebol (FPB) e futebol feminino/Equipa B ainda **não** têm ao vivo.
+  **Voleibol campeonato (Apps Script v97)**: `portugalvoleibol.com/classificacao/api/live.php?status=all` (JSON; `status` DRAFT/IN_PROGRESS/COMPLETED,
+  `resultado_a/b` = sets, `sets[{pontosA,pontosB}]`, `equipa_a/b.cod_clube`; FC Porto = `FCPORTO`; o campo `live` não é fiável). Mesmo formato do CEV. Teste: `testarAoVivoVoleiNacAgora`.
   **Andebol (Apps Script v96)**: lê a página `portal.fpa.pt/prova/10016/` (JSON embutido: `JOG_GOLOS_CASA/FORA`,
   `JOGO_ESTADO_CODIGO`, "50" = terminado; o código de "a decorrer" ainda é desconhecido) no mesmo gatilho de 1 min;
   vivo = jogo do FC Porto, já na hora e código ≠ 50. Teste: `testarAoVivoAndebolAgora`. Basquetebol: o FIBA LiveStats

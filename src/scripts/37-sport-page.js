@@ -2,8 +2,8 @@
 // Cabeçalho da modalidade + separadores "Jogos" e "Marcadores". Só lê dados que já existem.
 // Classificação vem do Apps Script v94 (ver 41-standings.js). O Plantel ainda não existe.
 let sportPageSport_ = null, sportPageTab_ = "jogos", sportPageStat_ = null;
-function openSportPage_(sport){
-  sportPageSport_ = sport; sportPageTab_ = "jogos"; sportPageStat_ = null;
+function openSportPage_(sport, tab){
+  sportPageSport_ = sport; sportPageTab_ = tab || "jogos"; sportPageStat_ = null;
   setView("modalidade");
   window.scrollTo(0, 0);
 }

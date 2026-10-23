@@ -57,7 +57,7 @@ function renderHomeView_(force){
   const sportsAll = Array.from(new Set(withD.map(x=>x.ev.sport))).sort((a, b)=>a.localeCompare(b, "pt"));
   if(homeSport_ !== "Todas" && !sportsAll.includes(homeSport_)) homeSport_ = "Todas";
 
-  const sig = JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, liveOf(x.ev)]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_]);
+  const sig = JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, liveOf(x.ev)]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_, Object.keys(STANDINGS || {}).map(k=>[k, ((STANDINGS[k] || {}).updated || 0)])]);
   if(!force && sig === homeSig_) return;
   homeSig_ = sig;
 
@@ -106,13 +106,32 @@ function renderHomeView_(force){
     resultsHtml = `<div class="hv-panel hv-results"><div class="hv-panel-head"><h3>Últimos resultados</h3><button type="button" class="hv-link" data-hist="1">Ver histórico</button></div>${res}</div>`;
   }
 
-  const html = `<div class="hv-top">${homeHeroHtml_(hero)}${week}${resultsHtml}</div>`;
+  // ---- Classificações: posição do FC Porto em cada modalidade (toque abre a classificação completa)
+  let clsHtml = "";
+  const clsCards = sportsAll.filter(sp=>STANDINGS && STANDINGS[sp] && (STANDINGS[sp].rows || []).length).map(sp=>{
+    const s = STANDINGS[sp], ci = (k)=>(s.cols || []).indexOf(k);
+    const me = s.rows.find(r=>r.me);
+    const played = me ? Number((me.c || [])[ci("J")]) : 0;
+    const pts = me ? (me.c || [])[ci("Pts")] : "";
+    const big = (me && played > 0) ? esc(me.p) + ".º" : "—";
+    const sub = (me && played > 0) ? `<b>${esc(pts)}</b> pts · ${esc(played)} jogos` : "ainda sem jogos";
+    return `<button type="button" class="hv-cls" data-cls="${esc(sp)}" style="--sc:${homeColor_(sp)};">
+      <span class="hv-cls-sport">${esc(sp)}</span>
+      <span class="hv-cls-pos">${big}</span>
+      <span class="hv-cls-sub">${sub}</span>
+      <span class="hv-cls-of">de ${s.rows.length} equipas</span>
+    </button>`;
+  }).join("");
+  if(clsCards) clsHtml = `<div class="hv-panel hv-cls-panel"><div class="hv-panel-head"><h3>🏆 Classificações</h3><span class="hv-cls-hint">Toca para ver a tabela</span></div><div class="hv-cls-grid">${clsCards}</div></div>`;
+
+  const html = `<div class="hv-top">${homeHeroHtml_(hero)}${week}${resultsHtml}${clsHtml}</div>`;
   host.innerHTML = html;
   host.querySelectorAll("[data-go]").forEach(b=>{ b.onclick = ()=>goToEventCard(b.getAttribute("data-go")); });
   host.querySelectorAll("[data-remind]").forEach(b=>{ b.onclick = ()=>toggleGameReminder_(b.getAttribute("data-remind"), b); });
   host.querySelectorAll("[data-cal]").forEach(b=>{ b.onclick = ()=>{ activeSport = "Todos"; setView("calendario"); renderFilters(); renderProgress(); renderTimeline(); window.scrollTo(0, 0); }; });
   host.querySelectorAll("[data-hist]").forEach(b=>{ b.onclick = ()=>{ setView("historico"); window.scrollTo(0, 0); }; });
   host.querySelectorAll("[data-sportpage]").forEach(b=>{ b.onclick = ()=>openSportPage_(b.getAttribute("data-sportpage")); });
+  host.querySelectorAll("[data-cls]").forEach(b=>{ b.onclick = ()=>openSportPage_(b.getAttribute("data-cls"), "classificacao"); });
   host.querySelectorAll("[data-hsport]").forEach(b=>{ b.onclick = ()=>{ homeSport_ = b.getAttribute("data-hsport"); renderHomeView_(true); }; });
 }
 setInterval(()=>{ try{ renderHomeView_(); }catch(e){} }, 15000);

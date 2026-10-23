@@ -436,7 +436,7 @@ function renderTimeline(){
         })()}
         ${notesLine}
         ${ev.watchUrl ? `<a class="watch-link" href="${ev.watchUrl}" target="_blank" rel="noopener">📺 Ver transmissão</a>` : ''}
-        ${ev.classLink ? `<a class="watch-link" href="${ev.classLink}" target="_blank" rel="noopener">🏆 Classificação geral</a>` : ''}
+        ${(matchesMode && typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).length) ? `<div class="watch-link" data-standings-go="1" style="cursor:pointer;">🏆 Classificação</div>` : (ev.classLink ? `<a class="watch-link" href="${ev.classLink}" target="_blank" rel="noopener">🏆 Classificação geral</a>` : '')}
         ${matchesMode ? `<a class="watch-link" href="https://wa.me/?text=${buildWhatsAppShareText_(ev, st)}" target="_blank" rel="noopener">💬 Partilhar no WhatsApp</a>` : ''}
         ${(matchesMode && ((Array.isArray(ev.playerStats) && ev.playerStats.length > 0) || (Array.isArray(ev.setScores) && ev.setScores.some(s=>s && s.trim())))) ? `<div class="watch-link" data-playerstats-preview="1" style="cursor:pointer;">${playerStatsCardLabel(ev.sport)}</div>` : ''}
         ${body}
@@ -494,6 +494,8 @@ function renderTimeline(){
       };
       const chooseQBtn = row.querySelector('[data-choosequestion="1"]');
       if(chooseQBtn) chooseQBtn.onclick = ()=> openQuestionPanel(ev);
+      const standingsGo = row.querySelector('[data-standings-go="1"]');
+      if(standingsGo) standingsGo.onclick = ()=>{ openSportPage_(ev.sport, "classificacao"); window.scrollTo(0, 0); };
       const previewLink = row.querySelector('[data-playerstats-preview="1"]');
       if(previewLink) previewLink.onclick = ()=>{
         statsOpenedFromWeekView = false;

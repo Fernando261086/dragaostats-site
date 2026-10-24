@@ -614,3 +614,13 @@ body.view-jogo #liveNowBanner{ display:none !important; }
 .pres-chip .pres-mark{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--text-dim,#8aa);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;line-height:1;flex:none;color:#12213a}
 .pres-chip.is-on{background:rgba(227,178,60,0.18);border-color:var(--gold-dim,#e3b23c)}
 .pres-chip.is-on .pres-mark{background:#e3b23c;border-color:#e3b23c}
+
+/* v155: convite para ativar notificações (Início + página do jogo) */
+.nc-card{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;align-items:center;margin:12px 0;padding:14px;border:1px solid var(--gold-dim,#e3b23c);border-radius:14px;background:rgba(227,178,60,.10)}
+.nc-ico{font-size:26px;line-height:1}
+.nc-body{display:flex;flex-direction:column;gap:2px;min-width:0}
+.nc-t{font-size:15px}
+.nc-s{font-size:12.5px;color:var(--text-dim,#9ab);line-height:1.35}
+.nc-btns{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.nc-yes{flex:1 1 auto}
+.nc-no{background:none;border:0;color:var(--text-dim,#9ab);font-size:12.5px;padding:8px 6px;cursor:pointer}

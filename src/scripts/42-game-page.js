@@ -120,7 +120,7 @@ function renderGamePage_(){
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpCal">${READONLY_MODE ? "Ver no calendário" : "Editar no calendário"}</button>
   </div>`;
 
-  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado]);
+  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_())]);
   if(sig === gameSig_) return;
   gameSig_ = sig;
 
@@ -136,7 +136,7 @@ function renderGamePage_(){
       </div>
       ${sub ? `<div class="gp-sub">${sub}</div>` : ""}
     </div>
-    ${setsBlock}${info}${acoes}
+    ${setsBlock}${(!fim && typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo") : ""}${info}${acoes}
   </div>`;
 
   host.querySelector("#gpBack").onclick = ()=>{
@@ -156,6 +156,7 @@ function renderGamePage_(){
   if(bImg) bImg.onclick = ()=>generateShareCard(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor);
   if(bReel) bReel.onclick = ()=>generateShareReel(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor);
   if(bSt) bSt.onclick = ()=>{ try{ statsOpenedFromWeekView = false; }catch(e){} openPlayerStatsPanel(ev); };
+  if(typeof bindNotifyCta_ === "function") bindNotifyCta_(host, ()=>{ gameSig_ = ""; renderGamePage_(); });
   const cal = host.querySelector("#gpCal");
   if(cal) cal.onclick = ()=>goToEventCardCal_(ev.id);
   const tb = host.querySelector("#gpTable");

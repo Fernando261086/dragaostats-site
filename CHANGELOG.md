@@ -1,3 +1,6 @@
+## v155
+- Convite para ativar notificações no Início e na página do jogo (`43-notify-cta.js`): só para quem vê e ainda não ativou; "Agora não" esconde 5 dias; texto só promete resultado final + lembrete 1 h antes. Popup atualizado com o mesmo texto.
+
 ## v154
 - "Quem jogou": quem está selecionado mostra um círculo dourado com ✕ (o visto nativo aparecia como pílula em branco).
 

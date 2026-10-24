@@ -59,7 +59,7 @@ function tryShowNotifyNudge_(triesLeft){
   const isIOS = variant === "ios-install";
   document.getElementById("notifyNudgeText").textContent = isIOS
     ? "No iPhone, as notificações só funcionam com a app instalada no ecrã principal."
-    : "Com as notificações ativas, nunca mais te esqueces de ver um resultado.";
+    : "Recebe o resultado final de cada jogo do FC Porto e um aviso antes dos jogos que escolheres.";
   document.getElementById("notifyNudgeYes").textContent = isIOS ? "Como instalar" : "Ativar notificações";
   el.style.display = "block";
   // sem resposta ao fim de 30s, fecha sozinho (não conta como "Agora não": amanhã pode voltar)

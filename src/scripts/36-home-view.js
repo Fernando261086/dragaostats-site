@@ -14,7 +14,7 @@ function homeLongDate_(d){ const m = ["janeiro","fevereiro","março","abril","ma
 // Resultado ao vivo para o cartão de destaque: números grandes (na ordem em que se joga) + parte/minuto.
 function homeLiveScoreHtml_(ev, j){
   const esc = homeEsc_;
-  const t = postTeams_(ev), fcpHome = (t.home === "FC Porto");
+  const fcpHome = !liveFora_(ev);
   let a, b, info = "";
   if(j.golosFcp !== undefined){
     a = fcpHome ? (j.golosFcp||0) : (j.golosAdv||0); b = fcpHome ? (j.golosAdv||0) : (j.golosFcp||0);

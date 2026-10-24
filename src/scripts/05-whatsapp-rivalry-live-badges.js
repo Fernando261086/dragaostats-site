@@ -41,18 +41,24 @@ function cevLiveFor_(ev){
   return (j && typeof j === "object") ? j : null;
 }
 // Texto do marcador, ex.: "FC Porto 1-0 Cajasol · 2.º set: 12-9"
+// v151: ordem em que se joga (quem joga em casa à esquerda). fora = true quando o FC Porto joga fora.
+function liveFora_(ev){ return !!(ev && ev.local === "fora"); }
 function cevLiveText_(ev, j){
   if(!j) return "";
-  const adv = ev.athlete || "Adversário";
+  const adv = ev.athlete || "Adversário", fora = liveFora_(ev);
+  const par = (a, b) => fora ? [b, a] : [a, b];
+  const nomes = fora ? [adv, "FC Porto"] : ["FC Porto", adv];
   if(j.golosFcp !== undefined){ // jogos de golos/pontos (ex.: hóquei): "FC Porto 3-2 Adversário · 1.ª parte 12:30"
     const t = [j.parte, j.tempo].filter(Boolean).join(" ");
-    return "FC Porto " + (j.golosFcp||0) + "-" + (j.golosAdv||0) + " " + adv + (t ? " · " + t : "");
+    const g = par(j.golosFcp||0, j.golosAdv||0);
+    return nomes[0] + " " + g[0] + "-" + g[1] + " " + nomes[1] + (t ? " · " + t : "");
   }
-  let txt = "FC Porto " + (j.setsFcp||0) + "-" + (j.setsAdv||0) + " " + adv;
+  const sc = par(j.setsFcp||0, j.setsAdv||0);
+  let txt = nomes[0] + " " + sc[0] + "-" + sc[1] + " " + nomes[1];
   const sets = Array.isArray(j.sets) ? j.sets : [];
   if(sets.length){
-    const last = sets[sets.length - 1];
-    txt += " · " + sets.length + ".º set: " + last[0] + "-" + last[1];
+    const last = sets[sets.length - 1], lp = par(last[0], last[1]);
+    txt += " · " + sets.length + ".º set: " + lp[0] + "-" + lp[1];
   }
   return txt;
 }
@@ -68,10 +74,17 @@ function renderLiveNowBanner_(){
   const fresh = CEV_LIVE && CEV_LIVE.jogos && CEV_LIVE.updated && Math.abs(Date.now() - CEV_LIVE.updated) <= 5 * 60 * 1000;
   const ids = fresh ? Object.keys(CEV_LIVE.jogos).filter(id => CEV_LIVE.jogos[id] && CEV_LIVE.jogos[id].estado === "vivo") : [];
   if(!ids.length){ host.style.display = "none"; host.innerHTML = ""; return; }
+  // os dados ao vivo podem chegar antes da lista de jogos: se faltar o jogo, volta a desenhar daqui a pouco (ordem casa/fora)
+  if(typeof EVENTS === "undefined" || ids.some(id => !EVENTS.some(x=>x.id===id))){
+    if((window.__liveRetry_ = (window.__liveRetry_ || 0) + 1) <= 6) setTimeout(renderLiveNowBanner_, 800);
+  }else{ window.__liveRetry_ = 0; }
   const secs = Math.max(0, Math.round((Date.now() - CEV_LIVE.updated) / 1000));
   const ago = secs < 90 ? ("há " + secs + " s") : ("há " + Math.round(secs / 60) + " min");
   host.innerHTML = ids.map(id => {
     const j = CEV_LIVE.jogos[id];
+    const evB = (typeof EVENTS !== "undefined") ? EVENTS.find(x=>x.id===id) : null;
+    const fora = liveFora_(evB);
+    const par = (a, b) => fora ? [b, a] : [a, b];
     const sets = Array.isArray(j.sets) ? j.sets : [];
     let setsHtml = "A começar";
     const porGolos = j.golosFcp !== undefined;
@@ -79,16 +92,16 @@ function renderLiveNowBanner_(){
       const t = [j.parte, j.tempo].filter(Boolean).join(" ");
       setsHtml = t ? "<b>" + liveEsc_(t) + "</b>" : "A decorrer";
     } else if(sets.length){
-      const cur = sets[sets.length - 1];
-      const prev = sets.slice(0, -1).map((s, i) => (i + 1) + ".º " + s[0] + "-" + s[1]).join(" · ");
+      const cur = par(sets[sets.length - 1][0], sets[sets.length - 1][1]);
+      const prev = sets.slice(0, -1).map((s, i) => { const q = par(s[0], s[1]); return (i + 1) + ".º " + q[0] + "-" + q[1]; }).join(" · ");
       setsHtml = "<b>" + sets.length + ".º set: " + cur[0] + "-" + cur[1] + "</b>" + (prev ? " · " + liveEsc_(prev) : "");
     }
     return `<div class="live-now-card" data-live-ev="${liveEsc_(id)}">
       <div class="live-now-top"><span class="live-flag">AO VIVO</span><span class="live-now-sport">${liveEsc_(j.sport || "")}${(()=>{ const e = (typeof EVENTS !== "undefined") ? EVENTS.find(x=>x.id===id) : null; return e && e.detail ? " · " + liveEsc_(e.detail) : ""; })()}</span><span class="live-now-upd">atualizado ${ago}</span></div>
       <div class="live-now-row">
-        <span class="live-now-team">FC Porto</span>
-        <span class="live-now-score">${porGolos ? (j.golosFcp||0) : (j.setsFcp||0)} – ${porGolos ? (j.golosAdv||0) : (j.setsAdv||0)}</span>
-        <span class="live-now-team away">${liveEsc_(j.adv || "Adversário")}</span>
+        <span class="live-now-team">${fora ? liveEsc_(j.adv || "Adversário") : "FC Porto"}</span>
+        <span class="live-now-score">${(()=>{ const q = porGolos ? par(j.golosFcp||0, j.golosAdv||0) : par(j.setsFcp||0, j.setsAdv||0); return q[0] + " – " + q[1]; })()}</span>
+        <span class="live-now-team away">${fora ? "FC Porto" : liveEsc_(j.adv || "Adversário")}</span>
       </div>
       <div class="live-now-sets">${setsHtml}</div>
     </div>`;

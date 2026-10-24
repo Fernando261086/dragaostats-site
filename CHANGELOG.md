@@ -22,6 +22,10 @@ estava publicado como `dragaostats-deploy-v95.zip`.
 Nenhuma funcionalidade foi alterada nesta divisão; é só reorganização do
 código para facilitar trabalhar nele.
 
+## v149
+- Campo "ID do jogo ao vivo" aceita também o link do Sofascore (número depois de `#id:`). Cache `dia22-cache-v225`.
+- Apps Script **v102** (não vive aqui): ao vivo por Sofascore para Futebol Feminino, Andebol e Futsal (`apps-script-v102.gs`).
+
 ## v148
 - Editor: novo campo opcional "ID do jogo ao vivo" (modo Modalidades). Aceita o número do FIBA LiveStats ou o endereço completo; guarda só o número em `ev.liveId`.
 - Apps Script v100: basquetebol ao vivo pelo FIBA LiveStats usando esse ID.

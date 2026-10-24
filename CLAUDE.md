@@ -102,9 +102,15 @@ lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 (atual `dia22-cache-v224`); em telemóvel os widgets laterais aparecem
 **depois** da lista de jogos.
 
-**Ainda por fazer:** Plantel; ao vivo nas outras modalidades
-(só há CEV/voleibol); campo manual "link/ID do jogo"; testar em produção as
-fontes reais, o push do "Lembrar-me" e a edição de um resultado real.
+**Ao vivo Sofascore (Apps Script v102):** Futebol Feminino, Andebol e Futsal leem
+`api.sofascore.com/api/v1/event/<id>` (não oficial; pode deixar de funcionar). Sem ID, o script procura o
+jogo do Porto do dia em `/sport/<football|handball|futsal>/scheduled-events/<data>` por hora + adversário
+(feminino filtra "Women"). O campo `liveId` (link do Sofascore, `#id:NNN`) tem prioridade. Prop `aoVivoSofascore`,
+fundida por último em `readAoVivoTodos_` (sobrepõe a página da FPA). Teste: `testarAoVivoSofascoreAgora`.
+Por confirmar com jogo real (24/10/2026): golos a atualizar durante o jogo.
+
+**Ainda por fazer:** Plantel; testar em produção as fontes reais (ao vivo de cada modalidade), o push do
+"Lembrar-me" e a edição de um resultado real.
 
 ## Build e deploy
 

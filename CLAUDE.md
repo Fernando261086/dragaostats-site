@@ -105,7 +105,7 @@ lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 **Ao vivo Sofascore (Apps Script v102):** Futebol Feminino, Andebol e Futsal leem
 `api.sofascore.com/api/v1/event/<id>` (não oficial; pode deixar de funcionar). Sem ID, o script procura o
 jogo nos jogos da equipa (`/team/<id>/events/next/0` + `last/0`; ids do Porto: feminino 938214, andebol 21795, futsal 1268317)
-por dia + hora + adversário (v104). A lista `/sport/<x>/scheduled-events/<data>` dá **404** — não usar. O campo `liveId` (link do Sofascore, `#id:NNN`) tem prioridade. Prop `aoVivoSofascore`,
+por dia + hora + adversário (v104). A lista `/sport/<x>/scheduled-events/<data>` dá **404** — não usar. **v105: Voleibol (campeonato)** também por Sofascore (equipa 335647; `homeScore.current`=sets, `period1..5`=pontos de cada set, o set em curso incluído) — dá os pontos em direto, ao contrário da API da FPV (só sets fechados); sobrepõe a FPV. O campo `liveId` (link do Sofascore, `#id:NNN`) tem prioridade. Prop `aoVivoSofascore`,
 fundida por último em `readAoVivoTodos_` (sobrepõe a página da FPA). Teste: `testarAoVivoSofascoreAgora`.
 Por confirmar com jogo real (24/10/2026): golos a atualizar durante o jogo.
 **Futsal — classificação (Apps Script v103):** lida de `api.sofascore.com/api/v1/tournament/112814/season/102039/standings/total`

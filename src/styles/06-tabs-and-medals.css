@@ -566,3 +566,44 @@ body.view-inicio #nextMatchBanner, body.view-inicio #todayOpponentBanner{ displa
 .hv-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; background:#fff; margin-right:7px; animation:hvPulse 1.2s ease-in-out infinite; }
 @keyframes hvPulse{ 0%,100%{ opacity:1; } 50%{ opacity:.25; } }
 @media (max-width:600px){ .hv-hero-score .hs-n{ font-size:54px; } }
+
+/* v152 — página do jogo */
+.gp{ display:flex; flex-direction:column; gap:14px; max-width:760px; margin:0 auto; padding:4px 0 24px; }
+.gp-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.gp-back{ font:inherit; font-size:15px; font-weight:700; color:#cfe1ff; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:12px; padding:8px 14px; cursor:pointer; }
+.gp-sport{ font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--sc,#5bb4f0); }
+.gp-hero{ background:linear-gradient(135deg,#15439b,#0e2b66); border:1px solid #2a5bc0; border-radius:20px; padding:20px 16px 22px; color:#fff; text-align:center; }
+.gp-hero.is-live{ border-color:#ff7a2e; box-shadow:0 0 0 1px rgba(255,122,46,.35), 0 10px 34px rgba(255,122,46,.2); }
+.gp-pill-row{ display:flex; justify-content:center; margin-bottom:14px; }
+.gp-pill{ display:inline-flex; align-items:center; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; background:rgba(255,255,255,.14); border-radius:999px; padding:5px 13px; }
+.gp-hero.is-live .gp-pill{ background:#ff7a2e; }
+.gp-hero.is-run .gp-pill{ background:rgba(255,122,46,.3); }
+.gp-teams{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:8px; }
+.gp-team{ font-family:'Bebas Neue',sans-serif; font-size:26px; line-height:1.05; overflow-wrap:anywhere; }
+.gp-score{ display:flex; align-items:baseline; justify-content:center; gap:10px; min-width:120px; }
+.gp-n{ font-family:'Bebas Neue',sans-serif; font-size:84px; line-height:1; }
+.gp-sep{ font-family:'Bebas Neue',sans-serif; font-size:48px; color:#7db8ff; }
+.gp-final{ font-family:'Bebas Neue',sans-serif; font-size:72px; line-height:1; }
+.gp-time{ font-family:'Bebas Neue',sans-serif; font-size:60px; line-height:1; }
+.gp-vs{ font-family:'Bebas Neue',sans-serif; font-size:40px; color:#7db8ff; }
+.gp-sub{ margin-top:12px; font-size:17px; font-weight:700; color:#ffd2b3; }
+.gp-hero:not(.is-live) .gp-sub{ color:#cfe1ff; }
+.gp-tag{ display:inline-block; font-size:13px; font-weight:800; border-radius:999px; padding:4px 14px; }
+.gp-tag-win{ background:#12391f; color:#5fe08a; } .gp-tag-loss{ background:#3d1519; color:#ff8a93; } .gp-tag-draw{ background:#3a3412; color:#f2d96a; }
+.gp-card{ background:#122041; border:1px solid #22314f; border-radius:16px; padding:14px 16px; }
+.gp-card h3{ margin:0 0 10px; font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:.02em; }
+.gp-sets{ display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; }
+.gp-set{ display:flex; flex-direction:column; gap:2px; background:rgba(255,255,255,.06); border-radius:12px; padding:9px 12px; }
+.gp-set span{ font-size:12px; color:#9cc6ff; font-weight:700; } .gp-set b{ font-size:20px; }
+.gp-set.is-cur{ outline:1px solid #ff7a2e; background:rgba(255,122,46,.12); }
+.gp-info{ display:flex; flex-direction:column; gap:8px; }
+.gp-info div{ display:flex; justify-content:space-between; gap:12px; font-size:15px; }
+.gp-info i{ font-style:normal; color:#8fa3c8; } .gp-info b{ text-align:right; }
+.gp-actions{ display:flex; flex-wrap:wrap; gap:10px; }
+.gp-act{ flex:1 1 150px; }
+.gp-actions .hv-btn-ghost{ color:#cfe1ff; border-color:rgba(255,255,255,.28); }
+.gp-actions .hv-btn-main.is-on{ background:#12391f; color:#5fe08a; }
+@media (max-width:600px){ .gp-n{ font-size:64px; } .gp-final{ font-size:56px; } .gp-team{ font-size:21px; } .gp-score{ min-width:96px; } }
+
+/* na página do jogo a faixa "Ao vivo agora" repete-se: esconde-a para o resultado ficar em cima */
+body.view-jogo #liveNowBanner{ display:none !important; }

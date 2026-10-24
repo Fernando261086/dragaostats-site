@@ -159,7 +159,15 @@ function computeCurrentStreak(sport){
 // que EVENTS já é da competição certa) — muda o mês em exibição se preciso,
 // abre a vista de calendário e desliza até ao cartão, com um breve destaque
 // para a pessoa perceber logo qual é.
+// v152: em modo Modalidades, "ver jogo" abre a página própria do jogo (42-game-page.js);
+// o salto antigo para o cartão no calendário continua disponível como goToEventCardCal_.
 function goToEventCard(evId){
+  const ev0 = EVENTS.find(e=>e.id===evId);
+  if(!ev0) return;
+  if(typeof openGamePage_ === "function" && currentCompMode() === "matches" && openGamePage_(evId)) return;
+  goToEventCardCal_(evId);
+}
+function goToEventCardCal_(evId){
   const ev = EVENTS.find(e=>e.id===evId);
   if(!ev) return;
   const isMatches = currentCompMode() === "matches";

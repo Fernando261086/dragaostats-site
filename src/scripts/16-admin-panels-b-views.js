@@ -468,10 +468,12 @@ function renderMedals(){
 }
 
 function setView(view){
+  window.__curView_ = view; // v152: a página do jogo usa-o para saber para onde voltar
   profileAthlete = null; // sair de qualquer vista fecha a ficha do atleta, se estiver aberta
   const cal = view === "calendario";
   const inicio = view === "inicio";
   const sportpg = view === "modalidade";
+  const gamepg = view === "jogo";
   const medals = view === "medalhas";
   const todayAll = view === "hoje-todas";
   const stats = view === "estatisticas";
@@ -479,12 +481,15 @@ function setView(view){
   const leaderboard = view === "marcadores";
 
   const hb = document.getElementById("viewHomeBtn");
-  if(hb) hb.classList.toggle("active", inicio || sportpg);
+  if(hb) hb.classList.toggle("active", inicio || sportpg || gamepg);
   const hv = document.getElementById("homeView");
   if(hv) hv.style.display = inicio ? "block" : "none";
   const sv = document.getElementById("sportView");
   if(sv) sv.style.display = sportpg ? "block" : "none";
-  document.body.classList.toggle("view-inicio", inicio || sportpg);
+  const gv = document.getElementById("gameView");
+  if(gv) gv.style.display = gamepg ? "block" : "none";
+  document.body.classList.toggle("view-inicio", inicio || sportpg || gamepg);
+  document.body.classList.toggle("view-jogo", gamepg);
   document.getElementById("viewCalendarBtn").classList.toggle("active", cal);
   document.getElementById("viewMedalsBtn").classList.toggle("active", medals);
   document.getElementById("viewTodayAllBtn").classList.toggle("active", todayAll);
@@ -509,6 +514,7 @@ function setView(view){
     document.getElementById("addPanel").style.display = "none";
   }
   if(sportpg && typeof renderSportPage_ === "function") renderSportPage_();
+  if(gamepg && typeof renderGamePage_ === "function") renderGamePage_();
   if(inicio && typeof renderHomeView_ === "function") renderHomeView_(true);
   if(medals) renderMedals();
   if(todayAll) renderTodayAllView();

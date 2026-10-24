@@ -327,7 +327,7 @@ function renderTimeline(){
         const mrStatsBtn = line.querySelector('[data-mrstats="1"]');
         if(mrStatsBtn) mrStatsBtn.onclick = (e)=>{ e.stopPropagation(); statsOpenedFromWeekView = false; openPlayerStatsPanel(ev); };
         const mrMoreBtn = line.querySelector('[data-mrmore="1"]');
-        if(mrMoreBtn) mrMoreBtn.onclick = (e)=>{ e.stopPropagation(); expandedIds.add(ev.id); renderTimeline(); };
+        if(mrMoreBtn) mrMoreBtn.onclick = (e)=>{ e.stopPropagation(); if(typeof openGamePage_ === "function" && openGamePage_(ev.id)) return; expandedIds.add(ev.id); renderTimeline(); };
         line.onclick = (e)=>{
           if(e.target.closest("button, a, input, select, textarea, .reaction-bar, [class*=prediction]")) return; // não abre ao tocar nas reações/palpite
           expandedIds.add(ev.id);

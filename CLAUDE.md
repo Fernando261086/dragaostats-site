@@ -87,6 +87,7 @@ defeito + tema claro). Onde está cada coisa:
   `JOGO_ESTADO_CODIGO`, "50" = terminado; o código de "a decorrer" ainda é desconhecido) no mesmo gatilho de 1 min;
   vivo = jogo do FC Porto, já na hora e código ≠ 50. Teste: `testarAoVivoAndebolAgora`. Basquetebol: o FIBA LiveStats
   (`/data/<id>/data.json`) é legível pelo Google, mas falta descobrir o id do jogo a partir da FPB (ficha tem `data-live`).
+- **Página do jogo** (`42-game-page.js`, v152): vista `jogo` em `setView()`; `openGamePage_(evId)`. `goToEventCard()` abre-a em modo Modalidades (o salto antigo ao cartão do calendário é `goToEventCardCal_`). Link partilhável `?comp=<id>&jogo=<evId>`. Classes `.gp-*`; o `body.view-jogo` esconde a faixa `#liveNowBanner`.
 - **Estilos**: tudo o que é novo está no fim de `06-tabs-and-medals.css`
   (`.hv-*` Início, `.sp-*` modalidade, cabeçalho `html.mode-matches`).
   Classes no `<html>`: `theme-light`, `mode-matches`, `readonly-view`.

@@ -22,6 +22,9 @@ estava publicado como `dragaostats-deploy-v95.zip`.
 Nenhuma funcionalidade foi alterada nesta divisão; é só reorganização do
 código para facilitar trabalhar nele.
 
+## v152
+- **Página do jogo** (`src/scripts/42-game-page.js`, vista `jogo`, `#gameView`): "Ver jogo", "Ver detalhes", a faixa "Ao vivo agora" e os links `?jogo=<id>` abrem uma página só daquele jogo — resultado enorme (ao vivo com minutos/pontos do set; terminado com V/E/D; futuro com contagem decrescente), sets, informação, transmissão, "Lembrar-me", partilhar (link `?comp=..&jogo=..`), classificação e "Ver no calendário". Atualiza sozinha. `goToEventCard` abre-a em modo Modalidades; o salto antigo ao cartão é `goToEventCardCal_`. Cache `dia22-cache-v228`.
+
 ## v151
 - Ao vivo: a faixa "Ao vivo agora", o texto do marcador nas linhas e o cartão azul mostram **quem joga em casa à esquerda** (antes o FC Porto ficava sempre à esquerda, mesmo fora), com os pontos do set pela mesma ordem. A faixa volta a desenhar-se se os dados ao vivo chegarem antes da lista de jogos. Cache `dia22-cache-v227`.
 

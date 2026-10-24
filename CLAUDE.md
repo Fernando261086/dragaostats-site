@@ -108,6 +108,8 @@ jogo do Porto do dia em `/sport/<football|handball|futsal>/scheduled-events/<dat
 (feminino filtra "Women"). O campo `liveId` (link do Sofascore, `#id:NNN`) tem prioridade. Prop `aoVivoSofascore`,
 fundida por último em `readAoVivoTodos_` (sobrepõe a página da FPA). Teste: `testarAoVivoSofascoreAgora`.
 Por confirmar com jogo real (24/10/2026): golos a atualizar durante o jogo.
+**Futsal — classificação (Apps Script v103):** lida de `api.sofascore.com/api/v1/tournament/112814/season/102039/standings/total`
+(3ª Divisão, 1ª Fase, Série A, 26/27; os números mudam de época: vêm em `event.tournament.id` / `event.season.id`). A edição manual fica como reserva (auto fresca <72 h tem prioridade).
 
 **Ainda por fazer:** Plantel; testar em produção as fontes reais (ao vivo de cada modalidade), o push do
 "Lembrar-me" e a edição de um resultado real.

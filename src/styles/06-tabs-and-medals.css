@@ -607,3 +607,10 @@ body.view-inicio #nextMatchBanner, body.view-inicio #todayOpponentBanner{ displa
 
 /* na página do jogo a faixa "Ao vivo agora" repete-se: esconde-a para o resultado ficar em cima */
 body.view-jogo #liveNowBanner{ display:none !important; }
+
+/* v154: "Quem jogou" — o visto nativo aparecia como uma pílula em branco; agora há marca ✕ visível em quem está selecionado */
+.pres-chip{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;padding:6px 12px 6px 6px;border:1px solid var(--line);border-radius:999px;cursor:pointer;position:relative}
+.pres-chip .pres-cb{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
+.pres-chip .pres-mark{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--text-dim,#8aa);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;line-height:1;flex:none;color:#12213a}
+.pres-chip.is-on{background:rgba(227,178,60,0.18);border-color:var(--gold-dim,#e3b23c)}
+.pres-chip.is-on .pres-mark{background:#e3b23c;border-color:#e3b23c}

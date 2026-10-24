@@ -1,3 +1,6 @@
+## v154
+- "Quem jogou": quem está selecionado mostra um círculo dourado com ✕ (o visto nativo aparecia como pílula em branco).
+
 ## v153
 - Página do jogo: voltam os botões Imagem do resultado/promover, Reel e Estatísticas (estavam só no menu 📤 do calendário).
 

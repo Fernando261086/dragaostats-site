@@ -152,9 +152,10 @@ function renderPlayerStatsPanel(){
     ? `<div class="medal-empty">Ainda sem jogadoras conhecidas nesta modalidade — usa "+ Adicionar jogador" ou o campo abaixo primeiro.</div>`
     : `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
         ${knownFcpPlayers.map(n=>`
-          <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; cursor:pointer; ${presentesSet.has(n) ? 'background:rgba(227,178,60,0.18); border-color:var(--gold-dim);' : ''}">
-            <input type="checkbox" data-presente="${n.replace(/"/g,'&quot;')}" ${presentesSet.has(n) ? 'checked' : ''} style="margin:0;">
-            ${n}
+          <label class="pres-chip${presentesSet.has(n) ? ' is-on' : ''}">
+            <input type="checkbox" class="pres-cb" data-presente="${n.replace(/"/g,'&quot;')}" ${presentesSet.has(n) ? 'checked' : ''}>
+            <span class="pres-mark" aria-hidden="true">${presentesSet.has(n) ? '✕' : ''}</span>
+            <span class="pres-name">${n}</span>
           </label>
         `).join("")}
       </div>`;
@@ -230,6 +231,8 @@ function renderPlayerStatsPanel(){
   panel.querySelectorAll('[data-presente]').forEach(cb=>{
     cb.onchange = ()=>{
       const nome = cb.getAttribute('data-presente');
+      const lab = cb.closest('.pres-chip');
+      if(lab){ lab.classList.toggle('is-on', cb.checked); const mk = lab.querySelector('.pres-mark'); if(mk) mk.textContent = cb.checked ? '✕' : ''; }
       if(cb.checked){ if(!ev.presentes.includes(nome)) ev.presentes.push(nome); }
       else{ ev.presentes = ev.presentes.filter(n=>n!==nome); }
     };

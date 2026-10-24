@@ -11,6 +11,22 @@ function homeOpp_(ev){ const t = postTeams_(ev); return (t.home === "FC Porto") 
 function homeDayDiff_(d){ const n = new Date(); const a = new Date(n.getFullYear(), n.getMonth(), n.getDate()); const b = new Date(d.getFullYear(), d.getMonth(), d.getDate()); return Math.round((b - a) / 86400000); }
 function homeLongDate_(d){ const m = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"]; const w = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"]; return w[d.getDay()] + ", " + d.getDate() + " de " + m[d.getMonth()]; }
 
+// Resultado ao vivo para o cartão de destaque: números grandes (na ordem em que se joga) + parte/minuto.
+function homeLiveScoreHtml_(ev, j){
+  const esc = homeEsc_;
+  const t = postTeams_(ev), fcpHome = (t.home === "FC Porto");
+  let a, b, info = "";
+  if(j.golosFcp !== undefined){
+    a = fcpHome ? (j.golosFcp||0) : (j.golosAdv||0); b = fcpHome ? (j.golosAdv||0) : (j.golosFcp||0);
+    info = [j.parte, j.tempo].filter(Boolean).join(" · ");
+  }else{
+    a = fcpHome ? (j.setsFcp||0) : (j.setsAdv||0); b = fcpHome ? (j.setsAdv||0) : (j.setsFcp||0);
+    const sets = Array.isArray(j.sets) ? j.sets : [];
+    if(sets.length){ const c = sets[sets.length - 1]; info = sets.length + ".º set: " + (fcpHome ? c[0] + "-" + c[1] : c[1] + "-" + c[0]); }
+  }
+  return `<div class="hv-hero-score"><span class="hs-n">${esc(String(a))}</span><span class="hs-sep">–</span><span class="hs-n">${esc(String(b))}</span>${info ? `<span class="hs-t">${esc(info)}</span>` : ""}</div>`;
+}
+
 // Cartão azul de destaque (usado no Início e no topo de cada página de modalidade)
 function homeHeroHtml_(item, label){
   const esc = homeEsc_;
@@ -18,15 +34,19 @@ function homeHeroHtml_(item, label){
     return `<div class="hv-hero"><div class="hv-hero-top"><span class="hv-kicker">${esc(label || "Próximo jogo")}</span></div><div class="hv-hero-match"><span class="hm-a" style="font-size:.75em;">Sem jogos marcados</span></div><div class="hv-hero-meta"><span>Volta cá em breve.</span></div></div>`;
   }
   const ev = item.ev, d = item.d, now = new Date();
-  const live = d < now;
-  const pill = live ? "AO VIVO" : (typeof formatCountdownMain === "function" ? formatCountdownMain(homeDayDiff_(d)) : "");
+  const lj = (typeof cevLiveFor_ === "function") ? cevLiveFor_(ev) : null;
+  const liveData = !!(lj && lj.estado === "vivo");        // há dados ao vivo da fonte (resultado e tempo)
+  const live = liveData || d < now;                          // sem dados, a hora já passou: "a decorrer"
+  const pill = liveData ? "AO VIVO" : (live ? "A decorrer" : (typeof formatCountdownMain === "function" ? formatCountdownMain(homeDayDiff_(d)) : ""));
+  const scoreHtml = liveData ? homeLiveScoreHtml_(ev, lj) : "";
   const detail = [ev.detail, ev.phase].filter(Boolean).join(" · ");
   const place = [ev.venue, localLabel(ev.local)].filter(Boolean).join(" · ");
   const ico = (n) => (typeof n === "string") ? n : "";
-  return `<div class="hv-hero${live ? " is-live" : ""}">
-    <div class="hv-hero-top"><span class="hv-kicker">${live ? "A decorrer" : esc(label || "Próximo jogo")}</span><span class="hv-pill">${esc(pill)}</span></div>
+  return `<div class="hv-hero${live ? " is-live" : ""}${liveData ? " has-score" : ""}">
+    <div class="hv-hero-top"><span class="hv-kicker">${liveData ? "A decorrer" : (live ? "A decorrer" : esc(label || "Próximo jogo"))}</span><span class="hv-pill">${liveData ? '<i class="hv-dot"></i>' : ""}${esc(pill)}</span></div>
     <div class="hv-hero-sport">${esc(ev.sport)}${detail ? " · " + esc(detail) : ""}</div>
     <div class="hv-hero-match${homeOpp_(ev).length > 16 ? " hm-long" : ""}"><span class="hm-a">${esc(postTeams_(ev).home)}</span><span class="hm-b"><span class="hv-vs">vs</span> ${esc(postTeams_(ev).away)}</span></div>
+    ${scoreHtml}
     <div class="hv-hero-meta">
       <span>${ico(typeof HERO_ICON_CAL_ !== "undefined" ? HERO_ICON_CAL_ : "")}${esc(homeLongDate_(d))}${ev.t ? " · " + esc(ev.t) : ""}</span>
       <span>${ico(typeof HERO_ICON_PIN_ !== "undefined" ? HERO_ICON_PIN_ : "")}${esc(place)}</span>
@@ -57,12 +77,12 @@ function renderHomeView_(force){
   const sportsAll = Array.from(new Set(withD.map(x=>x.ev.sport))).sort((a, b)=>a.localeCompare(b, "pt"));
   if(homeSport_ !== "Todas" && !sportsAll.includes(homeSport_)) homeSport_ = "Todas";
 
-  const sig = JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, liveOf(x.ev)]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_, Object.keys(STANDINGS || {}).map(k=>[k, ((STANDINGS[k] || {}).updated || 0)])]);
+  const sig = JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, liveOf(x.ev), (typeof cevLiveText_ === "function" && liveOf(x.ev)) ? cevLiveText_(x.ev, cevLiveFor_(x.ev)) : ""]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_, Object.keys(STANDINGS || {}).map(k=>[k, ((STANDINGS[k] || {}).updated || 0)])]);
   if(!force && sig === homeSig_) return;
   homeSig_ = sig;
 
   // Destaque: o próximo jogo. Se um jogo já aparece no cartão "ao vivo" (CEV), o destaque passa ao seguinte.
-  const heroIdx = upcoming.findIndex(x=>!(x.d < now && liveOf(x.ev)));
+  const heroIdx = upcoming.length ? 0 : -1; // v150: um jogo ao vivo fica em destaque, com resultado e minutos
   const hero = heroIdx >= 0 ? upcoming[heroIdx] : null;
 
   // ---- Esta semana (com filtro por modalidade)

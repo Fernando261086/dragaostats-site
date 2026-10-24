@@ -80,7 +80,9 @@ defeito + tema claro). Onde está cada coisa:
   Valores de `status` num jogo a decorrer AINDA DESCONHECIDOS (afinar `eqbEstado_` após o 1.º jogo real; guardados em `codigo`). Teste: `testarAoVivoEquipaBAgora`.
   **Basquetebol (Apps Script v100)**: campo `liveId` em cada jogo (editor: "ID do jogo ao vivo", aceita o número ou o endereço do FIBA LiveStats) →
   `fibalivestats.dcd.shared.geniussports.com/data/<liveId>/data.json` (`clock`, `period`, `tm.1/2.name/score`; sem campo de estado: fim = último período, relógio 00:00, resultado desigual).
-  Os IDs do FIBA são globais (vizinhos são jogos ucranianos): não há forma de os descobrir sozinhos; a FPB só preenche `data-id` na ficha (ao vivo?) — por confirmar.
+  **v101 descobre o ID sozinho**: os jogos da Liga Betclic são registados no FIBA em lotes seguidos (24/10/2026: 2922716…2922733 = jornada 3; 2922737 = FC Porto–CAB Madeira;
+  FIBA = `internalID` da FPB + 2508631 nesse lote) e a página do FIBA existe antes do jogo. `basqueDescobrirId_` procura a partir do último ID conhecido um jogo com "Porto" + adversário do site
+  (cache `basqueMap`). O campo `liveId` manual tem sempre prioridade. Os IDs do FIBA são globais (vizinhos podem ser jogos ucranianos).
   **Andebol (Apps Script v96)**: lê a página `portal.fpa.pt/prova/10016/` (JSON embutido: `JOG_GOLOS_CASA/FORA`,
   `JOGO_ESTADO_CODIGO`, "50" = terminado; o código de "a decorrer" ainda é desconhecido) no mesmo gatilho de 1 min;
   vivo = jogo do FC Porto, já na hora e código ≠ 50. Teste: `testarAoVivoAndebolAgora`. Basquetebol: o FIBA LiveStats

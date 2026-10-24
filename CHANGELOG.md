@@ -1,3 +1,6 @@
+## v156
+- Imagem + texto dos RESULTADOS de hoje (31-day-share.js): novo botão ao lado de "jogos de hoje", só em modo edição, aparece quando há resultados de hoje.
+
 ## v155
 - Convite para ativar notificações no Início e na página do jogo (`43-notify-cta.js`): só para quem vê e ainda não ativou; "Agora não" esconde 5 dias; texto só promete resultado final + lembrete 1 h antes. Popup atualizado com o mesmo texto.
 

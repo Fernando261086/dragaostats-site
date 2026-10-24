@@ -291,7 +291,7 @@ document.getElementById("fAtleta").addEventListener("input", (e)=>{
 function liveIdFromText_(txt){
   const t = String(txt || "").trim();
   if(!t) return "";
-  const m = t.match(/\/u\/[A-Za-z0-9]+\/(\d+)/) || t.match(/(\d{4,})/);
+  const m = t.match(/#id:(\d+)/) || t.match(/\/u\/[A-Za-z0-9]+\/(\d+)/) || t.match(/(\d{4,})/);
   return m ? m[1] : "";
 }
 

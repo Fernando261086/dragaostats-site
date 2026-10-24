@@ -1,3 +1,7 @@
+## v157
+- Folha "Resultado guardado" (44-result-share-prompt.js): ao escrever um resultado (modo edição), oferece Imagem, Reel e Copiar texto desse jogo.
+- Apps Script v108: email de aviso quando um jogo a decorrer não tem dados ao vivo (1 por jogo; futsal ignorado) + verificação diária passa a incluir o gatilho do ao vivo.
+
 ## v156
 - Imagem + texto dos RESULTADOS de hoje (31-day-share.js): novo botão ao lado de "jogos de hoje", só em modo edição, aparece quando há resultados de hoje.
 

@@ -624,3 +624,11 @@ body.view-jogo #liveNowBanner{ display:none !important; }
 .nc-btns{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .nc-yes{flex:1 1 auto}
 .nc-no{background:none;border:0;color:var(--text-dim,#9ab);font-size:12.5px;padding:8px 6px;cursor:pointer}
+
+/* v157: folha "Resultado guardado — partilhar?" (só modo edição) */
+.rsp{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;width:min(440px,calc(100vw - 24px));z-index:9000;background:#14284a;border:1px solid var(--gold-dim,#e3b23c);border-radius:16px;padding:12px 14px;box-shadow:0 10px 32px rgba(0,0,0,.5)}
+.rsp-top{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.rsp-x{background:none;border:0;color:var(--text-dim,#9ab);font-size:16px;padding:4px 8px;cursor:pointer}
+.rsp-match{margin:6px 0 10px;font-size:15px}
+.rsp-btns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.rsp-btns button{padding:10px 6px;border-radius:10px;border:1px solid var(--line,#2a3d60);background:rgba(255,255,255,.06);color:inherit;font-size:13px;cursor:pointer}

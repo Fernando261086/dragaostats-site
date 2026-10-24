@@ -1,3 +1,6 @@
+## v153
+- Página do jogo: voltam os botões Imagem do resultado/promover, Reel e Estatísticas (estavam só no menu 📤 do calendário).
+
 # Changelog
 
 ## 2026-10-22/23 — Redesenho completo (v129–v140)

@@ -113,6 +113,9 @@ function renderGamePage_(){
     ${lembrete}
     ${ev.watchUrl ? `<a class="hv-btn hv-btn-main gp-act" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">📺 Ver transmissão</a>` : ""}
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpShare">↗ Partilhar</button>
+    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ ${resultado ? "Imagem do resultado" : "Imagem para promover"}</button>
+    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 ${resultado ? "Reel do resultado" : "Reel para promover"}</button>
+    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpStats">📊 Estatísticas</button>
     ${classif}
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpCal">${READONLY_MODE ? "Ver no calendário" : "Editar no calendário"}</button>
   </div>`;
@@ -148,6 +151,11 @@ function renderGamePage_(){
     else if(navigator.clipboard){ try{ await navigator.clipboard.writeText(link); alert("Link copiado! Já podes colar e enviar:\n" + link); }catch(e){ prompt("Copia este link:", link); } }
     else prompt("Copia este link:", link);
   };
+  const cor = (typeof SPORT_COLORS !== "undefined" && SPORT_COLORS[ev.sport]) || "#e3b23c";
+  const bImg = host.querySelector("#gpImg"), bReel = host.querySelector("#gpReel"), bSt = host.querySelector("#gpStats");
+  if(bImg) bImg.onclick = ()=>generateShareCard(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor);
+  if(bReel) bReel.onclick = ()=>generateShareReel(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor);
+  if(bSt) bSt.onclick = ()=>{ try{ statsOpenedFromWeekView = false; }catch(e){} openPlayerStatsPanel(ev); };
   const cal = host.querySelector("#gpCal");
   if(cal) cal.onclick = ()=>goToEventCardCal_(ev.id);
   const tb = host.querySelector("#gpTable");

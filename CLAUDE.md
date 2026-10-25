@@ -77,7 +77,7 @@ defeito + tema claro). Onde está cada coisa:
   `resultado_a/b` = sets, `sets[{pontosA,pontosB}]`, `equipa_a/b.cod_clube`; FC Porto = `FCPORTO`; o campo `live` não é fiável). Mesmo formato do CEV. Teste: `testarAoVivoVoleiNacAgora`.
   **Equipa B (Apps Script v99)**: calendário iCal `ligaportugal.pt/calendars-ics/fc_porto_b.ics` (URL de cada jogo) + página do jogo
   (`/match/20262027/ligaportugalmeusuper/<jornada>/<jogo>`) com `__NUXT_DATA__` (devalue) → `homeTeamGoals/awayTeamGoals/status/subStatus`.
-  Valores de `status` num jogo a decorrer AINDA DESCONHECIDOS (afinar `eqbEstado_` após o 1.º jogo real; guardados em `codigo`). Teste: `testarAoVivoEquipaBAgora`.
+  **v111: a página da Liga NÃO tem relógio** (`minutesTillMatchStarts` = minutos até começar, negativo depois; `status 3/subStatus 3` visto aos 58 min do jogo de 25/10/2026) → o minuto vem do Sofascore (equipa FC Porto B = 74469, em `SOFA_SPORTS_`; sobrepõe a Liga). Valores de `status` num jogo a decorrer AINDA DESCONHECIDOS (afinar `eqbEstado_` após o 1.º jogo real; guardados em `codigo`). Teste: `testarAoVivoEquipaBAgora`.
   **Basquetebol (Apps Script v100)**: campo `liveId` em cada jogo (editor: "ID do jogo ao vivo", aceita o número ou o endereço do FIBA LiveStats) →
   `fibalivestats.dcd.shared.geniussports.com/data/<liveId>/data.json` (`clock`, `period`, `tm.1/2.name/score`; sem campo de estado: fim = último período, relógio 00:00, resultado desigual).
   **v101 descobre o ID sozinho**: os jogos da Liga Betclic são registados no FIBA em lotes seguidos (24/10/2026: 2922716…2922733 = jornada 3; 2922737 = FC Porto–CAB Madeira;

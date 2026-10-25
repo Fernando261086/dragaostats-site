@@ -1,3 +1,7 @@
+## v162 — Cronologia e estatísticas do jogo
+- Apps Script v112: lê do Sofascore golos, cartões, substituições e estatísticas (Equipa B, Futebol Feminino, Andebol) e entrega-os no campo `detalhes` (prop `sofaDetalhes`). Teste: `testarDetalheSofascoreAgora`. Equipa B passa a usar o Sofascore (equipa 74469).
+- Site (`46-game-details.js`): cartões "Cronologia" e "Estatísticas" na página do jogo. Só informação; não mexe em resultados.
+
 ## v161 — Equipa B "ao vivo" antes da hora
 - Apps Script v110: `eqbEstado_` nunca dá "vivo" antes da hora do jogo e reconhece "notStarted" (continha "started"); o relógio só vai com o jogo vivo.
 - Site: `cevLiveFor_` ignora "vivo" se faltam mais de 5 min para o jogo.

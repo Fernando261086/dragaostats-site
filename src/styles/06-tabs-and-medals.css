@@ -648,3 +648,17 @@ body.view-jogo #postGameReactionBox{display:none!important}
 .crest{ width:1.15em; height:1.15em; object-fit:contain; vertical-align:-.2em; margin-right:6px; }
 .gp-team .crest{ width:44px; height:44px; display:block; margin:0 auto 6px; }
 @media (max-width:600px){ .gp-team .crest{ width:36px; height:36px; } }
+
+/* cronologia e estatísticas do jogo (v162) */
+.gd-list{ display:flex; flex-direction:column; gap:6px; }
+.gd-row{ display:grid; grid-template-columns:44px 24px minmax(0,1fr); align-items:center; gap:6px; font-size:14px; }
+.gd-row.gd-adv{ opacity:.85; }
+.gd-min{ color:var(--muted,#93a2bd); font-variant-numeric:tabular-nums; font-weight:700; }
+.gd-tx i{ color:var(--muted,#93a2bd); font-style:normal; font-size:12px; margin-left:4px; }
+.gd-adv .gd-tx::after{ content:" · adv."; color:var(--muted,#93a2bd); font-size:11px; }
+.gd-st{ margin:10px 0; }
+.gd-st-t{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:8px; font-size:13px; text-align:center; }
+.gd-st-t b:first-child{ text-align:left; } .gd-st-t b:last-child{ text-align:right; } .gd-st-t span{ color:var(--muted,#93a2bd); }
+.gd-bar{ height:5px; border-radius:3px; background:rgba(255,255,255,.12); margin-top:4px; overflow:hidden; }
+.gd-bar i{ display:block; height:100%; background:var(--sc,#5BB4F0); }
+.gd-src{ font-size:11px; color:var(--muted,#93a2bd); text-align:center; margin:2px 0 10px; }

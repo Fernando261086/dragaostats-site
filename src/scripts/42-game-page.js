@@ -150,7 +150,7 @@ function renderGamePage_(){
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpCal">${READONLY_MODE ? "Ver no calendário" : "Editar no calendário"}</button>
   </div>`;
 
-  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, (typeof crestId_ === "function" && crestId_(ev.sport, ev.athlete) && crestCached_(crestId_(ev.sport, ev.athlete)) ? 1 : 0), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null)]);
+  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof DETALHES === "object" && DETALHES && DETALHES[ev.id]) || null), (typeof crestId_ === "function" && crestId_(ev.sport, ev.athlete) && crestCached_(crestId_(ev.sport, ev.athlete)) ? 1 : 0), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null)]);
   if(sig === gameSig_) return;
   gameSig_ = sig;
 
@@ -166,7 +166,7 @@ function renderGamePage_(){
       </div>
       ${sub ? `<div class="gp-sub">${sub}</div>` : ""}
     </div>
-    ${setsBlock}${extraBlock}${(!fim && typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo") : ""}${info}${acoes}
+    ${setsBlock}${extraBlock}${(typeof gameDetailsHtml_ === "function") ? gameDetailsHtml_(ev) : ""}${(!fim && typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo") : ""}${info}${acoes}
   </div>`;
 
   host.querySelector("#gpBack").onclick = ()=>{

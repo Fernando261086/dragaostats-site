@@ -110,6 +110,7 @@ function applyFormModeUI(){
   document.getElementById("fNotes").style.display = matches ? "block" : "none";
   document.getElementById("fClassLink").style.display = matches ? "block" : "none";
   document.getElementById("fLiveId").style.display = matches ? "block" : "none";
+  document.getElementById("fNoAutoWrap").style.display = matches ? "block" : "none";
   document.getElementById("addChecksRow").style.display = matches ? "none" : "flex";
   document.getElementById("addHintText").style.display = matches ? "none" : "block";
 
@@ -306,6 +307,7 @@ function openEditForm(ev){
   document.getElementById("fLocal").value = ev.local || "casa";
   document.getElementById("fVenue").value = ev.venue || "";
   document.getElementById("fLiveId").value = ev.liveId || "";
+  document.getElementById("fNoAuto").checked = !!ev.noAuto;
   document.getElementById("fNotes").value = ev.notes || "";
   document.getElementById("fClassLink").value = ev.classLink || "";
   document.getElementById("fApprox").checked = !!ev.approx;
@@ -331,6 +333,7 @@ function openDuplicateForm(ev){
   document.getElementById("fLocal").value = ev.local || "casa";
   document.getElementById("fVenue").value = ev.venue || "";
   document.getElementById("fLiveId").value = ""; // cada jogo tem o seu ID: não se copia ao duplicar
+  document.getElementById("fNoAuto").checked = false;
   document.getElementById("fNotes").value = ev.notes || "";
   document.getElementById("fClassLink").value = ev.classLink || "";
   document.getElementById("fApprox").checked = !!ev.approx;
@@ -353,6 +356,7 @@ function closeEditForm(){
   ["fDia","fHora","fSport","fAtleta","fDetalhe","fFase","fWatch","fLiveId","fVenue","fNotes","fClassLink"].forEach(id=>document.getElementById(id).value = "");
   document.getElementById("fApprox").checked = false;
   document.getElementById("fCond").checked = false;
+  document.getElementById("fNoAuto").checked = false;
   document.getElementById("addPanel").style.display = "none";
 }
 
@@ -378,6 +382,7 @@ document.getElementById("addSaveBtn").onclick = async ()=>{
     local: document.getElementById("fLocal").value,
     venue: document.getElementById("fVenue").value.trim(),
     liveId: liveIdFromText_(document.getElementById("fLiveId").value),
+    noAuto: document.getElementById("fNoAuto").checked,
     notes: document.getElementById("fNotes").value.trim(),
     classLink: document.getElementById("fClassLink").value.trim(),
     approx: document.getElementById("fApprox").checked,

@@ -1,3 +1,8 @@
+## v165 — Adicionar ao calendário + opção "sem avisos automáticos"
+- Página do jogo: botão "📅 Adicionar ao calendário" (jogos futuros). Gera um .ics no próprio aparelho, com alarme 1 hora antes (`47-add-to-calendar.js`).
+- Editor do jogo: caixa "Sem avisos automáticos de golo / fim de set neste jogo" (campo `noAuto`), lida pelo Apps Script v115.
+- Cache `dia22-cache-v241`.
+
 ## v164 — Escudo do FC Porto
 - O escudo do FC Porto aparece ao lado do nome em todo o lado onde já há o do adversário (Apps Script v114: `FCP|<modalidade>` e `FCP|*` no campo `escudos`; modalidades sem equipa no Sofascore usam o do futebol feminino).
 

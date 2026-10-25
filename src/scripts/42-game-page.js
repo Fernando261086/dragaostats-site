@@ -143,6 +143,7 @@ function renderGamePage_(){
     ${lembrete}
     ${ev.watchUrl ? `<a class="hv-btn hv-btn-main gp-act" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">📺 Ver transmissão</a>` : ""}
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpShare">↗ Partilhar</button>
+    ${(!resultado && !liveData) ? '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpIcs">📅 Adicionar ao calendário</button>' : ""}
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ ${resultado ? "Imagem do resultado" : "Imagem para promover"}</button>
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 ${resultado ? "Reel do resultado" : "Reel para promover"}</button>
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpStats">📊 Estatísticas</button>
@@ -173,6 +174,8 @@ function renderGamePage_(){
     const v = gamePrevView_ && gamePrevView_ !== "jogo" ? gamePrevView_ : "inicio";
     setView(v); window.scrollTo(0, 0);
   };
+  const icsBtn = host.querySelector("#gpIcs");
+  if(icsBtn) icsBtn.onclick = ()=>addGameToCalendar_(ev);
   const sh = host.querySelector("#gpShare");
   if(sh) sh.onclick = async ()=>{
     const link = gameLink_(ev);

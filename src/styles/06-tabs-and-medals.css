@@ -632,3 +632,8 @@ body.view-jogo #liveNowBanner{ display:none !important; }
 .rsp-match{margin:6px 0 10px;font-size:15px}
 .rsp-btns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .rsp-btns button{padding:10px 6px;border-radius:10px;border:1px solid var(--line,#2a3d60);background:rgba(255,255,255,.06);color:inherit;font-size:13px;cursor:pointer}
+
+/* v158: campos "novo nome / nova estatística" — o botão a 100% esmagava o campo de escrita */
+.row-add{display:flex;gap:8px;align-items:stretch}
+.row-add .gate-input{flex:1 1 auto;min-width:0;width:auto;padding:12px 12px;font-size:15px}
+.row-add .add-save{width:auto;flex:0 0 auto;margin-top:0;white-space:nowrap;padding:12px 16px}

@@ -168,14 +168,14 @@ function renderPlayerStatsPanel(){
     <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
       ${statNames.map(s=>`<span class="chip" style="cursor:default; display:inline-flex; align-items:center; gap:6px;">${s} <span data-remove-stattype="${s.replace(/"/g,'&quot;')}" style="cursor:pointer; opacity:0.75; font-weight:700;">✕</span></span>`).join("")}
     </div>
-    <div style="display:flex; gap:8px; margin-bottom:14px; align-items:center;">
+    <div class="row-add" style="margin-bottom:14px;">
       <input id="newStatTypeInput" class="gate-input" placeholder="Nova estatística (ex: Cartões)" style="flex:1;">
       <button class="add-save" id="addStatTypeBtn" style="white-space:nowrap;">+ Nova estatística</button>
     </div>
     <div class="medal-section-title" style="margin-top:4px;">👥 Quem jogou</div>
     <div style="font-size:11px; color:var(--text-dim); margin:4px 0 10px;">Marca quem esteve em campo neste jogo, mesmo quem não tem estatísticas registadas — é o que faz o "jogos" do Marcadores ser real.</div>
     ${presencasHtml}
-    <div style="display:flex; gap:8px; margin-bottom:14px;">
+    <div class="row-add" style="margin-bottom:14px;">
       <input id="novoPresenteInput" class="gate-input" placeholder="Nome de quem não está na lista" list="playerNameSuggestions" style="flex:1;">
       <button class="add-save" id="addPresenteBtn" style="white-space:nowrap;">+ Adicionar</button>
     </div>

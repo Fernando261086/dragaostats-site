@@ -1,3 +1,6 @@
+## v158
+- Campos "Nome de quem não está na lista" e "Nova estatística": o botão a 100% esmagava o campo de escrita; agora o campo ocupa o espaço e o botão fica ao lado.
+
 ## v157
 - Folha "Resultado guardado" (44-result-share-prompt.js): ao escrever um resultado (modo edição), oferece Imagem, Reel e Copiar texto desse jogo.
 - Apps Script v108: email de aviso quando um jogo a decorrer não tem dados ao vivo (1 por jogo; futsal ignorado) + verificação diária passa a incluir o gatilho do ao vivo.

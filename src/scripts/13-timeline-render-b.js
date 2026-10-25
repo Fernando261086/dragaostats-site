@@ -484,7 +484,7 @@ function renderGoalScorersPanel(ev, panel, headerHtml, teamLabel){
     <div class="medal-section-title" style="margin-top:4px;">👥 Quem jogou</div>
     <div style="font-size:11px; color:var(--text-dim); margin:4px 0 10px;">Marca quem esteve em campo neste jogo, mesmo quem não marcou golo — é o que faz o "jogos" do Marcadores ser real.</div>
     ${presencasHtml}
-    <div style="display:flex; gap:8px; margin-bottom:14px;">
+    <div class="row-add" style="margin-bottom:14px;">
       <input id="novoPresenteInput" class="gate-input" placeholder="Nome de quem não está na lista" list="playerNameSuggestions" style="flex:1;">
       <button class="add-save" id="addPresenteBtn" style="white-space:nowrap;">+ Adicionar</button>
     </div>

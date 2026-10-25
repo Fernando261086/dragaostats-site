@@ -38,7 +38,13 @@ function cevLiveFor_(ev){
   if(!ev || !CEV_LIVE || !CEV_LIVE.jogos || !CEV_LIVE.updated) return null;
   if(Math.abs(Date.now() - CEV_LIVE.updated) > 5 * 60 * 1000) return null;
   const j = CEV_LIVE.jogos[ev.id];
-  return (j && typeof j === "object") ? j : null;
+  if(!(j && typeof j === "object")) return null;
+  // v160: nunca "ao vivo" muito antes da hora do jogo (a fonte pode dar 0-0 e um relógio antigo antes do apito inicial)
+  if(j.estado === "vivo" && ev.day && ev.t){
+    const ini = new Date(ev.day + "T" + ev.t + ":00").getTime();
+    if(!isNaN(ini) && ini - Date.now() > 5 * 60 * 1000) return null;
+  }
+  return j;
 }
 // Texto do marcador, ex.: "FC Porto 1-0 Cajasol · 2.º set: 12-9"
 // v151: ordem em que se joga (quem joga em casa à esquerda). fora = true quando o FC Porto joga fora.

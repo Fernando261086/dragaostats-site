@@ -14,7 +14,7 @@ firebase.initializeApp({
 });
 firebase.messaging(); // já trata sozinho de mostrar a notificação quando chega em segundo plano
 
-const CACHE_NAME = "dia22-cache-v236";
+const CACHE_NAME = "dia22-cache-v237";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",

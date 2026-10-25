@@ -1,3 +1,7 @@
+## v163 — Escudos em todo o site
+- Escudo do adversário no herói do Início, em "Últimos resultados", no calendário, na página da modalidade, no histórico e na página do jogo.
+- Apps Script v114: nomes quase iguais (1-2 letras), pesquisa do Sofascore para os que faltam (`escudosBusca`) e tabela `ESCUDO_ALIASES_` à mão. Minuto do futebol (Equipa B/feminino) pelo início real da parte.
+
 ## v162 — Cronologia e estatísticas do jogo
 - Apps Script v112: lê do Sofascore golos, cartões, substituições e estatísticas (Equipa B, Futebol Feminino, Andebol) e entrega-os no campo `detalhes` (prop `sofaDetalhes`). Teste: `testarDetalheSofascoreAgora`. Equipa B passa a usar o Sofascore (equipa 74469).
 - Site (`46-game-details.js`): cartões "Cronologia" e "Estatísticas" na página do jogo. Só informação; não mexe em resultados.

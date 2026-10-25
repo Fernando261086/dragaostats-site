@@ -46,7 +46,7 @@ function fcpNameHtml_(name){
   const e = String(name == null ? "" : name).replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
   return name === "FC Porto" ? '<span class="fcp-name">FC Porto</span>' : e;
 }
-function matchTitleHtml_(ev){ const t = postTeams_(ev); return fcpNameHtml_(t.home) + " vs " + fcpNameHtml_(t.away); }
+function matchTitleHtml_(ev){ const t = postTeams_(ev); const f = (typeof crestName_ === "function") ? (n=>crestName_(ev, n)) : fcpNameHtml_; return f(t.home) + " vs " + f(t.away); }
 // Etiqueta "Neutro" (em campo neutro a ordem não diz onde se joga)
 function matchNeutralTag_(ev){ return ev && ev.local === "neutro" ? ' <span class="neutro-tag">Neutro</span>' : ""; }
 function buildPostTexts_(iso, mode){

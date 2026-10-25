@@ -45,7 +45,7 @@ function homeHeroHtml_(item, label){
   return `<div class="hv-hero${live ? " is-live" : ""}${liveData ? " has-score" : ""}">
     <div class="hv-hero-top"><span class="hv-kicker">${liveData ? "A decorrer" : (live ? "A decorrer" : esc(label || "Próximo jogo"))}</span><span class="hv-pill">${liveData ? '<i class="hv-dot"></i>' : ""}${esc(pill)}</span></div>
     <div class="hv-hero-sport">${esc(ev.sport)}${detail ? " · " + esc(detail) : ""}</div>
-    <div class="hv-hero-match${homeOpp_(ev).length > 16 ? " hm-long" : ""}"><span class="hm-a">${esc(postTeams_(ev).home)}</span><span class="hm-b"><span class="hv-vs">vs</span> ${esc(postTeams_(ev).away)}</span></div>
+    <div class="hv-hero-match${homeOpp_(ev).length > 16 ? " hm-long" : ""}"><span class="hm-a">${crestOnly_(ev, postTeams_(ev).home)}${esc(postTeams_(ev).home)}</span><span class="hm-b"><span class="hv-vs">vs</span> ${crestOnly_(ev, postTeams_(ev).away)}${esc(postTeams_(ev).away)}</span></div>
     ${scoreHtml}
     <div class="hv-hero-meta">
       <span>${ico(typeof HERO_ICON_CAL_ !== "undefined" ? HERO_ICON_CAL_ : "")}${esc(homeLongDate_(d))}${ev.t ? " · " + esc(ev.t) : ""}</span>
@@ -77,7 +77,7 @@ function renderHomeView_(force){
   const sportsAll = Array.from(new Set(withD.map(x=>x.ev.sport))).sort((a, b)=>a.localeCompare(b, "pt"));
   if(homeSport_ !== "Todas" && !sportsAll.includes(homeSport_)) homeSport_ = "Todas";
 
-  const sig = JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, liveOf(x.ev), (typeof cevLiveText_ === "function" && liveOf(x.ev)) ? cevLiveText_(x.ev, cevLiveFor_(x.ev)) : ""]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), Object.keys(STANDINGS || {}).map(k=>[k, ((STANDINGS[k] || {}).updated || 0)])]);
+  const sig = JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, liveOf(x.ev), (typeof cevLiveText_ === "function" && liveOf(x.ev)) ? cevLiveText_(x.ev, cevLiveFor_(x.ev)) : ""]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_, (typeof ESCUDOS === "object" && ESCUDOS ? Object.keys(ESCUDOS).length : 0), (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), Object.keys(STANDINGS || {}).map(k=>[k, ((STANDINGS[k] || {}).updated || 0)])]);
   if(!force && sig === homeSig_) return;
   homeSig_ = sig;
 
@@ -120,7 +120,7 @@ function renderHomeView_(force){
       const tag = st.resultTag === "win" ? ["V", "win"] : st.resultTag === "loss" ? ["D", "loss"] : st.resultTag === "draw" ? ["E", "draw"] : null;
       return `<button type="button" class="hv-row hv-res" data-go="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};">
         ${tag ? `<span class="hv-tag hv-tag-${tag[1]}">${tag[0]}</span>` : '<span class="hv-tag"></span>'}
-        <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)} · ${esc(formatShortDate(ev.day))}</span><span class="hv-row-match">${esc(t.home)} <b>${esc(String(st.resultado).trim())}</b> ${esc(t.away)}</span></span>
+        <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)} · ${esc(formatShortDate(ev.day))}</span><span class="hv-row-match">${crestOnly_(ev, t.home)}${esc(t.home)} <b>${esc(String(st.resultado).trim())}</b> ${crestOnly_(ev, t.away)}${esc(t.away)}</span></span>
       </button>`;
     }).join("");
     resultsHtml = `<div class="hv-panel hv-results"><div class="hv-panel-head"><h3>Últimos resultados</h3><button type="button" class="hv-link" data-hist="1">Ver histórico</button></div>${res}</div>`;

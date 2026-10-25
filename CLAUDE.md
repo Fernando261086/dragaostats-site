@@ -102,7 +102,7 @@ defeito + tema claro). Onde está cada coisa:
 **Cuidados aprendidos:** usar `minmax(0,1fr)` em grelhas (senão há deslize
 lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 360/390/768px; subir a versão da cache em `public/sw.js` a cada publicação
-(atual `dia22-cache-v238`); em telemóvel os widgets laterais aparecem
+(atual `dia22-cache-v239`); em telemóvel os widgets laterais aparecem
 **depois** da lista de jogos.
 
 **Ao vivo Sofascore (Apps Script v102):** Futebol Feminino, Andebol e Futsal leem
@@ -115,7 +115,7 @@ Por confirmar com jogo real (24/10/2026): golos a atualizar durante o jogo.
 **Futsal — classificação (Apps Script v103):** lida de `api.sofascore.com/api/v1/tournament/112814/season/102039/standings/total`
 (3ª Divisão, 1ª Fase, Série A, 26/27; os números mudam de época: vêm em `event.tournament.id` / `event.season.id`). A edição manual fica como reserva (auto fresca <72 h tem prioridade).
 
-**Escudos dos adversários (Apps Script v109, site v160):** `escudosAtualizar_` lê `team/<id>/events/next|last/0|1` do Sofascore (12 em 12 h, prop `escudosSofa`); `doGet` devolve `escudos` ("Modalidade|Adversário" → id; nome igual ou `cevNomesBatem_`); `?escudo=<id>` devolve `{ok,img:data URL}` (cache 6 h). Site: `45-crests.js` (`crestHtml_`, `crestImage_`, localStorage `dia22-crest-<id>`), usado em `42-game-page.js` e `02-share-card.js`. Por confirmar com dados reais: `testarEscudosAgora` (quantos adversários são reconhecidos por modalidade).
+**Escudos dos adversários (Apps Script v109, site v160):** `escudosAtualizar_` lê `team/<id>/events/next|last/0|1` do Sofascore (12 em 12 h, prop `escudosSofa`); `doGet` devolve `escudos` ("Modalidade|Adversário" → id; nome igual ou `cevNomesBatem_`); `?escudo=<id>` devolve `{ok,img:data URL}` (cache 6 h). Site: `45-crests.js` (`crestHtml_`, `crestImage_`, localStorage `dia22-crest-<id>`), usado em `42-game-page.js` e `02-share-card.js`. v114: reconhecimento por nome parecido/quase igual + pesquisa `search/all?q=` (`escudosPesquisar_`, prop `escudosBusca`) + `ESCUDO_ALIASES_` manual. Site v163: `crestName_/crestOnly_` em herói, listas e histórico. Teste real (25/10/2026): 53 de 58 adversários reconhecidos. `testarEscudosAgora` (quantos adversários são reconhecidos por modalidade).
 
 **Cronologia (Apps Script v112, site v162):** `sofaGuardarDetalhe_` lê `event/<id>/incidents` e `/statistics` (Futebol Feminino, Andebol, Equipa B), guarda compacto em `sofaDetalhes` (máx. ~8 KB, 6 jogos) e o `doGet` devolve `detalhes`. Site: `46-game-details.js`. Formato dos incidentes de andebol/estatísticas por confirmar com jogo real (`testarDetalheSofascoreAgora`).
 

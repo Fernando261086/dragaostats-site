@@ -317,7 +317,7 @@ function renderTimeline(){
           <div class="mr-main">
             <span class="hv-date"><b>${isNaN(dd) ? "" : dd.getDate()}</b><i>${wd}</i></span>
             <span class="hv-row-body"><span class="hv-row-sport">${mesc(ev.sport)}${sub ? " · " + mesc(sub) : ""}</span>
-              <span class="hv-row-match">${result ? `${fcpNameHtml_(tt.home)} <b>${mesc(result)}</b> ${fcpNameHtml_(tt.away)}` : matchTitleHtml_(ev) + matchNeutralTag_(ev)}</span>${(!result && cevj && cevj.estado === "vivo") ? `<span class="live-score">${cevLiveText_(ev, cevj)}</span>` : ""}</span>
+              <span class="hv-row-match">${result ? `${crestName_(ev, tt.home)} <b>${mesc(result)}</b> ${crestName_(ev, tt.away)}` : matchTitleHtml_(ev) + matchNeutralTag_(ev)}</span>${(!result && cevj && cevj.estado === "vivo") ? `<span class="live-score">${cevLiveText_(ev, cevj)}</span>` : ""}</span>
             ${liveNow ? '<span class="live-flag">AO VIVO</span>' : (result ? (tagTxt ? `<span class="hv-tag hv-tag-${tagTxt[1]}">${tagTxt[0]}</span>` : "") : `<span class="hv-row-time">${mesc(ev.t || "")}</span>`)}
           </div>
           <div class="mr-foot">${hasGameStats ? `<button type="button" class="mr-stats" data-mrstats="1">${playerStatsCardLabel(ev.sport)}</button>` : '<span></span>'}<button type="button" class="mr-more" data-mrmore="1">Ver detalhes ›</button></div>

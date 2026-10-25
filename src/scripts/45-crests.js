@@ -46,3 +46,9 @@ async function crestImage_(sport, adv){
   if(!src) return null;
   return await new Promise(res=>{ const im = new Image(); im.onload = ()=>res(im); im.onerror = ()=>res(null); im.src = src; });
 }
+
+// v163: escudo + nome em linhas e listas (só o do adversário; o FC Porto fica como estava)
+function crestOnly_(ev, name){
+  try{ return (ev && String(name).trim() === String(ev.athlete || "").trim()) ? crestHtml_(ev.sport, ev.athlete) : ""; }catch(e){ return ""; }
+}
+function crestName_(ev, name){ return crestOnly_(ev, name) + fcpNameHtml_(name); }

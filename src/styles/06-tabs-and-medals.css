@@ -662,3 +662,7 @@ body.view-jogo #postGameReactionBox{display:none!important}
 .gd-bar{ height:5px; border-radius:3px; background:rgba(255,255,255,.12); margin-top:4px; overflow:hidden; }
 .gd-bar i{ display:block; height:100%; background:var(--sc,#5BB4F0); }
 .gd-src{ font-size:11px; color:var(--muted,#93a2bd); text-align:center; margin:2px 0 10px; }
+
+/* escudos nas listas e no herói do Início (v163) */
+.hv-row-match .crest{ width:1.2em; height:1.2em; margin:0 5px 0 0; }
+.hv-hero-match .crest{ width:1.1em; height:1.1em; margin-right:8px; vertical-align:-.15em; }

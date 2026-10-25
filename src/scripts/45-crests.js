@@ -4,7 +4,10 @@
 // só se pede uma vez. Se algo falhar, não aparece escudo e o site fica exatamente como estava.
 let ESCUDOS = {};
 function crestId_(sport, adv){
-  try{ return (ESCUDOS && ESCUDOS[sport + "|" + String(adv || "").trim()]) || null; }catch(e){ return null; }
+  try{
+    if(String(adv || "").trim() === "FC Porto") return (ESCUDOS && (ESCUDOS["FCP|" + sport] || ESCUDOS["FCP|*"])) || null; // o do FC Porto (v164)
+    return (ESCUDOS && ESCUDOS[sport + "|" + String(adv || "").trim()]) || null;
+  }catch(e){ return null; }
 }
 function crestCached_(id){
   try{ return localStorage.getItem("dia22-crest-" + id) || ""; }catch(e){ return ""; }
@@ -49,6 +52,10 @@ async function crestImage_(sport, adv){
 
 // v163: escudo + nome em linhas e listas (só o do adversário; o FC Porto fica como estava)
 function crestOnly_(ev, name){
-  try{ return (ev && String(name).trim() === String(ev.athlete || "").trim()) ? crestHtml_(ev.sport, ev.athlete) : ""; }catch(e){ return ""; }
+  try{
+    if(!ev) return "";
+    const n = String(name).trim();
+    return (n === "FC Porto" || n === String(ev.athlete || "").trim()) ? crestHtml_(ev.sport, n) : "";
+  }catch(e){ return ""; }
 }
 function crestName_(ev, name){ return crestOnly_(ev, name) + fcpNameHtml_(name); }

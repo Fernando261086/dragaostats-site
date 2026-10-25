@@ -76,6 +76,11 @@ async function generateShareCard(ev, st, sportColor){
         ctx.drawImage(crest, 70 + (84 - w) / 2, yLinha - h / 2, w, h);
       }
     }
+    const cf = (typeof crestImage_ === "function") ? await crestImage_(ev.sport, "FC Porto") : null; // v164: escudo do FC Porto na linha dele
+    if(cf){
+      const yF = isAway ? 418 : 315, k2 = Math.min(84 / cf.width, 84 / cf.height), w2 = cf.width * k2, h2 = cf.height * k2;
+      ctx.drawImage(cf, 70 + (84 - w2) / 2, yF - h2 / 2, w2, h2);
+    }
   }catch(e){}
   ctx.font = "600 30px 'Archivo Narrow', sans-serif";
   ctx.fillStyle = "#93a2bd";

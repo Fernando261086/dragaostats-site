@@ -1,3 +1,6 @@
+## v164 — Escudo do FC Porto
+- O escudo do FC Porto aparece ao lado do nome em todo o lado onde já há o do adversário (Apps Script v114: `FCP|<modalidade>` e `FCP|*` no campo `escudos`; modalidades sem equipa no Sofascore usam o do futebol feminino).
+
 ## v163 — Escudos em todo o site
 - Escudo do adversário no herói do Início, em "Últimos resultados", no calendário, na página da modalidade, no histórico e na página do jogo.
 - Apps Script v114: nomes quase iguais (1-2 letras), pesquisa do Sofascore para os que faltam (`escudosBusca`) e tabela `ESCUDO_ALIASES_` à mão. Minuto do futebol (Equipa B/feminino) pelo início real da parte.

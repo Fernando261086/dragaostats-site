@@ -102,7 +102,7 @@ defeito + tema claro). Onde está cada coisa:
 **Cuidados aprendidos:** usar `minmax(0,1fr)` em grelhas (senão há deslize
 lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 360/390/768px; subir a versão da cache em `public/sw.js` a cada publicação
-(atual `dia22-cache-v235`); em telemóvel os widgets laterais aparecem
+(atual `dia22-cache-v236`); em telemóvel os widgets laterais aparecem
 **depois** da lista de jogos.
 
 **Ao vivo Sofascore (Apps Script v102):** Futebol Feminino, Andebol e Futsal leem
@@ -114,6 +114,8 @@ Por confirmar com jogo real (24/10/2026): golos a atualizar durante o jogo.
 **Alertas (Apps Script v108):** `verificarSaudeAoVivo_` (5 em 5 min, no gatilho do ao vivo) manda 1 email por jogo que já começou há >20 min, sem resultado escrito e sem dados ao vivo; `ALERTA_AOVIVO_IGNORAR` = ["Futsal"] (o Sofascore não acompanha a 3.ª Divisão). Teste: `testarAlertasAoVivoAgora`. O heartbeat `aoVivo` entra na verificação diária.
 **Futsal — classificação (Apps Script v103):** lida de `api.sofascore.com/api/v1/tournament/112814/season/102039/standings/total`
 (3ª Divisão, 1ª Fase, Série A, 26/27; os números mudam de época: vêm em `event.tournament.id` / `event.season.id`). A edição manual fica como reserva (auto fresca <72 h tem prioridade).
+
+**Escudos dos adversários (Apps Script v109, site v160):** `escudosAtualizar_` lê `team/<id>/events/next|last/0|1` do Sofascore (12 em 12 h, prop `escudosSofa`); `doGet` devolve `escudos` ("Modalidade|Adversário" → id; nome igual ou `cevNomesBatem_`); `?escudo=<id>` devolve `{ok,img:data URL}` (cache 6 h). Site: `45-crests.js` (`crestHtml_`, `crestImage_`, localStorage `dia22-crest-<id>`), usado em `42-game-page.js` e `02-share-card.js`. Por confirmar com dados reais: `testarEscudosAgora` (quantos adversários são reconhecidos por modalidade).
 
 **Ainda por fazer:** Plantel; testar em produção as fontes reais (ao vivo de cada modalidade), o push do
 "Lembrar-me" e a edição de um resultado real.

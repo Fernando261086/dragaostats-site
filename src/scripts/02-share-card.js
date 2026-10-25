@@ -66,6 +66,17 @@ async function generateShareCard(ev, st, sportColor){
   ctx.fillStyle = "#eef2f8";
   ctx.font = "700 46px 'Archivo Narrow', sans-serif";
   wrapCenteredText(ctx, topName, CARD/2, 315, CARD-120);
+  // v160: escudo do adversário à esquerda da linha dele (só se a imagem existir e o nome não for comprido)
+  try{
+    const crest = (typeof crestImage_ === "function") ? await crestImage_(ev.sport, ev.athlete) : null;
+    if(crest){
+      const yLinha = isAway ? 315 : 418, nomeW = ctx.measureText(ev.athlete || "").width;
+      if(nomeW < 600){
+        const k = Math.min(84 / crest.width, 84 / crest.height), w = crest.width * k, h = crest.height * k;
+        ctx.drawImage(crest, 70 + (84 - w) / 2, yLinha - h / 2, w, h);
+      }
+    }
+  }catch(e){}
   ctx.font = "600 30px 'Archivo Narrow', sans-serif";
   ctx.fillStyle = "#93a2bd";
   ctx.fillText("vs", CARD/2, 368);

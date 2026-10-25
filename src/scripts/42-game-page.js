@@ -32,6 +32,10 @@ function gameCountdown_(d){
   return "Começa dentro de " + Math.max(1, min) + " min";
 }
 
+function crestSide_(ev, nome){
+  try{ return (typeof crestHtml_ === "function" && String(nome).trim() === String(ev.athlete || "").trim()) ? crestHtml_(ev.sport, ev.athlete) : ""; }catch(e){ return ""; }
+}
+
 function renderGamePage_(){
   const host = document.getElementById("gameView");
   if(!host || host.style.display === "none") return;
@@ -146,7 +150,7 @@ function renderGamePage_(){
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpCal">${READONLY_MODE ? "Ver no calendário" : "Editar no calendário"}</button>
   </div>`;
 
-  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null)]);
+  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, (typeof crestId_ === "function" && crestId_(ev.sport, ev.athlete) && crestCached_(crestId_(ev.sport, ev.athlete)) ? 1 : 0), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null)]);
   if(sig === gameSig_) return;
   gameSig_ = sig;
 
@@ -156,9 +160,9 @@ function renderGamePage_(){
     <div class="gp-hero${pillCls}">
       <div class="gp-pill-row"><span class="gp-pill">${liveData ? '<i class="hv-dot"></i>' : ""}${esc(pill)}</span></div>
       <div class="gp-teams">
-        <div class="gp-team">${(typeof fcpNameHtml_ === "function") ? fcpNameHtml_(t.home) : nomeA}</div>
+        <div class="gp-team">${crestSide_(ev, t.home)}${(typeof fcpNameHtml_ === "function") ? fcpNameHtml_(t.home) : nomeA}</div>
         <div class="gp-score">${big}</div>
-        <div class="gp-team">${(typeof fcpNameHtml_ === "function") ? fcpNameHtml_(t.away) : nomeB}</div>
+        <div class="gp-team">${crestSide_(ev, t.away)}${(typeof fcpNameHtml_ === "function") ? fcpNameHtml_(t.away) : nomeB}</div>
       </div>
       ${sub ? `<div class="gp-sub">${sub}</div>` : ""}
     </div>

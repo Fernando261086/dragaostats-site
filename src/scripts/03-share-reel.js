@@ -419,6 +419,7 @@ async function fetchAll(){
       // marcador ao vivo da CEV (voleibol) — só existe quando o Apps Script o está a preencher
       CEV_LIVE = (raw.cevLive && typeof raw.cevLive === "object") ? raw.cevLive : {};
       if(raw.standings && typeof raw.standings === "object") STANDINGS = raw.standings;
+      ESCUDOS = (raw.escudos && typeof raw.escudos === "object") ? raw.escudos : {};
       if(typeof renderLiveNowBanner_ === "function") renderLiveNowBanner_();
       if(raw.questionTemplates && typeof raw.questionTemplates === "object"){
         const mergedQ = { ...DEFAULT_QUESTION_TEMPLATES };

@@ -1,3 +1,7 @@
+## v160 — Escudos dos adversários
+- Apps Script v109: lê do Sofascore as equipas adversárias de cada modalidade (de 12 em 12 h), junta-as aos jogos do site (campo `escudos` do `doGet`) e entrega o escudo em base64 em `?escudo=<id>`. Teste: `testarEscudosAgora`.
+- Site (`45-crests.js`): escudo na página do jogo e no cartão de imagem; guardado no aparelho. Sem escudo, tudo fica como estava.
+
 ## v159
 - Início/rodapé (público): as 5 ligações passam a uma linha discreta (continuam no menu Mais).
 - Página de modalidade sem próximo jogo: destaque mostra o último resultado.

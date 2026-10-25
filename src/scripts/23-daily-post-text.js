@@ -97,8 +97,8 @@ function buildPostTexts_(iso, mode){
     });
     const tags = ["#FCPorto", "#DragaoStats"];
     list.forEach(({ ev })=>{ const h = postSportHashtag_(ev.sport); if(h && tags.indexOf(h)===-1) tags.push(h); });
-    fb += (mode==="results" ? "Calendário e classificações em dragaostats.pt" : "Resultados em direto em dragaostats.pt") + "\n\n" + tags.join(" ");
-    rd += "\n" + (mode==="results" ? "Classificações: dragaostats.pt" : "Resultados e classificações: dragaostats.pt");
+    fb += (mode==="results" ? "Calendário e classificações em https://dragaostats.pt" : "Resultados em direto em https://dragaostats.pt") + "\n\n" + tags.join(" ");
+    rd += "\n" + (mode==="results" ? "Classificações: https://dragaostats.pt" : "Resultados e classificações: https://dragaostats.pt");
   }
   return { fb, rd, total: items.length, shown: list.length, missing };
 }

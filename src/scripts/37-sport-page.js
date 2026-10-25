@@ -33,7 +33,17 @@ function renderSportPage_(){
     </div>
   </div>`;
   const tabs = `<div class="sp-tabs"><button type="button" class="${sportPageTab_ === "jogos" ? "active" : ""}" data-sptab="jogos">Jogos</button><button type="button" class="${sportPageTab_ === "classificacao" ? "active" : ""}" data-sptab="classificacao">Classificação</button><button type="button" class="${sportPageTab_ === "marcadores" ? "active" : ""}" data-sptab="marcadores">Marcadores</button></div>`;
-  const heroHtml = (sportPageTab_ === "jogos" && typeof homeHeroHtml_ === "function") ? `<div class="sp-hero">${homeHeroHtml_(next)}</div>` : "";
+  let heroHtml = (sportPageTab_ === "jogos" && typeof homeHeroHtml_ === "function") ? `<div class="sp-hero">${homeHeroHtml_(next)}</div>` : "";
+  if(sportPageTab_ === "jogos" && !next && done.length){
+    // v159: sem próximo jogo marcado → em vez de um destaque vazio, mostra o último resultado
+    const u = done[0], tt = postTeams_(u.ev), tag = u.st.resultTag === "win" ? "Vitória" : u.st.resultTag === "loss" ? "Derrota" : u.st.resultTag === "draw" ? "Empate" : "Terminado";
+    const det = [u.ev.detail, u.ev.phase].filter(Boolean).join(" · ");
+    heroHtml = `<div class="sp-hero"><div class="hv-hero"><div class="hv-hero-top"><span class="hv-kicker">Último resultado</span><span class="hv-pill">${esc(tag)}</span></div>
+      <div class="hv-hero-sport">${esc(sport)}${det ? " · " + esc(det) : ""}</div>
+      <div class="hv-hero-match hm-long"><span class="hm-a">${esc(tt.home)}</span><span class="hm-b"><b>${esc(String(u.st.resultado).trim())}</b> ${esc(tt.away)}</span></div>
+      <div class="hv-hero-meta"><span>${esc(homeLongDate_(u.d))}</span><span>Sem próximo jogo marcado</span></div>
+      <div class="hv-hero-actions"><button type="button" class="hv-btn hv-btn-main" data-go="${esc(u.ev.id)}">Ver jogo</button></div></div></div>`;
+  }
 
   let body = "";
   if(sportPageTab_ === "jogos"){

@@ -1,3 +1,10 @@
+## v159
+- Início/rodapé (público): as 5 ligações passam a uma linha discreta (continuam no menu Mais).
+- Página de modalidade sem próximo jogo: destaque mostra o último resultado.
+- Página do jogo terminado: marcadores (estatística principal da modalidade), posição na classificação e reações ("O que achaste do jogo?"); o widget global de reação fica escondido nessa página.
+- Páginas SEO por modalidade: caixa "Últimos resultados" preenchida ao abrir (fica escondida se falhar; texto e meta intactos).
+- Textos de post antigos (Facebook/Reddit): link com https://.
+
 ## v158
 - Campos "Nome de quem não está na lista" e "Nova estatística": o botão a 100% esmagava o campo de escrita; agora o campo ocupa o espaço e o botão fica ao lado.
 

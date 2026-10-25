@@ -93,6 +93,32 @@ function renderGamePage_(){
   }
   const setsBlock = setsHtml ? `<div class="gp-card"><h3>Sets</h3><div class="gp-sets">${setsHtml}</div></div>` : "";
 
+  // ---- v159: jogo terminado → marcadores (estatística principal da modalidade), posição na classificação e reações
+  let extraBlock = "";
+  if(fim){
+    let linhas = "";
+    try{
+      const main = (typeof getStatTypesFor === "function" ? getStatTypesFor(ev.sport) : ["Golos"])[0] || "Golos";
+      const tot = {};
+      (Array.isArray(ev.playerStats) ? ev.playerStats : []).forEach(p=>{
+        if(!p || p.team === "adv" || !p.name || !String(p.name).trim()) return;
+        const n = Number(p.stats && p.stats[main]) || 0; if(n > 0) tot[String(p.name).trim()] = (tot[String(p.name).trim()] || 0) + n;
+      });
+      const lista = Object.keys(tot).sort((a, b)=>tot[b] - tot[a]);
+      if(lista.length) linhas += `<div class="gp-card"><h3>${main === "Golos" ? "Marcadores" : esc(main)}</h3><div class="gp-info">${lista.map(n=>`<div><i>${esc(n)}</i><b>${tot[n]}</b></div>`).join("")}</div></div>`;
+    }catch(e){}
+    try{
+      const S = (typeof STANDINGS === "object" && STANDINGS) ? STANDINGS[ev.sport] : null;
+      const me = S && (S.rows || []).find(r=>r.me);
+      if(me){
+        const ci = k=>(S.cols || []).indexOf(k), pts = (me.c || [])[ci("Pts")], j = (me.c || [])[ci("J")];
+        linhas += `<div class="gp-card"><h3>Classificação</h3><div class="gp-info"><div><i>Posição do FC Porto</i><b>${esc(me.p)}.º${pts !== undefined ? " · " + esc(pts) + " pts" : ""}${j !== undefined ? " · " + esc(j) + " jogos" : ""}</b></div></div></div>`;
+      }
+    }catch(e){}
+    if(typeof renderReactionBar === "function") linhas += `<div class="gp-card gp-react"><h3>O que achaste do jogo?</h3>${renderReactionBar(ev.id)}</div>`;
+    extraBlock = linhas;
+  }
+
   // ---- informação
   const detail = [ev.detail, ev.phase].filter(Boolean).join(" · ");
   const place = [ev.venue, localLabel(ev.local)].filter(Boolean).join(" · ");
@@ -120,7 +146,7 @@ function renderGamePage_(){
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpCal">${READONLY_MODE ? "Ver no calendário" : "Editar no calendário"}</button>
   </div>`;
 
-  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_())]);
+  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null)]);
   if(sig === gameSig_) return;
   gameSig_ = sig;
 
@@ -136,7 +162,7 @@ function renderGamePage_(){
       </div>
       ${sub ? `<div class="gp-sub">${sub}</div>` : ""}
     </div>
-    ${setsBlock}${(!fim && typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo") : ""}${info}${acoes}
+    ${setsBlock}${extraBlock}${(!fim && typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo") : ""}${info}${acoes}
   </div>`;
 
   host.querySelector("#gpBack").onclick = ()=>{
@@ -157,6 +183,8 @@ function renderGamePage_(){
   if(bReel) bReel.onclick = ()=>generateShareReel(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor);
   if(bSt) bSt.onclick = ()=>{ try{ statsOpenedFromWeekView = false; }catch(e){} openPlayerStatsPanel(ev); };
   if(typeof bindNotifyCta_ === "function") bindNotifyCta_(host, ()=>{ gameSig_ = ""; renderGamePage_(); });
+  const rb = host.querySelector(".gp-react");
+  if(rb && typeof wireReactionBar === "function"){ try{ wireReactionBar(rb, ev.id); }catch(e){} }
   const cal = host.querySelector("#gpCal");
   if(cal) cal.onclick = ()=>goToEventCardCal_(ev.id);
   const tb = host.querySelector("#gpTable");

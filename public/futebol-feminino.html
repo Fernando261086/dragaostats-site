@@ -66,6 +66,8 @@ footer a{color:var(--text-dim);}
   <h1>Futebol Feminino do <b>FC Porto</b></h1>
   <p>A equipa feminina do FC Porto disputa a Liga BPI, a principal competição de futebol feminino em Portugal pela primeira vez na sua história. Acompanha aqui o calendário, os resultados e a classificação, jornada a jornada.</p>
 
+  <div id="ultimos" style="display:none;margin:18px auto 6px;max-width:460px;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px 16px;"><div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.7;margin-bottom:6px;">Últimos resultados</div><div id="ultimosLista"></div></div>
+
   <a class="cta" href="/?sport=futebol-feminino">Ver calendário e resultados ao vivo →</a>
   <p class="cta-sub">Sem fins lucrativos, sem ligação oficial ao FC Porto.</p>
 
@@ -84,5 +86,39 @@ footer a{color:var(--text-dim);}
 
   <footer>Dragão Stats — projeto de adeptos, sem ligação oficial ao FC Porto.<br><a href="/">dragaostats.pt</a></footer>
 </div>
+<script>
+/* Últimos resultados desta modalidade (preenchido ao abrir; se falhar, a caixa fica escondida e a página fica como estava) */
+(function(){
+  var SPORT = "Futebol Feminino", URL_ = "https://script.google.com/macros/s/AKfycbzsPW_XhIwE-fq9GGd9rn_wPQkkOoH__dbJ6MBvRIW3mZE_kiw2JT3HszxUqCIcgOC9pw/exec";
+  fetch(URL_ + "?_=" + Date.now(), { cache: "no-store" }).then(function(r){ return r.json(); }).then(function(d){
+    var out = [];
+    (d.competitions || []).forEach(function(c){
+      if (c.mode !== "matches" || c.archived) return;
+      var dd = (d.data || {})[c.id] || {};
+      (dd.events || []).forEach(function(ev){
+        if (ev.sport !== SPORT) return;
+        var st = (dd.status || {})[ev.id] || {};
+        var res = st.resultado && String(st.resultado).trim();
+        if (res) out.push({ ev: ev, res: res });
+      });
+    });
+    out.sort(function(a, b){ return (b.ev.day + (b.ev.t || "")).localeCompare(a.ev.day + (a.ev.t || "")); });
+    out = out.slice(0, 3);
+    if (!out.length) return;
+    var box = document.getElementById("ultimos"), list = document.getElementById("ultimosLista");
+    var M = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+    out.forEach(function(x){
+      var fora = x.ev.local === "fora", home = fora ? x.ev.athlete : "FC Porto", away = fora ? "FC Porto" : x.ev.athlete;
+      var p = String(x.ev.day).split("-"), data = p.length === 3 ? (Number(p[2]) + " " + M[Number(p[1]) - 1]) : "";
+      var row = document.createElement("div");
+      row.style.cssText = "display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:15px;";
+      var a = document.createElement("span"); a.textContent = home + " " + x.res + " " + away;
+      var b = document.createElement("span"); b.textContent = data; b.style.opacity = ".6";
+      row.appendChild(a); row.appendChild(b); list.appendChild(row);
+    });
+    box.style.display = "block";
+  }).catch(function(){});
+})();
+</script>
 </body>
 </html>

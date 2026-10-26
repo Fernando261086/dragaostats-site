@@ -1,3 +1,6 @@
+## v175 — Médias e competições na folha do jogador
+- Basquetebol: médias por jogo (total em pequeno). Todas as modalidades: bloco "Por competição" (Campeonato, Amigável…) quando há mais do que uma; Basquetebol com médias, as outras com totais. Competições juntas ignorando maiúsculas e acentos. Cache `dia22-cache-v252`.
+
 ## v174 — Estatísticas do jogador no plantel
 - Tocar num jogador do Plantel abre uma folha com jogos, totais da época (golos, pontos, etc.) e jogo a jogo, a partir do que é registado em cada jogo (📊/⚽ e 👥). Ligação tolerante de nomes ("F. Moura" = "Francisco Jorge Moura"; um só nome só conta se for único no plantel). Só site, sem Apps Script novo. Cache `dia22-cache-v251`.
 

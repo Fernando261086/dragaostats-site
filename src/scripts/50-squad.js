@@ -80,7 +80,26 @@ function playerSheetHtml_(sport, r){
   const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
   const s = playerSeasonStats_(sport, r[1]);
   const comValor = s.tipos.filter(t=>s.totais[t] > 0);
-  const tiles = `<div class="ps-tile"><b>${s.jogos.length}</b><i>Jogos</i></div>` + comValor.map(t=>`<div class="ps-tile"><b>${s.totais[t]}</b><i>${esc(t)}</i></div>`).join("");
+  const media = sport === "Basquetebol"; // no Basquetebol mostra-se a média por jogo (total em pequeno)
+  const fmt = n=>{ const x = Math.round(n * 10) / 10; return String(x).replace(".", ","); };
+  const tiles = `<div class="ps-tile"><b>${s.jogos.length}</b><i>Jogos</i></div>` + comValor.map(t=>media
+    ? `<div class="ps-tile"><b>${fmt(s.totais[t] / s.jogos.length)}</b><i>${esc(t)} / jogo</i><u>total ${s.totais[t]}</u></div>`
+    : `<div class="ps-tile"><b>${s.totais[t]}</b><i>${esc(t)}</i></div>`).join("");
+  // por competição (texto "Competição" de cada jogo: Campeonato, Amigável, …) — só se houver mais do que uma
+  const comps = [];
+  s.jogos.forEach(g=>{
+    const nome = (g.ev.detail && String(g.ev.detail).trim()) || "Sem competição";
+    const k = sqNorm_(nome);
+    let c = comps.find(x=>x.k === k);
+    if(!c){ c = { k, nome, n: 0, tot: {} }; comps.push(c); }
+    c.n++;
+    comValor.forEach(t=>{ c.tot[t] = (c.tot[t] || 0) + (g.vals[t] || 0); });
+  });
+  comps.sort((a, b)=>b.n - a.n);
+  const porComp = comps.length > 1 ? `<div class="hv-panel"><div class="hv-panel-head"><h3>Por competição</h3></div>${comps.map(c=>{
+    const bits = comValor.map(t=>media ? `${esc(t)} <b>${fmt(c.tot[t] / c.n)}</b> / jogo` : `${esc(t)} <b>${c.tot[t]}</b>`).join(" · ");
+    return `<div class="ps-comp"><span class="ps-cn">${esc(c.nome)}</span><span class="ps-cj">${c.n} jogo${c.n === 1 ? "" : "s"}</span>${bits ? `<span class="ps-cv">${bits}</span>` : ""}</div>`;
+  }).join("")}</div>` : "";
   const lista = s.jogos.map(g=>{
     const st = (typeof getEv === "function" && getEv(g.ev.id)) || {};
     const vals = s.tipos.filter(t=>g.vals[t]).map(t=>`${g.vals[t]} ${esc(t.toLowerCase())}`).join(" · ");
@@ -91,7 +110,7 @@ function playerSheetHtml_(sport, r){
   const vazio = !s.jogos.length ? '<div class="hv-empty">Ainda sem estatísticas registadas para este jogador.</div>' : "";
   const nota = (sport === "Voleibol") ? '<div class="hv-empty">No Voleibol só se registam os pontos de cada set, não os de cada jogadora.</div>' : "";
   return `<div class="ps-head">${squadAvatar_(r[3], r[0] || "–", esc, false)}<div><h2>${esc(r[1])}</h2><span>${esc(r[2] || "")}${r[0] ? " · Nº " + esc(r[0]) : ""}</span></div></div>
-    <div class="ps-tiles">${tiles}</div>${nota}${vazio}${lista ? `<div class="hv-panel"><div class="hv-panel-head"><h3>Jogo a jogo</h3></div>${lista}</div>` : ""}`;
+    <div class="ps-tiles">${tiles}</div>${nota}${vazio}${porComp}${lista ? `<div class="hv-panel"><div class="hv-panel-head"><h3>Jogo a jogo</h3></div>${lista}</div>` : ""}`;
 }
 (function(){
   const box = document.createElement("div");

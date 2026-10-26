@@ -754,3 +754,9 @@ button.sq-click{ width:100%; background:none; border:0; border-top:1px solid var
 .ps-d{ color:rgba(255,255,255,.55); font-size:13px; }
 .ps-a i{ font-style:normal; color:rgba(255,255,255,.55); margin-left:4px; }
 .ps-v{ font-weight:700; text-align:right; }
+.ps-tile u{ display:block; text-decoration:none; font-size:10px; color:rgba(255,255,255,.4); margin-top:2px; }
+.ps-comp{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2px 10px; padding:9px 0; border-top:1px solid var(--line); font-size:14px; }
+.ps-comp:first-of-type{ border-top:0; }
+.ps-cn{ font-weight:600; }
+.ps-cj{ color:rgba(255,255,255,.55); font-size:13px; text-align:right; }
+.ps-cv{ grid-column:1 / -1; font-size:13px; color:rgba(255,255,255,.7); }

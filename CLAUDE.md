@@ -102,7 +102,7 @@ defeito + tema claro). Onde está cada coisa:
 **Cuidados aprendidos:** usar `minmax(0,1fr)` em grelhas (senão há deslize
 lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 360/390/768px; subir a versão da cache em `public/sw.js` a cada publicação
-(atual `dia22-cache-v255`); em telemóvel os widgets laterais aparecem
+(atual `dia22-cache-v257`); em telemóvel os widgets laterais aparecem
 **depois** da lista de jogos.
 
 **Ao vivo Sofascore (Apps Script v102):** Futebol Feminino, Andebol e Futsal leem
@@ -187,12 +187,14 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 
 **v173:** escudos nas classificações (`crestCell_` em `41-standings.js`; Apps Script v126 `escudosComTabelas_`, teste `testarEscudosTabelasAgora`; escudos guardados a 128px). **Reel da semana:** `51-week-reel.js` (`generateWeekReel_`, `buildWeekReelText_`, `startWeekReel_`), botão `#weekReelBtn` em `13-timeline-render-b.js`; cache atual `dia22-cache-v250`.
 
-**v174:** estatísticas do jogador: `playerSeasonStats_`, `sqNameMatch_`, `openPlayerSheet_` no fim de `50-squad.js` (linhas `.sq-click` com `data-sqp`); cache atual `dia22-cache-v255`.
+**v174:** estatísticas do jogador: `playerSeasonStats_`, `sqNameMatch_`, `openPlayerSheet_` no fim de `50-squad.js` (linhas `.sq-click` com `data-sqp`); cache atual `dia22-cache-v257`.
 
-**v175:** `playerSheetHtml_` (fim de `50-squad.js`): médias por jogo no Basquetebol e bloco "Por competição" (usa `ev.detail`); cache atual `dia22-cache-v255`.
+**v175:** `playerSheetHtml_` (fim de `50-squad.js`): médias por jogo no Basquetebol e bloco "Por competição" (usa `ev.detail`); cache atual `dia22-cache-v257`.
 
-**v176:** herói `.hv-hero[data-hero]` clicável (listener no fim de `36-home-view.js`); `pgSameTeam_` ignora palavras genéricas (`PG_GENERIC_`); cache atual `dia22-cache-v255`.
+**v176:** herói `.hv-hero[data-hero]` clicável (listener no fim de `36-home-view.js`); `pgSameTeam_` ignora palavras genéricas (`PG_GENERIC_`); cache atual `dia22-cache-v257`.
 
-**v177:** `liveRecentHtml_` (46), `miniStandingHtml_` (41), "Como foi" em `42-game-page.js`; cache atual `dia22-cache-v255`.
+**v177:** `liveRecentHtml_` (46), `miniStandingHtml_` (41), "Como foi" em `42-game-page.js`; cache atual `dia22-cache-v257`.
 
-**v178:** cartão Marcadores conta golos linha a linha; atalho `#gpAddStats` em modo edição; cache atual `dia22-cache-v255`.
+**v178:** cartão Marcadores conta golos linha a linha; atalho `#gpAddStats` em modo edição; cache atual `dia22-cache-v257`.
+
+**v179:** `52-extras-cache.js` (`extrasSave_`, `DATA_FRESH_`, `skelHtml_`; localStorage `dia22-extras-v1`); ranking com média e `squadIndexOf_`; tema claro e 44 px no fim de `06-tabs-and-medals.css`; cache atual `dia22-cache-v257`.

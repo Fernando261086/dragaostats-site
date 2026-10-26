@@ -10,7 +10,10 @@ function squadAvatar_(foto, numTxt, esc, staff){
 function squadHas_(sport){ return !!(PLANTEL && PLANTEL[sport] && Array.isArray(PLANTEL[sport].j) && PLANTEL[sport].j.length); }
 function squadPanelHtml_(sport){
   const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
-  if(!squadHas_(sport)) return '<div class="hv-panel"><div class="hv-empty">Plantel ainda não disponível para esta modalidade.</div></div>';
+  if(!squadHas_(sport)){
+    if(typeof DATA_FRESH_ !== "undefined" && !DATA_FRESH_ && typeof skelHtml_ === "function") return skelHtml_(6);
+    return '<div class="hv-panel"><div class="hv-empty">Plantel ainda não disponível para esta modalidade.</div></div>';
+  }
   const p = PLANTEL[sport];
   const norm = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   const grupos = [];
@@ -127,3 +130,11 @@ function playerSheetHtml_(sport, r){
   box.querySelector("#psClose").onclick = close_;
   document.addEventListener("keydown", e=>{ if(e.key === "Escape" && box.style.display !== "none") close_(); });
 })();
+
+// posição de um nome (como escrito nos marcadores) na lista do plantel, ou -1
+function squadIndexOf_(sport, nome){
+  const j = (PLANTEL[sport] && PLANTEL[sport].j) || [];
+  const todos = j.map(r=>r[1]);
+  for(let i = 0; i < j.length; i++) if(sqNameMatch_(j[i][1], nome, todos)) return i;
+  return -1;
+}

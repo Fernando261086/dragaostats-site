@@ -774,3 +774,54 @@ button.sq-click{ width:100%; background:none; border:0; border-top:1px solid var
 .gp-como-h span:first-child{ text-align:right; }
 .gp-como-r{ padding:7px 0; border-top:1px solid var(--line); font-size:14px; }
 .gc-l{ text-align:right; } .gc-m{ text-align:center; font-weight:700; color:#cfe0ff; } .gc-r{ color:#ffb3ba; }
+
+/* ===== v179: barras cinzentas enquanto carrega ===== */
+.skel{ display:block; background:linear-gradient(90deg, rgba(128,144,176,.16) 25%, rgba(128,144,176,.30) 50%, rgba(128,144,176,.16) 75%); background-size:200% 100%; border-radius:8px; animation:skel-sh 1.4s ease-in-out infinite; }
+.skel-h{ width:38%; height:18px; margin:2px 0 14px; }
+.skel-row{ display:grid; grid-template-columns:28px minmax(0,1fr) 38px; gap:12px; align-items:center; padding:9px 0; }
+.skel-c{ width:28px; height:28px; border-radius:50%; }
+.skel-l{ height:14px; }
+.skel-r{ height:14px; }
+@keyframes skel-sh{ from{ background-position:200% 0; } to{ background-position:-200% 0; } }
+@media (prefers-reduced-motion: reduce){ .skel{ animation:none; } }
+
+/* ===== v179: tema claro (o escuro continua o principal) — página do jogo, folha do jogador, pesquisa, tabelas ===== */
+html.theme-light{ --muted:#5b6b88; }
+html.theme-light .gp-card{ background:#fff; border-color:var(--line); box-shadow:0 1px 2px rgba(11,27,63,.06); }
+html.theme-light .gp-back{ color:#0a3fa8; background:#fff; border-color:var(--line); }
+html.theme-light .gp-sport{ color:color-mix(in srgb, var(--sc,#5bb4f0) 55%, #000); }
+html.theme-light .gp-info i{ color:#5b6b88; }
+html.theme-light .gp-set{ background:rgba(11,27,63,.05); }
+html.theme-light .gp-set span{ color:#0a3fa8; }
+html.theme-light .gp-actions .hv-btn-ghost{ color:#0a3fa8; border-color:rgba(11,27,63,.28); }
+html.theme-light .gp-actions .hv-btn-main.is-on{ background:#dff5e6; color:#0b6b2e; }
+html.theme-light .gd-bar{ background:rgba(11,27,63,.12); }
+html.theme-light .gd-row.gd-adv{ opacity:1; }
+html.theme-light .hv-search{ color:rgba(11,27,63,.65); }
+html.theme-light .ss-count{ color:rgba(11,27,63,.65); }
+html.theme-light .ss-close, html.theme-light .sq-go{ color:#0a3fa8; }
+html.theme-light .ps-head span, html.theme-light .ps-d, html.theme-light .ps-a i, html.theme-light .ps-tile i, html.theme-light .ps-cj{ color:rgba(11,27,63,.65); }
+html.theme-light .ps-tile u{ color:rgba(11,27,63,.55); }
+html.theme-light .ps-cv{ color:rgba(11,27,63,.8); }
+html.theme-light .ps-tile b{ color:#0a3fa8; }
+html.theme-light .gp-como-h{ color:rgba(11,27,63,.65); }
+html.theme-light .gc-m{ color:#0a3fa8; } html.theme-light .gc-r{ color:#b3261e; }
+html.theme-light .st-table th{ color:#4a5a78; }
+html.theme-light .hv-cls-sport{ color:color-mix(in srgb, var(--sc,#5bb4f0) 55%, #000); }
+html.theme-light .newsletter-privacy-link{ color:#4a5a78; }
+html.theme-light .hv-tag-win, html.theme-light .sp-w b{ color:#0b6b2e; }
+html.theme-light .hv-tag-loss, html.theme-light .sp-l b{ color:#b3261e; }
+html.theme-light .sq-num.sq-staff, html.theme-light .sq-av.sq-staff.noimg i{ color:rgba(11,27,63,.6); }
+html.theme-light .gp-card .hv-btn-ghost{ color:#0a3fa8; border-color:rgba(11,27,63,.28); }
+html.theme-light .ps-tile u{ color:rgba(11,27,63,.7); }
+html.theme-light .newsletter-privacy-link{ color:#3a4a68 !important; }
+
+/* ===== v179: zonas de toque de pelo menos 44 px no telemóvel ===== */
+@media (max-width:700px){
+  .hv-btn, .hv-pillbtn, .gp-back, .sp-back, .reaction-btn, .feedback-btn, .add-save, .st-edit{ min-height:44px; }
+  .hv-btn, .hv-pillbtn, .gp-back, .reaction-btn, .feedback-btn{ display:inline-flex; align-items:center; justify-content:center; }
+  .sp-back{ min-width:44px; }
+  .hv-link{ display:inline-flex; align-items:center; min-height:44px; }
+  #newsletterEmail, .newsletter-box input[type=email]{ min-height:44px; }
+}
+@media (max-width:700px){ input[type=email]{ min-height:44px; } .sp-tabs button{ min-height:44px; } .reaction-btn{ min-width:44px; } }

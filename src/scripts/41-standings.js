@@ -51,6 +51,7 @@ function standingsPanelHtml_(sport){
   const extra = compStandingsFor_(sport).map(t=>standingsObjHtml_(t, { title: t.comp || "Competição", hideSub: false, sport })).join("");
   if(!s || !Array.isArray(s.rows) || !s.rows.length){
     if(extra) return extra;
+    if(typeof DATA_FRESH_ !== "undefined" && !DATA_FRESH_ && typeof skelHtml_ === "function") return skelHtml_(7);
     return `<div class="hv-panel"><div class="hv-panel-head"><h3>Classificação</h3>${editBtn}</div><div class="hv-empty">Classificação ainda não disponível para esta modalidade.</div></div>`;
   }
   return standingsObjHtml_(s, { editBtn, sport }) + extra;

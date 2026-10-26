@@ -424,6 +424,7 @@ async function fetchAll(){
       FORMAS = (raw.formas && typeof raw.formas === "object") ? raw.formas : {};
       DETALHES = (raw.detalhes && typeof raw.detalhes === "object") ? raw.detalhes : {};
       ESCUDOS = (raw.escudos && typeof raw.escudos === "object") ? raw.escudos : {};
+      try{ DATA_FRESH_ = true; extrasSave_(); }catch(e){} // v179: dados do servidor chegaram; guarda uma cópia para a próxima visita abrir já preenchida
       if(typeof renderLiveNowBanner_ === "function") renderLiveNowBanner_();
       if(raw.questionTemplates && typeof raw.questionTemplates === "object"){
         const mergedQ = { ...DEFAULT_QUESTION_TEMPLATES };

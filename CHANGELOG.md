@@ -1,3 +1,8 @@
+## v179 — Abrir já preenchido, tema claro e toque
+- Classificações, plantel, escudos, forma e cronologia ficam guardados no aparelho (`52-extras-cache.js`): a visita seguinte abre logo preenchida e o servidor atualiza depois. Na 1.ª visita há barras cinzentas (`skelHtml_`) em vez de "ainda não disponível".
+- Ranking de Marcadores: no Basquetebol mostra a média por jogo; tocar num jogador abre a folha dele.
+- Tema claro: página do jogo, folha do jogador, pesquisa e tabelas passam a ter contraste mínimo 4,5:1 (o escuro continua o principal). Botões, pílulas e ligações com pelo menos 44 px no telemóvel. Cache `dia22-cache-v257`.
+
 ## v178 — Marcadores linha a linha e atalho para escrever depois do jogo
 - Jogo terminado (Feminino, Futsal, Equipa B): o cartão "Marcadores" conta cada golo escrito linha a linha. Em modo edição, jogo sem marcadores/estatísticas mostra "Adicionar marcadores/estatísticas" (abre o painel habitual). Cache `dia22-cache-v255`.
 

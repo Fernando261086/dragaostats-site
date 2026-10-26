@@ -1,3 +1,6 @@
+## v174 — Estatísticas do jogador no plantel
+- Tocar num jogador do Plantel abre uma folha com jogos, totais da época (golos, pontos, etc.) e jogo a jogo, a partir do que é registado em cada jogo (📊/⚽ e 👥). Ligação tolerante de nomes ("F. Moura" = "Francisco Jorge Moura"; um só nome só conta se for único no plantel). Só site, sem Apps Script novo. Cache `dia22-cache-v251`.
+
 ## v173 — Escudos nas classificações + Reel da semana (com Apps Script v126)
 - Escudos das equipas nas tabelas de classificação (campeonato e competições europeias); o Apps Script v126 (`escudosComTabelas_`) acrescenta aos `escudos` as equipas que só aparecem nas tabelas. Escudos guardados reduzidos a 128px (`crestShrink_`). Teste: `testarEscudosTabelasAgora`.
 - "🎬 Reel da semana" (modo edição, vista Esta semana; `51-week-reel.js`): vídeo vertical com abertura, um ecrã por dia (máx. 4 jogos, com escudos) e fecho com QR; partilha ou descarrega .webm. Legenda curta para colar (`buildWeekReelText_`). Cache `dia22-cache-v250`.

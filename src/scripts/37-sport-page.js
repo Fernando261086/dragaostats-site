@@ -91,6 +91,7 @@ function renderSportPage_(){
   host.querySelectorAll("[data-sptab]").forEach(b=>{ b.onclick = ()=>{ sportPageTab_ = b.getAttribute("data-sptab"); renderSportPage_(); }; });
   host.querySelectorAll("[data-spstat]").forEach(b=>{ b.onclick = ()=>{ sportPageStat_ = b.getAttribute("data-spstat"); renderSportPage_(); }; });
   host.querySelectorAll("[data-go]").forEach(b=>{ b.onclick = ()=>goToEventCard(b.getAttribute("data-go")); });
+  host.querySelectorAll("[data-sqp]").forEach(b=>{ b.onclick = ()=>openPlayerSheet_(sport, parseInt(b.getAttribute("data-sqp"), 10)); });
   if(sportPageTab_ === "classificacao" && typeof wireStandingsPanel_ === "function") wireStandingsPanel_(host, sport);
   host.querySelectorAll("[data-remind]").forEach(b=>{ b.onclick = ()=>toggleGameReminder_(b.getAttribute("data-remind"), b); });
 }

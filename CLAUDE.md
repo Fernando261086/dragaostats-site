@@ -102,7 +102,7 @@ defeito + tema claro). Onde está cada coisa:
 **Cuidados aprendidos:** usar `minmax(0,1fr)` em grelhas (senão há deslize
 lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 360/390/768px; subir a versão da cache em `public/sw.js` a cada publicação
-(atual `dia22-cache-v249`); em telemóvel os widgets laterais aparecem
+(atual `dia22-cache-v251`); em telemóvel os widgets laterais aparecem
 **depois** da lista de jogos.
 
 **Ao vivo Sofascore (Apps Script v102):** Futebol Feminino, Andebol e Futsal leem
@@ -186,3 +186,5 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 (Playwright + mock de dados quando fizer sentido), e só depois empacotar.
 
 **v173:** escudos nas classificações (`crestCell_` em `41-standings.js`; Apps Script v126 `escudosComTabelas_`, teste `testarEscudosTabelasAgora`; escudos guardados a 128px). **Reel da semana:** `51-week-reel.js` (`generateWeekReel_`, `buildWeekReelText_`, `startWeekReel_`), botão `#weekReelBtn` em `13-timeline-render-b.js`; cache atual `dia22-cache-v250`.
+
+**v174:** estatísticas do jogador: `playerSeasonStats_`, `sqNameMatch_`, `openPlayerSheet_` no fim de `50-squad.js` (linhas `.sq-click` com `data-sqp`); cache atual `dia22-cache-v251`.

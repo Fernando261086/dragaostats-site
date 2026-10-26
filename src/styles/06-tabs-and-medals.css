@@ -738,3 +738,19 @@ html.theme-light .st-table tr.is-adv td{ background:rgba(11,27,63,.06); }
 /* ===== Escudos nas classificações (v173) ===== */
 .st-team .crest{ width:1.45em; height:1.45em; margin:0 8px 0 0; vertical-align:-0.35em; object-fit:contain; }
 .st-crest-ph{ display:inline-block; width:1.45em; height:1em; margin-right:8px; }
+
+/* ===== Estatísticas do jogador (v174) ===== */
+button.sq-click{ width:100%; background:none; border:0; border-top:1px solid var(--line); color:inherit; font:inherit; text-align:left; cursor:pointer; }
+.sq-go{ margin-left:auto; color:var(--gold); font-size:22px; line-height:1; }
+.ps-head{ display:flex; align-items:center; gap:14px; margin:6px 0 14px; }
+.ps-head h2{ margin:0; font-size:22px; }
+.ps-head span{ font-size:13px; color:rgba(255,255,255,.6); }
+.ps-tiles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(0,1fr)); gap:8px; margin-bottom:14px; }
+.ps-tile{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 6px; text-align:center; }
+.ps-tile b{ display:block; font-size:24px; color:var(--gold); }
+.ps-tile i{ font-style:normal; font-size:11px; color:rgba(255,255,255,.6); }
+.ps-game{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:10px; padding:9px 0; border-top:1px solid var(--line); font-size:14px; align-items:baseline; }
+.ps-game:first-of-type{ border-top:0; }
+.ps-d{ color:rgba(255,255,255,.55); font-size:13px; }
+.ps-a i{ font-style:normal; color:rgba(255,255,255,.55); margin-left:4px; }
+.ps-v{ font-weight:700; text-align:right; }

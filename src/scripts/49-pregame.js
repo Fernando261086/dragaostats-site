@@ -36,15 +36,17 @@ function pregameHtml_(ev){
     blocos.push(`<div class="pg-blk"><div class="pg-lbl">Último confronto</div><div class="pg-last">${crestOnly_(u, t.home)}${esc(t.home)} <b>${esc(String(st.resultado).trim())}</b> ${crestOnly_(u, t.away)}${esc(t.away)}</div><div class="pg-sub">${esc(formatShortDate(u.day))}${u.detail ? " · " + esc(u.detail) : ""}${total > 1 ? ` · Balanço: ${bal.win}V ${bal.draw}E ${bal.loss}D` : ""}</div></div>`);
   }
 
-  // classificação
-  const s = (typeof STANDINGS === "object" && STANDINGS) ? STANDINGS[ev.sport] : null;
+  // classificação (a da competição europeia/taça, se o adversário jogar no mesmo grupo; senão a do campeonato)
+  const sComp = (typeof compStandingForGame_ === "function") ? compStandingForGame_(ev) : null;
+  const s = sComp || ((typeof STANDINGS === "object" && STANDINGS) ? STANDINGS[ev.sport] : null);
   if(s && Array.isArray(s.rows) && s.rows.length){
     const me = s.rows.find(r=>r.me);
     const adv = s.rows.find(r=>!r.me && pgSameTeam_(r.t, ev.athlete));
     const iPts = (s.cols || []).indexOf("Pts");
     const cel = (r, nome)=>`<div class="pg-pos"><b>${esc(r.p)}.º</b><span>${esc(nome)}</span>${iPts >= 0 && r.c && r.c[iPts] != null ? `<i>${esc(r.c[iPts])} pts</i>` : ""}</div>`;
-    if(me && adv) blocos.push(`<div class="pg-blk"><div class="pg-lbl">Classificação</div><div class="pg-poss">${cel(me, "FC Porto")}<span class="pg-vs">vs</span>${cel(adv, ev.athlete)}</div>${s.comp ? `<div class="pg-sub">${esc(s.comp)}</div>` : ""}</div>`);
-    else if(me) blocos.push(`<div class="pg-blk"><div class="pg-lbl">Classificação</div><div class="pg-poss">${cel(me, "FC Porto")}</div>${s.comp ? `<div class="pg-sub">${esc(s.comp)}</div>` : ""}</div>`);
+    const sub = [s.comp, sComp ? s.fase : ""].filter(Boolean).join(" · ");
+    if(me && adv) blocos.push(`<div class="pg-blk"><div class="pg-lbl">Classificação</div><div class="pg-poss">${cel(me, "FC Porto")}<span class="pg-vs">vs</span>${cel(adv, ev.athlete)}</div>${sub ? `<div class="pg-sub">${esc(sub)}</div>` : ""}</div>`);
+    else if(me) blocos.push(`<div class="pg-blk"><div class="pg-lbl">Classificação</div><div class="pg-poss">${cel(me, "FC Porto")}</div>${sub ? `<div class="pg-sub">${esc(sub)}</div>` : ""}</div>`);
   }
   if(!blocos.length) return "";
   return `<div class="hv-panel pg-card"><div class="hv-panel-head"><h3>Antes do jogo</h3></div>${blocos.join("")}</div>`;

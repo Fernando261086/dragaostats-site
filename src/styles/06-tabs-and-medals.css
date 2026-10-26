@@ -730,3 +730,7 @@ html.theme-light .sq-role{ color:rgba(11,27,63,.6); }
 .sq-av.noimg{ display:flex; align-items:center; justify-content:center; border:0; background:none; }
 .sq-av.noimg i{ position:static; display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:var(--ink-2); border:1px solid var(--gold-dim); color:var(--gold); font-size:18px; line-height:1; padding:0; }
 .sq-av.sq-staff.noimg i{ display:inline; color:rgba(255,255,255,.4); }
+
+/* ===== Classificações de competições (v172) ===== */
+.st-table tr.is-adv td{ background:rgba(255,255,255,.06); }
+html.theme-light .st-table tr.is-adv td{ background:rgba(11,27,63,.06); }

@@ -102,7 +102,7 @@ defeito + tema claro). Onde está cada coisa:
 **Cuidados aprendidos:** usar `minmax(0,1fr)` em grelhas (senão há deslize
 lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 360/390/768px; subir a versão da cache em `public/sw.js` a cada publicação
-(atual `dia22-cache-v247`); em telemóvel os widgets laterais aparecem
+(atual `dia22-cache-v248`); em telemóvel os widgets laterais aparecem
 **depois** da lista de jogos.
 
 **Ao vivo Sofascore (Apps Script v102):** Futebol Feminino, Andebol e Futsal leem
@@ -128,6 +128,8 @@ Por confirmar com jogo real (24/10/2026): golos a atualizar durante o jogo.
 **Antes do jogo (v168):** `pregameHtml_(ev)` em `49-pregame.js`, usado em `42-game-page.js`; só com dados do site (histórico + `STANDINGS`). **Forma do adversário (Apps Script v116, site v169):** `formasAtualizar_` (de 6 em 6 h, jogos dos próximos 7 dias, Sofascore `team/<id>/events/last/0`, prop `formasSofa`); `doGet` devolve `formas` ("Modalidade|Adversário" → [[V|E|D, oponente, placar]]). Precisa do id do adversário nos `escudos` (Futsal não tem). Teste: `testarFormasAgora`.
 
 **Plantel (Apps Script v120, site v170):** API do site do clube `api.app.fcporto.pt/v2/sportClasses/<classe>/teamsSquads?team=<equipa>` (pública, sem chave; `data[0].squad.players` com `number`, `full_name`, `position.name`; `data[0].staff_teams[].members` com `full_name`, `speciality`). Mapa `PLANTEL_FCP_`: Feminino 17/1150, Equipa B 2/100, Andebol 3/200, Basquetebol 4/300, Hóquei 5/400, Futsal 21/1500, Voleibol 14/250 (confirmar pelas posições). Lido de 24 em 24 h para props `plantelFcp_<modalidade>`; `doGet` devolve `plantel`. Fotos (v171, Apps Script v121): `profile.thumb`/`profile.url` (endereços em files.app.fcporto.pt, ligados diretamente com `<img>`, sem guardar) — **o Fernando tem autorização do clube**; se falhar/não houver, fica o círculo com o número. Teste: `atualizarPlantelAgora`.
+
+**Classificações europeias (Apps Script v123, site v172):** `compStdAtualizar_` (de hora a hora; Sofascore `unique-tournament/<id>/season/<id>/standings/total`, a partir dos jogos da equipa nos últimos 45/próximos 150 dias; ignora campeonatos de categoria "Portugal" exceto a Taça da Liga; guarda só os grupos com o FC Porto; prop `compStandings`); `doGet` devolve `classificacoesComp`. O site liga o jogo à tabela pelo adversário (`compStandingForGame_`). Só `unique-tournament` funciona (o caminho `tournament/` dá 404 na CEV). Competições a eliminar (CEV Cup, Taças) não têm tabela. Testes: `testarClassificacoesEuropaAgora`, `testarBasqueSofaAgora` (basquetebol: a pesquisa por "FC Porto basketball" não achou a equipa; ver a lista).
 
 **Ainda por fazer:** testar em produção as fontes reais (ao vivo de cada modalidade), o push do
 "Lembrar-me" e a edição de um resultado real.

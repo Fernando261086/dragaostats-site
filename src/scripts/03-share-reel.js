@@ -419,6 +419,7 @@ async function fetchAll(){
       // marcador ao vivo da CEV (voleibol) — só existe quando o Apps Script o está a preencher
       CEV_LIVE = (raw.cevLive && typeof raw.cevLive === "object") ? raw.cevLive : {};
       if(raw.standings && typeof raw.standings === "object") STANDINGS = raw.standings;
+      COMP_STANDINGS = (raw.classificacoesComp && typeof raw.classificacoesComp === "object") ? raw.classificacoesComp : {};
       PLANTEL = (raw.plantel && typeof raw.plantel === "object") ? raw.plantel : {};
       FORMAS = (raw.formas && typeof raw.formas === "object") ? raw.formas : {};
       DETALHES = (raw.detalhes && typeof raw.detalhes === "object") ? raw.detalhes : {};

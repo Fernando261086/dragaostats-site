@@ -1,3 +1,6 @@
+## v172 — Classificações das competições europeias e taças (com Apps Script v123)
+- Separador "Classificação" da modalidade mostra, abaixo da tabela do campeonato, a tabela do grupo do FC Porto em cada competição europeia/taça (campo `classificacoesComp`). Página do jogo: "Classificação do grupo" com o adversário destacado; "Antes do jogo" usa essa tabela quando o adversário está no mesmo grupo. Cache `dia22-cache-v248`.
+
 ## v171 — Fotos no plantel (com Apps Script v121)
 - Plantel com fotografia redonda e número em distintivo (autorizado pelo clube). Endereço da imagem vem da API do clube; ligado diretamente, nada é copiado. Sem foto ou se falhar: círculo com o número. Cache `dia22-cache-v247`.
 

@@ -1,0 +1,48 @@
+// ===================== ANTES DO JOGO (v168) =====================
+// Cartão na página de um jogo ainda por começar: forma recente do FC Porto na modalidade, último confronto com
+// este adversário e posição de cada equipa na classificação. Tudo sai do que o site já tem (histórico e classificação).
+function pgNorm_(s){ return String(s == null ? "" : s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim(); }
+function pgSameTeam_(a, b){
+  const x = pgNorm_(a), y = pgNorm_(b);
+  if(!x || !y) return false;
+  return x === y || (x.length >= 4 && y.length >= 4 && (x.indexOf(y) >= 0 || y.indexOf(x) >= 0));
+}
+function pgWhen_(ev){ const d = new Date(ev.day + "T" + (ev.t || "00:00") + ":00"); return isNaN(d) ? 0 : d.getTime(); }
+function pgDone_(ev){ const st = (typeof getEv === "function" && getEv(ev.id)) || {}; return (st.resultado && String(st.resultado).trim()) ? st : null; }
+function pgTag_(st){ return st.resultTag === "win" ? "win" : st.resultTag === "loss" ? "loss" : st.resultTag === "draw" ? "draw" : ""; }
+function pregameHtml_(ev){
+  if(typeof EVENTS === "undefined") return "";
+  const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
+  const feitos = EVENTS.filter(e=>e.id !== ev.id && e.sport === ev.sport && pgWhen_(e) < pgWhen_(ev) && pgDone_(e)).sort((a, b)=>pgWhen_(b) - pgWhen_(a));
+  const blocos = [];
+
+  // forma do FC Porto (últimos 5)
+  const forma = feitos.filter(e=>pgTag_(pgDone_(e))).slice(0, 5).reverse();
+  if(forma.length >= 2){
+    const nome = { win: "V", loss: "D", draw: "E" };
+    blocos.push(`<div class="pg-blk"><div class="pg-lbl">Forma do FC Porto</div><div class="pg-form">${forma.map(e=>{ const tg = pgTag_(pgDone_(e)); return `<span class="hv-tag hv-tag-${tg}" title="${esc(e.athlete)} ${esc(pgDone_(e).resultado)}">${nome[tg]}</span>`; }).join("")}</div><div class="pg-sub">${esc(ev.sport)}, últimos ${forma.length} jogos</div></div>`);
+  }
+
+  // último confronto e balanço
+  const diretos = feitos.filter(e=>pgSameTeam_(e.athlete, ev.athlete));
+  if(diretos.length){
+    const u = diretos[0], st = pgDone_(u), t = postTeams_(u);
+    const bal = { win: 0, draw: 0, loss: 0 };
+    diretos.forEach(e=>{ const tg = pgTag_(pgDone_(e)); if(tg) bal[tg]++; });
+    const total = bal.win + bal.draw + bal.loss;
+    blocos.push(`<div class="pg-blk"><div class="pg-lbl">Último confronto</div><div class="pg-last">${crestOnly_(u, t.home)}${esc(t.home)} <b>${esc(String(st.resultado).trim())}</b> ${crestOnly_(u, t.away)}${esc(t.away)}</div><div class="pg-sub">${esc(formatShortDate(u.day))}${u.detail ? " · " + esc(u.detail) : ""}${total > 1 ? ` · Balanço: ${bal.win}V ${bal.draw}E ${bal.loss}D` : ""}</div></div>`);
+  }
+
+  // classificação
+  const s = (typeof STANDINGS === "object" && STANDINGS) ? STANDINGS[ev.sport] : null;
+  if(s && Array.isArray(s.rows) && s.rows.length){
+    const me = s.rows.find(r=>r.me);
+    const adv = s.rows.find(r=>!r.me && pgSameTeam_(r.t, ev.athlete));
+    const iPts = (s.cols || []).indexOf("Pts");
+    const cel = (r, nome)=>`<div class="pg-pos"><b>${esc(r.p)}.º</b><span>${esc(nome)}</span>${iPts >= 0 && r.c && r.c[iPts] != null ? `<i>${esc(r.c[iPts])} pts</i>` : ""}</div>`;
+    if(me && adv) blocos.push(`<div class="pg-blk"><div class="pg-lbl">Classificação</div><div class="pg-poss">${cel(me, "FC Porto")}<span class="pg-vs">vs</span>${cel(adv, ev.athlete)}</div>${s.comp ? `<div class="pg-sub">${esc(s.comp)}</div>` : ""}</div>`);
+    else if(me) blocos.push(`<div class="pg-blk"><div class="pg-lbl">Classificação</div><div class="pg-poss">${cel(me, "FC Porto")}</div>${s.comp ? `<div class="pg-sub">${esc(s.comp)}</div>` : ""}</div>`);
+  }
+  if(!blocos.length) return "";
+  return `<div class="hv-panel pg-card"><div class="hv-panel-head"><h3>Antes do jogo</h3></div>${blocos.join("")}</div>`;
+}

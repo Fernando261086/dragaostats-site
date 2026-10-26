@@ -1,3 +1,6 @@
+## v168 — Antes do jogo
+- Página de um jogo ainda por começar: cartão "Antes do jogo" com forma do FC Porto (últimos 5), último confronto + balanço com o adversário e posição de cada equipa na classificação (`49-pregame.js`). Só aparece o que houver dados. Cache `dia22-cache-v244`.
+
 ## v167 — Dia a dia em "Esta semana"
 - Faixa Seg…Dom por cima da lista, com o número de jogos de cada dia; tocar num dia mostra só esse dia, "Toda a semana" volta atrás. Muda de semana com Anterior/Seguinte. Cache `dia22-cache-v243`.
 

@@ -690,3 +690,19 @@ body.search-open{ overflow:hidden; }
 .wd-pill.active .wd-c, .wd-pill.active .wd-n{ color:var(--gold-text); opacity:1; }
 .wd-all .wd-d{ font-size:12px; }
 @media (max-width:420px){ .wd-strip{ gap:4px; } .wd-pill .wd-d{ font-size:15px; } }
+
+/* ===== Antes do jogo (v168) ===== */
+.pg-blk{ padding:10px 0; border-top:1px solid var(--line); }
+.pg-blk:first-of-type{ border-top:0; }
+.pg-lbl{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); margin-bottom:6px; font-weight:700; }
+.pg-form{ display:flex; gap:6px; }
+.pg-last{ font-size:15px; font-weight:600; overflow-wrap:anywhere; }
+.pg-last .crest{ width:1.2em; height:1.2em; margin:0 5px 0 0; }
+.pg-sub{ font-size:13px; color:rgba(255,255,255,.55); margin-top:5px; }
+html.theme-light .pg-sub{ color:rgba(11,27,63,.6); }
+.pg-poss{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:8px; }
+.pg-pos{ display:flex; flex-direction:column; align-items:center; text-align:center; min-width:0; }
+.pg-pos b{ font-family:'Bebas Neue',sans-serif; font-weight:400; font-size:28px; letter-spacing:.03em; line-height:1; }
+.pg-pos span{ font-size:13px; overflow-wrap:anywhere; }
+.pg-pos i{ font-style:normal; font-size:12px; color:var(--gold); }
+.pg-vs{ font-size:12px; opacity:.55; }

@@ -1,3 +1,6 @@
+## v178 — Marcadores linha a linha e atalho para escrever depois do jogo
+- Jogo terminado (Feminino, Futsal, Equipa B): o cartão "Marcadores" conta cada golo escrito linha a linha. Em modo edição, jogo sem marcadores/estatísticas mostra "Adicionar marcadores/estatísticas" (abre o painel habitual). Cache `dia22-cache-v255`.
+
 ## v177 — Ao vivo no Início e resumo pós-jogo
 - Cartão "ao vivo" do Início: 3 últimos acontecimentos (golos, cartões; cronologia do Sofascore quando existe) e botão "Ver jogo completo".
 - Página do jogo terminado: "Como foi" (golos por minuto, FC Porto à esquerda; só em Feminino/Futsal/Equipa B com minutos escritos e sem cronologia automática) e "Classificação depois do jogo" (5 linhas à volta do FC Porto, J e Pts, ligação à tabela completa). Sem dados, as secções não aparecem. Cache `dia22-cache-v254`.

@@ -104,12 +104,19 @@ function renderGamePage_(){
     try{
       const main = (typeof getStatTypesFor === "function" ? getStatTypesFor(ev.sport) : ["Golos"])[0] || "Golos";
       const tot = {};
+      const soGolos = (typeof MARCADORES_LABEL_SPORTS !== "undefined" && MARCADORES_LABEL_SPORTS.has(ev.sport)); // Feminino/Futsal/Equipa B: cada linha é um golo
       (Array.isArray(ev.playerStats) ? ev.playerStats : []).forEach(p=>{
         if(!p || p.team === "adv" || !p.name || !String(p.name).trim()) return;
-        const n = Number(p.stats && p.stats[main]) || 0; if(n > 0) tot[String(p.name).trim()] = (tot[String(p.name).trim()] || 0) + n;
+        const n = soGolos ? (Number(p.stats && p.stats.Golos) || 1) : (Number(p.stats && p.stats[main]) || 0);
+        if(n > 0) tot[String(p.name).trim()] = (tot[String(p.name).trim()] || 0) + n;
       });
       const lista = Object.keys(tot).sort((a, b)=>tot[b] - tot[a]);
       if(lista.length) linhas += `<div class="gp-card"><h3>${main === "Golos" ? "Marcadores" : esc(main)}</h3><div class="gp-info">${lista.map(n=>`<div><i>${esc(n)}</i><b>${tot[n]}</b></div>`).join("")}</div></div>`;
+      else if(!READONLY_MODE && !(typeof SET_SCORE_SPORTS !== "undefined" && SET_SCORE_SPORTS.has(ev.sport))){
+        // v178: modo edição — jogo terminado sem marcadores/estatísticas: atalho para os escrever depois do jogo
+        const golos = (typeof MARCADORES_LABEL_SPORTS !== "undefined" && MARCADORES_LABEL_SPORTS.has(ev.sport));
+        linhas += `<div class="gp-card"><h3>${golos ? "Marcadores" : "Estatísticas"}</h3><div class="gp-info"><div><i>Ainda sem ${golos ? "marcadores" : "estatísticas"} escritos neste jogo.</i></div></div><button type="button" class="hv-btn hv-btn-main gp-act" id="gpAddStats" style="width:100%;margin-top:8px;">${golos ? "⚽ Adicionar marcadores" : "📊 Adicionar estatísticas"}</button></div>`;
+      }
     }catch(e){}
     // "Como foi": golos por minuto (FC Porto à esquerda, adversário à direita) a partir dos marcadores escritos à mão; só se houver minutos
     // e a cronologia automática (Sofascore) não existir — senão já aparece em "Cronologia". Sem dados, a secção não aparece.
@@ -195,6 +202,8 @@ function renderGamePage_(){
   if(bImg) bImg.onclick = ()=>generateShareCard(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor);
   if(bReel) bReel.onclick = ()=>generateShareReel(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor);
   if(bSt) bSt.onclick = ()=>{ try{ statsOpenedFromWeekView = false; }catch(e){} openPlayerStatsPanel(ev); };
+  const bAdd = host.querySelector("#gpAddStats");
+  if(bAdd) bAdd.onclick = ()=>{ try{ statsOpenedFromWeekView = false; }catch(e){} openPlayerStatsPanel(ev); };
   if(typeof bindNotifyCta_ === "function") bindNotifyCta_(host, ()=>{ gameSig_ = ""; renderGamePage_(); });
   const rb = host.querySelector(".gp-react");
   if(rb && typeof wireReactionBar === "function"){ try{ wireReactionBar(rb, ev.id); }catch(e){} }

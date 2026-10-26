@@ -12,6 +12,29 @@ function crestId_(sport, adv){
 function crestCached_(id){
   try{ return localStorage.getItem("dia22-crest-" + id) || ""; }catch(e){ return ""; }
 }
+// v173: reduz o escudo a 128 px (WebP quando o aparelho deixa, senão PNG) antes de o guardar — de ~36 KB para poucos KB, para caberem
+// muitos escudos no armazenamento do browser. Se algo falhar, guarda o original.
+function crestShrink_(src){
+  return new Promise(res=>{
+    try{
+      const im = new Image();
+      im.onload = ()=>{
+        try{
+          const m = Math.max(im.naturalWidth, im.naturalHeight) || 1;
+          if(m <= 128){ res(src); return; }
+          const k = 128 / m, w = Math.max(1, Math.round(im.naturalWidth * k)), h = Math.max(1, Math.round(im.naturalHeight * k));
+          const c = document.createElement("canvas"); c.width = w; c.height = h;
+          c.getContext("2d").drawImage(im, 0, 0, w, h);
+          let out = c.toDataURL("image/webp", 0.9);
+          if(out.indexOf("data:image/webp") !== 0) out = c.toDataURL("image/png");
+          res(out && out.length < src.length ? out : src);
+        }catch(e){ res(src); }
+      };
+      im.onerror = ()=>res(src);
+      im.src = src;
+    }catch(e){ res(src); }
+  });
+}
 const crestPending_ = {};
 function crestEnsure_(id){
   if(!id) return Promise.resolve("");
@@ -22,8 +45,8 @@ function crestEnsure_(id){
     .then(r=>r.json())
     .then(j=>{
       const img = (j && j.ok && typeof j.img === "string" && j.img.indexOf("data:image/") === 0) ? j.img : "";
-      if(img){ try{ localStorage.setItem("dia22-crest-" + id, img); }catch(e){} }
-      return img;
+      if(!img) return "";
+      return crestShrink_(img).then(small=>{ try{ localStorage.setItem("dia22-crest-" + id, small); }catch(e){} return small; });
     })
     .catch(()=>"")
     .then(img=>{ delete crestPending_[id]; return img; });

@@ -154,8 +154,10 @@ function renderTodayAllView(){
       ${!READONLY_MODE ? `
         <div class="add-btn-row" style="margin-top:14px;">
           <button class="chip" id="weekShareBtn">🖼️ Imagem + texto para publicar</button>
+          <button class="chip" id="weekReelBtn">🎬 Reel da semana</button>
         </div>
         <div id="weekShareBox" style="display:none;"></div>
+        <div id="weekReelBox" style="display:none;"></div>
       ` : ''}
     `;
 
@@ -174,6 +176,8 @@ function renderTodayAllView(){
     document.getElementById("weekPrevBtn").onclick = ()=>{ weekOffset--; weekDay_ = null; renderTodayAllView(); };
     document.getElementById("weekNextBtn").onclick = ()=>{ weekOffset++; weekDay_ = null; renderTodayAllView(); };
     container.querySelectorAll("[data-wday]").forEach(b=>{ b.onclick = ()=>{ const v = b.getAttribute("data-wday"); weekDay_ = v === "" ? null : Number(v); renderTodayAllView(); }; });
+    const reelBtn = document.getElementById("weekReelBtn");
+    if(reelBtn) reelBtn.onclick = ()=>{ if(typeof startWeekReel_ === "function") startWeekReel_(weekStart, weekEnd, weekEndDisplay); };
     const shareBtn = document.getElementById("weekShareBtn");
     if(shareBtn){
       shareBtn.onclick = ()=>{

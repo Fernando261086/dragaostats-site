@@ -13,6 +13,14 @@ function standingsAgo_(ms){
   return "há " + d + (d === 1 ? " dia" : " dias");
 }
 const STANDINGS_OPT_COLS_ = { "GM":1, "GS":1, "PM":1, "PS":1, "Dif. pontos":1 }; // escondidas no telemóvel estreito
+// v173: escudo da equipa de uma linha (o FC Porto usa o seu; as outras, o mapa "Modalidade|Nome na tabela" do Apps Script v126)
+function crestCell_(sport, r){
+  try{
+    if(!sport || typeof crestHtml_ !== "function") return "";
+    const nome = r.me ? "FC Porto" : String(r.t || "").trim();
+    return crestHtml_(sport, nome, "st-crest") || '<span class="st-crest-ph"></span>';
+  }catch(e){ return ""; }
+}
 // v172: tabela a partir de um objeto de classificação (opts: title, advName → destaca o adversário)
 function standingsObjHtml_(s, opts){
   const esc = standingsEsc_;
@@ -20,7 +28,7 @@ function standingsObjHtml_(s, opts){
   const cols = s.cols || [];
   const isAdv = r => !!(opts.advName && !r.me && typeof pgSameTeam_ === "function" && pgSameTeam_(r.t, opts.advName));
   const head = `<tr><th class="st-pos">#</th><th class="st-team">Equipa</th>${cols.map(c=>`<th class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc(c)}</th>`).join("")}</tr>`;
-  const body = s.rows.map(r=>`<tr class="${r.me ? "is-me" : ""}${isAdv(r) ? " is-adv" : ""}"><td class="st-pos">${esc(r.p)}</td><td class="st-team">${esc(r.t)}</td>${cols.map((c, i)=>`<td class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc((r.c || [])[i])}</td>`).join("")}</tr>`).join("");
+  const body = s.rows.map(r=>`<tr class="${r.me ? "is-me" : ""}${isAdv(r) ? " is-adv" : ""}"><td class="st-pos">${esc(r.p)}</td><td class="st-team">${crestCell_(opts.sport, r)}${esc(r.t)}</td>${cols.map((c, i)=>`<td class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc((r.c || [])[i])}</td>`).join("")}</tr>`).join("");
   const sub = [s.comp, s.fase].filter(Boolean).join(" · ");
   const when = s.updated ? (s.manual ? "Atualizado à mão " + standingsAgo_(s.updated) : "Atualizado " + standingsAgo_(s.updated)) : "";
   return `<div class="hv-panel"><div class="hv-panel-head"><h3>${esc(opts.title || "Classificação")}</h3>${opts.editBtn || ""}</div>
@@ -40,12 +48,12 @@ function standingsPanelHtml_(sport){
   const s = (typeof STANDINGS === "object" && STANDINGS) ? STANDINGS[sport] : null;
   const canEdit = (typeof READONLY_MODE !== "undefined") && !READONLY_MODE;
   const editBtn = (canEdit && (!s || s.manual)) ? `<button type="button" class="st-edit" id="stEditBtn">✏️ ${s ? "Atualizar à mão" : "Preencher à mão"}</button>` : "";
-  const extra = compStandingsFor_(sport).map(t=>standingsObjHtml_(t, { title: t.comp || "Competição", hideSub: false })).join("");
+  const extra = compStandingsFor_(sport).map(t=>standingsObjHtml_(t, { title: t.comp || "Competição", hideSub: false, sport })).join("");
   if(!s || !Array.isArray(s.rows) || !s.rows.length){
     if(extra) return extra;
     return `<div class="hv-panel"><div class="hv-panel-head"><h3>Classificação</h3>${editBtn}</div><div class="hv-empty">Classificação ainda não disponível para esta modalidade.</div></div>`;
   }
-  return standingsObjHtml_(s, { editBtn }) + extra;
+  return standingsObjHtml_(s, { editBtn, sport }) + extra;
 }
 function wireStandingsPanel_(host, sport){
   const b = host.querySelector("#stEditBtn");

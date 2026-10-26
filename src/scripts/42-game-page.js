@@ -167,7 +167,7 @@ function renderGamePage_(){
       </div>
       ${sub ? `<div class="gp-sub">${sub}</div>` : ""}
     </div>
-    ${setsBlock}${extraBlock}${(!fim && !liveData && !aDecorrer && typeof pregameHtml_ === "function") ? pregameHtml_(ev) : ""}${(typeof gameDetailsHtml_ === "function") ? gameDetailsHtml_(ev) : ""}${(typeof compStandingForGame_ === "function" && compStandingForGame_(ev)) ? standingsObjHtml_(compStandingForGame_(ev), { title: "Classificação do grupo", advName: ev.athlete }) : ""}${(!fim && typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo") : ""}${info}${acoes}
+    ${setsBlock}${extraBlock}${(!fim && !liveData && !aDecorrer && typeof pregameHtml_ === "function") ? pregameHtml_(ev) : ""}${(typeof gameDetailsHtml_ === "function") ? gameDetailsHtml_(ev) : ""}${(typeof compStandingForGame_ === "function" && compStandingForGame_(ev)) ? standingsObjHtml_(compStandingForGame_(ev), { title: "Classificação do grupo", advName: ev.athlete, sport: ev.sport }) : ""}${(!fim && typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo") : ""}${info}${acoes}
   </div>`;
 
   host.querySelector("#gpBack").onclick = ()=>{

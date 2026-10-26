@@ -1,3 +1,7 @@
+## v173 — Escudos nas classificações + Reel da semana (com Apps Script v126)
+- Escudos das equipas nas tabelas de classificação (campeonato e competições europeias); o Apps Script v126 (`escudosComTabelas_`) acrescenta aos `escudos` as equipas que só aparecem nas tabelas. Escudos guardados reduzidos a 128px (`crestShrink_`). Teste: `testarEscudosTabelasAgora`.
+- "🎬 Reel da semana" (modo edição, vista Esta semana; `51-week-reel.js`): vídeo vertical com abertura, um ecrã por dia (máx. 4 jogos, com escudos) e fecho com QR; partilha ou descarrega .webm. Legenda curta para colar (`buildWeekReelText_`). Cache `dia22-cache-v250`.
+
 ## v172 — Classificações das competições europeias e taças (com Apps Script v123)
 - Separador "Classificação" da modalidade mostra, abaixo da tabela do campeonato, a tabela do grupo do FC Porto em cada competição europeia/taça (campo `classificacoesComp`). Página do jogo: "Classificação do grupo" com o adversário destacado; "Antes do jogo" usa essa tabela quando o adversário está no mesmo grupo. Cache `dia22-cache-v248`.
 

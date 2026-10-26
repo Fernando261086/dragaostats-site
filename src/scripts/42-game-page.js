@@ -111,14 +111,20 @@ function renderGamePage_(){
       const lista = Object.keys(tot).sort((a, b)=>tot[b] - tot[a]);
       if(lista.length) linhas += `<div class="gp-card"><h3>${main === "Golos" ? "Marcadores" : esc(main)}</h3><div class="gp-info">${lista.map(n=>`<div><i>${esc(n)}</i><b>${tot[n]}</b></div>`).join("")}</div></div>`;
     }catch(e){}
+    // "Como foi": golos por minuto (FC Porto à esquerda, adversário à direita) a partir dos marcadores escritos à mão; só se houver minutos
+    // e a cronologia automática (Sofascore) não existir — senão já aparece em "Cronologia". Sem dados, a secção não aparece.
     try{
-      const S = (typeof STANDINGS === "object" && STANDINGS) ? STANDINGS[ev.sport] : null;
-      const me = S && (S.rows || []).find(r=>r.me);
-      if(me){
-        const ci = k=>(S.cols || []).indexOf(k), pts = (me.c || [])[ci("Pts")], j = (me.c || [])[ci("J")];
-        linhas += `<div class="gp-card"><h3>Classificação</h3><div class="gp-info"><div><i>Posição do FC Porto</i><b>${esc(me.p)}.º${pts !== undefined ? " · " + esc(pts) + " pts" : ""}${j !== undefined ? " · " + esc(j) + " jogos" : ""}</b></div></div></div>`;
+      const temCron = !!(typeof DETALHES === "object" && DETALHES && DETALHES[ev.id] && Array.isArray(DETALHES[ev.id].inc) && DETALHES[ev.id].inc.length);
+      const golos = (typeof MARCADORES_LABEL_SPORTS !== "undefined" && MARCADORES_LABEL_SPORTS.has(ev.sport) && !temCron)
+        ? (Array.isArray(ev.playerStats) ? ev.playerStats : []).filter(p=>p && p.minute != null && String(p.minute).trim() !== "").sort((x, y)=>(parseInt(x.minute, 10) || 0) - (parseInt(y.minute, 10) || 0)) : [];
+      if(golos.length){
+        linhas += `<div class="gp-card"><h3>Como foi</h3><div class="gp-como"><div class="gp-como-h"><span>FC Porto</span><span></span><span>${esc(homeOpp_(ev))}</span></div>${golos.map(g=>{
+          const adv = g.team === "adv", nome = esc(String(g.name || "").trim());
+          return `<div class="gp-como-r"><span class="gc-l">${adv ? "" : "Golo" + (nome ? " · " + nome : "")}</span><span class="gc-m">${esc(String(g.minute))}'</span><span class="gc-r">${adv ? "Golo" + (nome ? " · " + nome : "") : ""}</span></div>`;
+        }).join("")}</div></div>`;
       }
     }catch(e){}
+    linhas += (typeof miniStandingHtml_ === "function") ? miniStandingHtml_(ev) : "";
     if(typeof renderReactionBar === "function") linhas += `<div class="gp-card gp-react"><h3>O que achaste do jogo?</h3>${renderReactionBar(ev.id)}</div>`;
     extraBlock = linhas;
   }
@@ -194,8 +200,7 @@ function renderGamePage_(){
   if(rb && typeof wireReactionBar === "function"){ try{ wireReactionBar(rb, ev.id); }catch(e){} }
   const cal = host.querySelector("#gpCal");
   if(cal) cal.onclick = ()=>goToEventCardCal_(ev.id);
-  const tb = host.querySelector("#gpTable");
-  if(tb) tb.onclick = ()=>{ if(typeof openSportPage_ === "function") openSportPage_(ev.sport, "classificacao"); };
+  host.querySelectorAll("#gpTable, #gpTable2").forEach(tb=>{ tb.onclick = ()=>{ if(typeof openSportPage_ === "function") openSportPage_(ev.sport, "classificacao"); }; });
   host.querySelectorAll("[data-remind]").forEach(b=>{ b.onclick = async ()=>{ await toggleGameReminder_(b.getAttribute("data-remind"), b); gameSig_ = ""; renderGamePage_(); }; });
 }
 

@@ -136,3 +136,20 @@ function openStandingsEditor_(sport){
     if(await send({ sport, clear: true })){ delete STANDINGS[sport]; ov.remove(); if(typeof renderSportPage_ === "function") renderSportPage_(); }
   };
 }
+
+// v177: mini-tabela depois do jogo — 5 linhas à volta do FC Porto, com J e Pts, e ligação à tabela completa
+function miniStandingHtml_(ev){
+  try{
+    const S = (typeof STANDINGS === "object" && STANDINGS) ? STANDINGS[ev.sport] : null;
+    if(!S || !Array.isArray(S.rows) || !S.rows.length) return "";
+    const i = S.rows.findIndex(r=>r.me);
+    if(i < 0) return "";
+    const esc = standingsEsc_, cols = S.cols || [], iP = cols.indexOf("Pts"), iJ = cols.indexOf("J");
+    let a = Math.max(0, i - 2), b = Math.min(S.rows.length, a + 5); a = Math.max(0, b - 5);
+    const rows = S.rows.slice(a, b);
+    const body = rows.map(r=>`<tr class="${r.me ? "is-me" : ""}"><td class="st-pos">${esc(r.p)}</td><td class="st-team">${crestCell_(ev.sport, r)}${esc(r.t)}</td><td>${iJ >= 0 ? esc((r.c || [])[iJ]) : ""}</td><td class="st-pts">${iP >= 0 ? esc((r.c || [])[iP]) : ""}</td></tr>`).join("");
+    return `<div class="gp-card"><h3>Classificação depois do jogo</h3>
+      <div class="st-wrap"><table class="st-table"><thead><tr><th class="st-pos">#</th><th class="st-team">Equipa</th><th>J</th><th class="st-pts">Pts</th></tr></thead><tbody>${body}</tbody></table></div>
+      <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpTable2" style="width:100%;margin-top:8px;">Ver classificação completa</button></div>`;
+  }catch(e){ return ""; }
+}

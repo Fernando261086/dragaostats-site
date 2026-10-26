@@ -47,12 +47,13 @@ function homeHeroHtml_(item, label){
     <div class="hv-hero-sport">${esc(ev.sport)}${detail ? " · " + esc(detail) : ""}</div>
     <div class="hv-hero-match${homeOpp_(ev).length > 16 ? " hm-long" : ""}"><span class="hm-a">${crestOnly_(ev, postTeams_(ev).home)}${esc(postTeams_(ev).home)}</span><span class="hm-b"><span class="hv-vs">vs</span> ${crestOnly_(ev, postTeams_(ev).away)}${esc(postTeams_(ev).away)}</span></div>
     ${scoreHtml}
+    ${(liveData && typeof liveRecentHtml_ === "function") ? liveRecentHtml_(ev) : ""}
     <div class="hv-hero-meta">
       <span>${ico(typeof HERO_ICON_CAL_ !== "undefined" ? HERO_ICON_CAL_ : "")}${esc(homeLongDate_(d))}${ev.t ? " · " + esc(ev.t) : ""}</span>
       <span>${ico(typeof HERO_ICON_PIN_ !== "undefined" ? HERO_ICON_PIN_ : "")}${esc(place)}</span>
     </div>
     <div class="hv-hero-actions">
-      ${live ? `<button type="button" class="hv-btn hv-btn-main" data-go="${esc(ev.id)}">Ver jogo</button>`
+      ${live ? `<button type="button" class="hv-btn hv-btn-main" data-go="${esc(ev.id)}">${liveData ? "Ver jogo completo" : "Ver jogo"}</button>`
              : `<button type="button" class="hv-btn hv-btn-main${(typeof hasGameReminder_ === "function" && hasGameReminder_(ev.id)) ? " is-on" : ""}" data-remind="${esc(ev.id)}">${(typeof hasGameReminder_ === "function" && hasGameReminder_(ev.id)) ? "✓ Lembrete ativo" : "Lembrar-me"}</button>`}
       ${ev.watchUrl ? `<a class="hv-btn hv-btn-ghost" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">Ver transmissão</a>` : (live ? "" : `<button type="button" class="hv-btn hv-btn-ghost" data-go="${esc(ev.id)}">Ver jogo</button>`)}
     </div>

@@ -34,3 +34,17 @@ function gameDetailsHtml_(ev){
   }
   return html + `<div class="gd-src">Cronologia e estatísticas: Sofascore, podem ter atraso. O resultado oficial é o do site.</div>`;
 }
+
+// v177: últimos acontecimentos no cartão "ao vivo" do Início (3 mais recentes da cronologia, se houver)
+function liveRecentHtml_(ev){
+  const d = (DETALHES && typeof DETALHES === "object") ? DETALHES[ev.id] : null;
+  const inc = d && Array.isArray(d.inc) ? d.inc.filter(x=>x && x[1] && x[1] !== "O" && x[1] !== "S").slice(-3).reverse() : [];
+  if(!inc.length) return "";
+  const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
+  const icone = {G:"⚽", GP:"⚽", AG:"⚽", CA:"🟨", CV:"🟥", CA2:"🟥"};
+  const rot = {G:"Golo", GP:"Golo de penálti", AG:"Auto-golo", CA:"Cartão amarelo", CV:"Cartão vermelho", CA2:"2.º amarelo"};
+  return `<div class="hv-live-ev"><div class="hv-live-ev-t">Últimos acontecimentos</div>${inc.map(x=>{
+    const lado = x[2] === 1 ? (typeof homeOpp_ === "function" ? homeOpp_(ev) : "Adversário") : "FC Porto";
+    return `<div class="hv-live-row"><span class="hv-live-min">${esc(x[0])}'</span><span>${icone[x[1]] || "•"}</span><span class="hv-live-tx">${esc(rot[x[1]] || "Lance")} · ${esc(lado)}${x[3] ? " <i>" + esc(x[3]) + "</i>" : ""}</span></div>`;
+  }).join("")}</div>`;
+}

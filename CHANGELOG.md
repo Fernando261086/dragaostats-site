@@ -1,3 +1,7 @@
+## v177 — Ao vivo no Início e resumo pós-jogo
+- Cartão "ao vivo" do Início: 3 últimos acontecimentos (golos, cartões; cronologia do Sofascore quando existe) e botão "Ver jogo completo".
+- Página do jogo terminado: "Como foi" (golos por minuto, FC Porto à esquerda; só em Feminino/Futsal/Equipa B com minutos escritos e sem cronologia automática) e "Classificação depois do jogo" (5 linhas à volta do FC Porto, J e Pts, ligação à tabela completa). Sem dados, as secções não aparecem. Cache `dia22-cache-v254`.
+
 ## v176 — Cartão do próximo jogo clicável + nomes de equipas
 - O cartão do próximo jogo (Início e modalidade) abre a página do jogo ao tocar (os botões mantêm a função).
 - Ligação de nomes de equipas mais tolerante (`pgSameTeam_` ignora "HC", "FC", "Club"…: "Veszprém HC" = "Telekom Veszprém"), para a tabela do grupo europeu aparecer em "Antes do jogo" e na página do jogo. Cache `dia22-cache-v253`.

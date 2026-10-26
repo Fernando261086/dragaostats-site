@@ -1,3 +1,6 @@
+## v169 — Forma do adversário (com Apps Script v116)
+- "Antes do jogo" mostra também os últimos 5 resultados do adversário (campo `formas` do `doGet`). Cache `dia22-cache-v245`.
+
 ## v168 — Antes do jogo
 - Página de um jogo ainda por começar: cartão "Antes do jogo" com forma do FC Porto (últimos 5), último confronto + balanço com o adversário e posição de cada equipa na classificação (`49-pregame.js`). Só aparece o que houver dados. Cache `dia22-cache-v244`.
 

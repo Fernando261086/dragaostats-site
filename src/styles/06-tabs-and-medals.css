@@ -706,3 +706,5 @@ html.theme-light .pg-sub{ color:rgba(11,27,63,.6); }
 .pg-pos span{ font-size:13px; overflow-wrap:anywhere; }
 .pg-pos i{ font-style:normal; font-size:12px; color:var(--gold); }
 .pg-vs{ font-size:12px; opacity:.55; }
+.pg-frow{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:3px 0; }
+.pg-fname{ font-size:14px; font-weight:600; min-width:0; overflow-wrap:anywhere; }

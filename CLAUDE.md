@@ -102,7 +102,7 @@ defeito + tema claro). Onde está cada coisa:
 **Cuidados aprendidos:** usar `minmax(0,1fr)` em grelhas (senão há deslize
 lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 360/390/768px; subir a versão da cache em `public/sw.js` a cada publicação
-(atual `dia22-cache-v244`); em telemóvel os widgets laterais aparecem
+(atual `dia22-cache-v245`); em telemóvel os widgets laterais aparecem
 **depois** da lista de jogos.
 
 **Ao vivo Sofascore (Apps Script v102):** Futebol Feminino, Andebol e Futsal leem
@@ -125,7 +125,7 @@ Por confirmar com jogo real (24/10/2026): golos a atualizar durante o jogo.
 
 **Dia a dia (v167):** `weekDayStripHtml_` / `weekDay_` em `13-timeline-render-b.js`, faixa `.wd-strip` na vista "Esta semana".
 
-**Antes do jogo (v168):** `pregameHtml_(ev)` em `49-pregame.js`, usado em `42-game-page.js`; só com dados do site (histórico + `STANDINGS`). A forma do ADVERSÁRIO ainda não existe (precisaria do Sofascore `team/<id>/events/last` no Apps Script).
+**Antes do jogo (v168):** `pregameHtml_(ev)` em `49-pregame.js`, usado em `42-game-page.js`; só com dados do site (histórico + `STANDINGS`). **Forma do adversário (Apps Script v116, site v169):** `formasAtualizar_` (de 6 em 6 h, jogos dos próximos 7 dias, Sofascore `team/<id>/events/last/0`, prop `formasSofa`); `doGet` devolve `formas` ("Modalidade|Adversário" → [[V|E|D, oponente, placar]]). Precisa do id do adversário nos `escudos` (Futsal não tem). Teste: `testarFormasAgora`.
 
 **Ainda por fazer:** Plantel; testar em produção as fontes reais (ao vivo de cada modalidade), o push do
 "Lembrar-me" e a edição de um resultado real.

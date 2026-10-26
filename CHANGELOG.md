@@ -1,3 +1,6 @@
+## v171 — Fotos no plantel (com Apps Script v121)
+- Plantel com fotografia redonda e número em distintivo (autorizado pelo clube). Endereço da imagem vem da API do clube; ligado diretamente, nada é copiado. Sem foto ou se falhar: círculo com o número. Cache `dia22-cache-v247`.
+
 ## v170 — Plantel (com Apps Script v120)
 - Separador "Plantel" na página de modalidade: jogadores agrupados por posição (número em círculo + nome) e equipa técnica, só texto (`50-squad.js`). Dados do site oficial do FC Porto via Apps Script (campo `plantel`). Só aparece o separador nas modalidades com plantel. Cache `dia22-cache-v246`.
 

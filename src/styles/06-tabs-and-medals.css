@@ -720,3 +720,13 @@ html.theme-light .sq-n{ color:rgba(11,27,63,.6); }
 .sq-name{ display:flex; flex-direction:column; min-width:0; font-size:15px; font-weight:600; overflow-wrap:anywhere; }
 .sq-role{ font-size:12px; font-weight:400; color:rgba(255,255,255,.55); }
 html.theme-light .sq-role{ color:rgba(11,27,63,.6); }
+
+/* ===== Plantel com fotos (v171) ===== */
+.sq-av{ position:relative; flex:0 0 auto; width:46px; height:46px; border-radius:50%; background:var(--ink-2); border:1px solid var(--gold-dim); display:block; }
+.sq-av img{ width:100%; height:100%; border-radius:50%; object-fit:cover; object-position:top; display:block; }
+.sq-av i{ position:absolute; right:-5px; bottom:-3px; min-width:20px; height:20px; padding:0 4px; border-radius:10px; background:var(--gold); color:var(--gold-text); font-style:normal; font-family:'Bebas Neue',sans-serif; font-size:14px; line-height:20px; text-align:center; }
+.sq-av.sq-staff{ border-color:var(--line); }
+.sq-av.sq-staff i{ display:none; }
+.sq-av.noimg{ display:flex; align-items:center; justify-content:center; border:0; background:none; }
+.sq-av.noimg i{ position:static; display:flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:var(--ink-2); border:1px solid var(--gold-dim); color:var(--gold); font-size:18px; line-height:1; padding:0; }
+.sq-av.sq-staff.noimg i{ display:inline; color:rgba(255,255,255,.4); }

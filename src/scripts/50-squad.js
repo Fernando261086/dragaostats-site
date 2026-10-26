@@ -1,8 +1,12 @@
 // ===================== PLANTEL (v170) =====================
-// Separador "Plantel" da página de modalidade: jogadores (número, nome, posição) e equipa técnica, só texto.
+// Separador "Plantel" da página de modalidade: jogadores (número, nome, posição, foto) e equipa técnica. Fotos: autorizadas pelo clube (v171); sem foto (ou se falhar) fica o círculo com o número.
 // Vem do site oficial do FC Porto, lido pelo Apps Script v120 (campo `plantel` do doGet).
 let PLANTEL = {}; // { "Modalidade": { t, j:[[número,nome,posição]], s:[[nome,cargo]] } }
 const SQUAD_POS_ORDER_ = ["guarda-redes", "defesa", "medio", "avancado"];
+function squadAvatar_(foto, numTxt, esc, staff){
+  if(foto) return `<span class="sq-av${staff ? " sq-staff" : ""}"><img src="${esc(foto)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('noimg');this.remove();"><i>${esc(numTxt)}</i></span>`;
+  return `<span class="sq-num${staff ? " sq-staff" : ""}">${esc(numTxt)}</span>`;
+}
 function squadHas_(sport){ return !!(PLANTEL && PLANTEL[sport] && Array.isArray(PLANTEL[sport].j) && PLANTEL[sport].j.length); }
 function squadPanelHtml_(sport){
   const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
@@ -21,8 +25,8 @@ function squadPanelHtml_(sport){
   const num = r => { const n = parseInt(r[0], 10); return isNaN(n) ? 999 : n; };
   const jog = grupos.map(g=>{
     g.rows.sort((a, b)=>num(a) - num(b));
-    return `<div class="hv-panel sq-grp"><div class="hv-panel-head"><h3>${esc(g.pos)}</h3><span class="sq-n">${g.rows.length}</span></div>${g.rows.map(r=>`<div class="sq-row"><span class="sq-num">${esc(r[0] || "–")}</span><span class="sq-name">${esc(r[1])}</span></div>`).join("")}</div>`;
+    return `<div class="hv-panel sq-grp"><div class="hv-panel-head"><h3>${esc(g.pos)}</h3><span class="sq-n">${g.rows.length}</span></div>${g.rows.map(r=>`<div class="sq-row">${squadAvatar_(r[3], r[0] || "–", esc, false)}<span class="sq-name">${esc(r[1])}</span></div>`).join("")}</div>`;
   }).join("");
-  const staff = (p.s && p.s.length) ? `<div class="hv-panel sq-grp"><div class="hv-panel-head"><h3>Equipa técnica</h3><span class="sq-n">${p.s.length}</span></div>${p.s.map(r=>`<div class="sq-row"><span class="sq-num sq-staff">•</span><span class="sq-name">${esc(r[0])}${r[1] ? `<span class="sq-role">${esc(r[1])}</span>` : ""}</span></div>`).join("")}</div>` : "";
+  const staff = (p.s && p.s.length) ? `<div class="hv-panel sq-grp"><div class="hv-panel-head"><h3>Equipa técnica</h3><span class="sq-n">${p.s.length}</span></div>${p.s.map(r=>`<div class="sq-row">${squadAvatar_(r[2], "•", esc, true)}<span class="sq-name">${esc(r[0])}${r[1] ? `<span class="sq-role">${esc(r[1])}</span>` : ""}</span></div>`).join("")}</div>` : "";
   return jog + staff + '<div class="st-foot">Fonte: fcporto.pt' + (p.t && typeof standingsAgo_ === "function" ? " · atualizado " + standingsAgo_(p.t) : "") + "</div>";
 }

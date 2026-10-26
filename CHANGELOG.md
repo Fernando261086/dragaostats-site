@@ -1,3 +1,6 @@
+## v170 — Plantel (com Apps Script v120)
+- Separador "Plantel" na página de modalidade: jogadores agrupados por posição (número em círculo + nome) e equipa técnica, só texto (`50-squad.js`). Dados do site oficial do FC Porto via Apps Script (campo `plantel`). Só aparece o separador nas modalidades com plantel. Cache `dia22-cache-v246`.
+
 ## v169 — Forma do adversário (com Apps Script v116)
 - "Antes do jogo" mostra também os últimos 5 resultados do adversário (campo `formas` do `doGet`). Cache `dia22-cache-v245`.
 

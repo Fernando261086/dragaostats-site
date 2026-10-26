@@ -708,3 +708,15 @@ html.theme-light .pg-sub{ color:rgba(11,27,63,.6); }
 .pg-vs{ font-size:12px; opacity:.55; }
 .pg-frow{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:3px 0; }
 .pg-fname{ font-size:14px; font-weight:600; min-width:0; overflow-wrap:anywhere; }
+
+/* ===== Plantel (v170) ===== */
+.sq-grp{ padding-bottom:6px; }
+.sq-n{ font-size:13px; color:rgba(255,255,255,.55); }
+html.theme-light .sq-n{ color:rgba(11,27,63,.6); }
+.sq-row{ display:flex; align-items:center; gap:12px; padding:8px 0; border-top:1px solid var(--line); }
+.sq-row:first-of-type{ border-top:0; }
+.sq-num{ flex:0 0 auto; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:.02em; background:var(--ink-2); border:1px solid var(--gold-dim); color:var(--gold); }
+.sq-num.sq-staff{ border-color:var(--line); color:rgba(255,255,255,.4); }
+.sq-name{ display:flex; flex-direction:column; min-width:0; font-size:15px; font-weight:600; overflow-wrap:anywhere; }
+.sq-role{ font-size:12px; font-weight:400; color:rgba(255,255,255,.55); }
+html.theme-light .sq-role{ color:rgba(11,27,63,.6); }

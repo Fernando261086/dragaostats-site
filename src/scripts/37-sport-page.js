@@ -1,6 +1,6 @@
 // ===================== PÁGINA DE MODALIDADE (a partir do Início) =====================
 // Cabeçalho da modalidade + separadores "Jogos" e "Marcadores". Só lê dados que já existem.
-// Classificação vem do Apps Script v94 (ver 41-standings.js). O Plantel ainda não existe.
+// Classificação vem do Apps Script v94 (ver 41-standings.js). O Plantel vem em `50-squad.js`.
 let sportPageSport_ = null, sportPageTab_ = "jogos", sportPageStat_ = null;
 function openSportPage_(sport, tab){
   sportPageSport_ = sport; sportPageTab_ = tab || "jogos"; sportPageStat_ = null;
@@ -32,7 +32,7 @@ function renderSportPage_(){
       </div>
     </div>
   </div>`;
-  const tabs = `<div class="sp-tabs"><button type="button" class="${sportPageTab_ === "jogos" ? "active" : ""}" data-sptab="jogos">Jogos</button><button type="button" class="${sportPageTab_ === "classificacao" ? "active" : ""}" data-sptab="classificacao">Classificação</button><button type="button" class="${sportPageTab_ === "marcadores" ? "active" : ""}" data-sptab="marcadores">Marcadores</button></div>`;
+  const tabs = `<div class="sp-tabs"><button type="button" class="${sportPageTab_ === "jogos" ? "active" : ""}" data-sptab="jogos">Jogos</button><button type="button" class="${sportPageTab_ === "classificacao" ? "active" : ""}" data-sptab="classificacao">Classificação</button><button type="button" class="${sportPageTab_ === "marcadores" ? "active" : ""}" data-sptab="marcadores">Marcadores</button>${(typeof squadHas_ === "function" && squadHas_(sport)) ? `<button type="button" class="${sportPageTab_ === "plantel" ? "active" : ""}" data-sptab="plantel">Plantel</button>` : ""}</div>`;
   let heroHtml = (sportPageTab_ === "jogos" && typeof homeHeroHtml_ === "function") ? `<div class="sp-hero">${homeHeroHtml_(next)}</div>` : "";
   if(sportPageTab_ === "jogos" && !next && done.length){
     // v159: sem próximo jogo marcado → em vez de um destaque vazio, mostra o último resultado
@@ -60,6 +60,8 @@ function renderSportPage_(){
     const nextRest = upcoming.slice(1);
     body = `<div class="hv-panel"><div class="hv-panel-head"><h3>Calendário</h3></div>${nextRest.length ? nextRest.map(row).join("") : '<div class="hv-empty">Sem mais jogos marcados.</div>'}</div>
       <div class="hv-panel"><div class="hv-panel-head"><h3>Resultados</h3></div>${done.length ? done.map(row).join("") : '<div class="hv-empty">Ainda sem resultados.</div>'}</div>`;
+  }else if(sportPageTab_ === "plantel"){
+    body = (typeof squadPanelHtml_ === "function") ? squadPanelHtml_(sport) : "";
   }else if(sportPageTab_ === "classificacao"){
     body = (typeof standingsPanelHtml_ === "function") ? standingsPanelHtml_(sport) : "";
   }else{

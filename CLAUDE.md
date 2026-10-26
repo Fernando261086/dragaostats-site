@@ -41,7 +41,7 @@ defeito + tema claro). Onde está cada coisa:
   (link "só ver", modo Modalidades). Herói do próximo jogo, "Esta semana",
   "Últimos resultados". Abre por `openHomeByDefault_()`.
 - **Página de modalidade** (`37-sport-page.js`): `openSportPage_(sport)`;
-  separadores Jogos/Classificação/Marcadores. Plantel **ainda não existe**.
+  separadores Jogos/Classificação/Marcadores. Plantel: `50-squad.js` (v170).
 - **Lembrar-me** (`38-game-reminders.js` + Apps Script v93): aviso 1 hora
   antes. Guarda em `localStorage` (`dia22-reminders`) e envia
   `{setGameReminder:{token,evId,on}}` ao `STORE_URL`. No Apps Script usa a
@@ -102,7 +102,7 @@ defeito + tema claro). Onde está cada coisa:
 **Cuidados aprendidos:** usar `minmax(0,1fr)` em grelhas (senão há deslize
 lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 360/390/768px; subir a versão da cache em `public/sw.js` a cada publicação
-(atual `dia22-cache-v245`); em telemóvel os widgets laterais aparecem
+(atual `dia22-cache-v246`); em telemóvel os widgets laterais aparecem
 **depois** da lista de jogos.
 
 **Ao vivo Sofascore (Apps Script v102):** Futebol Feminino, Andebol e Futsal leem
@@ -127,7 +127,9 @@ Por confirmar com jogo real (24/10/2026): golos a atualizar durante o jogo.
 
 **Antes do jogo (v168):** `pregameHtml_(ev)` em `49-pregame.js`, usado em `42-game-page.js`; só com dados do site (histórico + `STANDINGS`). **Forma do adversário (Apps Script v116, site v169):** `formasAtualizar_` (de 6 em 6 h, jogos dos próximos 7 dias, Sofascore `team/<id>/events/last/0`, prop `formasSofa`); `doGet` devolve `formas` ("Modalidade|Adversário" → [[V|E|D, oponente, placar]]). Precisa do id do adversário nos `escudos` (Futsal não tem). Teste: `testarFormasAgora`.
 
-**Ainda por fazer:** Plantel; testar em produção as fontes reais (ao vivo de cada modalidade), o push do
+**Plantel (Apps Script v120, site v170):** API do site do clube `api.app.fcporto.pt/v2/sportClasses/<classe>/teamsSquads?team=<equipa>` (pública, sem chave; `data[0].squad.players` com `number`, `full_name`, `position.name`; `data[0].staff_teams[].members` com `full_name`, `speciality`). Mapa `PLANTEL_FCP_`: Feminino 17/1150, Equipa B 2/100, Andebol 3/200, Basquetebol 4/300, Hóquei 5/400, Futsal 21/1500, Voleibol 14/250 (confirmar pelas posições). Lido de 24 em 24 h para props `plantelFcp_<modalidade>`; `doGet` devolve `plantel`. Só texto: **sem fotos** (direitos do clube). Teste: `atualizarPlantelAgora`.
+
+**Ainda por fazer:** testar em produção as fontes reais (ao vivo de cada modalidade), o push do
 "Lembrar-me" e a edição de um resultado real.
 
 ## Build e deploy

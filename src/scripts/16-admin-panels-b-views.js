@@ -527,7 +527,7 @@ if(document.getElementById("viewHomeBtn")) document.getElementById("viewHomeBtn"
 document.getElementById("viewMedalsBtn").onclick = ()=>setView("medalhas");
 document.getElementById("viewHistoryBtn").onclick = ()=>setView("historico");
 document.getElementById("viewLeaderboardBtn").onclick = ()=>setView("marcadores");
-document.getElementById("viewTodayAllBtn").onclick = ()=>{ weekOffset = 0; setView("hoje-todas"); };
+document.getElementById("viewTodayAllBtn").onclick = ()=>{ weekOffset = 0; weekDay_ = null; setView("hoje-todas"); };
 document.getElementById("viewStatsBtn").onclick = ()=>setView("estatisticas");
 
 document.getElementById("globalSearchBtn").onclick = ()=>{

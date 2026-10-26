@@ -677,3 +677,16 @@ body.view-jogo #postGameReactionBox{display:none!important}
 .ss-body{ max-width:760px; margin:0 auto; padding:14px 16px 40px; }
 .ss-count{ font-size:13px; color:rgba(255,255,255,.55); margin:0 2px 8px; }
 body.search-open{ overflow:hidden; }
+
+/* ===== Dia a dia em "Esta semana" (v167) ===== */
+.wd-strip{ display:grid; grid-template-columns:1.5fr repeat(7,minmax(0,1fr)); gap:6px; margin:4px 0 14px; }
+.wd-pill{ display:flex; flex-direction:column; align-items:center; gap:1px; padding:7px 2px; background:var(--panel); border:1px solid var(--line); border-radius:12px; color:var(--text); font:inherit; cursor:pointer; min-width:0; }
+.wd-pill .wd-n{ font-size:11px; text-transform:uppercase; letter-spacing:.04em; opacity:.65; }
+.wd-pill .wd-d{ font-size:16px; font-weight:700; }
+.wd-pill .wd-c{ font-size:11px; color:var(--gold); min-height:13px; }
+.wd-pill:not(.has):not(.wd-all){ opacity:.55; }
+.wd-pill.today{ border-color:var(--gold-dim); }
+.wd-pill.active{ background:var(--gold); border-color:var(--gold); color:var(--gold-text); }
+.wd-pill.active .wd-c, .wd-pill.active .wd-n{ color:var(--gold-text); opacity:1; }
+.wd-all .wd-d{ font-size:12px; }
+@media (max-width:420px){ .wd-strip{ gap:4px; } .wd-pill .wd-d{ font-size:15px; } }

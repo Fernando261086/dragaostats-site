@@ -102,7 +102,7 @@ defeito + tema claro). Onde está cada coisa:
 **Cuidados aprendidos:** usar `minmax(0,1fr)` em grelhas (senão há deslize
 lateral no telemóvel); no modo edição verificar sempre overflow horizontal a
 360/390/768px; subir a versão da cache em `public/sw.js` a cada publicação
-(atual `dia22-cache-v242`); em telemóvel os widgets laterais aparecem
+(atual `dia22-cache-v243`); em telemóvel os widgets laterais aparecem
 **depois** da lista de jogos.
 
 **Ao vivo Sofascore (Apps Script v102):** Futebol Feminino, Andebol e Futsal leem
@@ -122,6 +122,8 @@ Por confirmar com jogo real (24/10/2026): golos a atualizar durante o jogo.
 **Avisos automáticos (Apps Script v115, site v165):** golos da Equipa B e do Futebol Feminino e fim de cada set (exceto o decisivo) no Voleibol, no gatilho do ao vivo (`avisosAutoProcessar_`, estado na prop `avisosAuto`; só avisa à 2.ª leitura igual; grava antes de enviar). Modo por prop `AVISOS_AUTO_MODO` ("teste" por defeito: só os nomes de `AVISOS_AUTO_NOMES`; `avisosAutoModoTodos()` passa a todos). `ev.noAuto` desliga por jogo. Teste: `testarAvisosAutoAgora`. Intervalo e resultado final continuam manuais. Site: botão "Adicionar ao calendário" (`47-add-to-calendar.js`).
 
 **Pesquisa (v166):** `48-search.js`, `openSearchSheet_()`, aberta pela barra `.hv-search` no Início.
+
+**Dia a dia (v167):** `weekDayStripHtml_` / `weekDay_` em `13-timeline-render-b.js`, faixa `.wd-strip` na vista "Esta semana".
 
 **Ainda por fazer:** Plantel; testar em produção as fontes reais (ao vivo de cada modalidade), o push do
 "Lembrar-me" e a edição de um resultado real.

@@ -106,6 +106,26 @@ function renderCrossCompetitionList(container, filterFn, emptyMessage){
   });
 }
 
+// v167: dia a dia dentro de "Esta semana" — faixa 2ª…Dom com o número de jogos de cada dia
+let weekDay_ = null; // null = semana toda; 0..6 = 2ª…Domingo
+function weekDayStripHtml_(weekStart){
+  const nomes = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+  const cont = [0, 0, 0, 0, 0, 0, 0];
+  ALL.competitions.filter(c=>(c.mode||"medals")==="matches").forEach(c=>{
+    (((ALL.data[c.id] || {}).events) || []).forEach(ev=>{
+      const i = Math.round((new Date((ev.day||"") + "T00:00:00") - weekStart) / 86400000);
+      if(i >= 0 && i < 7) cont[i]++;
+    });
+  });
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const pills = nomes.map((n, i)=>{
+    const d = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + i);
+    const isHoje = d.getTime() === hoje.getTime();
+    return `<button type="button" class="wd-pill${weekDay_ === i ? " active" : ""}${isHoje ? " today" : ""}${cont[i] ? " has" : ""}" data-wday="${i}"><span class="wd-n">${n}</span><span class="wd-d">${d.getDate()}</span><span class="wd-c">${cont[i] ? cont[i] : "·"}</span></button>`;
+  }).join("");
+  return `<div class="wd-strip"><button type="button" class="wd-pill wd-all${weekDay_ === null ? " active" : ""}" data-wday=""><span class="wd-n">Toda a</span><span class="wd-d">semana</span></button>${pills}</div>`;
+}
+
 function renderTodayAllView(){
   const inMatchesContext = currentCompMode()==="matches";
   const container = document.getElementById("todayAllView");
@@ -129,6 +149,7 @@ function renderTodayAllView(){
         <span class="week-nav-label">${rangeLabel}</span>
         <button class="hide-toggle" id="weekNextBtn">Seguinte ›</button>
       </div>
+      ${weekDayStripHtml_(weekStart)}
       <div id="weekListContainer"></div>
       ${!READONLY_MODE ? `
         <div class="add-btn-row" style="margin-top:14px;">
@@ -144,13 +165,15 @@ function renderTodayAllView(){
         const comp = ALL.competitions.find(c=>c.id===compId);
         if(((comp && comp.mode) || "medals") !== "matches") return false;
         const d = new Date((ev.day||"") + "T00:00:00");
+        if(weekDay_ !== null){ const i = Math.round((d - weekStart) / 86400000); if(i !== weekDay_) return false; }
         return d >= weekStart && d < weekEnd;
       },
-      "Sem jogos nesta semana em nenhuma competição."
+      weekDay_ !== null ? "Sem jogos neste dia." : "Sem jogos nesta semana em nenhuma competição."
     );
 
-    document.getElementById("weekPrevBtn").onclick = ()=>{ weekOffset--; renderTodayAllView(); };
-    document.getElementById("weekNextBtn").onclick = ()=>{ weekOffset++; renderTodayAllView(); };
+    document.getElementById("weekPrevBtn").onclick = ()=>{ weekOffset--; weekDay_ = null; renderTodayAllView(); };
+    document.getElementById("weekNextBtn").onclick = ()=>{ weekOffset++; weekDay_ = null; renderTodayAllView(); };
+    container.querySelectorAll("[data-wday]").forEach(b=>{ b.onclick = ()=>{ const v = b.getAttribute("data-wday"); weekDay_ = v === "" ? null : Number(v); renderTodayAllView(); }; });
     const shareBtn = document.getElementById("weekShareBtn");
     if(shareBtn){
       shareBtn.onclick = ()=>{

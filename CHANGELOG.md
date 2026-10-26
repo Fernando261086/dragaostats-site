@@ -1,3 +1,6 @@
+## v167 — Dia a dia em "Esta semana"
+- Faixa Seg…Dom por cima da lista, com o número de jogos de cada dia; tocar num dia mostra só esse dia, "Toda a semana" volta atrás. Muda de semana com Anterior/Seguinte. Cache `dia22-cache-v243`.
+
 ## v166 — Pesquisa de jogos
 - Início: barra "Procurar jogo, adversário, mês…" que abre um ecrã de pesquisa (`48-search.js`). Procura em todos os jogos por adversário, modalidade, competição, local, data e resultado (sem acentos); cada resultado abre a página do jogo. Cache `dia22-cache-v242`.
 

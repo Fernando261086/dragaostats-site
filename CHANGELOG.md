@@ -1,3 +1,6 @@
+## v166 — Pesquisa de jogos
+- Início: barra "Procurar jogo, adversário, mês…" que abre um ecrã de pesquisa (`48-search.js`). Procura em todos os jogos por adversário, modalidade, competição, local, data e resultado (sem acentos); cada resultado abre a página do jogo. Cache `dia22-cache-v242`.
+
 ## v165 — Adicionar ao calendário + opção "sem avisos automáticos"
 - Página do jogo: botão "📅 Adicionar ao calendário" (jogos futuros). Gera um .ics no próprio aparelho, com alarme 1 hora antes (`47-add-to-calendar.js`).
 - Editor do jogo: caixa "Sem avisos automáticos de golo / fim de set neste jogo" (campo `noAuto`), lida pelo Apps Script v115.

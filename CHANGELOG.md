@@ -1,3 +1,7 @@
+## v176 — Cartão do próximo jogo clicável + nomes de equipas
+- O cartão do próximo jogo (Início e modalidade) abre a página do jogo ao tocar (os botões mantêm a função).
+- Ligação de nomes de equipas mais tolerante (`pgSameTeam_` ignora "HC", "FC", "Club"…: "Veszprém HC" = "Telekom Veszprém"), para a tabela do grupo europeu aparecer em "Antes do jogo" e na página do jogo. Cache `dia22-cache-v253`.
+
 ## v175 — Médias e competições na folha do jogador
 - Basquetebol: médias por jogo (total em pequeno). Todas as modalidades: bloco "Por competição" (Campeonato, Amigável…) quando há mais do que uma; Basquetebol com médias, as outras com totais. Competições juntas ignorando maiúsculas e acentos. Cache `dia22-cache-v252`.
 

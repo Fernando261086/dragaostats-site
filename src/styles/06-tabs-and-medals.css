@@ -760,3 +760,4 @@ button.sq-click{ width:100%; background:none; border:0; border-top:1px solid var
 .ps-cn{ font-weight:600; }
 .ps-cj{ color:rgba(255,255,255,.55); font-size:13px; text-align:right; }
 .ps-cv{ grid-column:1 / -1; font-size:13px; color:rgba(255,255,255,.7); }
+.hv-hero-click{ cursor:pointer; }

@@ -42,7 +42,7 @@ function homeHeroHtml_(item, label){
   const detail = [ev.detail, ev.phase].filter(Boolean).join(" · ");
   const place = [ev.venue, localLabel(ev.local)].filter(Boolean).join(" · ");
   const ico = (n) => (typeof n === "string") ? n : "";
-  return `<div class="hv-hero${live ? " is-live" : ""}${liveData ? " has-score" : ""}">
+  return `<div class="hv-hero hv-hero-click${live ? " is-live" : ""}${liveData ? " has-score" : ""}" data-hero="${esc(ev.id)}">
     <div class="hv-hero-top"><span class="hv-kicker">${liveData ? "A decorrer" : (live ? "A decorrer" : esc(label || "Próximo jogo"))}</span><span class="hv-pill">${liveData ? '<i class="hv-dot"></i>' : ""}${esc(pill)}</span></div>
     <div class="hv-hero-sport">${esc(ev.sport)}${detail ? " · " + esc(detail) : ""}</div>
     <div class="hv-hero-match${homeOpp_(ev).length > 16 ? " hm-long" : ""}"><span class="hm-a">${crestOnly_(ev, postTeams_(ev).home)}${esc(postTeams_(ev).home)}</span><span class="hm-b"><span class="hv-vs">vs</span> ${crestOnly_(ev, postTeams_(ev).away)}${esc(postTeams_(ev).away)}</span></div>
@@ -164,3 +164,10 @@ function openHomeByDefault_(){
     if(READONLY_MODE && typeof currentCompMode === "function" && currentCompMode() === "matches") setView("inicio");
   }catch(e){}
 }
+
+// o cartão do próximo jogo (herói) todo abre a página do jogo; os botões (Lembrar-me, Ver transmissão…) mantêm a sua função
+document.addEventListener("click", e=>{
+  const h = e.target.closest && e.target.closest(".hv-hero[data-hero]");
+  if(!h || e.target.closest("button, a, input")) return;
+  if(typeof goToEventCard === "function") goToEventCard(h.getAttribute("data-hero"));
+});

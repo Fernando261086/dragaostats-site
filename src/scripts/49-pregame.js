@@ -3,10 +3,18 @@
 // este adversário e posição de cada equipa na classificação. Tudo sai do que o site já tem (histórico e classificação).
 let FORMAS = {}; // forma recente dos adversários ("Modalidade|Adversário" → [[V|E|D, oponente, placar],…]), do Apps Script v116
 function pgNorm_(s){ return String(s == null ? "" : s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim(); }
+// palavras que não distinguem uma equipa de outra ("HC", "FC", "Club"…): ignoradas ao comparar nomes
+const PG_GENERIC_ = new Set(["hc", "fc", "cf", "sc", "cd", "ac", "ad", "as", "sl", "bc", "bk", "cb", "hk", "rk", "kk", "sad", "club", "clube", "de", "do", "da", "dos", "the", "of", "handball", "basket", "basketball", "futsal", "volley", "volleyball", "hoquei", "hockey", "andebol"]);
+function pgTokens_(s){ return pgNorm_(s).split(" ").filter(t=>t && t.length > 1 && !PG_GENERIC_.has(t)); }
 function pgSameTeam_(a, b){
   const x = pgNorm_(a), y = pgNorm_(b);
   if(!x || !y) return false;
-  return x === y || (x.length >= 4 && y.length >= 4 && (x.indexOf(y) >= 0 || y.indexOf(x) >= 0));
+  if(x === y || (x.length >= 4 && y.length >= 4 && (x.indexOf(y) >= 0 || y.indexOf(x) >= 0))) return true;
+  // "Veszprém HC" = "Telekom Veszprém": sem as palavras genéricas, todas as de um nome estão no outro
+  const tx = pgTokens_(a), ty = pgTokens_(b);
+  if(!tx.length || !ty.length) return false;
+  const sub = (p, q)=>p.every(t=>q.indexOf(t) >= 0);
+  return sub(tx, ty) || sub(ty, tx);
 }
 function pgWhen_(ev){ const d = new Date(ev.day + "T" + (ev.t || "00:00") + ":00"); return isNaN(d) ? 0 : d.getTime(); }
 function pgDone_(ev){ const st = (typeof getEv === "function" && getEv(ev.id)) || {}; return (st.resultado && String(st.resultado).trim()) ? st : null; }

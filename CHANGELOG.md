@@ -1,3 +1,6 @@
+## v182 — Ferramentas de publicação só para quem edita
+- Página do jogo, para quem só vê: "Partilhar" e (jogo terminado) "Imagem do resultado". O **Reel** e as imagens/reels "para promover" ficam só em modo edição. Cache `dia22-cache-v260`.
+
 ## v181 — Partilha com resultado
 - Página do jogo: o botão "Partilhar" envia agora o resultado no texto ("🤾 Andebol — FC Porto 31-28 Kiel (Vitória) · Vê o jogo completo: link"). Jogo terminado: cartão em destaque "Partilha este resultado" (Partilhar, Imagem, Reel) logo a seguir ao resultado.
 - Início: depois de uma vitória (até 2 dias) cartão "Vitória! … Partilha com um amigo adepto" (✕ esconde-o para esse jogo). Contagem anónima: `partilhar_clique`, `convite_vitoria`. Cache `dia22-cache-v259`.

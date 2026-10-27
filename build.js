@@ -47,6 +47,8 @@ function build() {
 
   const html = headBeforeStyle + css + betweenStyleAndScript + js + tail;
 
+  // v192: limpa o dist antes (para ficheiros apagados em public/ não ficarem esquecidos no zip)
+  fs.rmSync(DIST, { recursive: true, force: true });
   fs.mkdirSync(DIST, { recursive: true });
   fs.writeFileSync(path.join(DIST, "index.html"), html, "utf-8");
 

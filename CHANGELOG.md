@@ -1,3 +1,10 @@
+## v192 — Sem "Novidades", Início alinhado, imagem de partilha leve, cabeçalhos de segurança
+- Removido o "Novidades": página, popup, ligação no rodapé e linha no menu "Mais" (o endereço antigo redireciona para o Início).
+- Início no computador: o cartão "Ao vivo" ocupa a largura do conteúdo (marcador centrado) e já não há um vazio por baixo do cartão do jogo. Banner do resumo semanal: botões lado a lado no computador, a quebrar linha no telemóvel.
+- Imagem de partilha (`og-image.png`) de 409 KB para 187 KB (o WhatsApp aceita bem até ~300 KB).
+- `_headers`: `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`.
+- `build.js` limpa o `dist` antes de gerar. Cache `dia22-cache-v270`.
+
 ## v191 — Auditoria: contraste, acessibilidade e pequenos defeitos
 - Contraste de cores (WCAG AA) corrigido: etiqueta "AO VIVO", marcador ao vivo, "atualizado há…", botão de notificações do banner, ligação de privacidade, posição nas Modalidades (tema claro), etiquetas roxas da Equipa B (tema escuro), vitórias no Histórico (tema claro).
 - Banner do resumo semanal: os botões já não saem do cartão em ecrãs pequenos ("Agora não" aparecia cortado). Faixa "Toda a semana": texto já cabe a 360 px.

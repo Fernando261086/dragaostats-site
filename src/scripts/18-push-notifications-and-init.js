@@ -152,9 +152,8 @@ function showStaleDataBanner_(at){
     // do link e ficar com acesso total sem pedir nada
     await ensureAdminAuthenticated();
   }
-  // 1ª vez: só as boas-vindas (curtas). Quem já cá veio: só as novidades, se houver
-  // versão nova. Nunca os dois de seguida.
-  if(!maybeShowIntro()) maybeShowChangelog();
+  // 1ª vez: só as boas-vindas (curtas)
+  maybeShowIntro();
   runAskManager(); // pedidos (newsletter/instalar): só a partir da 2ª visita, um por dia
   startNotifyNudgeTimer_(); // popup de notificações: ao fim de ~1 minuto (ou na 1ª reação/prognóstico)
   // Se o link tiver ?comp=...&day=..., abre logo aí em vez do último usado

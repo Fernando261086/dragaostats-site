@@ -32,7 +32,6 @@
     ["🏆", "Marcadores", "viewLeaderboardBtn"],
     ["🗓️", "Calendário em grelha", "gridToggleBtn"],
     ["📖", "A tua época", "myYearBtn"],
-    ["🆕", "Novidades", "novidadesLink"],
     ["🎯", "Ranking de palpites", "predictionRankingBtn"],
     ["🧠", "Quiz do Dragão", "quizBtn"],
     ["☕", "Apoiar o projeto", "supportBtn"],

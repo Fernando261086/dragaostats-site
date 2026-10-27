@@ -15,19 +15,6 @@ document.getElementById("myYearCloseBtn").onclick = ()=>{
   document.getElementById("myYearOverlay").style.display = "none";
 };
 
-function maybeShowChangelog(){
-  let seen = null;
-  try{ seen = localStorage.getItem("dia22-changelog-seen"); }catch(e){}
-  if(seen === CHANGELOG_VERSION) return;
-  const overlay = document.getElementById("changelogOverlay");
-  document.getElementById("changelogContent").innerHTML = CHANGELOG_HTML;
-  overlay.style.display = "flex";
-  document.getElementById("changelogCloseBtn").onclick = ()=>{
-    try{ localStorage.setItem("dia22-changelog-seen", CHANGELOG_VERSION); }catch(e){}
-    overlay.style.display = "none";
-  };
-}
-
 function ensureAdminAuthenticated(){
   return new Promise((resolve)=>{
     // Confia numa entrada já feita antes neste aparelho, sem voltar a perguntar

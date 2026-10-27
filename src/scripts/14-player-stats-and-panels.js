@@ -562,9 +562,6 @@ function maybeShowIntro(){
 document.getElementById("introCloseBtn").onclick = ()=>{
   document.getElementById("introOverlay").style.display = "none";
   try{ localStorage.setItem("dia22-intro-seen", INTRO_VERSION); }catch(e){}
-  // quem acabou de chegar não tem "novidades" para ver — fica logo marcado como visto,
-  // para o popup de novidades só aparecer a quem já cá veio e há algo novo a mostrar
-  try{ localStorage.setItem("dia22-changelog-seen", CHANGELOG_VERSION); }catch(e){}
 };
 // Toast genérico, para avisos pontuais (ex: resposta a um reporte) — sem limite
 // de "uma vez por dia", ao contrário do modal de boas-vindas.
@@ -629,21 +626,6 @@ function ensureViewerRegistered(){
 
 // Bloqueia o modo de EDIÇÃO com uma password de administração — impede que alguém
 // tire o "?view=readonly" do link e fique com acesso total sem pedir nada.
-// Popup de novidades — mostra-se uma vez a cada pessoa/aparelho, sempre que
-// CHANGELOG_VERSION mudar. Para publicar novidades novas no futuro, basta mudar
-// este texto e subir o número da versão aqui.
-const CHANGELOG_VERSION = "2026-09-28a";
-const CHANGELOG_HTML = `
-  <div style="padding:0 2px;">
-    <p style="margin:0 0 4px; font-weight:700; font-size:14px; color:var(--text);">🎯 Adversário do dia</p>
-    <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim); line-height:1.5;">Quando há jogo, aparece logo no topo quem é o adversário — até o jogo começar.</p>
-    <p style="margin:0 0 4px; font-weight:700; font-size:14px; color:var(--text);">📲 Instalar app</p>
-    <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim); line-height:1.5;">Um botão novo, sempre à mão, para pôr o Dragão Stats no ecrã principal do telemóvel.</p>
-    <p style="margin:0 0 4px; font-weight:700; font-size:14px; color:var(--text);">ℹ️ Sobre o Dragão Stats</p>
-    <p style="margin:0; font-size:13px; color:var(--text-dim); line-height:1.5;">No rodapé, conta quem somos e porque criámos este projeto.</p>
-  </div>
-`;
-
 const PRIVACY_HTML = `
   <div class="medal-section-title">🔒 Política de Privacidade</div>
   <p style="margin:10px 0 14px; font-size:13px; color:var(--text-dim);">Esta é uma app de adeptos, sem qualquer ligação oficial ao FC Porto — um projeto pessoal, sem fins lucrativos, gerido por Fernando Silva e pelo seu irmão.</p>

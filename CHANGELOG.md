@@ -1,3 +1,6 @@
+## v186 — Logos das redes no rodapé
+- "Segue o Dragão Stats": botões com o logo do Facebook e do Instagram (maiores, com contorno da cor de cada rede ao passar/tocar). Cache `dia22-cache-v264`.
+
 ## v185 — Reel da semana já não desaparece
 - A sincronização periódica voltava a desenhar a vista "Esta semana" e apagava a caixa do reel (e da imagem + texto) a meio. Agora a caixa aberta mantém-se (incluindo a legenda que estejas a editar) e o botão do reel fica bloqueado enquanto grava. Ao mudar de semana a caixa fecha. Cache `dia22-cache-v263`.
 

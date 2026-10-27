@@ -210,3 +210,5 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 **v184:** as regras de limpeza (`#newsletterBox`, `#formOverview`, `.search-row`…) e a barra com Tabelas usam `html.mode-matches` (público **e** edição); `openHomeByDefault_` abre o Início também em edição; cache atual `dia22-cache-v262`.
 
 **v185:** `renderTodayAllView` (13) preserva `#weekReelBox`/`#weekShareBox` abertos (`dataset.week` = `weekOffset`) quando a sincronização (18) a volta a desenhar; `window.__weekReelBusy_` mantém o botão do reel bloqueado; cache atual `dia22-cache-v263`.
+
+**v186:** `#footFb`/`#footIg` (rodapé) com os SVG dos logos (`.foot-soc`); o gradiente do Instagram usa o id próprio `igFootGrad`; cache atual `dia22-cache-v264`.

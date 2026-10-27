@@ -877,3 +877,7 @@ html.theme-light .hv-sg .sg-s{ color:#5b6b88; }
 .hv-modgrid .hv-panel-head{ display:flex; align-items:baseline; justify-content:space-between; }
 .hv-modgrid .sg-grid{ width:100%; }
 .foot-links .feedback-btn{ display:inline-flex !important; align-items:center; width:auto !important; }
+.foot-soc{ display:inline-flex; align-items:center; gap:8px; padding:0 16px 0 10px; min-height:48px; font-weight:700; border-color:rgba(255,255,255,.3); }
+.foot-soc svg{ width:28px; height:28px; flex:0 0 auto; }
+#footFb:hover, #footFb:active{ border-color:#1877F2; }
+#footIg:hover, #footIg:active{ border-color:#d6249f; }

@@ -204,3 +204,5 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 **v181:** `shareTextFan_/shareGameFan_/resultWin_/winInviteHtml_` no fim de `53-home-extras.js` (texto de partilha com resultado; cartão de vitória no Início, `dia22-win-dismissed`); cartão `.gp-share` em `42-game-page.js` (só jogo terminado; os botões `#gpShare/#gpImg/#gpReel` passam para lá); cache atual `dia22-cache-v259`.
 
 **v182:** `42-game-page.js`: em `READONLY_MODE` só há `#gpShare` e, com jogo terminado, `#gpImg`; `#gpReel` e os botões "para promover" só em edição; cache atual `dia22-cache-v260`.
+
+**v183:** `setView` ganhou `classificacoes` (`#clsView`, `54-standings-view.js`, botão escondido `#viewStandingsBtn` só no público) e as classes `view-home`/`view-cal` no `<body>`; rodapé com `#newsletterBox`, `#footFollow`, `.foot-links`; `sportsGridHtml_` e a pesquisa única em `53-home-extras.js`; cache atual `dia22-cache-v261`.

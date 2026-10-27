@@ -198,6 +198,7 @@
       <button class="view-tab" id="viewTodayAllBtn">🌍 Hoje</button>
       <button class="view-tab" id="viewStatsBtn" style="display:none;">📈 Estatísticas</button>
       <button class="view-tab" id="viewHistoryBtn">📜 Histórico</button>
+      <button class="view-tab" id="viewStandingsBtn" style="display:none;">🏆 Tabelas</button>
       <button class="view-tab" id="viewLeaderboardBtn">🏆 Marcadores</button>
     </div>
     <div class="progress-row" id="progressRow">
@@ -225,7 +226,7 @@
       <button class="hide-toggle" id="predictionRankingBtn" title="Ranking de quem acerta mais nos prognósticos de resultado">🎯 Ranking</button>
       <button class="hide-toggle" id="myYearBtn" title="Um resumo pessoal da tua ligação ao site">📖 A tua época</button>
       <button class="hide-toggle" id="quizBtn" title="Um mini-quiz com curiosidades do FC Porto">🧠 Quiz do Dragão</button>
-      <a class="hide-toggle" href="novidades.html" style="text-decoration:none; display:inline-flex; align-items:center;">🆕 Novidades</a>
+      <a class="hide-toggle" id="novidadesLink" href="novidades.html" style="text-decoration:none; display:inline-flex; align-items:center;">🆕 Novidades</a>
       <button class="hide-toggle" id="supportBtn" title="Ajuda a cobrir os custos do site — projeto sem fins lucrativos">☕ Apoiar o projeto</button>
       <button class="social-icon-btn" id="facebookBtn" title="Segue o Dragão Stats no Facebook" aria-label="Segue o Dragão Stats no Facebook">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1877F2"/><path fill="#fff" d="M13.6 21V13h2.6l.4-3h-3V8.3c0-.9.3-1.5 1.6-1.5H16.8V4.1c-.4 0-1.2-.1-2.1-.1-2.4 0-4 1.5-4 4.1V10H8v3h2.7v8z"/></svg>
@@ -323,6 +324,7 @@
     <div class="home-view" id="homeView" style="display:none;"></div>
     <div class="home-view" id="sportView" style="display:none;"></div>
     <div class="home-view" id="gameView" style="display:none;"></div>
+    <div class="home-view" id="clsView" style="display:none;"></div>
     <div class="medals-view" id="medalsView" style="display:none;"></div>
     <div class="medals-view" id="todayAllView" style="display:none;"></div>
     <div class="medals-view" id="statsView" style="display:none;"></div>
@@ -338,7 +340,7 @@
       <button class="reset-btn" id="summaryBtn">📋 Resumo do dia (falado)</button>
       <button class="reset-btn" id="resetBtn">Limpar todas as marcações</button>
       <br>
-      <div style="margin-top:14px; padding:12px 14px; background:var(--panel); border:1px solid var(--line); border-radius:10px; max-width:420px; margin-left:auto; margin-right:auto;">
+      <div id="newsletterBox" style="margin-top:14px; padding:12px 14px; background:var(--panel); border:1px solid var(--line); border-radius:10px; max-width:420px; margin-left:auto; margin-right:auto;">
         <div style="font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px;">📧 Resumo semanal por email</div>
         <div style="font-size:12px; color:var(--text-dim); margin-bottom:10px;">Recebe um email por semana com os resultados de todas as modalidades.</div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -348,13 +350,18 @@
         <div style="font-size:10.5px; color:var(--text-dim); opacity:0.75; margin-top:6px;">Ao inscreveres-te, aceitas receber este email semanal. Podes cancelar a qualquer momento. <span class="newsletter-privacy-link" style="color:var(--gold-dim); text-decoration:underline; cursor:pointer;">Política de Privacidade</span></div>
       </div>
       <br>
-      <button class="feedback-btn" id="inviteFriendBtn" style="margin-top:8px;">📣 Convida um amigo adepto</button>
-      <br>
-      <button class="feedback-btn" id="feedbackBtn" style="margin-top:8px;">🐛 Reportar um bug ou sugestão</button>
-      <br>
-      <button class="feedback-btn" id="aboutBtn" style="margin-top:8px;">ℹ️ Sobre o Dragão Stats</button>
-      <button class="feedback-btn" id="privacyBtn" style="margin-top:8px;">🔒 Política de Privacidade</button>
-      <button class="feedback-btn" id="termsBtn" style="margin-top:8px;">📄 Termos de Uso</button>
+      <div class="foot-follow" id="footFollow"><span>Segue o Dragão Stats</span>
+        <button type="button" class="foot-chip" id="footFb">Facebook</button>
+        <button type="button" class="foot-chip" id="footIg">Instagram</button>
+        <button type="button" class="foot-chip" id="footSupport">☕ Apoiar</button>
+      </div>
+      <div class="foot-links">
+      <button class="feedback-btn" id="inviteFriendBtn">📣 Convida um amigo adepto</button>
+      <button class="feedback-btn" id="feedbackBtn">🐛 Reportar um bug ou sugestão</button>
+      <button class="feedback-btn" id="aboutBtn">ℹ️ Sobre o Dragão Stats</button>
+      <button class="feedback-btn" id="privacyBtn">🔒 Política de Privacidade</button>
+      <button class="feedback-btn" id="termsBtn">📄 Termos de Uso</button>
+      </div>
     </footer>
     </div>
   </div>

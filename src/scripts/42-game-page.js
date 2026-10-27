@@ -177,7 +177,7 @@ function renderGamePage_(){
     <div class="gp-top"><button type="button" class="gp-back" id="gpBack" aria-label="Voltar">‹ Voltar</button><span class="gp-sport">${esc(ev.sport)}</span></div>
     <div class="gp-hero${pillCls}">
       <div class="gp-pill-row"><span class="gp-pill">${liveData ? '<i class="hv-dot"></i>' : ""}${esc(pill)}</span></div>
-      <div class="gp-teams">
+      <div class="gp-teams${[t.home, t.away].some(n=>String(n).split(/\s+/).some(w=>w.length > 6)) ? " gp-teams-long" : ""}">
         <div class="gp-team">${crestSide_(ev, t.home)}${(typeof fcpNameHtml_ === "function") ? fcpNameHtml_(t.home) : nomeA}</div>
         <div class="gp-score">${big}</div>
         <div class="gp-team">${crestSide_(ev, t.away)}${(typeof fcpNameHtml_ === "function") ? fcpNameHtml_(t.away) : nomeB}</div>

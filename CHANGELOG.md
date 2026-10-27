@@ -1,3 +1,10 @@
+## v183 — Arrumar o site
+- Página do jogo: nomes das equipas já não se partem a meio da palavra (tamanho adapta-se aos nomes compridos).
+- Rodapé (só público): newsletter só no Início; "Segue o Dragão Stats" (Facebook, Instagram, Apoiar) + links numa linha; "Forma recente" e "Recordes da época" só no Calendário.
+- Calendário/Histórico (público): sem o filtro "Resultados", sem "Modalidades" e sem "•••"; a lupa abre a pesquisa do Início (uma só). Histórico sem a barra de pesquisa/filtros duplicada. "Mais" ganhou Marcadores, Calendário em grelha, A tua época e Novidades.
+- Página de modalidade: sem cartão "Calendário" vazio.
+- Início: bloco "Modalidades" (cada modalidade com o próximo jogo e a posição). Barra de baixo (público): Início, Calendário, Resultados, **Tabelas** (novo ecrã `54-standings-view.js`), Mais. Cache `dia22-cache-v261`.
+
 ## v182 — Ferramentas de publicação só para quem edita
 - Página do jogo, para quem só vê: "Partilhar" e (jogo terminado) "Imagem do resultado". O **Reel** e as imagens/reels "para promover" ficam só em modo edição. Cache `dia22-cache-v260`.
 

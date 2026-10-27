@@ -134,3 +134,33 @@ document.addEventListener("click", e=>{
     if(typeof renderHomeView_ === "function") renderHomeView_(true);
   }
 });
+
+// ---- v183: bloco "Modalidades" no Início (entrada clara para cada página de modalidade)
+function sportsGridHtml_(sportsAll, upcoming){
+  try{
+    if(!sportsAll || !sportsAll.length) return "";
+    const esc = homeEsc_;
+    const tiles = sportsAll.map(sp=>{
+      const nx = (upcoming || []).find(x=>x.ev.sport === sp);
+      const when = nx ? (homeDayDiff_(nx.d) === 0 ? "Hoje" : homeDayDiff_(nx.d) === 1 ? "Amanhã" : HOME_WD_[nx.d.getDay()] + " " + nx.d.getDate()) + (nx.ev.t ? " · " + nx.ev.t : "") : "Sem jogos marcados";
+      const s = (typeof STANDINGS === "object" && STANDINGS) ? STANDINGS[sp] : null;
+      const me = s && (s.rows || []).find(r=>r.me);
+      const pos = me ? `<i class="sg-pos">${esc(me.p)}.º</i>` : "";
+      return `<button type="button" class="hv-sg" data-sportpage="${esc(sp)}" style="--sc:${homeColor_(sp)};"><span class="sg-n">${esc(sp)}${pos}</span><span class="sg-s">${esc(when)}</span></button>`;
+    }).join("");
+    return `<div class="hv-panel hv-modgrid"><div class="hv-panel-head"><h3>Modalidades</h3><span class="hv-cls-hint">Toca para ver a página</span></div><div class="sg-grid">${tiles}</div></div>`;
+  }catch(e){ return ""; }
+}
+
+// ---- v183: redes e apoio no rodapé; uma só pesquisa
+(function(){
+  const go = (id, ev)=>{ const el = document.getElementById(id); if(el) el.click(); if(typeof track_ === "function") track_(ev); };
+  const fb = document.getElementById("footFb"), ig = document.getElementById("footIg"), su = document.getElementById("footSupport");
+  if(fb) fb.onclick = ()=>go("facebookBtn", "rede_facebook");
+  if(ig) ig.onclick = ()=>go("instagramBtn", "rede_instagram");
+  if(su) su.onclick = ()=>go("supportBtn", "apoiar_clique");
+  const lupa = document.getElementById("searchToggleBtn");
+  if(lupa) lupa.addEventListener("click", e=>{
+    if(READONLY_MODE && typeof openSearchSheet_ === "function"){ e.stopImmediatePropagation(); e.preventDefault(); openSearchSheet_(); }
+  }, true);
+})();

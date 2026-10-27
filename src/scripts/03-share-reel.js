@@ -960,6 +960,8 @@ function updateModeVisibleTabs(){
   document.getElementById("viewStatsBtn").style.display = matches ? "none" : "";
   document.getElementById("viewHistoryBtn").style.display = matches ? "" : "none";
   document.getElementById("viewLeaderboardBtn").style.display = matches ? "" : "none";
+  const stBtn_ = document.getElementById("viewStandingsBtn");
+  if(stBtn_) stBtn_.style.display = (matches && READONLY_MODE) ? "" : "none"; // v183: só para o público (quem edita mantém a barra como estava)
   document.getElementById("summaryBtn").textContent = matches ? "📋 Resumo da semana (falado)" : "📋 Resumo do dia (falado)";
   document.getElementById("sportLinksBtn").style.display = matches ? "" : "none";
   document.getElementById("gridToggleBtn").style.display = matches ? "" : "none";

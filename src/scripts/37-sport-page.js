@@ -58,7 +58,7 @@ function renderSportPage_(){
       </button>`;
     };
     const nextRest = upcoming.slice(1);
-    body = `<div class="hv-panel"><div class="hv-panel-head"><h3>Calendário</h3></div>${nextRest.length ? nextRest.map(row).join("") : '<div class="hv-empty">Sem mais jogos marcados.</div>'}</div>
+    body = `${nextRest.length ? `<div class="hv-panel"><div class="hv-panel-head"><h3>Calendário</h3></div>${nextRest.map(row).join("")}</div>` : ""}
       <div class="hv-panel"><div class="hv-panel-head"><h3>Resultados</h3></div>${done.length ? done.map(row).join("") : '<div class="hv-empty">Ainda sem resultados.</div>'}</div>`;
   }else if(sportPageTab_ === "plantel"){
     body = (typeof squadPanelHtml_ === "function") ? squadPanelHtml_(sport) : "";

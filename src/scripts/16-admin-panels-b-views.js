@@ -479,6 +479,7 @@ function setView(view){
   const stats = view === "estatisticas";
   const history = view === "historico";
   const leaderboard = view === "marcadores";
+  const cls = view === "classificacoes";
 
   const hb = document.getElementById("viewHomeBtn");
   if(hb) hb.classList.toggle("active", inicio || sportpg || gamepg);
@@ -488,7 +489,13 @@ function setView(view){
   if(sv) sv.style.display = sportpg ? "block" : "none";
   const gv = document.getElementById("gameView");
   if(gv) gv.style.display = gamepg ? "block" : "none";
-  document.body.classList.toggle("view-inicio", inicio || sportpg || gamepg);
+  const cv = document.getElementById("clsView");
+  if(cv) cv.style.display = cls ? "block" : "none";
+  const sb = document.getElementById("viewStandingsBtn");
+  if(sb) sb.classList.toggle("active", cls);
+  document.body.classList.toggle("view-home", inicio);
+  document.body.classList.toggle("view-cal", cal);
+  document.body.classList.toggle("view-inicio", inicio || sportpg || gamepg || cls);
   document.body.classList.toggle("view-jogo", gamepg);
   document.getElementById("viewCalendarBtn").classList.toggle("active", cal);
   document.getElementById("viewMedalsBtn").classList.toggle("active", medals);
@@ -520,6 +527,7 @@ function setView(view){
   if(todayAll) renderTodayAllView();
   if(stats) renderStatsView();
   if(history) renderHistoryView();
+  if(cls && typeof renderClsView_ === "function") renderClsView_();
   if(leaderboard) renderLeaderboardView();
 }
 document.getElementById("viewCalendarBtn").onclick = ()=>setView("calendario");
@@ -527,6 +535,7 @@ if(document.getElementById("viewHomeBtn")) document.getElementById("viewHomeBtn"
 document.getElementById("viewMedalsBtn").onclick = ()=>setView("medalhas");
 document.getElementById("viewHistoryBtn").onclick = ()=>setView("historico");
 document.getElementById("viewLeaderboardBtn").onclick = ()=>setView("marcadores");
+if(document.getElementById("viewStandingsBtn")) document.getElementById("viewStandingsBtn").onclick = ()=>{ setView("classificacoes"); window.scrollTo(0, 0); };
 document.getElementById("viewTodayAllBtn").onclick = ()=>{ weekOffset = 0; weekDay_ = null; setView("hoje-todas"); };
 document.getElementById("viewStatsBtn").onclick = ()=>setView("estatisticas");
 

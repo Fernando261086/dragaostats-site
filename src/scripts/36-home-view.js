@@ -148,7 +148,7 @@ function renderHomeView_(force){
   }).join("");
   if(clsCards) clsHtml = `<div class="hv-panel hv-cls-panel"><div class="hv-panel-head"><h3>🏆 Classificações</h3><span class="hv-cls-hint">Toca para ver a tabela</span></div><div class="hv-cls-grid">${clsCards}</div></div>`;
 
-  const html = `<div class="hv-top"><button type="button" class="hv-search" data-search="1"><span aria-hidden="true">🔎</span> Procurar jogo, adversário, mês…</button>${(typeof todayStripHtml_ === "function") ? todayStripHtml_(withD) : ""}${homeHeroHtml_(hero)}${(typeof winInviteHtml_ === "function") ? winInviteHtml_(done) : ""}${(typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("inicio") : ""}${week}${resultsHtml}${clsHtml}</div>`;
+  const html = `<div class="hv-top"><button type="button" class="hv-search" data-search="1"><span aria-hidden="true">🔎</span> Procurar jogo, adversário, mês…</button>${(typeof todayStripHtml_ === "function") ? todayStripHtml_(withD) : ""}${homeHeroHtml_(hero)}${(typeof winInviteHtml_ === "function") ? winInviteHtml_(done) : ""}${(typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("inicio") : ""}${week}${(typeof sportsGridHtml_ === "function") ? sportsGridHtml_(sportsAll, upcoming) : ""}${resultsHtml}${clsHtml}</div>`;
   host.innerHTML = html;
   if(typeof bindNotifyCta_ === "function") bindNotifyCta_(host, ()=>renderHomeView_(true));
   host.querySelectorAll("[data-search]").forEach(b=>{ b.onclick = ()=>{ if(typeof openSearchSheet_ === "function") openSearchSheet_(); }; });

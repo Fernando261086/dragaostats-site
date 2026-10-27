@@ -13,6 +13,7 @@
     ["viewMedalsBtn",      svg('<circle cx="12" cy="9" r="5"/><path d="m9 13.5-1.5 6.5 4.5-2.5 4.5 2.5L15 13.5"/>')],
     ["viewStatsBtn",       svg('<path d="M5 20V10M12 20V4M19 20v-7"/>')],
     ["viewHistoryBtn",     svg('<path d="M4 12a8 8 0 1 0 2.5-5.8L4 8.5"/><path d="M4 4v4.5h4.5M12 8v4l3 2"/>')],
+    ["viewStandingsBtn",   svg('<path d="M4 20V9M10 20V4M16 20v-8M22 20H2"/>')],
     ["viewLeaderboardBtn", svg('<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M9 20h6"/>')]
   ];
   const nav = document.createElement("nav");
@@ -42,7 +43,7 @@
       const active = src.classList.contains("active");
       btn.classList.toggle("active", active);
       if(active) btn.setAttribute("aria-current", "page"); else btn.removeAttribute("aria-current");
-      btn.style.display = (src.style.display === "none" || (src.id === "viewTodayAllBtn" && modeMatches_())) ? "none" : "";
+      btn.style.display = (src.style.display === "none" || (src.id === "viewTodayAllBtn" && modeMatches_()) || (src.id === "viewLeaderboardBtn" && READONLY_MODE)) ? "none" : "";
       let txt = cleanLabel_(src.textContent);
       if(src.id === "viewHistoryBtn") txt = "Resultados"; // como na proposta
       if(label.textContent !== txt) label.textContent = txt;

@@ -844,3 +844,36 @@ html.theme-light .hv-tday .td-t{ color:#5b6b88; }
 .gp-share .gp-actions{ margin-top:2px; }
 .hv-win{ border-color:rgba(95,224,138,.35); }
 html.theme-light .gp-share-s{ color:#5b6b88; }
+
+/* ===== v183: nomes de equipa nunca partidos a meio da palavra ===== */
+.gp-team{ overflow-wrap:break-word; word-break:normal; hyphens:manual; }
+@media (max-width:600px){
+  .gp-team{ font-size:clamp(17px,5.2vw,21px); }
+  .gp-final, .gp-n{ font-size:clamp(38px,12vw,56px); }
+  .gp-teams-long .gp-team{ font-size:clamp(13px,4vw,17px); }
+  .gp-teams-long .gp-score{ min-width:0; }
+}
+.gp-time{ font-size:clamp(44px,14vw,60px); }
+
+/* ===== v183: rodapé arrumado, filtros do calendário, Modalidades, Tabelas ===== */
+body.readonly-mode:not(.view-home) #newsletterBox{ display:none !important; }
+body.readonly-mode:not(.view-cal) #formOverview, body.readonly-mode:not(.view-cal) #recordsShelf{ display:none !important; }
+body.readonly-mode:not(.view-cal) .search-row{ display:none !important; }
+body.readonly-mode #matchesFilterResultadosBtn, body.readonly-mode #filterToggleBtn, body.readonly-mode #moreOptionsBtn{ display:none !important; }
+.foot-follow{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin:18px 0 6px; font:700 .72rem/1 'Archivo Narrow',sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+.foot-chip{ min-height:44px; padding:0 14px; border-radius:999px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.05); color:inherit; font:600 .8rem 'Archivo',sans-serif; letter-spacing:0; text-transform:none; cursor:pointer; }
+.foot-links{ display:flex; flex-wrap:wrap; justify-content:center; gap:2px 6px; margin:4px 0 8px; }
+.foot-links .feedback-btn{ margin:0 !important; min-height:44px; padding:0 8px; font-size:.78rem; opacity:.85; }
+html.theme-light .foot-chip{ background:#fff; border-color:rgba(20,40,80,.2); color:#0f1b33; }
+.sg-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.hv-sg{ display:flex; flex-direction:column; gap:4px; min-height:64px; padding:10px 12px; text-align:left; border-radius:12px; border:1px solid rgba(255,255,255,.1); border-left:4px solid var(--sc,#5BB4F0); background:rgba(255,255,255,.05); color:inherit; cursor:pointer; font-family:inherit; }
+.hv-sg .sg-n{ display:flex; justify-content:space-between; gap:6px; font-weight:700; font-size:.88rem; }
+.hv-sg .sg-pos{ font-style:normal; color:var(--sc,#5BB4F0); }
+.hv-sg .sg-s{ font-size:.78rem; color:var(--muted); }
+html.theme-light .hv-sg{ background:#fff; border-color:rgba(20,40,80,.14); border-left-color:var(--sc,#5BB4F0); color:#0f1b33; }
+html.theme-light .hv-sg .sg-s{ color:#5b6b88; }
+.cls-head h2{ margin:4px 2px 10px; font:400 1.9rem 'Bebas Neue',sans-serif; letter-spacing:.02em; }
+.foot-follow > span{ flex:0 0 100%; text-align:center; }
+.hv-modgrid .hv-panel-head{ display:flex; align-items:baseline; justify-content:space-between; }
+.hv-modgrid .sg-grid{ width:100%; }
+.foot-links .feedback-btn{ display:inline-flex !important; align-items:center; width:auto !important; }

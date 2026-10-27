@@ -856,10 +856,10 @@ html.theme-light .gp-share-s{ color:#5b6b88; }
 .gp-time{ font-size:clamp(44px,14vw,60px); }
 
 /* ===== v183: rodapé arrumado, filtros do calendário, Modalidades, Tabelas ===== */
-body.readonly-mode:not(.view-home) #newsletterBox{ display:none !important; }
-body.readonly-mode:not(.view-cal) #formOverview, body.readonly-mode:not(.view-cal) #recordsShelf{ display:none !important; }
-body.readonly-mode:not(.view-cal) .search-row{ display:none !important; }
-body.readonly-mode #matchesFilterResultadosBtn, body.readonly-mode #filterToggleBtn, body.readonly-mode #moreOptionsBtn{ display:none !important; }
+html.mode-matches body:not(.view-home) #newsletterBox{ display:none !important; }
+html.mode-matches body:not(.view-cal) #formOverview, html.mode-matches body:not(.view-cal) #recordsShelf{ display:none !important; }
+html.mode-matches body:not(.view-cal) .search-row{ display:none !important; }
+html.mode-matches body #matchesFilterResultadosBtn, html.mode-matches body #filterToggleBtn, html.mode-matches body #moreOptionsBtn{ display:none !important; }
 .foot-follow{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin:18px 0 6px; font:700 .72rem/1 'Archivo Narrow',sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
 .foot-chip{ min-height:44px; padding:0 14px; border-radius:999px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.05); color:inherit; font:600 .8rem 'Archivo',sans-serif; letter-spacing:0; text-transform:none; cursor:pointer; }
 .foot-links{ display:flex; flex-wrap:wrap; justify-content:center; gap:2px 6px; margin:4px 0 8px; }

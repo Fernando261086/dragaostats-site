@@ -43,7 +43,7 @@
       const active = src.classList.contains("active");
       btn.classList.toggle("active", active);
       if(active) btn.setAttribute("aria-current", "page"); else btn.removeAttribute("aria-current");
-      btn.style.display = (src.style.display === "none" || (src.id === "viewTodayAllBtn" && modeMatches_()) || (src.id === "viewLeaderboardBtn" && READONLY_MODE)) ? "none" : "";
+      btn.style.display = (src.style.display === "none" || (src.id === "viewTodayAllBtn" && modeMatches_()) || (src.id === "viewLeaderboardBtn" && modeMatches_())) ? "none" : "";
       let txt = cleanLabel_(src.textContent);
       if(src.id === "viewHistoryBtn") txt = "Resultados"; // como na proposta
       if(label.textContent !== txt) label.textContent = txt;

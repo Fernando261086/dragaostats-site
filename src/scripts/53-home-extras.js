@@ -113,7 +113,7 @@ async function shareGameFan_(ev){
 }
 function winInviteHtml_(done){
   try{
-    if(!READONLY_MODE || !done || !done.length) return "";
+    if(!done || !done.length) return "";
     const x = done[0], ev = x.ev, st = (typeof getEv === "function" && getEv(ev.id)) || {};
     if(homeDayDiff_(x.d) < -2 || !resultWin_(ev, st)) return "";
     let dis = ""; try{ dis = localStorage.getItem("dia22-win-dismissed") || ""; }catch(e){}
@@ -161,6 +161,6 @@ function sportsGridHtml_(sportsAll, upcoming){
   if(su) su.onclick = ()=>go("supportBtn", "apoiar_clique");
   const lupa = document.getElementById("searchToggleBtn");
   if(lupa) lupa.addEventListener("click", e=>{
-    if(READONLY_MODE && typeof openSearchSheet_ === "function"){ e.stopImmediatePropagation(); e.preventDefault(); openSearchSheet_(); }
+    if(typeof currentCompMode === "function" && currentCompMode() === "matches" && typeof openSearchSheet_ === "function"){ e.stopImmediatePropagation(); e.preventDefault(); openSearchSheet_(); }
   }, true);
 })();

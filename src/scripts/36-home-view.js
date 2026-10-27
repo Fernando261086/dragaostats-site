@@ -167,7 +167,7 @@ setInterval(()=>{ try{ renderHomeView_(); }catch(e){} }, 15000);
 // Abre o Início por defeito para quem só vê (público), no Modo Modalidades.
 function openHomeByDefault_(){
   try{
-    if(READONLY_MODE && typeof currentCompMode === "function" && currentCompMode() === "matches") setView("inicio");
+    if(typeof currentCompMode === "function" && currentCompMode() === "matches") setView("inicio");
   }catch(e){}
 }
 

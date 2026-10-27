@@ -1,3 +1,6 @@
+## v184 — Modo de edição igual ao de ver
+- Quem edita vê o mesmo que o público: abre no Início, barra de baixo com **Tabelas**, rodapé, Calendário, Histórico e pesquisa iguais, cartão de vitória no Início. Continuam só em edição: barra Gestão, "+ Adicionar prova", Reel e "para promover" na página do jogo. A contagem de uso continua só no modo de ver. Cache `dia22-cache-v262`.
+
 ## v183 — Arrumar o site
 - Página do jogo: nomes das equipas já não se partem a meio da palavra (tamanho adapta-se aos nomes compridos).
 - Rodapé (só público): newsletter só no Início; "Segue o Dragão Stats" (Facebook, Instagram, Apoiar) + links numa linha; "Forma recente" e "Recordes da época" só no Calendário.

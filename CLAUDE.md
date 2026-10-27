@@ -227,3 +227,29 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 **v192:** removido o popup/página/ligações "Novidades" (`/novidades` redireciona para `/` em `_redirects`); `.hv-top` com `grid-template-rows:auto minmax(0,1fr) auto`; cartão ao vivo em largura total no computador; `og-image.png` 187 KB; `_headers` com cabeçalhos de segurança; `build.js` limpa `dist`; cache atual `dia22-cache-v271`.
 
 **v193:** cabeçalho do modo edição compacto em ecrãs pequenos (bloco `v193` no fim de `06-tabs-and-medals.css`; `#syncLabel` ganha `data-short`); cache atual `dia22-cache-v271`.
+
+
+## Mudança de época (checklist — fazer em julho/agosto, antes da 1.ª jornada)
+
+Várias fontes têm números ou endereços da época **26/27**. Quando a época mudar, verificar uma a uma
+(no Apps Script correr o teste indicado e ver o Registo; se uma modalidade ficar com a classificação
+parada, é quase sempre o endereço da fonte):
+
+- **Classificações** (`STANDINGS_SOURCES_`, correr `atualizarClassificacoesAgora`):
+  Andebol FPA `portal.fpa.pt/prova/10016/` (o número da prova muda), Voleibol FPV `campeonato=NSFI&fase=1&serie=.`,
+  Basquetebol FPB `fpb.pt/classificacao/11440`, Hóquei `hoqueipatins.pt/liga/1-divisao-regular/`,
+  Futebol Feminino e Equipa B em `fcporto.pt/.../classificacao` (normalmente estáveis).
+- **Futsal** (Sofascore): torneio `112814` / época `102039` (3.ª Divisão, 1.ª Fase, Série A). Os números vêm no próprio jogo
+  (`event.tournament.id` / `event.season.id`); a fase e a série também mudam. A edição manual (`setManualStandings`) fica de reserva.
+- **Andebol ao vivo**: `ANDEBOL_PROVA_URL_` (mesmo número da prova da FPA).
+- **Equipa B**: `EQB_ICS_` (`ligaportugal.pt/calendars-ics/fc_porto_b.ics`) — confirmar que continua a ser o calendário da nova época;
+  o endereço da página de cada jogo (`/match/20262027/...`) vem do iCal, mas confirmar `eqbEstado_`.
+- **Basquetebol ao vivo**: os IDs do FIBA são novos a cada época/lote (a descoberta automática `basqueDescobrirId_` e a cache `basqueMap`
+  partem do último ID conhecido — apagar a cache se ficar presa; o desvio +2508631 era só do lote de 24/10/2026). Classificação FPB: ver acima.
+- **Sofascore**: os ids das equipas do Porto (feminino 938214, andebol 21795, futsal 1268317, Equipa B 74469, voleibol 335647, basquetebol 208083)
+  são estáveis; as **competições europeias** (`compStdAtualizar_`) descobrem-se sozinhas a partir dos jogos. Correr `testarEscudosAgora`,
+  `testarFormasAgora`, `testarClassificacoesEuropaAgora`.
+- **Plantel**: `atualizarPlantelAgora` (o mapa `PLANTEL_FCP_` usa classe/equipa do site do clube; confirmar que as equipas continuam as mesmas).
+- **No site**: criar a competição nova (ex.: "Época 27/28", modo Modalidades) e arquivar a anterior; fixar a nova (📌); `Época 26/27` aparece no seletor.
+  Verificar o Início, o Histórico e os Marcadores (somam por competição), a sondagem em curso e a imagem/texto do `og`.
+- **Depois**: um jogo ao vivo de cada modalidade (ver "Ainda por fazer"), `sitemap.xml` (`lastmod`) e subir a cache em `public/sw.js`.

@@ -1,0 +1,84 @@
+// ===================== v180: "HOJE", MODALIDADE FAVORITA E CONTAGEM ANÓNIMA =====================
+// Hoje: faixa de chips no Início com as modalidades que jogam hoje (hora ou resultado).
+// Favorita: guardada só neste aparelho (localStorage), sem conta; o Início abre nela.
+// track_: conta ações (sem nomes, sem IDs, sem identificar ninguém) e envia agregado ao Apps Script.
+function favSport_(){ try{ return localStorage.getItem("dia22-fav-sport") || ""; }catch(e){ return ""; } }
+function favToggle_(sp){
+  try{
+    if(favSport_() === sp){ localStorage.removeItem("dia22-fav-sport"); }
+    else{ localStorage.setItem("dia22-fav-sport", sp); if(typeof track_ === "function") track_("favorita"); }
+  }catch(e){}
+}
+let favApplied_ = false;
+function favApplyOnce_(sportsAll){
+  if(favApplied_) return;
+  favApplied_ = true;
+  const f = favSport_();
+  if(f && Array.isArray(sportsAll) && sportsAll.includes(f) && homeSport_ === "Todas") homeSport_ = f;
+}
+
+function todayStripHtml_(withD){
+  try{
+    const esc = homeEsc_;
+    const items = (withD || []).filter(x=>homeDayDiff_(x.d) === 0).sort((a, b)=>a.d - b.d);
+    if(!items.length) return "";
+    const chips = items.map(x=>{
+      const ev = x.ev, st = (typeof getEv === "function" && getEv(ev.id)) || {};
+      const res = st.resultado && String(st.resultado).trim();
+      const j = (typeof cevLiveFor_ === "function") ? cevLiveFor_(ev) : null;
+      const live = !res && j && j.estado === "vivo";
+      const right = res ? esc(res) : (live ? '<i class="hv-dot"></i>AO VIVO' : esc(ev.t || ""));
+      return `<button type="button" class="hv-tday${live ? " is-live" : ""}" data-tday="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};"><span class="td-sp">${esc(ev.sport)}</span><span class="td-t">${right}</span></button>`;
+    }).join("");
+    return `<div class="hv-today"><span class="hv-today-h">Hoje joga</span><div class="hv-today-row">${chips}</div></div>`;
+  }catch(e){ return ""; }
+}
+
+// ---- contagem anónima (só quem vê; nunca em modo edição)
+const TRACK_URL_ = (typeof STORE_URL !== "undefined") ? STORE_URL : "";
+let trackBuf_ = {};
+function track_(name){
+  try{
+    if(!READONLY_MODE || !name) return;
+    trackBuf_[name] = (trackBuf_[name] || 0) + 1;
+  }catch(e){}
+}
+function trackFlush_(){
+  try{
+    const keys = Object.keys(trackBuf_);
+    if(!keys.length || !TRACK_URL_) return;
+    const body = JSON.stringify({ track: trackBuf_ });
+    trackBuf_ = {};
+    if(navigator.sendBeacon){
+      try{ if(navigator.sendBeacon(TRACK_URL_, new Blob([body], { type: "text/plain" }))) return; }catch(e){}
+    }
+    fetch(TRACK_URL_, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body, keepalive: true }).catch(()=>{});
+  }catch(e){}
+}
+setInterval(trackFlush_, 45000);
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState === "hidden") trackFlush_(); });
+window.addEventListener("pagehide", trackFlush_);
+
+// pontos de contagem (delegados, sem mexer nos módulos)
+document.addEventListener("click", e=>{
+  const t = e.target.closest && e.target.closest("button, a, .sq-click, [data-go], [data-hero]");
+  if(!t) return;
+  const id = t.id || "";
+  if(t.matches && t.matches("[data-sqp]")) track_("jogador_aberto");
+  else if(t.matches && t.matches("[data-search]")) track_("pesquisa");
+  else if(t.matches && t.matches("[data-cls]")) track_("classificacao_inicio");
+  else if(t.matches && t.matches("[data-remind]")) track_("lembrar_me");
+  else if(t.matches && (t.matches("[data-go]") || t.matches("[data-hero]"))) track_("jogo_aberto");
+  else if(t.matches && t.matches("[data-ncyes]")) track_("notif_convite_sim");
+  else if(id === "weekReelBtn") track_("reel_gerado");
+  else if(id === "installAppBtn" || id === "installBannerBtn") track_("instalar_clique");
+}, true);
+document.addEventListener("click", e=>{
+  const t = e.target.closest && e.target.closest(".sp-tab, [data-sptab], [data-tab]");
+  if(!t) return;
+  const k = t.getAttribute("data-sptab") || t.getAttribute("data-tab") || "";
+  if(k === "plantel") track_("plantel_aberto");
+  else if(k === "classificacao") track_("classificacao_aberta");
+  else if(k === "marcadores") track_("marcadores_aberto");
+}, true);
+setTimeout(()=>track_("sessao"), 2000);

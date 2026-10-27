@@ -1,3 +1,7 @@
+## v180
+- Início: faixa **"Hoje joga"** (chips por modalidade com hora, "AO VIVO" ou resultado; toque abre o jogo). **Modalidade favorita** (★, guardada em `dia22-fav-sport`, o Início abre nela). **Contagem anónima de uso** (`track_` em `53-home-extras.js`, só quem vê, lotes de contagens por nome de ação). O convite para instalar já existia (banner a partir da 2.ª visita). Cache `dia22-cache-v258`.
+- Apps Script **v131** (`apps-script-v131.gs`): `verificarSaudeFontes_` (email se uma fonte fica velha; teste `testarSaudeFontesAgora`), contagem de uso (`usoRegistar_`, `usoResumoAgora`, email semanal à segunda, `testarUsoAgora`).
+
 ## v179 — Abrir já preenchido, tema claro e toque
 - Classificações, plantel, escudos, forma e cronologia ficam guardados no aparelho (`52-extras-cache.js`): a visita seguinte abre logo preenchida e o servidor atualiza depois. Na 1.ª visita há barras cinzentas (`skelHtml_`) em vez de "ainda não disponível".
 - Ranking de Marcadores: no Basquetebol mostra a média por jogo; tocar num jogador abre a folha dele.

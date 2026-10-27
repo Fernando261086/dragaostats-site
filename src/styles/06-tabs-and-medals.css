@@ -825,3 +825,16 @@ html.theme-light .newsletter-privacy-link{ color:#3a4a68 !important; }
   #newsletterEmail, .newsletter-box input[type=email]{ min-height:44px; }
 }
 @media (max-width:700px){ input[type=email]{ min-height:44px; } .sp-tabs button{ min-height:44px; } .reaction-btn{ min-width:44px; } }
+
+/* ===== v180: Hoje joga, modalidade favorita ===== */
+.hv-today{ margin:10px 0 12px; }
+.hv-today-h{ display:block; font:700 .72rem/1 'Archivo Narrow',sans-serif; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0 0 8px 2px; }
+.hv-today-row{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+.hv-today-row::-webkit-scrollbar{ display:none; }
+.hv-tday{ flex:0 0 auto; display:flex; flex-direction:column; gap:3px; min-height:44px; padding:8px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.1); border-left:4px solid var(--sc,#5BB4F0); background:rgba(255,255,255,.05); color:inherit; text-align:left; cursor:pointer; font-family:inherit; }
+.hv-tday .td-sp{ font-weight:700; font-size:.82rem; }
+.hv-tday .td-t{ font-size:.8rem; color:var(--muted); display:flex; align-items:center; gap:5px; }
+.hv-tday.is-live .td-t{ color:#ff5d5d; font-weight:700; }
+.hv-favbtn{ display:block; margin:8px 0 2px; min-height:44px; padding:8px 12px; background:none; border:0; color:var(--muted); font:600 .8rem 'Archivo',sans-serif; cursor:pointer; text-align:left; }
+html.theme-light .hv-tday{ background:#fff; border-color:rgba(20,40,80,.14); border-left-color:var(--sc,#5BB4F0); color:#0f1b33; }
+html.theme-light .hv-tday .td-t{ color:#5b6b88; }

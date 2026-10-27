@@ -81,6 +81,7 @@ function renderHomeView_(force){
   const sig = JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, liveOf(x.ev), (typeof cevLiveText_ === "function" && liveOf(x.ev)) ? cevLiveText_(x.ev, cevLiveFor_(x.ev)) : ""]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_, (typeof ESCUDOS === "object" && ESCUDOS ? Object.keys(ESCUDOS).length : 0), (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), Object.keys(STANDINGS || {}).map(k=>[k, ((STANDINGS[k] || {}).updated || 0)])]);
   if(!force && sig === homeSig_) return;
   homeSig_ = sig;
+  if(typeof favApplyOnce_ === "function") favApplyOnce_(sportsAll);
 
   // Destaque: o próximo jogo. Se um jogo já aparece no cartão "ao vivo" (CEV), o destaque passa ao seguinte.
   const heroIdx = upcoming.length ? 0 : -1; // v150: um jogo ao vivo fica em destaque, com resultado e minutos
@@ -93,7 +94,9 @@ function renderHomeView_(force){
   const weekList = (within.length || homeSport_ !== "Todas" ? within : base).slice(0, 6);
   const listUse = (weekList.length || homeSport_ === "Todas") ? weekList : base.slice(0, 6);
   const weekTitle = (within.length || homeSport_ !== "Todas") ? "Esta semana" : "Próximos jogos";
-  const pills = ["Todas"].concat(sportsAll).map(sp=>`<button type="button" class="hv-pillbtn${sp === homeSport_ ? " active" : ""}" data-hsport="${esc(sp)}">${esc(sp)}</button>`).join("");
+  const favSp = (typeof favSport_ === "function") ? favSport_() : "";
+  const pills = ["Todas"].concat(sportsAll).map(sp=>`<button type="button" class="hv-pillbtn${sp === homeSport_ ? " active" : ""}" data-hsport="${esc(sp)}">${sp === favSp ? "★ " : ""}${esc(sp)}</button>`).join("");
+  const favBtn = (homeSport_ !== "Todas" && typeof favSport_ === "function") ? `<button type="button" class="hv-favbtn" data-fav="${esc(homeSport_)}">${homeSport_ === favSp ? "★ É a tua favorita · tirar" : "☆ Tornar favorita"}</button>` : "";
   const rows = listUse.map(x=>{
     const ev = x.ev;
     return `<button type="button" class="hv-row" data-go="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};">
@@ -106,7 +109,7 @@ function renderHomeView_(force){
     ? `<button type="button" class="hv-link" data-cal="1">Ver calendário</button>`
     : `<button type="button" class="hv-link" data-sportpage="${esc(homeSport_)}">Página de ${esc(homeSport_)} ›</button>`;
   const week = `<div class="hv-panel hv-week">
-    <div class="hv-pills">${pills}</div>
+    <div class="hv-pills">${pills}</div>${favBtn}
     <div class="hv-panel-head"><h3>${weekTitle}</h3>${link}</div>
     ${rows || '<div class="hv-empty">Sem mais jogos marcados.</div>'}
   </div>`;
@@ -145,7 +148,7 @@ function renderHomeView_(force){
   }).join("");
   if(clsCards) clsHtml = `<div class="hv-panel hv-cls-panel"><div class="hv-panel-head"><h3>🏆 Classificações</h3><span class="hv-cls-hint">Toca para ver a tabela</span></div><div class="hv-cls-grid">${clsCards}</div></div>`;
 
-  const html = `<div class="hv-top"><button type="button" class="hv-search" data-search="1"><span aria-hidden="true">🔎</span> Procurar jogo, adversário, mês…</button>${homeHeroHtml_(hero)}${(typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("inicio") : ""}${week}${resultsHtml}${clsHtml}</div>`;
+  const html = `<div class="hv-top"><button type="button" class="hv-search" data-search="1"><span aria-hidden="true">🔎</span> Procurar jogo, adversário, mês…</button>${(typeof todayStripHtml_ === "function") ? todayStripHtml_(withD) : ""}${homeHeroHtml_(hero)}${(typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("inicio") : ""}${week}${resultsHtml}${clsHtml}</div>`;
   host.innerHTML = html;
   if(typeof bindNotifyCta_ === "function") bindNotifyCta_(host, ()=>renderHomeView_(true));
   host.querySelectorAll("[data-search]").forEach(b=>{ b.onclick = ()=>{ if(typeof openSearchSheet_ === "function") openSearchSheet_(); }; });
@@ -156,6 +159,8 @@ function renderHomeView_(force){
   host.querySelectorAll("[data-sportpage]").forEach(b=>{ b.onclick = ()=>openSportPage_(b.getAttribute("data-sportpage")); });
   host.querySelectorAll("[data-cls]").forEach(b=>{ b.onclick = ()=>openSportPage_(b.getAttribute("data-cls"), "classificacao"); });
   host.querySelectorAll("[data-hsport]").forEach(b=>{ b.onclick = ()=>{ homeSport_ = b.getAttribute("data-hsport"); renderHomeView_(true); }; });
+  host.querySelectorAll("[data-fav]").forEach(b=>{ b.onclick = ()=>{ if(typeof favToggle_ === "function") favToggle_(b.getAttribute("data-fav")); renderHomeView_(true); }; });
+  host.querySelectorAll("[data-tday]").forEach(b=>{ b.onclick = ()=>{ if(typeof track_ === "function") track_("hoje_chip"); goToEventCard(b.getAttribute("data-tday")); }; });
 }
 setInterval(()=>{ try{ renderHomeView_(); }catch(e){} }, 15000);
 

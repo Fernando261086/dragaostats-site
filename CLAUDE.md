@@ -211,4 +211,7 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 
 **v185:** `renderTodayAllView` (13) preserva `#weekReelBox`/`#weekShareBox` abertos (`dataset.week` = `weekOffset`) quando a sincronização (18) a volta a desenhar; `window.__weekReelBusy_` mantém o botão do reel bloqueado; cache atual `dia22-cache-v263`.
 
-**v186:** `#footFb`/`#footIg` (rodapé) com os SVG dos logos (`.foot-soc`); o gradiente do Instagram usa o id próprio `igFootGrad`; cache atual `dia22-cache-v264`.
+**v186:** `#footFb`/`#footIg` (rodapé) com os SVG dos logos (`.foot-soc`); o gradiente do Instagram usa o id próprio `igFootGrad`; cache atual `dia22-cache-v265`.
+
+**v187:** `public/_worker.js` (Cloudflare Pages, modo avançado; só `/`+`?jogo=` e as 7 páginas de modalidade, ver `_routes.json`): pré-visualização por jogo (HTMLRewriter em title/description/og/twitter), injeção de "Próximos jogos"/"Classificação"/JSON-LD nas páginas SEO; lê o Apps Script (`env.STORE_URL` ou o valor por defeito), cache 120 s, qualquer erro → página normal. Apps Script **v132**: `backupDiarioSeDevido_` (cópia diária da Folha, mantém 14; teste `testarBackupDiarioAgora`); cache atual `dia22-cache-v265`.
+

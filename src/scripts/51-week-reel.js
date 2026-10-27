@@ -17,23 +17,25 @@ function buildWeekReelText_(games, weekStart, weekEndDisplay){
 }
 
 // ecrãs do vídeo: abertura + um por dia (no máximo 4 jogos por ecrã) + fecho
-const WEEK_REEL_INTRO_ = 2.6, WEEK_REEL_SLIDE_ = 3.4, WEEK_REEL_OUTRO_ = 3.8, WEEK_REEL_PER_SLIDE_ = 4;
+const WEEK_REEL_INTRO_ = 3.4, WEEK_REEL_OUTRO_ = 4.6, WEEK_REEL_PER_SLIDE_ = 4;
+// v187: cada ecrã dura conforme o número de jogos (tempo para ler tudo): 3,4 s + 1,6 s por jogo
+function weekReelSlideDur_(n){ return 3.4 + 1.6 * n; }
 function weekReelSlides_(games){
   const byDay = {};
   games.forEach(g=>{ (byDay[g.ev.day] = byDay[g.ev.day] || []).push(g); });
   const slides = [];
   Object.keys(byDay).sort().forEach(day=>{
     const list = byDay[day];
-    for(let i = 0; i < list.length; i += WEEK_REEL_PER_SLIDE_) slides.push({ day, games: list.slice(i, i + WEEK_REEL_PER_SLIDE_), more: i > 0 });
+    for(let i = 0; i < list.length; i += WEEK_REEL_PER_SLIDE_) { const g = list.slice(i, i + WEEK_REEL_PER_SLIDE_); slides.push({ day, games: g, more: i > 0, dur: weekReelSlideDur_(g.length) }); }
   });
   return slides;
 }
-function weekReelDuration_(games){ return WEEK_REEL_INTRO_ + weekReelSlides_(games).length * WEEK_REEL_SLIDE_ + WEEK_REEL_OUTRO_; }
+function weekReelDuration_(games){ return WEEK_REEL_INTRO_ + weekReelSlides_(games).reduce((a, sl)=>a + sl.dur, 0) + WEEK_REEL_OUTRO_; }
 
 async function generateWeekReel_(games, weekStart, weekEndDisplay){
   const W = 1080, H = 1920;
   const slides = weekReelSlides_(games);
-  const TOTAL = WEEK_REEL_INTRO_ + slides.length * WEEK_REEL_SLIDE_ + WEEK_REEL_OUTRO_;
+  const TOTAL = WEEK_REEL_INTRO_ + slides.reduce((a, sl)=>a + sl.dur, 0) + WEEK_REEL_OUTRO_;
   const canvas = document.createElement("canvas");
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d");
@@ -147,17 +149,18 @@ async function generateWeekReel_(games, weekStart, weekEndDisplay){
   function draw(elapsed){
     ctx.clearRect(0, 0, W, H); background(); brand();
     if(elapsed < WEEK_REEL_INTRO_){ drawIntro(elapsed); return; }
-    const e2 = elapsed - WEEK_REEL_INTRO_;
-    const idx = Math.floor(e2 / WEEK_REEL_SLIDE_);
-    if(idx < slides.length){
-      const lt = e2 - idx * WEEK_REEL_SLIDE_;
-      ctx.save();
-      if(lt > WEEK_REEL_SLIDE_ - 0.3) ctx.globalAlpha = Math.max(0, (WEEK_REEL_SLIDE_ - lt) / 0.3); // desvanece no fim do ecrã
-      drawSlide(slides[idx], lt);
-      ctx.restore();
-      return;
+    let e2 = elapsed - WEEK_REEL_INTRO_;
+    for(const sl of slides){
+      if(e2 < sl.dur){
+        ctx.save();
+        if(e2 > sl.dur - 0.3) ctx.globalAlpha = Math.max(0, (sl.dur - e2) / 0.3); // desvanece no fim do ecrã
+        drawSlide(sl, e2);
+        ctx.restore();
+        return;
+      }
+      e2 -= sl.dur;
     }
-    drawOutro(e2 - slides.length * WEEK_REEL_SLIDE_);
+    drawOutro(e2);
   }
 
   const stream = canvas.captureStream(30);

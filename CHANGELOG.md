@@ -1,3 +1,6 @@
+## v188 — Reel da semana mais comprido
+- Cada ecrã (dia) dura 3,4 s + 1,6 s por jogo (antes 3,4 s fixos), abertura 3,4 s e fecho 4,6 s. Um dia com 1 jogo dá ~13 s; semanas cheias passam dos 30 s. Cache `dia22-cache-v266`.
+
 ## v187 — Pré-visualização por jogo, SEO e backup diário
 - `public/_worker.js` + `_routes.json` (Cloudflare Pages): ao partilhar `/?comp=..&jogo=..` o título/descrição da pré-visualização passam a ser do jogo (ex.: "🤾 Andebol — FC Porto 31-28 Kiel (Vitória)"). Nas páginas de modalidade são injetados "Próximos jogos", "Classificação" e dados estruturados (SportsEvent). Dados do Apps Script com cache de 2 min; qualquer erro serve a página normal. Imagem og continua a genérica. Cache `dia22-cache-v265`.
 - Apps Script v132: backup diário da Folha (cópia, últimas 14), teste `testarBackupDiarioAgora`; corrigida a chave do plantel do Hóquei ("Hóquei Patins").

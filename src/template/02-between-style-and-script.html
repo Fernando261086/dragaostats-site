@@ -102,6 +102,7 @@
 </div>
 <div class="wrap">
   <header>
+    <h1 class="sr-h1">Dragão Stats — calendário, resultados e classificações do FC Porto</h1>
     <div class="brand-row">
       <div id="emblemWrap" style="position:relative; flex-shrink:0;">
         <svg class="emblem" id="emblemSvg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
@@ -126,7 +127,7 @@
       <button class="theme-toggle" id="viewOnlyLinkBtn" title="Copiar link só para ver, sem editar">👁️</button>
     </div>
     <div class="comp-row">
-      <select id="compSelect" class="comp-select"></select>
+      <select id="compSelect" class="comp-select" aria-label="Competição"></select>
       <button class="comp-del" id="showArchivedBtn" style="display:none;" title="Ver competições arquivadas">🗄️</button>
       <button class="comp-del" id="sportLinksBtn" title="Ligações de classificação por modalidade">⚙️</button>
       <button class="comp-del" id="accessManageBtn" title="Gerir password de edição">🔑</button>
@@ -183,10 +184,10 @@
 
     <div id="newsletterBanner" style="display:none; margin:0 0 14px; padding:10px 14px; background:var(--panel); border:1px solid var(--line); border-radius:10px; align-items:center; gap:10px; justify-content:space-between; flex-wrap:wrap;">
       <span id="newsletterBannerText" style="font-size:13px; color:var(--text); flex:1; min-width:180px;">📧 Recebe o resumo semanal por email, com os resultados de todas as modalidades.</span>
-      <div style="display:flex; gap:8px;">
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button class="add-save" id="newsletterBannerNotifyBtn" style="padding:6px 14px; font-size:12.5px; background:none; border:1px solid var(--gold-dim); color:var(--gold-dim); white-space:nowrap;">🔔 Ativar notificações</button>
         <button class="add-save" id="newsletterBannerBtn" style="padding:6px 14px; font-size:12.5px;">Receber Newsletter</button>
-        <button class="add-cancel" id="newsletterBannerDismiss" style="padding:6px 14px; font-size:12.5px;">Agora não</button>
+        <button class="add-cancel" id="newsletterBannerDismiss" style="padding:6px 14px; font-size:12.5px; white-space:nowrap;">Agora não</button>
       </div>
     </div>
 
@@ -307,7 +308,7 @@
       <div class="form-overview" id="visitStreakBox" style="display:none;"></div>
       <div class="form-overview" id="lightQuestionBox" style="display:none;"></div>
     </div>
-    <div class="main-col">
+    <div class="main-col" role="main">
     <div class="sport-cards" id="sportCards" style="display:none;"></div>
     <div class="calendar-grid" id="calendarGrid" style="display:none;"></div>
     <div class="load-error-screen" id="loadErrorScreen" style="display:none;">

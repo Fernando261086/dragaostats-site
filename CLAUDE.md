@@ -220,4 +220,6 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 
 **v189:** `55-webm-encode.js` (`webmEncodeFrames_`, mux WebM mínimo) usado por `generateWeekReel_`; fallback MediaRecorder; ecrã = 3,8+1,8·n s; cache atual `dia22-cache-v267`.
 
-**v190:** `build.js` reduz JS/CSS com esbuild (devDependency; sem ele gera sem reduzir; `--no-min` para depurar — para ler o código final use sempre `--no-min`); endereços das páginas SEO sem `.html` (canonical/og/sitemap); cache atual `dia22-cache-v268`.
+**v190:** `build.js` reduz JS/CSS com esbuild (devDependency; sem ele gera sem reduzir; `--no-min` para depurar — para ler o código final use sempre `--no-min`); endereços das páginas SEO sem `.html` (canonical/og/sitemap); cache atual `dia22-cache-v269`.
+
+**v191:** auditoria completa (Playwright 16 combinações modo/tema/largura + axe-core): contraste AA (bloco `v191` no fim de `06-tabs-and-medals.css`), `sr-h1`, `role=main`, `aria-label` no `#compSelect`, canonical na home, `sw.js` só guarda respostas `ok`; cache atual `dia22-cache-v269`.

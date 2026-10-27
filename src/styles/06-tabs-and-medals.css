@@ -881,3 +881,23 @@ html.theme-light .hv-sg .sg-s{ color:#5b6b88; }
 .foot-soc svg{ width:28px; height:28px; flex:0 0 auto; }
 #footFb:hover, #footFb:active{ border-color:#1877F2; }
 #footIg:hover, #footIg:active{ border-color:#d6249f; }
+
+/* ===== v191: contraste (WCAG AA), botão do banner, faixa "Toda a semana", título invisível ===== */
+.sr-h1{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+.live-flag{ background:#b84f0c; }
+.hv-hero.is-live .hv-pill{ background:#b84f0c; }
+html.theme-light .live-now-score{ color:#c4560f; }
+.live-now-top .live-now-upd{ opacity:1; color:#a3b0c8; }
+html.theme-light .live-now-top .live-now-upd{ color:#56647f; }
+html:not(.theme-light) #newsletterBannerNotifyBtn{ color:#7dbbe3 !important; border-color:#7dbbe3 !important; }
+html.theme-light #newsletterBannerNotifyBtn{ color:#33559b !important; border-color:#33559b !important; }
+html:not(.theme-light) .newsletter-privacy-link{ color:#7fb4d8 !important; }
+#newsletterBox > div:nth-child(4){ opacity:1 !important; color:#94a3bd !important; }
+html.theme-light #newsletterBox > div:nth-child(4){ color:#5f6c85 !important; }
+html.theme-light .hist-nums .hn-w b{ color:#2a7d48; }
+html.theme-light .hv-sg .sg-pos{ color:color-mix(in srgb, var(--sc,#5bb4f0) 55%, #000); }
+html:not(.theme-light) .hv-row-sport, html:not(.theme-light) .hv-sg .sg-pos{ color:color-mix(in srgb, var(--sc,#5bb4f0) 72%, #fff); }
+@media (max-width:420px){ .wd-strip{ grid-template-columns:1.8fr repeat(7,minmax(0,1fr)); } .wd-all .wd-n{ font-size:9.5px; } .wd-all .wd-d{ font-size:10.5px; } }
+.mr-more{ min-height:32px; }
+.reaction-btn{ min-height:28px; }
+

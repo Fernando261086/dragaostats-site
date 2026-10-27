@@ -1,3 +1,10 @@
+## v191 — Auditoria: contraste, acessibilidade e pequenos defeitos
+- Contraste de cores (WCAG AA) corrigido: etiqueta "AO VIVO", marcador ao vivo, "atualizado há…", botão de notificações do banner, ligação de privacidade, posição nas Modalidades (tema claro), etiquetas roxas da Equipa B (tema escuro), vitórias no Histórico (tema claro).
+- Banner do resumo semanal: os botões já não saem do cartão em ecrãs pequenos ("Agora não" aparecia cortado). Faixa "Toda a semana": texto já cabe a 360 px.
+- Seletor de competição com nome acessível; título H1 invisível e zona principal marcada (leitores de ecrã e Google); `canonical` na página inicial; `twitter:card` nas páginas estáticas.
+- Alvos de toque um pouco maiores ("Ver mais", reações).
+- `sw.js`: só guarda em cache respostas boas (nunca um erro 404/500). Cache `dia22-cache-v269`.
+
 ## v190 — Site mais leve e SEO alinhado
 - `node build.js` reduz agora espaços e comentários do código e do estilo (esbuild, sem mudar nomes): `index.html` de 777 KB para 593 KB (gzip 202 → 142 KB). Testado: mesmas páginas e o reel continua igual. `node build.js --no-min` gera a versão legível.
 - Páginas de modalidade, Novidades e Social: endereço oficial (canonical, og:url, ligações e sitemap) sem `.html`, igual ao que o Cloudflare serve (antes apontava para um endereço que redireciona). Sitemap com data. Cache `dia22-cache-v268`.

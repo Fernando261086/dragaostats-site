@@ -14,7 +14,7 @@ firebase.initializeApp({
 });
 firebase.messaging(); // já trata sozinho de mostrar a notificação quando chega em segundo plano
 
-const CACHE_NAME = "dia22-cache-v268";
+const CACHE_NAME = "dia22-cache-v269";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -86,7 +86,10 @@ self.addEventListener("fetch", (event) => {
         const cache = await caches.open(CACHE_NAME);
         const networkPromise = fetch(event.request)
           .then((response) => {
-            cache.put(event.request, response.clone());
+            // só guarda respostas boas (nunca um erro 404/500 nem um redirecionamento)
+            if (response && response.ok && response.type === "basic") {
+              cache.put(event.request, response.clone()).catch(() => {});
+            }
             return response;
           })
           .catch(() => null);

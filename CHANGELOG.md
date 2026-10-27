@@ -1,3 +1,6 @@
+## v189 — Reel da semana sem saltos nem paragens
+- O vídeo passou a ser criado fotograma a fotograma (WebCodecs, 30 fps exatos) em vez de gravado em tempo real: fim dos saltos e das paragens de 1-2 s. Fundo e marca desenhados uma só vez; letras carregadas antes de desenhar. Ficheiro `55-webm-encode.js` (mux WebM próprio). Browsers sem WebCodecs usam a gravação antiga. Ecrãs: 3,8 s + 1,8 s por jogo, abertura 3,6 s, fecho 5 s. Cache `dia22-cache-v267`.
+
 ## v188 — Reel da semana mais comprido
 - Cada ecrã (dia) dura 3,4 s + 1,6 s por jogo (antes 3,4 s fixos), abertura 3,4 s e fecho 4,6 s. Um dia com 1 jogo dá ~13 s; semanas cheias passam dos 30 s. Cache `dia22-cache-v266`.
 

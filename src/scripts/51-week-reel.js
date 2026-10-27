@@ -17,9 +17,9 @@ function buildWeekReelText_(games, weekStart, weekEndDisplay){
 }
 
 // ecrãs do vídeo: abertura + um por dia (no máximo 4 jogos por ecrã) + fecho
-const WEEK_REEL_INTRO_ = 3.4, WEEK_REEL_OUTRO_ = 4.6, WEEK_REEL_PER_SLIDE_ = 4;
-// v187: cada ecrã dura conforme o número de jogos (tempo para ler tudo): 3,4 s + 1,6 s por jogo
-function weekReelSlideDur_(n){ return 3.4 + 1.6 * n; }
+const WEEK_REEL_INTRO_ = 3.6, WEEK_REEL_OUTRO_ = 5, WEEK_REEL_PER_SLIDE_ = 4;
+// v187: cada ecrã dura conforme o número de jogos (tempo para ler tudo): 3,8 s + 1,8 s por jogo
+function weekReelSlideDur_(n){ return 3.8 + 1.8 * n; }
 function weekReelSlides_(games){
   const byDay = {};
   games.forEach(g=>{ (byDay[g.ev.day] = byDay[g.ev.day] || []).push(g); });
@@ -40,6 +40,8 @@ async function generateWeekReel_(games, weekStart, weekEndDisplay){
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d");
 
+  // garante que as letras do site estão carregadas antes de desenhar
+  try{ await Promise.all(["700 40px 'Archivo Narrow'", "500 40px 'Archivo Narrow'", "400 100px 'Bebas Neue'"].map(f=>document.fonts.load(f))); }catch(e){}
   // pré-carrega logo, QR e escudos
   let logo = null;
   try{ logo = await new Promise((res, rej)=>{ const im = new Image(); im.onload = ()=>res(im); im.onerror = rej; im.src = "header-emblem.png"; }); }catch(e){}
@@ -146,8 +148,13 @@ async function generateWeekReel_(games, weekStart, weekEndDisplay){
     }
     ctx.save(); ctx.globalAlpha = b; ctx.fillStyle = "#e3b23c"; ctx.font = `700 52px ${FONT}`; ctx.fillText("dragaostats.pt", W/2, 1400); ctx.restore();
   }
+  // fundo + marca desenhados uma só vez e copiados em cada fotograma (muito mais rápido)
+  const layer = document.createElement("canvas"); layer.width = W; layer.height = H;
+  { const real = ctx; const lctx = layer.getContext("2d");
+    // background()/brand() usam o ctx do canvas principal: desenhamos lá e copiamos
+    real.clearRect(0, 0, W, H); background(); brand(); lctx.drawImage(canvas, 0, 0); real.clearRect(0, 0, W, H); }
   function draw(elapsed){
-    ctx.clearRect(0, 0, W, H); background(); brand();
+    ctx.clearRect(0, 0, W, H); ctx.drawImage(layer, 0, 0);
     if(elapsed < WEEK_REEL_INTRO_){ drawIntro(elapsed); return; }
     let e2 = elapsed - WEEK_REEL_INTRO_;
     for(const sl of slides){
@@ -163,23 +170,30 @@ async function generateWeekReel_(games, weekStart, weekEndDisplay){
     drawOutro(e2);
   }
 
-  const stream = canvas.captureStream(30);
-  const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9"
-    : (MediaRecorder.isTypeSupported("video/webm;codecs=vp8") ? "video/webm;codecs=vp8" : "video/webm");
-  const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 6_000_000 });
-  const chunks = [];
-  recorder.ondataavailable = e=>{ if(e.data && e.data.size > 0) chunks.push(e.data); };
-  const finished = new Promise(res=>{ recorder.onstop = res; });
-  const startTime = performance.now();
-  recorder.start();
-  (function loop(now){
-    const elapsed = (now - startTime) / 1000;
-    draw(Math.min(elapsed, TOTAL));
-    if(elapsed < TOTAL) requestAnimationFrame(loop); else recorder.stop();
-  })(startTime);
-  await finished;
-
-  const blob = new Blob(chunks, { type: "video/webm" });
+  // 1.º: vídeo fotograma a fotograma (tempos exatos, sem saltos). 2.º (browsers antigos): gravação em tempo real.
+  const setStatus = t=>{ const st = document.getElementById("weekReelStatus"); if(st) st.textContent = t; };
+  let blob = null;
+  try{
+    blob = await webmEncodeFrames_(canvas, draw, TOTAL, 30, p=>setStatus(`🎬 A criar o vídeo… ${Math.round(p * 100)}%. Deixa esta página aberta até terminar.`));
+  }catch(e){ blob = null; }
+  if(!blob){
+    const stream = canvas.captureStream(30);
+    const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9"
+      : (MediaRecorder.isTypeSupported("video/webm;codecs=vp8") ? "video/webm;codecs=vp8" : "video/webm");
+    const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 6_000_000 });
+    const chunks = [];
+    recorder.ondataavailable = e=>{ if(e.data && e.data.size > 0) chunks.push(e.data); };
+    const finished = new Promise(res=>{ recorder.onstop = res; });
+    const startTime = performance.now();
+    recorder.start();
+    (function loop(now){
+      const elapsed = (now - startTime) / 1000;
+      draw(Math.min(elapsed, TOTAL));
+      if(elapsed < TOTAL) requestAnimationFrame(loop); else recorder.stop();
+    })(startTime);
+    await finished;
+    blob = new Blob(chunks, { type: "video/webm" });
+  }
   const fileName = `dragaostats-semana-${(weekStart.getFullYear())}-${String(weekStart.getMonth() + 1).padStart(2, "0")}-${String(weekStart.getDate()).padStart(2, "0")}.webm`;
   const file = new File([blob], fileName, { type: "video/webm" });
   if(navigator.canShare && navigator.canShare({ files: [file] })){
@@ -202,7 +216,7 @@ async function startWeekReel_(weekStart, weekEnd, weekEndDisplay){
   const secs = Math.ceil(weekReelDuration_(games));
   const taStyle = "width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:8px; padding:8px; font-size:13px; color:var(--text); resize:vertical; font-family:inherit;";
   box.innerHTML = `
-    <div id="weekReelStatus" style="font-size:13px; color:var(--text-dim); margin:10px 0 8px;">🎬 A gravar o reel (${games.length} ${games.length === 1 ? "jogo" : "jogos"}, cerca de ${secs} segundos)… Deixa esta página aberta e à vista até terminar.</div>
+    <div id="weekReelStatus" style="font-size:13px; color:var(--text-dim); margin:10px 0 8px;">🎬 A preparar o reel (${games.length} ${games.length === 1 ? "jogo" : "jogos"}, vídeo de cerca de ${secs} segundos)… Deixa esta página aberta até terminar.</div>
     <div style="font-size:12px; font-weight:700; color:var(--text-dim); margin:4px 0 4px;">Legenda curta para colar</div>
     <textarea id="weekReelText" rows="7" style="${taStyle}">${esc(buildWeekReelText_(games, weekStart, weekEndDisplay))}</textarea>
     <button class="add-save" id="weekReelCopyBtn" style="margin-top:6px;">Copiar</button>`;

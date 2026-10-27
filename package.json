@@ -5,5 +5,8 @@
   "description": "Código fonte do site Dragão Stats (dragaostats.pt)",
   "scripts": {
     "build": "node build.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
   }
 }

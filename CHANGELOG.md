@@ -1,3 +1,7 @@
+## v190 — Site mais leve e SEO alinhado
+- `node build.js` reduz agora espaços e comentários do código e do estilo (esbuild, sem mudar nomes): `index.html` de 777 KB para 593 KB (gzip 202 → 142 KB). Testado: mesmas páginas e o reel continua igual. `node build.js --no-min` gera a versão legível.
+- Páginas de modalidade, Novidades e Social: endereço oficial (canonical, og:url, ligações e sitemap) sem `.html`, igual ao que o Cloudflare serve (antes apontava para um endereço que redireciona). Sitemap com data. Cache `dia22-cache-v268`.
+
 ## v189 — Reel da semana sem saltos nem paragens
 - O vídeo passou a ser criado fotograma a fotograma (WebCodecs, 30 fps exatos) em vez de gravado em tempo real: fim dos saltos e das paragens de 1-2 s. Fundo e marca desenhados uma só vez; letras carregadas antes de desenhar. Ficheiro `55-webm-encode.js` (mux WebM próprio). Browsers sem WebCodecs usam a gravação antiga. Ecrãs: 3,8 s + 1,8 s por jogo, abertura 3,6 s, fecho 5 s. Cache `dia22-cache-v267`.
 

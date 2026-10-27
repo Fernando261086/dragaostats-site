@@ -219,3 +219,5 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 **v188:** `51-week-reel.js`: duração por ecrã `weekReelSlideDur_(n)` = 3,4 + 1,6·n s, abertura 3,4 s, fecho 4,6 s; cache atual `dia22-cache-v267`.
 
 **v189:** `55-webm-encode.js` (`webmEncodeFrames_`, mux WebM mínimo) usado por `generateWeekReel_`; fallback MediaRecorder; ecrã = 3,8+1,8·n s; cache atual `dia22-cache-v267`.
+
+**v190:** `build.js` reduz JS/CSS com esbuild (devDependency; sem ele gera sem reduzir; `--no-min` para depurar — para ler o código final use sempre `--no-min`); endereços das páginas SEO sem `.html` (canonical/og/sitemap); cache atual `dia22-cache-v268`.

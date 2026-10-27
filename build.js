@@ -27,8 +27,23 @@ function build() {
   const betweenStyleAndScript = fs.readFileSync(path.join(SRC, "template/02-between-style-and-script.html"), "utf-8");
   const tail = fs.readFileSync(path.join(SRC, "template/03-tail.html"), "utf-8");
 
-  const css = readAllIn(path.join(SRC, "styles"));
-  const js = readAllIn(path.join(SRC, "scripts"));
+  let css = readAllIn(path.join(SRC, "styles"));
+  let js = readAllIn(path.join(SRC, "scripts"));
+
+  // v190: reduz espaços e comentários (NÃO muda nomes de funções/variáveis, por
+  // isso os onclick do HTML e tudo o resto continuam iguais). `node build.js --no-min`
+  // gera a versão legível (para depurar). Sem o esbuild instalado, não reduz.
+  let minNote = "sem reduzir";
+  if (!process.argv.includes("--no-min")) {
+    try {
+      const esbuild = require("esbuild");
+      js = esbuild.transformSync(js, { loader: "js", minifyWhitespace: true, minifySyntax: false, legalComments: "none" }).code;
+      css = esbuild.transformSync(css, { loader: "css", minifyWhitespace: true, minifySyntax: false, legalComments: "none" }).code;
+      minNote = "reduzido";
+    } catch (e) {
+      console.log("Aviso: não consegui reduzir (" + String(e.message).split("\n")[0] + ") — gerado sem reduzir.");
+    }
+  }
 
   const html = headBeforeStyle + css + betweenStyleAndScript + js + tail;
 
@@ -41,7 +56,7 @@ function build() {
     copyDirInto(PUBLIC, DIST);
   }
 
-  console.log("Build pronto em dist/index.html (" + html.length + " caracteres).");
+  console.log("Build pronto em dist/index.html (" + html.length + " caracteres, " + minNote + ").");
 }
 
 function copyDirInto(srcDir, destDir) {

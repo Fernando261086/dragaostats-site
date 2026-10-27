@@ -5,12 +5,12 @@
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  <url><loc>https://dragaostats.pt/andebol.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://dragaostats.pt/basquetebol.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://dragaostats.pt/hoquei-em-patins.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://dragaostats.pt/voleibol.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://dragaostats.pt/futebol-feminino.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://dragaostats.pt/futsal.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://dragaostats.pt/equipa-b.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://dragaostats.pt/novidades.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://dragaostats.pt/andebol</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/basquetebol</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/hoquei-em-patins</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/voleibol</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/futebol-feminino</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/futsal</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/equipa-b</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://dragaostats.pt/novidades</loc><lastmod>2026-10-27</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
 </urlset>

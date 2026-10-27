@@ -903,3 +903,14 @@ html:not(.theme-light) .hv-row-sport, html:not(.theme-light) .hv-sg .sg-pos{ col
 .reaction-btn{ min-height:28px; }
 
 #newsletterBanner .add-save, #newsletterBanner .add-cancel{ width:auto; flex:0 0 auto; }
+
+/* ===== v193: cabeçalho do modo edição mais baixo em ecrãs pequenos (o público não muda) ===== */
+@media (max-width:480px){
+  html:not(.readonly-view) .brand-disclaimer{ display:none !important; }
+  html.mode-matches:not(.readonly-view) .brand-title{ font-size:26px; white-space:nowrap; }
+  html:not(.readonly-view) .sync-label{ font-size:0 !important; line-height:1; white-space:nowrap; }
+  html:not(.readonly-view) .sync-label::after{ content:"↻ " attr(data-short); font-size:10px; }
+}
+
+@media (max-width:400px){ html.mode-matches:not(.readonly-view) .brand-title{ font-size:22px; } html:not(.readonly-view) header .brand-row{ gap:8px; } }
+@media (max-width:340px){ html:not(.readonly-view) .sync-label{ display:none; } html.mode-matches:not(.readonly-view) .brand-title{ font-size:20px; } }

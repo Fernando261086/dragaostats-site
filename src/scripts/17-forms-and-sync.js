@@ -233,11 +233,12 @@ function markSynced(){
 }
 function updateSyncLabel(){
   const el = document.getElementById("syncLabel");
-  if(!lastSyncTime){ el.textContent = "A sincronizar..."; return; }
+  // data-short: versão curtíssima, usada no cabeçalho do modo edição em ecrãs pequenos (v193)
+  if(!lastSyncTime){ el.textContent = "A sincronizar..."; el.dataset.short = "…"; return; }
   const secs = Math.round((Date.now() - lastSyncTime)/1000);
-  if(secs < 10) el.textContent = "Atualizado agora mesmo";
-  else if(secs < 60) el.textContent = `Atualizado há ${secs}s`;
-  else el.textContent = `Atualizado há ${Math.round(secs/60)} min`;
+  if(secs < 10){ el.textContent = "Atualizado agora mesmo"; el.dataset.short = "agora"; }
+  else if(secs < 60){ el.textContent = `Atualizado há ${secs}s`; el.dataset.short = secs + "s"; }
+  else { el.textContent = `Atualizado há ${Math.round(secs/60)} min`; el.dataset.short = Math.round(secs/60) + " min"; }
 }
 setInterval(updateSyncLabel, 5000);
 setInterval(()=>{

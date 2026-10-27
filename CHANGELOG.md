@@ -1,3 +1,6 @@
+## v193 — Cabeçalho do modo edição mais baixo no telemóvel
+- Só em edição e ecrãs ≤480 px: sem o subtítulo, título numa linha e "↻ agora/12s/3 min" em vez de "Atualizado agora mesmo". Cabeçalho de ~130 px para ~67 px; testado a 320/360/390/430 px. O público não muda. Cache `dia22-cache-v271`.
+
 ## v192 — Sem "Novidades", Início alinhado, imagem de partilha leve, cabeçalhos de segurança
 - Removido o "Novidades": página, popup, ligação no rodapé e linha no menu "Mais" (o endereço antigo redireciona para o Início).
 - Início no computador: o cartão "Ao vivo" ocupa a largura do conteúdo (marcador centrado) e já não há um vazio por baixo do cartão do jogo. Banner do resumo semanal: botões lado a lado no computador, a quebrar linha no telemóvel.

@@ -208,3 +208,5 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 **v183:** `setView` ganhou `classificacoes` (`#clsView`, `54-standings-view.js`, botão escondido `#viewStandingsBtn` só no público) e as classes `view-home`/`view-cal` no `<body>`; rodapé com `#newsletterBox`, `#footFollow`, `.foot-links`; `sportsGridHtml_` e a pesquisa única em `53-home-extras.js`; cache atual `dia22-cache-v261`.
 
 **v184:** as regras de limpeza (`#newsletterBox`, `#formOverview`, `.search-row`…) e a barra com Tabelas usam `html.mode-matches` (público **e** edição); `openHomeByDefault_` abre o Início também em edição; cache atual `dia22-cache-v262`.
+
+**v185:** `renderTodayAllView` (13) preserva `#weekReelBox`/`#weekShareBox` abertos (`dataset.week` = `weekOffset`) quando a sincronização (18) a volta a desenhar; `window.__weekReelBusy_` mantém o botão do reel bloqueado; cache atual `dia22-cache-v263`.

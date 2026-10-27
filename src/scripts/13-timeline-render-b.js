@@ -143,6 +143,12 @@ function renderTodayAllView(){
     const rangeLabel = weekOffset===0 ? "Esta semana"
       : `${String(weekStart.getDate()).padStart(2,"0")}/${String(weekStart.getMonth()+1).padStart(2,"0")} – ${String(weekEndDisplay.getDate()).padStart(2,"0")}/${String(weekEndDisplay.getMonth()+1).padStart(2,"0")}`;
 
+    // v185: a sincronização periódica volta a desenhar esta vista; não pode apagar o reel/imagem que estão abertos
+    const keepBoxes_ = {};
+    ["weekReelBox", "weekShareBox"].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el && el.style.display !== "none" && el.childNodes.length && el.dataset.week === String(weekOffset)) keepBoxes_[id] = el;
+    });
     container.innerHTML = `
       <div class="week-nav">
         <button class="hide-toggle" id="weekPrevBtn">‹ Anterior</button>
@@ -173,6 +179,8 @@ function renderTodayAllView(){
       weekDay_ !== null ? "Sem jogos neste dia." : "Sem jogos nesta semana em nenhuma competição."
     );
 
+    Object.keys(keepBoxes_).forEach(id=>{ const n = document.getElementById(id); if(n) n.replaceWith(keepBoxes_[id]); });
+    if(window.__weekReelBusy_){ const rb = document.getElementById("weekReelBtn"); if(rb) rb.disabled = true; }
     document.getElementById("weekPrevBtn").onclick = ()=>{ weekOffset--; weekDay_ = null; renderTodayAllView(); };
     document.getElementById("weekNextBtn").onclick = ()=>{ weekOffset++; weekDay_ = null; renderTodayAllView(); };
     container.querySelectorAll("[data-wday]").forEach(b=>{ b.onclick = ()=>{ const v = b.getAttribute("data-wday"); weekDay_ = v === "" ? null : Number(v); renderTodayAllView(); }; });
@@ -182,6 +190,7 @@ function renderTodayAllView(){
     if(shareBtn){
       shareBtn.onclick = ()=>{
         const box = document.getElementById("weekShareBox");
+        box.dataset.week = String(weekOffset);
         const opening = box.style.display === "none";
         box.style.display = opening ? "block" : "none";
         if(opening) renderWeekShareBox_(weekStart, weekEnd, weekEndDisplay);

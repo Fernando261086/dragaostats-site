@@ -193,6 +193,7 @@ async function startWeekReel_(weekStart, weekEnd, weekEndDisplay){
   if(!box) return;
   const games = getWeekShareGames_(weekStart, weekEnd);
   box.style.display = "block";
+  box.dataset.week = String(weekOffset);
   if(!games.length){ box.innerHTML = `<div class="medal-empty" style="margin-top:10px;">Não há jogos por realizar nesta semana para gerar o reel.</div>`; return; }
   const esc = s=>String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const secs = Math.ceil(weekReelDuration_(games));
@@ -208,6 +209,7 @@ async function startWeekReel_(weekStart, weekEnd, weekEndDisplay){
     const old = btn.textContent; btn.textContent = "Copiado ✓"; setTimeout(()=>{ btn.textContent = old; }, 1500);
   };
   const btnReel = document.getElementById("weekReelBtn");
+  window.__weekReelBusy_ = true;
   if(btnReel) btnReel.disabled = true;
   try{
     await generateWeekReel_(games, weekStart, weekEndDisplay);
@@ -215,5 +217,7 @@ async function startWeekReel_(weekStart, weekEnd, weekEndDisplay){
   }catch(e){
     const st = document.getElementById("weekReelStatus"); if(st) st.textContent = "Não foi possível gravar o reel neste aparelho. Tenta noutro browser (Chrome) ou no computador.";
   }
-  if(btnReel) btnReel.disabled = false;
+  window.__weekReelBusy_ = false;
+  const btnReel2 = document.getElementById("weekReelBtn");
+  if(btnReel2) btnReel2.disabled = false;
 }

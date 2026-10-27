@@ -1,3 +1,6 @@
+## v185 — Reel da semana já não desaparece
+- A sincronização periódica voltava a desenhar a vista "Esta semana" e apagava a caixa do reel (e da imagem + texto) a meio. Agora a caixa aberta mantém-se (incluindo a legenda que estejas a editar) e o botão do reel fica bloqueado enquanto grava. Ao mudar de semana a caixa fecha. Cache `dia22-cache-v263`.
+
 ## v184 — Modo de edição igual ao de ver
 - Quem edita vê o mesmo que o público: abre no Início, barra de baixo com **Tabelas**, rodapé, Calendário, Histórico e pesquisa iguais, cartão de vitória no Início. Continuam só em edição: barra Gestão, "+ Adicionar prova", Reel e "para promover" na página do jogo. A contagem de uso continua só no modo de ver. Cache `dia22-cache-v262`.
 

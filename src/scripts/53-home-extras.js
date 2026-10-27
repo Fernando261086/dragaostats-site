@@ -82,3 +82,55 @@ document.addEventListener("click", e=>{
   else if(k === "marcadores") track_("marcadores_aberto");
 }, true);
 setTimeout(()=>track_("sessao"), 2000);
+
+// ---- v181: partilha com o resultado no texto + convite depois de uma vitória
+function resultWin_(ev, st){
+  try{
+    const sc = String((st && st.resultado) || "").trim();
+    if(!sc) return false;
+    if(st.resultTag) return st.resultTag === "win";
+    const m = sc.match(/(\d+)\s*[-–:]\s*(\d+)/);
+    if(!m) return false;
+    const a = Number(m[1]), b = Number(m[2]);
+    return (ev.local === "fora" ? b : a) > (ev.local === "fora" ? a : b);
+  }catch(e){ return false; }
+}
+function shareTextFan_(ev){
+  const t = postTeams_(ev), st = (typeof getEv === "function" && getEv(ev.id)) || {};
+  const score = String(st.resultado || "").trim();
+  const link = gameLink_(ev);
+  const tag = st.resultTag === "win" ? " (Vitória)" : st.resultTag === "loss" ? " (Derrota)" : st.resultTag === "draw" ? " (Empate)" : (resultWin_(ev, st) ? " (Vitória)" : "");
+  const emoji = (typeof postSportEmoji_ === "function") ? postSportEmoji_(ev.sport) : "💙";
+  const titulo = score ? `${emoji} ${ev.sport} — ${t.home} ${score} ${t.away}${tag}` : `${emoji} ${ev.sport} — ${t.home} vs ${t.away}${ev.t ? " (" + ev.t + ")" : ""}`;
+  return { titulo, texto: titulo + "\nVê o jogo completo:", link };
+}
+async function shareGameFan_(ev){
+  const s = shareTextFan_(ev);
+  if(navigator.share){ try{ await navigator.share({ title: s.titulo, text: s.texto, url: s.link }); }catch(e){} return; }
+  const all = s.texto + " " + s.link;
+  if(navigator.clipboard){ try{ await navigator.clipboard.writeText(all); alert("Copiado! Já podes colar e enviar:\n" + all); return; }catch(e){} }
+  prompt("Copia isto:", all);
+}
+function winInviteHtml_(done){
+  try{
+    if(!READONLY_MODE || !done || !done.length) return "";
+    const x = done[0], ev = x.ev, st = (typeof getEv === "function" && getEv(ev.id)) || {};
+    if(homeDayDiff_(x.d) < -2 || !resultWin_(ev, st)) return "";
+    let dis = ""; try{ dis = localStorage.getItem("dia22-win-dismissed") || ""; }catch(e){}
+    if(dis === ev.id) return "";
+    const esc = homeEsc_, t = postTeams_(ev);
+    return `<div class="nc-card hv-win"><span class="nc-ico">💙</span><div class="nc-body"><b class="nc-t">Vitória! ${esc(t.home)} ${esc(String(st.resultado).trim())} ${esc(t.away)}</b><span class="nc-s">Partilha com um amigo adepto.</span></div>
+      <div class="nc-btns"><button type="button" class="hv-btn hv-btn-main" data-winshare="${esc(ev.id)}">Partilhar</button><button type="button" class="nc-no" data-windis="${esc(ev.id)}" aria-label="Fechar">✕</button></div></div>`;
+  }catch(e){ return ""; }
+}
+document.addEventListener("click", e=>{
+  const sh = e.target.closest && e.target.closest("[data-winshare]");
+  const ds = e.target.closest && e.target.closest("[data-windis]");
+  if(sh){
+    const ev = (typeof EVENTS !== "undefined") && EVENTS.find(v=>v.id === sh.getAttribute("data-winshare"));
+    if(ev){ track_("convite_vitoria"); shareGameFan_(ev); }
+  }else if(ds){
+    try{ localStorage.setItem("dia22-win-dismissed", ds.getAttribute("data-windis")); }catch(e){}
+    if(typeof renderHomeView_ === "function") renderHomeView_(true);
+  }
+});

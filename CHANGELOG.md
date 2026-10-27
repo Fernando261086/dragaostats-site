@@ -1,3 +1,7 @@
+## v181 — Partilha com resultado
+- Página do jogo: o botão "Partilhar" envia agora o resultado no texto ("🤾 Andebol — FC Porto 31-28 Kiel (Vitória) · Vê o jogo completo: link"). Jogo terminado: cartão em destaque "Partilha este resultado" (Partilhar, Imagem, Reel) logo a seguir ao resultado.
+- Início: depois de uma vitória (até 2 dias) cartão "Vitória! … Partilha com um amigo adepto" (✕ esconde-o para esse jogo). Contagem anónima: `partilhar_clique`, `convite_vitoria`. Cache `dia22-cache-v259`.
+
 ## v180
 - Início: faixa **"Hoje joga"** (chips por modalidade com hora, "AO VIVO" ou resultado; toque abre o jogo). **Modalidade favorita** (★, guardada em `dia22-fav-sport`, o Início abre nela). **Contagem anónima de uso** (`track_` em `53-home-extras.js`, só quem vê, lotes de contagens por nome de ação). O convite para instalar já existia (banner a partir da 2.ª visita). Cache `dia22-cache-v258`.
 - Apps Script **v131** (`apps-script-v131.gs`): `verificarSaudeFontes_` (email se uma fonte fica velha; teste `testarSaudeFontesAgora`), contagem de uso (`usoRegistar_`, `usoResumoAgora`, email semanal à segunda, `testarUsoAgora`).

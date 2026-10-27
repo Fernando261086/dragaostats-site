@@ -155,15 +155,19 @@ function renderGamePage_(){
   const acoes = `<div class="gp-actions">
     ${lembrete}
     ${ev.watchUrl ? `<a class="hv-btn hv-btn-main gp-act" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">📺 Ver transmissão</a>` : ""}
-    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpShare">↗ Partilhar</button>
+    ${(resultado && fim) ? "" : '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpShare">↗ Partilhar</button>'}
     ${(!resultado && !liveData) ? '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpIcs">📅 Adicionar ao calendário</button>' : ""}
-    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ ${resultado ? "Imagem do resultado" : "Imagem para promover"}</button>
-    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 ${resultado ? "Reel do resultado" : "Reel para promover"}</button>
+    ${(resultado && fim) ? "" : `<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ ${resultado ? "Imagem do resultado" : "Imagem para promover"}</button>
+    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 ${resultado ? "Reel do resultado" : "Reel para promover"}</button>`}
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpStats">📊 Estatísticas</button>
     ${classif}
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpCal">${READONLY_MODE ? "Ver no calendário" : "Editar no calendário"}</button>
   </div>`;
 
+  const partilhaCard = (resultado && fim) ? `<div class="gp-card gp-share"><h3>Partilha este resultado</h3><p class="gp-share-s">Mostra aos amigos adeptos como correu.</p><div class="gp-actions">
+    <button type="button" class="hv-btn hv-btn-main gp-act" id="gpShare">↗ Partilhar</button>
+    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ Imagem do resultado</button>
+    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 Reel do resultado</button></div></div>` : "";
   const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof DETALHES === "object" && DETALHES && DETALHES[ev.id]) || null), (typeof crestId_ === "function" ? [crestId_(ev.sport, ev.athlete), crestId_(ev.sport, "FC Porto")].map(i=>i && crestCached_(i) ? 1 : 0).join("") : ""), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null)]);
   if(sig === gameSig_) return;
   gameSig_ = sig;
@@ -180,7 +184,7 @@ function renderGamePage_(){
       </div>
       ${sub ? `<div class="gp-sub">${sub}</div>` : ""}
     </div>
-    ${setsBlock}${extraBlock}${(!fim && !liveData && !aDecorrer && typeof pregameHtml_ === "function") ? pregameHtml_(ev) : ""}${(typeof gameDetailsHtml_ === "function") ? gameDetailsHtml_(ev) : ""}${(typeof compStandingForGame_ === "function" && compStandingForGame_(ev)) ? standingsObjHtml_(compStandingForGame_(ev), { title: "Classificação do grupo", advName: ev.athlete, sport: ev.sport }) : ""}${(!fim && typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo") : ""}${info}${acoes}
+    ${partilhaCard}${setsBlock}${extraBlock}${(!fim && !liveData && !aDecorrer && typeof pregameHtml_ === "function") ? pregameHtml_(ev) : ""}${(typeof gameDetailsHtml_ === "function") ? gameDetailsHtml_(ev) : ""}${(typeof compStandingForGame_ === "function" && compStandingForGame_(ev)) ? standingsObjHtml_(compStandingForGame_(ev), { title: "Classificação do grupo", advName: ev.athlete, sport: ev.sport }) : ""}${(!fim && typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo") : ""}${info}${acoes}
   </div>`;
 
   host.querySelector("#gpBack").onclick = ()=>{
@@ -190,13 +194,7 @@ function renderGamePage_(){
   const icsBtn = host.querySelector("#gpIcs");
   if(icsBtn) icsBtn.onclick = ()=>addGameToCalendar_(ev);
   const sh = host.querySelector("#gpShare");
-  if(sh) sh.onclick = async ()=>{
-    const link = gameLink_(ev);
-    const titulo = t.home + " vs " + t.away + " — " + ev.sport + (ev.t ? " (" + ev.t + ")" : "");
-    if(navigator.share){ try{ await navigator.share({ title: titulo, url: link }); }catch(e){} }
-    else if(navigator.clipboard){ try{ await navigator.clipboard.writeText(link); alert("Link copiado! Já podes colar e enviar:\n" + link); }catch(e){ prompt("Copia este link:", link); } }
-    else prompt("Copia este link:", link);
-  };
+  if(sh) sh.onclick = ()=>{ if(typeof track_ === "function") track_("partilhar_clique"); shareGameFan_(ev); };
   const cor = (typeof SPORT_COLORS !== "undefined" && SPORT_COLORS[ev.sport]) || "#e3b23c";
   const bImg = host.querySelector("#gpImg"), bReel = host.querySelector("#gpReel"), bSt = host.querySelector("#gpStats");
   if(bImg) bImg.onclick = ()=>generateShareCard(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor);

@@ -838,3 +838,9 @@ html.theme-light .newsletter-privacy-link{ color:#3a4a68 !important; }
 .hv-favbtn{ display:block; margin:8px 0 2px; min-height:44px; padding:8px 12px; background:none; border:0; color:var(--muted); font:600 .8rem 'Archivo',sans-serif; cursor:pointer; text-align:left; }
 html.theme-light .hv-tday{ background:#fff; border-color:rgba(20,40,80,.14); border-left-color:var(--sc,#5BB4F0); color:#0f1b33; }
 html.theme-light .hv-tday .td-t{ color:#5b6b88; }
+
+/* ===== v181: partilha ===== */
+.gp-share-s{ margin:-4px 0 12px; font-size:.85rem; color:var(--muted); }
+.gp-share .gp-actions{ margin-top:2px; }
+.hv-win{ border-color:rgba(95,224,138,.35); }
+html.theme-light .gp-share-s{ color:#5b6b88; }

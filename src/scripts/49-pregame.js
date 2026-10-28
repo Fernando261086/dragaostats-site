@@ -41,7 +41,7 @@ function pregameHtml_(ev){
     const bal = { win: 0, draw: 0, loss: 0 };
     diretos.forEach(e=>{ const tg = pgTag_(pgDone_(e)); if(tg) bal[tg]++; });
     const total = bal.win + bal.draw + bal.loss;
-    blocos.push(`<div class="pg-blk"><div class="pg-lbl">Último confronto</div><div class="pg-last">${crestOnly_(u, t.home)}${esc(t.home)} <b>${esc(String(st.resultado).trim())}</b> ${crestOnly_(u, t.away)}${esc(t.away)}</div><div class="pg-sub">${esc(formatShortDate(u.day))}${u.detail ? " · " + esc(u.detail) : ""}${total > 1 ? ` · Balanço: ${bal.win}V ${bal.draw}E ${bal.loss}D` : ""}</div></div>`);
+    blocos.push(`<div class="pg-blk"><div class="pg-lbl">Último confronto</div><div class="pg-last">${crestOnly_(u, t.home)}${esc(t.home)} <b>${esc(String(st.resultado).trim())}</b> ${crestNameEnd_(u, t.away)}</div><div class="pg-sub">${esc(formatShortDate(u.day))}${u.detail ? " · " + esc(u.detail) : ""}${total > 1 ? ` · Balanço: ${bal.win}V ${bal.draw}E ${bal.loss}D` : ""}</div></div>`);
   }
 
   // classificação (a da competição europeia/taça, se o adversário jogar no mesmo grupo; senão a do campeonato)

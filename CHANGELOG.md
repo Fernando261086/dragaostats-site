@@ -1,3 +1,6 @@
+## v197 — Escudo da 2.ª equipa no fim do nome
+- Nas linhas de jogos (Calendário, Início, Histórico, página da modalidade, pesquisa, "Último confronto") o escudo da equipa que aparece à direita passa para depois do nome ("🛡 FC Porto 3-4 Caxinas 🛡"), em vez de ficar colado ao resultado. `crestNameEnd_` em `45-crests.js`. Cache `dia22-cache-v275`.
+
 ## v196 — Calendário para subscrever, imagem por modalidade nas partilhas, "Já começou!" e email semanal (Apps Script v133)
 - `_worker.js`: `/calendario/<modalidade>.ics` e `/calendario/todas.ics` (iCal com todos os jogos; resultado no título quando existe; o telemóvel volta a ler de hora a hora). Botão "📆 Subscrever calendário" na página de cada modalidade (telemóvel abre `webcal://`; computador copia o link).
 - Pré-visualização de um jogo partilhado usa a imagem da modalidade (`public/og/<modalidade>.png`, 1200×630) em vez da genérica. Imagem própria por jogo não é possível com o upload por arrastar (sem bibliotecas de imagem no Worker).

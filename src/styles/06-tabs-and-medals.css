@@ -927,3 +927,6 @@ html:not(.theme-light) .hv-row-sport, html:not(.theme-light) .hv-sg .sg-pos{ col
 .sp-sub{ margin:18px 0 6px; text-align:center; }
 .sp-sub .hv-btn{ width:100%; max-width:420px; }
 .sp-sub p{ margin:8px 0 0; font-size:13px; color:var(--text-dim); }
+
+/* v197: escudo da 2.ª equipa no fim do nome */
+.crest-end .crest{ margin:0 0 0 5px !important; }

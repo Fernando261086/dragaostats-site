@@ -124,7 +124,7 @@ function renderHomeView_(force){
       const tag = st.resultTag === "win" ? ["V", "win"] : st.resultTag === "loss" ? ["D", "loss"] : st.resultTag === "draw" ? ["E", "draw"] : null;
       return `<button type="button" class="hv-row hv-res" data-go="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};">
         ${tag ? `<span class="hv-tag hv-tag-${tag[1]}">${tag[0]}</span>` : '<span class="hv-tag"></span>'}
-        <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)} · ${esc(formatShortDate(ev.day))}</span><span class="hv-row-match">${crestOnly_(ev, t.home)}${esc(t.home)} <b>${esc(String(st.resultado).trim())}</b> ${crestOnly_(ev, t.away)}${esc(t.away)}</span></span>
+        <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)} · ${esc(formatShortDate(ev.day))}</span><span class="hv-row-match">${crestOnly_(ev, t.home)}${esc(t.home)} <b>${esc(String(st.resultado).trim())}</b> ${crestNameEnd_(ev, t.away)}</span></span>
       </button>`;
     }).join("");
     resultsHtml = `<div class="hv-panel hv-results"><div class="hv-panel-head"><h3>Últimos resultados</h3><button type="button" class="hv-link" data-hist="1">Ver histórico</button></div>${res}</div>`;

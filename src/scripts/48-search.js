@@ -29,7 +29,7 @@ function searchRowHtml_(ev){
   const mid = res ? ` <b>${esc(res)}</b> ` : " vs ";
   return `<button type="button" class="hv-row hv-res" data-sgo="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};">
     ${tag ? `<span class="hv-tag hv-tag-${tag[1]}">${tag[0]}</span>` : '<span class="hv-tag"></span>'}
-    <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)} · ${esc(formatShortDate(ev.day))}${ev.t ? " · " + esc(ev.t) : ""}</span><span class="hv-row-match">${crestOnly_(ev, t.home)}${esc(t.home)}${mid}${crestOnly_(ev, t.away)}${esc(t.away)}</span></span>
+    <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)} · ${esc(formatShortDate(ev.day))}${ev.t ? " · " + esc(ev.t) : ""}</span><span class="hv-row-match">${crestOnly_(ev, t.home)}${esc(t.home)}${mid}${crestNameEnd_(ev, t.away)}</span></span>
   </button>`;
 }
 (function(){

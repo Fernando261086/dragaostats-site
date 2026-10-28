@@ -355,7 +355,7 @@ function renderHistoryView(){
       const safe = x => String(x == null ? "" : x).replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
       return `<button type="button" class="hv-row" data-ev-id="${ev.id}" style="--sc:${color};">
         <span class="hv-date"><b>${dd.getDate()}</b><i>${wd}</i></span>
-        <span class="hv-row-body"><span class="hv-row-sport">${safe(ev.sport)} · ${safe(local)}${ev.phase ? " · " + safe(ev.phase) : ""}</span><span class="hv-row-match">${res ? `${crestName_(ev, tt.home)} <b>${safe(res)}</b> ${crestName_(ev, tt.away)}` : `${matchTitleHtml_(ev)}${matchNeutralTag_(ev)} <span class="hist-nores">sem resultado</span>`}</span></span>
+        <span class="hv-row-body"><span class="hv-row-sport">${safe(ev.sport)} · ${safe(local)}${ev.phase ? " · " + safe(ev.phase) : ""}</span><span class="hv-row-match">${res ? `${crestName_(ev, tt.home)} <b>${safe(res)}</b> ${crestNameEnd_(ev, tt.away)}` : `${matchTitleHtml_(ev)}${matchNeutralTag_(ev)} <span class="hist-nores">sem resultado</span>`}</span></span>
         ${tag ? `<span class="hv-tag hv-tag-${tag[1]}">${tag[0]}</span>` : ""}
       </button>`;
     }).join("");

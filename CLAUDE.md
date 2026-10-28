@@ -234,6 +234,8 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 
 **v196:** `_worker.js` serve `/calendario/<slug>.ics` (`calendarioIcs_`) e troca o `og:image` por `/og/<slug>.png` nos links de jogo; botão `#spSub` em `37-sport-page.js`. Apps Script **v133** (`apps-script-v133.gs`): "Já começou!" em `checkGameRemindersForPush_` (campo `started`), `usoResumoCorpo_`/`jogosSemanaTexto_` (email de segunda com jogos da semana; `RESUMO_EMAILS_EXTRA`), teste `testarResumoSemanalAgora`. Imagens `public/og/*.png` geradas em Playwright (Bebas Neue + cor da modalidade). Cache atual `dia22-cache-v274`.
 
+**v197:** `crestNameEnd_` (`45-crests.js`) para o escudo da 2.ª equipa no fim do nome nas linhas; cache atual `dia22-cache-v275`.
+
 ## Mudança de época (checklist — fazer em julho/agosto, antes da 1.ª jornada)
 
 Várias fontes têm números ou endereços da época **26/27**. Quando a época mudar, verificar uma a uma

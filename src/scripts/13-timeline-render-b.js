@@ -44,7 +44,7 @@ function renderCrossCompetitionList(container, filterFn, emptyMessage){
       const safe = x => String(x == null ? "" : x).replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
       return `<button type="button" class="hv-row" data-comp="${r.compId}" data-day="${r.ev.day}" data-ev-id="${r.ev.id}" style="--sc:${color};">
         <span class="hv-date"><b>${dd.getDate()}</b><i>${wd}</i></span>
-        <span class="hv-row-body"><span class="hv-row-sport">${safe(r.ev.sport)}${detail ? " · " + safe(detail) : ""}</span><span class="hv-row-match">${result ? `${crestName_(r.ev, tt.home)} <b>${safe(result)}</b> ${crestName_(r.ev, tt.away)}` : matchTitleHtml_(r.ev) + matchNeutralTag_(r.ev)}</span></span>
+        <span class="hv-row-body"><span class="hv-row-sport">${safe(r.ev.sport)}${detail ? " · " + safe(detail) : ""}</span><span class="hv-row-match">${result ? `${crestName_(r.ev, tt.home)} <b>${safe(result)}</b> ${crestNameEnd_(r.ev, tt.away)}` : matchTitleHtml_(r.ev) + matchNeutralTag_(r.ev)}</span></span>
         ${result ? (tagC ? `<span class="hv-tag hv-tag-${tagC[1]}">${tagC[0]}</span>` : "") : `<span class="hv-row-time">${safe(r.ev.t || "")}</span>`}
       </button>`;
     }

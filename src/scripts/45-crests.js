@@ -82,3 +82,5 @@ function crestOnly_(ev, name){
   }catch(e){ return ""; }
 }
 function crestName_(ev, name){ return crestOnly_(ev, name) + fcpNameHtml_(name); }
+// v197: segunda equipa do resultado ("FC Porto 3-4 Caxinas 🛡"): o escudo vai para o fim, longe do resultado
+function crestNameEnd_(ev, name){ const c = crestOnly_(ev, name); return fcpNameHtml_(name) + (c ? `<span class="crest-end">${c}</span>` : ""); }

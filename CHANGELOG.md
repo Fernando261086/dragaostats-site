@@ -1,3 +1,6 @@
+## v205
+- Cronologia e estatísticas (Sofascore) traduzidas para português (dicionário `GD_STAT_PT_`/`GD_INC_PT_` em `46-game-details.js`; o que não estiver no dicionário fica como veio); lances sem nome de jogador mostram "Golo", "Cartão amarelo"… em vez de ficar em branco. Cache `dia22-cache-v283`.
+
 ## v204
 - O botão/gesto "voltar" do telemóvel e do browser segue a mesma cadeia que o ‹ do site (cada página de modalidade/jogo aberta fica no histórico do browser). Cache `dia22-cache-v282`.
 

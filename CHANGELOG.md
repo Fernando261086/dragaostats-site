@@ -1,3 +1,8 @@
+## v196 — Calendário para subscrever, imagem por modalidade nas partilhas, "Já começou!" e email semanal (Apps Script v133)
+- `_worker.js`: `/calendario/<modalidade>.ics` e `/calendario/todas.ics` (iCal com todos os jogos; resultado no título quando existe; o telemóvel volta a ler de hora a hora). Botão "📆 Subscrever calendário" na página de cada modalidade (telemóvel abre `webcal://`; computador copia o link).
+- Pré-visualização de um jogo partilhado usa a imagem da modalidade (`public/og/<modalidade>.png`, 1200×630) em vez da genérica. Imagem própria por jogo não é possível com o upload por arrastar (sem bibliotecas de imagem no Worker).
+- Apps Script **v133**: push "🔴 Já começou!" até 15 min depois da hora, para quem pediu "Lembrar-me" nesse jogo (estado `started` na linha `__game_reminders__`; Futsal diz "resultado" em vez de "direto"); email de segunda passa a "resumo da semana" com os jogos dos próximos 7 dias e destinatários extra na propriedade `RESUMO_EMAILS_EXTRA`. Teste: `testarResumoSemanalAgora`. Cache `dia22-cache-v274`.
+
 ## v195 — Botões rápidos em direto, set em curso em destaque, marcadores no texto de partilha
 - Página do jogo, enquanto o jogo está ao vivo ou a decorrer: cartão "Como está a ser o jogo?" com 4 botões (💙 Força Porto!, 🔥 Grande jogo, 👏 Bem jogado, 😬 Estamos a sofrer). Usa a mesma linha de reações do Apps Script (aceita qualquer emoji, sem versão nova); pausa de 1,5 s entre toques; em edição só mostra as contagens/nomes.
 - Voleibol: o set em curso fica maior (cartão ao vivo e página do jogo).

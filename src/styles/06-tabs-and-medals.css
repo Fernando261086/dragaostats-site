@@ -922,3 +922,8 @@ html:not(.theme-light) .hv-row-sport, html:not(.theme-light) .hv-sg .sg-pos{ col
 .gp-react-live .reaction-bar{ gap:8px !important; }
 .gp-react-live .reaction-btn, .gp-react-live .reaction-names-btn{ font-size:14px !important; padding:8px 12px !important; min-height:40px; border-radius:14px !important; }
 .gp-react-live .reaction-btn:disabled{ opacity:.6; }
+
+/* v196: subscrever calendário */
+.sp-sub{ margin:18px 0 6px; text-align:center; }
+.sp-sub .hv-btn{ width:100%; max-width:420px; }
+.sp-sub p{ margin:8px 0 0; font-size:13px; color:var(--text-dim); }

@@ -93,7 +93,18 @@ function renderSportPage_(){
       return `<${tag} class="hv-row${idx >= 0 ? " sq-click" : ""}" style="${idx >= 0 ? "" : "cursor:default; "}--sc:${color};"><span class="hv-tag">${i + 1}º</span><span class="hv-row-body"><span class="hv-row-match">${esc(r.n)}</span><span class="hv-sport-next">${r.games} jogo${r.games === 1 ? "" : "s"}${media}</span></span><span class="hv-row-time">${r.total}</span></${end}>`;
     }).join("") : '<div class="hv-empty">Ainda sem estatísticas registadas nesta modalidade.</div>'}</div>`;
   }
-  host.innerHTML = head + tabs + heroHtml + body;
+  // v196: subscrever o calendário desta modalidade (ficheiro .ics servido pelo _worker.js; atualiza sozinho no telemóvel)
+  const icsSlug = { "Andebol":"andebol", "Basquetebol":"basquetebol", "Hóquei Patins":"hoquei-em-patins", "Voleibol":"voleibol", "Futebol Feminino":"futebol-feminino", "Futsal":"futsal", "Equipa B":"equipa-b" }[sport];
+  const subBtn = icsSlug ? `<div class="sp-sub"><button type="button" class="hv-btn hv-btn-ghost" id="spSub">📆 Subscrever calendário de ${esc(sport)}</button><p>Os jogos aparecem sozinhos no calendário do telemóvel e mudam se a hora mudar.</p></div>` : "";
+  host.innerHTML = head + tabs + heroHtml + body + subBtn;
+  const bSub = host.querySelector("#spSub");
+  if(bSub) bSub.onclick = async ()=>{
+    const https = "https://dragaostats.pt/calendario/" + icsSlug + ".ics";
+    if(typeof track_ === "function") track_("subscrever_calendario");
+    if(/iPhone|iPad|Android/i.test(navigator.userAgent)){ window.location.href = "webcal://dragaostats.pt/calendario/" + icsSlug + ".ics"; return; }
+    try{ await navigator.clipboard.writeText(https); alert("Link copiado! No Google Calendar: Outros calendários › A partir do URL, e cola o link.\n\n" + https); }
+    catch(e){ prompt("Copia este link e cola-o no teu calendário (A partir do URL):", https); }
+  };
   host.querySelector("#spBack").onclick = ()=>{ setView("inicio"); window.scrollTo(0, 0); };
   host.querySelectorAll("[data-sptab]").forEach(b=>{ b.onclick = ()=>{ sportPageTab_ = b.getAttribute("data-sptab"); renderSportPage_(); }; });
   host.querySelectorAll("[data-spstat]").forEach(b=>{ b.onclick = ()=>{ sportPageStat_ = b.getAttribute("data-spstat"); renderSportPage_(); }; });

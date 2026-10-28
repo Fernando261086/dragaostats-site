@@ -1,5 +1,5 @@
 // Dragão Stats — Cloudflare Pages "advanced mode" (v187)
-// Faz DUAS coisas e só isso; tudo o resto passa direto para os ficheiros do site:
+// Faz QUATRO coisas e só isso (v195: + calendário subscrito .ics e imagem por modalidade na pré-visualização); tudo o resto passa direto para os ficheiros do site:
 //  1) Link de um jogo (/?comp=..&jogo=..): troca o título/descrição da pré-visualização (WhatsApp, Facebook, Google…)
 //     por "🤾 Andebol — FC Porto 31-28 Kiel" em vez do texto genérico do site.
 //  2) Páginas de modalidade (/andebol.html …): acrescenta no HTML (para o Google ler) os próximos jogos, a
@@ -28,6 +28,10 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     try {
+      if (request.method === "GET" && /^\/calendario\/[a-z-]+\.ics$/.test(path)) {
+        const r = await calendarioIcs_(env, ctx, path);
+        if (r) return r;
+      }
       if (request.method === "GET") {
         if ((path === "/" || path === "/index.html") && url.searchParams.get("jogo")) {
           const r = await jogoPage_(request, env, ctx, url);
@@ -51,6 +55,51 @@ async function passThrough_(request, env, path) {
     return h;
   }
   return res;
+}
+
+// ---------- slug de cada modalidade (ficheiros /og/<slug>.png e /calendario/<slug>.ics)
+function slugOf_(sport) {
+  const k = Object.keys(SPORT_PAGES).find(p => SPORT_PAGES[p][0] === sport);
+  return k ? k.replace("/", "").replace(".html", "") : "";
+}
+
+// ---------- 3) calendário para subscrever (.ics): /calendario/andebol.ics, ..., /calendario/todas.ics
+function icsEsc_(s) { return String(s == null ? "" : s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n"); }
+function icsFold_(line) {
+  const enc = new TextEncoder(); let out = "", cur = "", bytes = 0;
+  for (const ch of line) {
+    const b = enc.encode(ch).length;
+    if (bytes + b > 73) { out += cur + "\r\n "; cur = ""; bytes = 0; }
+    cur += ch; bytes += b;
+  }
+  return out + cur;
+}
+function icsStamp_(ms) { return new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z"); }
+async function calendarioIcs_(env, ctx, path) {
+  const slug = path.replace("/calendario/", "").replace(".ics", "");
+  const sport = slug === "todas" ? null : (Object.keys(SPORT_PAGES).map(k => SPORT_PAGES[k][0]).find(n => slugOf_(n) === slug) || "");
+  if (sport === "") return null;
+  let data = null;
+  try { data = await getData_(env, ctx); } catch (e) { data = null; }
+  if (!data) return new Response("Calendário temporariamente indisponível", { status: 503, headers: { "Retry-After": "300" } });
+  const nome = sport ? "Dragão Stats — FC Porto " + sport : "Dragão Stats — FC Porto (todas as modalidades)";
+  const L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Dragao Stats//FC Porto//PT", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "X-WR-CALNAME:" + icsEsc_(nome), "X-WR-TIMEZONE:Europe/Lisbon", "REFRESH-INTERVAL;VALUE=DURATION:PT1H", "X-PUBLISHED-TTL:PT1H"];
+  const agora = icsStamp_(Date.now());
+  data.events.filter(e => !sport || e.sport === sport).forEach(e => {
+    const s = startInfo_(e.day, e.t);
+    if (!s) return;
+    const t = teams_(e);
+    const titulo = emoji_(e.sport) + " " + (e.res ? e.sport + ": " + t.home + " " + e.res + " " + t.away : e.sport + ": " + t.home + " vs " + t.away);
+    const desc = [e.det, e.fase, e.res ? "Resultado final: " + e.res : "Segue em direto em " + SITE].filter(Boolean).join(" · ");
+    L.push("BEGIN:VEVENT", "UID:" + e.id + "@dragaostats.pt", "DTSTAMP:" + agora, "DTSTART:" + icsStamp_(s.ms), "DTEND:" + icsStamp_(s.ms + 2 * 3600000),
+      "SUMMARY:" + icsEsc_(titulo), "DESCRIPTION:" + icsEsc_(desc), "URL:" + SITE + "/?jogo=" + encodeURIComponent(e.id));
+    if (e.venue) L.push("LOCATION:" + icsEsc_(e.venue));
+    L.push("END:VEVENT");
+  });
+  L.push("END:VCALENDAR");
+  return new Response(L.map(icsFold_).join("\r\n") + "\r\n", { headers: {
+    "Content-Type": "text/calendar; charset=utf-8", "Cache-Control": "public, max-age=900", "Content-Disposition": 'inline; filename="dragaostats-' + slug + '.ics"' } });
 }
 
 // ---------- dados (cache de 2 min, com tempo limite)
@@ -153,6 +202,8 @@ async function jogoPage_(request, env, ctx, url) {
     .on('meta[property="og:url"]', { element(e) { e.setAttribute("content", url.toString()); } })
     .on('meta[name="twitter:title"]', { element(e) { e.setAttribute("content", title); } })
     .on('meta[name="twitter:description"]', { element(e) { e.setAttribute("content", desc); } })
+    .on('meta[property="og:image"]', { element(e) { if (slugOf_(ev.sport)) e.setAttribute("content", SITE + "/og/" + slugOf_(ev.sport) + ".png"); } })
+    .on('meta[name="twitter:image"]', { element(e) { if (slugOf_(ev.sport)) e.setAttribute("content", SITE + "/og/" + slugOf_(ev.sport) + ".png"); } })
     .transform(res);
   const r = new Response(out.body, out);
   r.headers.set("Cache-Control", "no-cache, must-revalidate");

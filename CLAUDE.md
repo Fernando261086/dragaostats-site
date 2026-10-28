@@ -236,6 +236,8 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 
 **v197:** `crestNameEnd_` (`45-crests.js`) para o escudo da 2.ª equipa no fim do nome nas linhas; cache atual `dia22-cache-v275`.
 
+**v198:** herói `.hv-hero-match` (`36-home-view.js`) também com o escudo da 2.ª equipa no fim; cache atual `dia22-cache-v276`.
+
 ## Mudança de época (checklist — fazer em julho/agosto, antes da 1.ª jornada)
 
 Várias fontes têm números ou endereços da época **26/27**. Quando a época mudar, verificar uma a uma

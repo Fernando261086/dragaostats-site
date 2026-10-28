@@ -930,3 +930,4 @@ html:not(.theme-light) .hv-row-sport, html:not(.theme-light) .hv-sg .sg-pos{ col
 
 /* v197: escudo da 2.ª equipa no fim do nome */
 .crest-end .crest{ margin:0 0 0 5px !important; }
+.hv-hero-match .crest-end .crest{ margin-left:8px !important; }

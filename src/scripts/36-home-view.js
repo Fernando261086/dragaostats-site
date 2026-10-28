@@ -45,7 +45,7 @@ function homeHeroHtml_(item, label){
   return `<div class="hv-hero hv-hero-click${live ? " is-live" : ""}${liveData ? " has-score" : ""}" data-hero="${esc(ev.id)}">
     <div class="hv-hero-top"><span class="hv-kicker">${liveData ? "A decorrer" : (live ? "A decorrer" : esc(label || "Próximo jogo"))}</span><span class="hv-pill">${liveData ? '<i class="hv-dot"></i>' : ""}${esc(pill)}</span></div>
     <div class="hv-hero-sport">${esc(ev.sport)}${detail ? " · " + esc(detail) : ""}</div>
-    <div class="hv-hero-match${homeOpp_(ev).length > 16 ? " hm-long" : ""}"><span class="hm-a">${crestOnly_(ev, postTeams_(ev).home)}${esc(postTeams_(ev).home)}</span><span class="hm-b"><span class="hv-vs">vs</span> ${crestOnly_(ev, postTeams_(ev).away)}${esc(postTeams_(ev).away)}</span></div>
+    <div class="hv-hero-match${homeOpp_(ev).length > 16 ? " hm-long" : ""}"><span class="hm-a">${crestOnly_(ev, postTeams_(ev).home)}${esc(postTeams_(ev).home)}</span><span class="hm-b"><span class="hv-vs">vs</span> ${esc(postTeams_(ev).away)}${(c=>c ? `<span class="crest-end">${c}</span>` : "")(crestOnly_(ev, postTeams_(ev).away))}</span></div>
     ${scoreHtml}
     ${(liveData && typeof liveRecentHtml_ === "function") ? liveRecentHtml_(ev) : ""}
     <div class="hv-hero-meta">

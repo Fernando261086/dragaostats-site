@@ -1,3 +1,6 @@
+## v198 — Escudo no fim também no cartão "Próximo jogo"
+- O herói do Início e das páginas de modalidade passa a "VS VESZPRÉM HC 🛡" (escudo depois do nome). Cache `dia22-cache-v276`.
+
 ## v197 — Escudo da 2.ª equipa no fim do nome
 - Nas linhas de jogos (Calendário, Início, Histórico, página da modalidade, pesquisa, "Último confronto") o escudo da equipa que aparece à direita passa para depois do nome ("🛡 FC Porto 3-4 Caxinas 🛡"), em vez de ficar colado ao resultado. `crestNameEnd_` em `45-crests.js`. Cache `dia22-cache-v275`.
 

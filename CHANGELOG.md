@@ -1,3 +1,7 @@
+## v199 — Cartão "TERMINOU" no ao vivo (Apps Script v134)
+- Quando a fonte ao vivo dá o jogo como acabado e o editor ainda não escreveu o resultado, o cartão no topo passa a "TERMINOU" com o resultado final (e os sets, no voleibol), até 5 h depois do início ou até o resultado ser escrito. Cache `dia22-cache-v277`.
+- Apps Script **v134**: email ANTES do jogo (entre 90 e 20 min) se o Sofascore não encontrar o jogo e não houver "ID do jogo ao vivo" (`verificarLigacaoAntes_`; Andebol, Voleibol, Futebol Feminino, Equipa B; teste `testarLigacaoAntesAgora`); resumo mensal por email no dia 1 (`resumoMensalSeDevido_`, mesmos destinatários do semanal; teste `testarResumoMensalAgora`).
+
 ## v198 — Escudo no fim também no cartão "Próximo jogo"
 - O herói do Início e das páginas de modalidade passa a "VS VESZPRÉM HC 🛡" (escudo depois do nome). Cache `dia22-cache-v276`.
 

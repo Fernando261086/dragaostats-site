@@ -238,6 +238,10 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 
 **v198:** herói `.hv-hero-match` (`36-home-view.js`) também com o escudo da 2.ª equipa no fim; cache atual `dia22-cache-v276`.
 
+**v199:** cartão `TERMINOU` em `renderLiveNowBanner_` (`05-…`, `fimSemResultado`); Apps Script **v134** (`apps-script-v134.gs`): `verificarLigacaoAntes_`, `resumoMensalSeDevido_`; cache atual `dia22-cache-v277`.
+
+**Ideias adiadas (lembrar ao Fernando perto de julho):** botão no editor que cria a competição da época seguinte a partir da atual (modalidades e adversários habituais). Também por decidir: "forma" V/E/D (só do FC Porto e do próximo adversário; as fontes não dão a forma de todas as equipas da tabela).
+
 ## Mudança de época (checklist — fazer em julho/agosto, antes da 1.ª jornada)
 
 Várias fontes têm números ou endereços da época **26/27**. Quando a época mudar, verificar uma a uma

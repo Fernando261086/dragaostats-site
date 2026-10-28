@@ -78,7 +78,18 @@ function renderLiveNowBanner_(){
   const host = document.getElementById("liveNowBanner");
   if(!host) return;
   const fresh = CEV_LIVE && CEV_LIVE.jogos && CEV_LIVE.updated && Math.abs(Date.now() - CEV_LIVE.updated) <= 5 * 60 * 1000;
-  const ids = fresh ? Object.keys(CEV_LIVE.jogos).filter(id => CEV_LIVE.jogos[id] && CEV_LIVE.jogos[id].estado === "vivo") : [];
+  // v199: jogo acabado na fonte mas ainda SEM resultado escrito pelo editor → cartão "TERMINOU" (some quando o resultado é escrito)
+  const fimSemResultado = id => {
+    const j = CEV_LIVE.jogos[id];
+    if(!(j && j.estado === "fim") || typeof EVENTS === "undefined") return false;
+    const e = EVENTS.find(x=>x.id === id);
+    if(!e || !e.day || !e.t) return false;
+    const st = (typeof getEv === "function" && getEv(id)) || {};
+    if(st.resultado && String(st.resultado).trim()) return false;
+    const ini = new Date(e.day + "T" + e.t + ":00").getTime();
+    return !isNaN(ini) && Date.now() - ini >= 0 && Date.now() - ini <= 5 * 3600000;
+  };
+  const ids = fresh ? Object.keys(CEV_LIVE.jogos).filter(id => CEV_LIVE.jogos[id] && (CEV_LIVE.jogos[id].estado === "vivo" || fimSemResultado(id))) : [];
   if(!ids.length){ host.style.display = "none"; host.innerHTML = ""; return; }
   // os dados ao vivo podem chegar antes da lista de jogos: se faltar o jogo, volta a desenhar daqui a pouco (ordem casa/fora)
   if(typeof EVENTS === "undefined" || ids.some(id => !EVENTS.some(x=>x.id===id))){
@@ -94,16 +105,21 @@ function renderLiveNowBanner_(){
     const sets = Array.isArray(j.sets) ? j.sets : [];
     let setsHtml = "A começar";
     const porGolos = j.golosFcp !== undefined;
-    if(porGolos){
+    const acabou = j.estado === "fim";
+    if(porGolos && acabou){
+      setsHtml = "<b>Resultado final</b>";
+    } else if(porGolos){
       const t = [j.parte, j.tempo].filter(Boolean).join(" ");
       setsHtml = t ? "<b>" + liveEsc_(t) + "</b>" : "A decorrer";
+    } else if(sets.length && acabou){
+      setsHtml = "<b>Resultado final</b> · " + liveEsc_(sets.map((x, i) => { const q = par(x[0], x[1]); return (i + 1) + ".º " + q[0] + "-" + q[1]; }).join(" · "));
     } else if(sets.length){
       const cur = par(sets[sets.length - 1][0], sets[sets.length - 1][1]);
       const prev = sets.slice(0, -1).map((s, i) => { const q = par(s[0], s[1]); return (i + 1) + ".º " + q[0] + "-" + q[1]; }).join(" · ");
       setsHtml = "<b>" + sets.length + ".º set: " + cur[0] + "-" + cur[1] + "</b>" + (prev ? " · " + liveEsc_(prev) : "");
     }
     return `<div class="live-now-card" data-live-ev="${liveEsc_(id)}">
-      <div class="live-now-top"><span class="live-flag">AO VIVO</span><span class="live-now-sport">${liveEsc_(j.sport || "")}${(()=>{ const e = (typeof EVENTS !== "undefined") ? EVENTS.find(x=>x.id===id) : null; return e && e.detail ? " · " + liveEsc_(e.detail) : ""; })()}</span><span class="live-now-upd">atualizado ${ago}</span></div>
+      <div class="live-now-top"><span class="live-flag${acabou ? " is-fim" : ""}">${acabou ? "TERMINOU" : "AO VIVO"}</span><span class="live-now-sport">${liveEsc_(j.sport || "")}${(()=>{ const e = (typeof EVENTS !== "undefined") ? EVENTS.find(x=>x.id===id) : null; return e && e.detail ? " · " + liveEsc_(e.detail) : ""; })()}</span><span class="live-now-upd">atualizado ${ago}</span></div>
       <div class="live-now-row">
         <span class="live-now-team">${fora ? liveEsc_(j.adv || "Adversário") : "FC Porto"}</span>
         <span class="live-now-score">${(()=>{ const q = porGolos ? par(j.golosFcp||0, j.golosAdv||0) : par(j.setsFcp||0, j.setsAdv||0); return q[0] + " – " + q[1]; })()}</span>

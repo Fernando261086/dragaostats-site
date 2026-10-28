@@ -238,7 +238,7 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 
 **v198:** herói `.hv-hero-match` (`36-home-view.js`) também com o escudo da 2.ª equipa no fim; cache atual `dia22-cache-v276`.
 
-**v199:** cartão `TERMINOU` em `renderLiveNowBanner_` (`05-…`, `fimSemResultado`); Apps Script **v134** (`apps-script-v134.gs`): `verificarLigacaoAntes_`, `resumoMensalSeDevido_`; cache atual `dia22-cache-v280`.
+**v199:** cartão `TERMINOU` em `renderLiveNowBanner_` (`05-…`, `fimSemResultado`); Apps Script **v134** (`apps-script-v134.gs`): `verificarLigacaoAntes_`, `resumoMensalSeDevido_`; cache atual `dia22-cache-v281`.
 
 **Ideias adiadas (lembrar ao Fernando perto de julho):** botão no editor que cria a competição da época seguinte a partir da atual (modalidades e adversários habituais). Também por decidir: "forma" V/E/D (só do FC Porto e do próximo adversário; as fontes não dão a forma de todas as equipas da tabela).
 
@@ -267,8 +267,10 @@ parada, é quase sempre o endereço da fonte):
   Verificar o Início, o Histórico e os Marcadores (somam por competição), a sondagem em curso e a imagem/texto do `og`.
 - **Depois**: um jogo ao vivo de cada modalidade (ver "Ainda por fazer"), `sitemap.xml` (`lastmod`) e subir a cache em `public/sw.js`.
 
-**v200:** `pregameWire_(host)` (`49-pregame.js`, chamada no fim da ligação de eventos de `42-game-page.js`): o bloco "Último confronto" (`.pg-click[data-pgjogo]`) abre `openGamePage_` desse jogo; cache atual `dia22-cache-v280`.
+**v200:** `pregameWire_(host)` (`49-pregame.js`, chamada no fim da ligação de eventos de `42-game-page.js`): o bloco "Último confronto" (`.pg-click[data-pgjogo]`) abre `openGamePage_` desse jogo; cache atual `dia22-cache-v281`.
 
-**v201:** `gameStack_` (`42-game-page.js`): "Voltar" da página do jogo desfaz a cadeia (jogo → jogo → vista de origem) com scroll; cache atual `dia22-cache-v280`.
+**v201:** `gameStack_` (`42-game-page.js`): "Voltar" da página do jogo desfaz a cadeia (jogo → jogo → vista de origem) com scroll; cache atual `dia22-cache-v281`.
 
-**v202:** `navStack_/navPush_/navBack_` (`37-sport-page.js`): histórico das páginas de detalhe (modalidade/jogo) usado pelo "Voltar"/‹; `setView` (16) limpa-o em vistas de topo (exceto durante `__navBacking_`); substitui o `gameStack_` da v201; cache atual `dia22-cache-v280`.
+**v202:** `navStack_/navPush_/navBack_` (`37-sport-page.js`): histórico das páginas de detalhe (modalidade/jogo) usado pelo "Voltar"/‹; `setView` (16) limpa-o em vistas de topo (exceto durante `__navBacking_`); substitui o `gameStack_` da v201; cache atual `dia22-cache-v281`.
+
+**v203:** `showAthleteProfile` (14) guarda `navSnap_()`/`navStack_` e o "← Voltar" usa `navRestore_` (37); cache atual `dia22-cache-v281`.

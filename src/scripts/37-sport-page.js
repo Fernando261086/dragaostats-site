@@ -12,8 +12,8 @@ function navPush_(){
   navStack_.push(s);
   if(navStack_.length > 30) navStack_.shift();
 }
-function navBack_(){
-  const s = navStack_.pop();
+function navBack_(){ navRestore_(navStack_.pop()); }
+function navRestore_(s){
   window.__navBacking_ = true;
   try{
     if(!s){ setView("inicio"); window.scrollTo(0, 0); return; }

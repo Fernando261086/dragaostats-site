@@ -334,6 +334,7 @@ function downloadMatchICS(ev){
 }
 
 function showAthleteProfile(name){
+  const fromSnap_ = (typeof navSnap_ === "function") ? navSnap_() : null, fromStack_ = (typeof navStack_ !== "undefined") ? navStack_.slice() : []; // v203: para o "Voltar" regressar à página anterior
   setView("hoje-todas");
   profileAthlete = name; // marca que a ficha está ativa, para a sincronização não a substituir sozinha
   document.getElementById("viewTodayAllBtn").classList.remove("active");
@@ -375,7 +376,7 @@ function showAthleteProfile(name){
     },
     "Sem provas encontradas para esta pessoa/equipa."
   );
-  document.getElementById("backFromProfileBtn").onclick = ()=> setView("calendario");
+  document.getElementById("backFromProfileBtn").onclick = ()=>{ if(fromSnap_ && fromSnap_.view !== "hoje-todas"){ navStack_ = fromStack_; navRestore_(fromSnap_); } else setView("calendario"); };
 }
 
 function renderGlobalSearchView(){

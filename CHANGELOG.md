@@ -1,3 +1,6 @@
+## v203
+- O "← Voltar" da ficha do atleta regressa à página de onde se veio (antes ia sempre para o Calendário). Cache `dia22-cache-v281`.
+
 ## v202
 - "Voltar" e a seta ‹ (página da modalidade e página do jogo) regressam sempre à página imediatamente anterior (histórico `navStack_`), com a posição de scroll; ao ir para uma vista de topo (Início, Calendário…) o histórico limpa-se. Cache `dia22-cache-v280`.
 

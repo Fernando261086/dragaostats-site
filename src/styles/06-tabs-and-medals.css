@@ -941,3 +941,17 @@ html:not(.theme-light) .hv-row-sport, html:not(.theme-light) .hv-sg .sg-pos{ col
 html.theme-light .pg-click:hover,html.theme-light .pg-click:active{ background:rgba(11,27,63,.05); }
 .pg-click:focus-visible{ outline:2px solid #4fa3ff; outline-offset:2px; }
 .pg-go{ position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:24px; line-height:1; opacity:.55; }
+
+/* v207: "Lance a lance" em duas colunas */
+.gd-head{ display:grid; grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr); gap:6px; font-weight:700; font-size:13px; padding:2px 0 8px; border-bottom:1px solid var(--line,rgba(255,255,255,.12)); margin-bottom:8px; }
+.gd-hl{ text-align:left; } .gd-hr{ text-align:right; }
+.gd-head .crest{ width:1.2em; height:1.2em; vertical-align:-.2em; margin:0 5px 0 0; }
+.gd-head .crest-end .crest{ margin:0 0 0 5px !important; }
+.gd-row3{ display:grid; grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr); align-items:center; gap:6px; font-size:14px; }
+.gd-c{ display:flex; align-items:center; gap:6px; min-width:0; overflow-wrap:anywhere; }
+.gd-r{ justify-content:flex-end; text-align:right; }
+.gd-mid{ display:flex; flex-direction:column; align-items:center; line-height:1.15; }
+.gd-sc{ font-style:normal; font-size:11px; font-weight:700; color:var(--sc,#5BB4F0); font-variant-numeric:tabular-nums; }
+.gd-hide{ display:none !important; }
+.gd-open .gd-hide{ display:grid !important; }
+.gd-toggle{ display:block; width:100%; margin-top:10px; padding:9px; border-radius:10px; border:1px solid var(--line,rgba(255,255,255,.18)); background:transparent; color:inherit; font:inherit; font-weight:700; font-size:13px; cursor:pointer; min-height:44px; }

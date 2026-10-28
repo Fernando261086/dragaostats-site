@@ -1,3 +1,6 @@
+## v207
+- Jogo: "Cronologia" passa a "Lance a lance", em duas colunas (casa à esquerda, fora à direita), com resultado corrido nos golos e botão "Ver todos (N)" (mostra os 10 lances mais recentes). Cache `dia22-cache-v285`.
+
 ## v206
 - Estatísticas do jogo: "jogadoras" no Futebol Feminino e no Voleibol, "jogadores" nas outras modalidades (textos, botões e campos; `gJog_` em `03-share-reel.js`). Antes dizia sempre "jogadores" (e "jogadoras em campo" em todas). Cache `dia22-cache-v284`.
 

@@ -2,6 +2,7 @@
 // Vêm do Apps Script v112 (campo "detalhes" do doGet, lido do Sofascore): golos, cartões, substituições e estatísticas.
 // É só informação para ver — nunca altera o resultado nem os marcadores oficiais, que continuam a ser escritos à mão.
 let DETALHES = {};
+const GD_OPEN_ = {}; // v207: jogos com o "Lance a lance" aberto por inteiro
 // v205: tradução para português do que o Sofascore envia em inglês (estatísticas e tipos de lance). O que não estiver aqui fica como veio.
 const GD_STAT_PT_ = {
   "shooting efficiency":"Eficácia de remate","wing goals":"Golos de ala","7 meters":"Livres de 7 m","7 metres":"Livres de 7 m","7m":"Livres de 7 m","saves":"Defesas","2 min penalty":"Exclusões de 2 min","2 min penalties":"Exclusões de 2 min","2 minute suspensions":"Exclusões de 2 min",
@@ -34,8 +35,21 @@ function gameDetailsHtml_(ev){
   const icone = {G:"⚽", GP:"⚽", AG:"⚽", CA:"🟨", CV:"🟥", CA2:"🟥", S:"🔄", O:"•"};
   let html = "";
   if(inc.length){
-    const linhas = inc.slice().reverse().map(x=>{
-      const min = esc(x[0]), tipo = x[1], lado = x[2] === 1 ? "adv" : "fcp", nome = esc(x[3] || ""), extra = esc(x[4] || "");
+    // v207: "Lance a lance" em duas colunas — quem joga em casa à esquerda, quem joga fora à direita; resultado corrido nos golos
+    const t = (typeof postTeams_ === "function") ? postTeams_(ev) : { home: "FC Porto", away: ev.athlete || "" };
+    const fcpEsq = ev.local !== "fora"; // o FC Porto fica à esquerda quando joga em casa (ou em campo neutro)
+    const GOLOS = { G: 1, GP: 1, AG: 1 };
+    let sE = 0, sD = 0;
+    const itens = inc.map(x=>{
+      const tipo = x[1], ehFcp = x[2] !== 1, esq = (ehFcp === fcpEsq);
+      let placar = "";
+      if(GOLOS[tipo]){ if(esq) sE++; else sD++; placar = sE + "–" + sD; }
+      return { x, esq, placar };
+    });
+    const total = itens.length, LIM = 10, aberto = !!GD_OPEN_[ev.id];
+    const linhas = itens.slice().reverse().map((it, k)=>{
+      const x = it.x, tipo = x[1];
+      const min = esc(x[0]), nome = esc(x[3] || ""), extra = esc(x[4] || "");
       let txt = "";
       if(tipo === "S") txt = `<b>↑ ${nome}</b>${extra ? ` <i>↓ ${extra}</i>` : ""}`;
       else if(tipo === "GP") txt = `<b>${nome}</b> <i>(penálti)</i>`;
@@ -45,9 +59,14 @@ function gameDetailsHtml_(ev){
       else txt = `<b>${nome}</b>${extra ? ` <i>${esc(gdTr_(x[4] || "", GD_INC_PT_))}</i>` : ""}`;
       if(!nome && !extra){ const rotulo = { G:"Golo", GP:"Golo de penálti", AG:"Auto-golo", CA:"Cartão amarelo", CV:"Cartão vermelho", CA2:"2.º amarelo", S:"Substituição" }[tipo]; if(rotulo) txt = `<b>${rotulo}</b>`; }
       else if(!nome && tipo === "G") txt = `<b>Golo</b>${extra ? ` <i>(ass. ${extra})</i>` : ""}`;
-      return `<div class="gd-row gd-${lado}"><span class="gd-min">${min}'</span><span class="gd-ic">${icone[tipo] || "•"}</span><span class="gd-tx">${txt}</span></div>`;
+      const ic = `<span class="gd-ic">${icone[tipo] || "•"}</span>`;
+      const cel = it.esq ? `<span class="gd-c gd-l">${ic}<span class="gd-tx">${txt}</span></span><span class="gd-mid"><b class="gd-min">${min}'</b>${it.placar ? `<em class="gd-sc">${it.placar}</em>` : ""}</span><span class="gd-c"></span>`
+                         : `<span class="gd-c"></span><span class="gd-mid"><b class="gd-min">${min}'</b>${it.placar ? `<em class="gd-sc">${it.placar}</em>` : ""}</span><span class="gd-c gd-r"><span class="gd-tx">${txt}</span>${ic}</span>`;
+      return `<div class="gd-row3${k >= LIM ? " gd-hide" : ""}">${cel}</div>`;
     }).join("");
-    html += `<div class="gp-card"><h3>Cronologia</h3><div class="gd-list">${linhas}</div></div>`;
+    const cab = `<div class="gd-head"><span class="gd-hl">${typeof crestName_ === "function" ? crestName_(ev, t.home) : esc(t.home)}</span><span></span><span class="gd-hr">${typeof crestNameEnd_ === "function" ? crestNameEnd_(ev, t.away) : esc(t.away)}</span></div>`;
+    const btn = total > LIM ? `<button type="button" class="gd-toggle" data-gdev="${esc(ev.id)}" data-n="${total}">${aberto ? "Ver menos" : `Ver todos (${total})`}</button>` : "";
+    html += `<div class="gp-card${aberto ? " gd-open" : ""}"><h3>Lance a lance</h3>${cab}<div class="gd-list">${linhas}</div>${btn}</div>`;
   }
   if(st.length){
     const linhas = st.map(x=>{
@@ -73,3 +92,14 @@ function liveRecentHtml_(ev){
     return `<div class="hv-live-row"><span class="hv-live-min">${esc(x[0])}'</span><span>${icone[x[1]] || "•"}</span><span class="hv-live-tx">${esc(rot[x[1]] || "Lance")} · ${esc(lado)}${x[3] ? " <i>" + esc(x[3]) + "</i>" : ""}</span></div>`;
   }).join("")}</div>`;
 }
+
+// v207: botão "Ver todos / Ver menos" do "Lance a lance" (delegado, porque a página do jogo volta a desenhar-se sozinha)
+document.addEventListener("click", e=>{
+  const b = e.target && e.target.closest ? e.target.closest(".gd-toggle") : null;
+  if(!b) return;
+  const id = b.getAttribute("data-gdev");
+  GD_OPEN_[id] = !GD_OPEN_[id];
+  const card = b.closest(".gp-card");
+  if(card) card.classList.toggle("gd-open", !!GD_OPEN_[id]);
+  b.textContent = GD_OPEN_[id] ? "Ver menos" : "Ver todos (" + b.getAttribute("data-n") + ")";
+});

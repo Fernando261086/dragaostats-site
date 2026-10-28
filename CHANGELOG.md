@@ -1,3 +1,6 @@
+## v204
+- O botão/gesto "voltar" do telemóvel e do browser segue a mesma cadeia que o ‹ do site (cada página de modalidade/jogo aberta fica no histórico do browser). Cache `dia22-cache-v282`.
+
 ## v203
 - O "← Voltar" da ficha do atleta regressa à página de onde se veio (antes ia sempre para o Calendário). Cache `dia22-cache-v281`.
 

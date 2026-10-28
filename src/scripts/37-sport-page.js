@@ -11,8 +11,27 @@ function navPush_(){
   if(top && top.view === s.view && top.sport === s.sport && top.evId === s.evId) return;
   navStack_.push(s);
   if(navStack_.length > 30) navStack_.shift();
+  // v204: cada página de detalhe aberta ganha uma entrada no histórico do browser (o "voltar" do telemóvel/browser usa a mesma cadeia)
+  const push = ()=>{ try{ history.pushState({ dsNav: 1 }, ""); }catch(e){} };
+  if(window.__navIgnore_) setTimeout(push, 150); else push();
 }
 function navBack_(){ navRestore_(navStack_.pop()); }
+// botão ‹ / "Voltar" do ecrã: se há entrada de histórico, usa o histórico (o popstate faz o resto); senão volta direto
+function navUiBack_(){
+  let st = null; try{ st = history.state; }catch(e){}
+  if(navStack_.length && st && st.dsNav){ history.back(); return; }
+  navBack_();
+}
+// ao ir para uma vista de topo, o caminho esquece-se; recua-se o histórico do browser pelas entradas que ficaram
+function navClear_(){
+  const n = (navStack_ && navStack_.length) || 0; navStack_ = [];
+  if(n > 0){ let st = null; try{ st = history.state; }catch(e){} if(st && st.dsNav){ window.__navIgnore_ = true; try{ history.go(-n); }catch(e){ window.__navIgnore_ = false; } setTimeout(()=>{ window.__navIgnore_ = false; }, 600); } }
+}
+window.addEventListener("popstate", ()=>{
+  if(window.__navIgnore_){ window.__navIgnore_ = false; return; }
+  const v = window.__curView_;
+  if((v === "modalidade" || v === "jogo") && navStack_.length) navRestore_(navStack_.pop());
+});
 function navRestore_(s){
   window.__navBacking_ = true;
   try{
@@ -126,7 +145,7 @@ function renderSportPage_(){
     try{ await navigator.clipboard.writeText(https); alert("Link copiado! No Google Calendar: Outros calendários › A partir do URL, e cola o link.\n\n" + https); }
     catch(e){ prompt("Copia este link e cola-o no teu calendário (A partir do URL):", https); }
   };
-  host.querySelector("#spBack").onclick = ()=>navBack_();
+  host.querySelector("#spBack").onclick = ()=>navUiBack_();
   host.querySelectorAll("[data-sptab]").forEach(b=>{ b.onclick = ()=>{ sportPageTab_ = b.getAttribute("data-sptab"); renderSportPage_(); }; });
   host.querySelectorAll("[data-spstat]").forEach(b=>{ b.onclick = ()=>{ sportPageStat_ = b.getAttribute("data-spstat"); renderSportPage_(); }; });
   host.querySelectorAll("[data-go]").forEach(b=>{ b.onclick = ()=>goToEventCard(b.getAttribute("data-go")); });

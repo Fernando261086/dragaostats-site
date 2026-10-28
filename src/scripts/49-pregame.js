@@ -41,7 +41,7 @@ function pregameHtml_(ev){
     const bal = { win: 0, draw: 0, loss: 0 };
     diretos.forEach(e=>{ const tg = pgTag_(pgDone_(e)); if(tg) bal[tg]++; });
     const total = bal.win + bal.draw + bal.loss;
-    blocos.push(`<div class="pg-blk"><div class="pg-lbl">Último confronto</div><div class="pg-last">${crestOnly_(u, t.home)}${esc(t.home)} <b>${esc(String(st.resultado).trim())}</b> ${crestNameEnd_(u, t.away)}</div><div class="pg-sub">${esc(formatShortDate(u.day))}${u.detail ? " · " + esc(u.detail) : ""}${total > 1 ? ` · Balanço: ${bal.win}V ${bal.draw}E ${bal.loss}D` : ""}</div></div>`);
+    blocos.push(`<div class="pg-blk pg-click" data-pgjogo="${esc(u.id)}" role="link" tabindex="0" aria-label="Ver o jogo ${esc(t.home)} ${esc(String(st.resultado).trim())} ${esc(t.away)}"><div class="pg-lbl">Último confronto</div><div class="pg-last">${crestOnly_(u, t.home)}${esc(t.home)} <b>${esc(String(st.resultado).trim())}</b> ${crestNameEnd_(u, t.away)}</div><div class="pg-sub">${esc(formatShortDate(u.day))}${u.detail ? " · " + esc(u.detail) : ""}${total > 1 ? ` · Balanço: ${bal.win}V ${bal.draw}E ${bal.loss}D` : ""}</div><span class="pg-go" aria-hidden="true">›</span></div>`);
   }
 
   // classificação (a da competição europeia/taça, se o adversário jogar no mesmo grupo; senão a do campeonato)
@@ -58,4 +58,14 @@ function pregameHtml_(ev){
   }
   if(!blocos.length) return "";
   return `<div class="hv-panel pg-card"><div class="hv-panel-head"><h3>Antes do jogo</h3></div>${blocos.join("")}</div>`;
+}
+
+// v200: "Último confronto" abre a página desse jogo
+function pregameWire_(host){
+  if(!host) return;
+  host.querySelectorAll("[data-pgjogo]").forEach(b=>{
+    const go = ()=>{ if(typeof openGamePage_ === "function") openGamePage_(b.getAttribute("data-pgjogo")); };
+    b.onclick = go;
+    b.onkeydown = (e)=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); go(); } };
+  });
 }

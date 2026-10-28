@@ -934,3 +934,10 @@ html:not(.theme-light) .hv-row-sport, html:not(.theme-light) .hv-sg .sg-pos{ col
 
 /* v199: cartão "TERMINOU" */
 .live-flag.is-fim{ background:#35527f !important; }
+
+/* v200: "Último confronto" clicável */
+.pg-click{ position:relative; cursor:pointer; padding-right:26px; border-radius:10px; -webkit-tap-highlight-color:transparent; }
+.pg-click:hover,.pg-click:active{ background:rgba(255,255,255,.05); }
+html.theme-light .pg-click:hover,html.theme-light .pg-click:active{ background:rgba(11,27,63,.05); }
+.pg-click:focus-visible{ outline:2px solid #4fa3ff; outline-offset:2px; }
+.pg-go{ position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:24px; line-height:1; opacity:.55; }

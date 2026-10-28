@@ -196,6 +196,7 @@ function renderGamePage_(){
   };
   const icsBtn = host.querySelector("#gpIcs");
   if(icsBtn) icsBtn.onclick = ()=>addGameToCalendar_(ev);
+  if(typeof pregameWire_ === "function") pregameWire_(host);
   const sh = host.querySelector("#gpShare");
   if(sh) sh.onclick = ()=>{ if(typeof track_ === "function") track_("partilhar_clique"); shareGameFan_(ev); };
   const cor = (typeof SPORT_COLORS !== "undefined" && SPORT_COLORS[ev.sport]) || "#e3b23c";

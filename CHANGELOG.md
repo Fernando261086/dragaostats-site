@@ -1,3 +1,8 @@
+## v194 — Imagem e reel dos jogos de hoje, com versão "Ao vivo"
+- Em modo edição, junto ao banner do dia: **Imagem normal**, **Imagem ao vivo**, **Reel normal**, **Reel com Ao vivo** (e a imagem dos resultados, como antes).
+- Versão ao vivo: selo "● AO VIVO" só nos jogos com acompanhamento (todas as modalidades menos Futsal; `hasLiveCoverage_` em `31-day-share.js`), rodapé/fecho "Acompanha em direto" e texto com "🔴 Acompanha o resultado em direto em https://dragaostats.pt". Dia só com Futsal: as opções ao vivo ficam escondidas.
+- Reel do dia novo: `56-day-reel.js` (`generateDayReel_`, `startDayReel_`), abertura "Hoje há jogo(s)!", um ecrã por grupo de 4 jogos, fecho com QR; mesmo codificador fotograma a fotograma do reel da semana. Cache `dia22-cache-v272`.
+
 ## v193 — Cabeçalho do modo edição mais baixo no telemóvel
 - Só em edição e ecrãs ≤480 px: sem o subtítulo, título numa linha e "↻ agora/12s/3 min" em vez de "Atualizado agora mesmo". Cabeçalho de ~130 px para ~67 px; testado a 320/360/390/430 px. O público não muda. Cache `dia22-cache-v271`.
 

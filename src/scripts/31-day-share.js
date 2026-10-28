@@ -21,7 +21,10 @@ function getDayResultGames_(){
     return !!(st.resultado && String(st.resultado).trim());
   }).sort((a, b)=>String(a.t || "").localeCompare(String(b.t || "")));
 }
-let dayShareMode_ = "jogos"; // "jogos" (por realizar) | "resultados"
+let dayShareMode_ = "jogos"; // "jogos" (por realizar) | "jogos-live" (com selo AO VIVO) | "resultados"
+// v194: modalidades com acompanhamento ao vivo (tudo menos Futsal, que ainda não tem fonte).
+function hasLiveCoverage_(ev){ return !!ev && ev.sport !== "Futsal"; }
+function getDayLiveGames_(){ return getDayShareGames_().filter(hasLiveCoverage_); }
 function dayResultTagText_(ev){
   const st = getEv(ev.id) || {};
   return st.resultTag === "win" ? "Vitória" : st.resultTag === "loss" ? "Derrota" : st.resultTag === "draw" ? "Empate" : "";
@@ -47,25 +50,27 @@ function dayShareDateLabel_(){
 }
 
 // Texto pronto a colar — mesmo tom/estilo do texto da semana, com link completo.
-function buildDayPostText_(games){
+function buildDayPostText_(games, live){
   if(!games.length) return "";
   let text = `💙 Jogos de hoje (${dayShareDateLabel_()}):\n\n`;
   games.forEach(ev=>{
     const emoji = postSportEmoji_(ev.sport);
     const t = postTeams_(ev);
     const dp = [ev.detail, ev.phase].filter(Boolean).join(", ");
-    text += `${emoji} ${ev.sport} — ${t.home} vs ${t.away}${ev.t ? ' — ' + ev.t : ''}\n`;
+    text += `${emoji} ${ev.sport} — ${t.home} vs ${t.away}${ev.t ? ' — ' + ev.t : ''}${live && hasLiveCoverage_(ev) ? ' 🔴 AO VIVO' : ''}\n`;
     if(dp) text += dp + "\n";
   });
   const tags = ["#FCPorto", "#DragaoStats"];
   games.forEach(ev=>{ const h = postSportHashtag_(ev.sport); if(h && tags.indexOf(h)===-1) tags.push(h); });
-  text += "\nAcompanha tudo em https://dragaostats.pt\n\n" + tags.join(" ");
+  text += live ? "\n🔴 Acompanha o resultado em direto em https://dragaostats.pt\n\n" : "\nAcompanha tudo em https://dragaostats.pt\n\n";
+  text += tags.join(" ");
   return text;
 }
 
 // Imagem para partilhar — mesmo esqueleto visual do cartão da semana/mês.
 async function generateDayShareCard_(games, modo){
   const resultados = modo === "resultados";
+  const live = modo === "jogos-live";
   const W = 1080;
   const rowH = 150, headerH = 380, footerH = 150;
   const H = headerH + games.length*rowH + footerH;
@@ -141,9 +146,20 @@ async function generateDayShareCard_(games, modo){
       ctx.fillStyle = "#eef2f8";
       ctx.font = "700 24px 'Archivo Narrow', sans-serif";
       ctx.fillText(ev.t || "hora por confirmar", rowX+26, rowY+rowRH/2-14);
+      if(live && hasLiveCoverage_(ev)){
+        ctx.font = "700 13px 'Archivo Narrow', sans-serif";
+        const lw = ctx.measureText("AO VIVO").width + 34, lx = rowX+26, ly = rowY+rowRH/2+2;
+        // selo por baixo da hora (a hora fica sempre legível)
+        ctx.fillStyle = "#b84f0c";
+        if(ctx.roundRect){ ctx.beginPath(); ctx.roundRect(lx, ly-1, lw, 24, 12); ctx.fill(); } else ctx.fillRect(lx, ly-1, lw, 24);
+        ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(lx+13, ly+11, 4, 0, Math.PI*2); ctx.fill();
+        ctx.textAlign = "left"; ctx.fillText("AO VIVO", lx+23, ly+12);
+        ctx.font = "500 17px 'Archivo Narrow', sans-serif";
+      }
       ctx.font = "500 17px 'Archivo Narrow', sans-serif";
       ctx.fillStyle = "#9fb0c8";
-      ctx.fillText(localLabel(ev.local), rowX+26, rowY+rowRH/2+16);
+      if(!(live && hasLiveCoverage_(ev))) ctx.fillText(localLabel(ev.local), rowX+26, rowY+rowRH/2+16);
+      else { ctx.font = "500 15px 'Archivo Narrow', sans-serif"; ctx.fillText(localLabel(ev.local), rowX+26, rowY+rowRH-16); }
     }
 
     const badgeText = (ev.sport||"").toUpperCase();
@@ -183,11 +199,11 @@ async function generateDayShareCard_(games, modo){
   ctx.textAlign = "left";
   ctx.font = "700 26px 'Archivo Narrow', sans-serif";
   ctx.fillStyle = "#e3b23c";
-  ctx.fillText("dragaostats.pt", 70, y+64);
+  ctx.fillText(live ? "● Acompanha em direto: dragaostats.pt" : "dragaostats.pt", 70, y+64);
   ctx.textAlign = "right";
   ctx.font = "400 16px 'Archivo', sans-serif";
   ctx.fillStyle = "#9fb0c8";
-  ctx.fillText("Projeto de adeptos, sem ligação oficial ao FC Porto", W-70, y+64);
+  ctx.fillText(live ? "Projeto de adeptos, sem ligação oficial" : "Projeto de adeptos, sem ligação oficial ao FC Porto", W-70, y+64);
 
   return new Promise(resolve=>{
     canvas.toBlob(blob=>resolve({ canvas, blob }), "image/png");
@@ -198,12 +214,13 @@ function renderDayShareBox_(){
   const box = document.getElementById("dayShareBox");
   if(!box) return;
   const resultados = dayShareMode_ === "resultados";
+  const live = dayShareMode_ === "jogos-live";
   const games = resultados ? getDayResultGames_() : getDayShareGames_();
   if(!games.length){
     box.innerHTML = `<div class="medal-empty" style="margin-top:10px;">${resultados ? "Ainda não há resultados de hoje para gerar a imagem." : "Não há jogos de hoje por realizar para gerar a imagem."}</div>`;
     return;
   }
-  const text = resultados ? buildDayResultsText_(games) : buildDayPostText_(games);
+  const text = resultados ? buildDayResultsText_(games) : buildDayPostText_(games, live);
   const esc = str => String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   const taStyle = "width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:8px; padding:8px; font-size:13px; color:var(--text); resize:vertical; font-family:inherit;";
   box.innerHTML = `
@@ -238,7 +255,7 @@ function renderDayShareBox_(){
     if(dlBtn){
       dlBtn.disabled = false;
       dlBtn.onclick = ()=>{
-        const fileName = `dragaostats-${resultados ? "resultados" : "hoje"}-${todayISO_()}.png`;
+        const fileName = `dragaostats-${resultados ? "resultados" : (live ? "hoje-aovivo" : "hoje")}-${todayISO_()}.png`;
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = fileName;
@@ -260,6 +277,7 @@ function renderDayShareToggle_(){
   const el = document.getElementById("dayShareToggleRow");
   if(!el) return;
   const nJogos = (READONLY_MODE || currentCompMode() !== "matches") ? 0 : getDayShareGames_().length;
+  const nLive = (READONLY_MODE || currentCompMode() !== "matches") ? 0 : getDayLiveGames_().length;
   const nRes = (READONLY_MODE || currentCompMode() !== "matches") ? 0 : getDayResultGames_().length;
   if(!nJogos && !nRes){
     el.style.display = "none";
@@ -276,6 +294,8 @@ function renderDayShareToggle_(){
     btn.dataset.wired = "1";
     btn.onclick = ()=>{
       const box = document.getElementById("dayShareBox");
+      const rbox = document.getElementById("dayReelBox");
+      if(rbox) rbox.style.display = "none";
       const opening = box.style.display === "none" || dayShareMode_ !== modo;
       dayShareMode_ = modo;
       box.style.display = opening ? "block" : "none";
@@ -283,5 +303,16 @@ function renderDayShareToggle_(){
     };
   };
   wire("dayShareBtn", "jogos", nJogos);
+  wire("dayShareLiveBtn", "jogos-live", nLive);
+  const wireReel = (id, live, n)=>{
+    const btn = document.getElementById(id);
+    if(!btn) return;
+    btn.style.display = n ? "" : "none";
+    if(btn.dataset.wired) return;
+    btn.dataset.wired = "1";
+    btn.onclick = ()=>{ if(typeof startDayReel_ === "function") startDayReel_(live); };
+  };
+  wireReel("dayReelBtn", false, nJogos);
+  wireReel("dayReelLiveBtn", true, nLive);
   wire("dayShareResBtn", "resultados", nRes);
 }

@@ -63,7 +63,7 @@ defeito + tema claro). Onde está cada coisa:
   a hora (no gatilho de 5 min, `updateStandingsIfDue_`) e guarda na linha reservada
   `__classificacoes__` (tem de estar na lista do `readAll_`). Fontes: Andebol=FPA
   (JSON dentro da página), Voleibol=FPV, Basquetebol=FPB, Hóquei=hoqueipatins.pt,
-  Futebol Feminino e Equipa B=fcporto.pt. **Futsal é manual** (modo edição, `setManualStandings`).
+  Futebol Feminino e Equipa B=fcporto.pt. Futsal = Sofascore (v103; edição manual `setManualStandings` só de reserva).
   zerozero.pt e resultados.fpf.pt bloqueiam o Google (403). As páginas de modalidade do
   fcporto.pt carregam por JavaScript (não servem). Se uma fonte mudar o HTML, só essa
   modalidade pára (fica a última boa) — correr `atualizarClassificacoesAgora` no Apps Script
@@ -228,6 +228,7 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 
 **v193:** cabeçalho do modo edição compacto em ecrãs pequenos (bloco `v193` no fim de `06-tabs-and-medals.css`; `#syncLabel` ganha `data-short`); cache atual `dia22-cache-v271`.
 
+**v194:** `56-day-reel.js` (`generateDayReel_`, `startDayReel_`) + variantes "ao vivo" em `31-day-share.js` (`hasLiveCoverage_`: tudo menos Futsal; botões `#dayShareLiveBtn/#dayReelBtn/#dayReelLiveBtn`); cache atual `dia22-cache-v272`.
 
 ## Mudança de época (checklist — fazer em julho/agosto, antes da 1.ª jornada)
 

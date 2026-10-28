@@ -254,19 +254,22 @@ function reactionCount(val){ return Array.isArray(val) ? val.length : (typeof va
 
 const REACTION_EMOJIS = ["👏","🔥","😢"];
 // Quem edita nunca reage, só consulta — e agora também vê os nomes de quem reagiu.
-function renderReactionBar(eventId){
+// v195: opts opcional { emojis, labels } — usado pelos botões rápidos EM DIRETO (mesma linha reservada do Apps Script, que aceita qualquer emoji)
+const REACTION_LIVE_ = { emojis: ["💙","🔥","👏","😬"], labels: { "💙": "Força Porto!", "🔥": "Grande jogo", "👏": "Bem jogado", "😬": "Estamos a sofrer" } };
+function renderReactionBar(eventId, opts){
   const data = (REACTIONS[activeCompId] && REACTIONS[activeCompId][eventId]) || {};
+  const EMS = (opts && opts.emojis) || REACTION_EMOJIS, LBL = (opts && opts.labels) || {};
   if(READONLY_MODE){
-    return `<div class="reaction-bar" style="display:flex; gap:6px; margin-top:5px; padding-left:2px;">
-      ${REACTION_EMOJIS.map(em=>`<button class="reaction-btn" data-emoji="${em}" style="background:rgba(255,255,255,0.05); border:1px solid var(--line); border-radius:12px; padding:2px 9px; font-size:12px; cursor:pointer; color:var(--text-dim);">${em} <span class="reaction-count">${reactionCount(data[em])}</span></button>`).join("")}
+    return `<div class="reaction-bar" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:5px; padding-left:2px;">
+      ${EMS.map(em=>`<button class="reaction-btn" data-emoji="${em}" style="background:rgba(255,255,255,0.05); border:1px solid var(--line); border-radius:12px; padding:2px 9px; font-size:12px; cursor:pointer; color:var(--text-dim);">${em} ${LBL[em] ? LBL[em] + " " : ""}<span class="reaction-count">${reactionCount(data[em])}</span></button>`).join("")}
     </div>`;
   }
   // modo edição: toca num emoji para veres os nomes de quem reagiu com ele
   return `<div class="reaction-bar" data-event-id="${eventId}" style="display:flex; flex-direction:column; gap:4px; margin-top:5px; padding-left:2px;">
     <div style="display:flex; gap:6px; flex-wrap:wrap;">
-      ${REACTION_EMOJIS.map(em=>{
+      ${EMS.map(em=>{
         const count = reactionCount(data[em]);
-        return `<button class="reaction-names-btn" data-emoji="${em}" style="background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:12px; padding:2px 9px; font-size:12px; color:var(--text-dim); cursor:${count?'pointer':'default'};">${em} ${count}</button>`;
+        return `<button class="reaction-names-btn" data-emoji="${em}" style="background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:12px; padding:2px 9px; font-size:12px; color:var(--text-dim); cursor:${count?'pointer':'default'};">${em} ${LBL[em] ? LBL[em] + " " : ""}${count}</button>`;
       }).join("")}
     </div>
     <div class="reaction-names-detail" style="font-size:11px; color:var(--text-dim); display:none;"></div>
@@ -308,6 +311,8 @@ function wireReactionBar(line, eventId){
       const countEl = btn.querySelector(".reaction-count");
       if(countEl) countEl.textContent = current.length;
       sendReaction(eventId, emoji, myName);
+      // v195: pausa curta entre toques (cada toque grava na Folha; evita rajadas)
+      btn.disabled = true; setTimeout(()=>{ btn.disabled = false; }, 1500);
     };
   });
 }

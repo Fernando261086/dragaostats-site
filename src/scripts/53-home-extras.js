@@ -102,7 +102,23 @@ function shareTextFan_(ev){
   const tag = st.resultTag === "win" ? " (Vitória)" : st.resultTag === "loss" ? " (Derrota)" : st.resultTag === "draw" ? " (Empate)" : (resultWin_(ev, st) ? " (Vitória)" : "");
   const emoji = (typeof postSportEmoji_ === "function") ? postSportEmoji_(ev.sport) : "💙";
   const titulo = score ? `${emoji} ${ev.sport} — ${t.home} ${score} ${t.away}${tag}` : `${emoji} ${ev.sport} — ${t.home} vs ${t.away}${ev.t ? " (" + ev.t + ")" : ""}`;
-  return { titulo, texto: titulo + "\nVê o jogo completo:", link };
+  // v195: marcadores no texto de partilha (só jogo terminado e com marcadores escritos)
+  let marc = "";
+  try{
+    if(score){
+      const main = (typeof getStatTypesFor === "function" ? getStatTypesFor(ev.sport) : ["Golos"])[0] || "Golos";
+      const soGolos = (typeof MARCADORES_LABEL_SPORTS !== "undefined" && MARCADORES_LABEL_SPORTS.has(ev.sport));
+      const tot = {};
+      (Array.isArray(ev.playerStats) ? ev.playerStats : []).forEach(p=>{
+        if(!p || p.team === "adv" || !p.name || !String(p.name).trim()) return;
+        const n = soGolos ? (Number(p.stats && p.stats.Golos) || 1) : (Number(p.stats && p.stats[main]) || 0);
+        if(n > 0) tot[String(p.name).trim()] = (tot[String(p.name).trim()] || 0) + n;
+      });
+      const lista = Object.keys(tot).sort((a, b)=>tot[b] - tot[a]).slice(0, 6);
+      if(lista.length && main === "Golos") marc = "\nMarcadores: " + lista.map(n=>n + (tot[n] > 1 ? " (" + tot[n] + ")" : "")).join(", ");
+    }
+  }catch(e){}
+  return { titulo, texto: titulo + marc + "\nVê o jogo completo:", link };
 }
 async function shareGameFan_(ev){
   const s = shareTextFan_(ev);

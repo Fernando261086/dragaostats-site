@@ -1,3 +1,8 @@
+## v195 — Botões rápidos em direto, set em curso em destaque, marcadores no texto de partilha
+- Página do jogo, enquanto o jogo está ao vivo ou a decorrer: cartão "Como está a ser o jogo?" com 4 botões (💙 Força Porto!, 🔥 Grande jogo, 👏 Bem jogado, 😬 Estamos a sofrer). Usa a mesma linha de reações do Apps Script (aceita qualquer emoji, sem versão nova); pausa de 1,5 s entre toques; em edição só mostra as contagens/nomes.
+- Voleibol: o set em curso fica maior (cartão ao vivo e página do jogo).
+- Texto de partilha do jogo terminado inclui "Marcadores: …" quando existem. Cache `dia22-cache-v273`.
+
 ## v194 — Imagem e reel dos jogos de hoje, com versão "Ao vivo"
 - Em modo edição, junto ao banner do dia: **Imagem normal**, **Imagem ao vivo**, **Reel normal**, **Reel com Ao vivo** (e a imagem dos resultados, como antes).
 - Versão ao vivo: selo "● AO VIVO" só nos jogos com acompanhamento (todas as modalidades menos Futsal; `hasLiveCoverage_` em `31-day-share.js`), rodapé/fecho "Acompanha em direto" e texto com "🔴 Acompanha o resultado em direto em https://dragaostats.pt". Dia só com Futsal: as opções ao vivo ficam escondidas.

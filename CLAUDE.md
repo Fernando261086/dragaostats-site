@@ -230,6 +230,8 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 
 **v194:** `56-day-reel.js` (`generateDayReel_`, `startDayReel_`) + variantes "ao vivo" em `31-day-share.js` (`hasLiveCoverage_`: tudo menos Futsal; botões `#dayShareLiveBtn/#dayReelBtn/#dayReelLiveBtn`); cache atual `dia22-cache-v272`.
 
+**v195:** `REACTION_LIVE_` + `renderReactionBar(id, opts)` em `09-visit-milestones.js`; cartão `.gp-react-live` em `42-game-page.js` (jogo ao vivo/a decorrer; reações guardadas na linha `__reactions__`, sem Apps Script novo); marcadores em `shareTextFan_` (`53-home-extras.js`); cache atual `dia22-cache-v273`.
+
 ## Mudança de época (checklist — fazer em julho/agosto, antes da 1.ª jornada)
 
 Várias fontes têm números ou endereços da época **26/27**. Quando a época mudar, verificar uma a uma

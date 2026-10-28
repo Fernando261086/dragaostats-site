@@ -914,3 +914,11 @@ html:not(.theme-light) .hv-row-sport, html:not(.theme-light) .hv-sg .sg-pos{ col
 
 @media (max-width:400px){ html.mode-matches:not(.readonly-view) .brand-title{ font-size:22px; } html:not(.readonly-view) header .brand-row{ gap:8px; } }
 @media (max-width:340px){ html:not(.readonly-view) .sync-label{ display:none; } html.mode-matches:not(.readonly-view) .brand-title{ font-size:20px; } }
+
+/* v195: set em curso em destaque + botões rápidos em direto */
+.gp-set.is-cur b{ font-size:26px; color:#ffb27a; }
+.gp-hero.is-live .gp-sub{ font-size:18px; font-weight:800; }
+.live-now-sets b{ font-size:16px; }
+.gp-react-live .reaction-bar{ gap:8px !important; }
+.gp-react-live .reaction-btn, .gp-react-live .reaction-names-btn{ font-size:14px !important; padding:8px 12px !important; min-height:40px; border-radius:14px !important; }
+.gp-react-live .reaction-btn:disabled{ opacity:.6; }

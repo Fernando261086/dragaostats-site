@@ -134,6 +134,9 @@ function renderGamePage_(){
     linhas += (typeof miniStandingHtml_ === "function") ? miniStandingHtml_(ev) : "";
     if(typeof renderReactionBar === "function") linhas += `<div class="gp-card gp-react"><h3>O que achaste do jogo?</h3>${renderReactionBar(ev.id)}</div>`;
     extraBlock = linhas;
+  }else if((liveData || aDecorrer) && typeof renderReactionBar === "function" && typeof REACTION_LIVE_ !== "undefined"){
+    // v195: botões rápidos durante o jogo
+    extraBlock = `<div class="gp-card gp-react gp-react-live"><h3>Como está a ser o jogo?</h3>${renderReactionBar(ev.id, REACTION_LIVE_)}</div>`;
   }
 
   // ---- informação
@@ -168,7 +171,7 @@ function renderGamePage_(){
     <button type="button" class="hv-btn hv-btn-main gp-act" id="gpShare">↗ Partilhar</button>
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ Imagem do resultado</button>
     ${READONLY_MODE ? "" : '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 Reel do resultado</button>'}</div></div>` : "";
-  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof DETALHES === "object" && DETALHES && DETALHES[ev.id]) || null), (typeof crestId_ === "function" ? [crestId_(ev.sport, ev.athlete), crestId_(ev.sport, "FC Porto")].map(i=>i && crestCached_(i) ? 1 : 0).join("") : ""), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null)]);
+  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof REACTIONS === "object" && REACTIONS && REACTIONS[activeCompId] && REACTIONS[activeCompId][ev.id]) || null), JSON.stringify((typeof DETALHES === "object" && DETALHES && DETALHES[ev.id]) || null), (typeof crestId_ === "function" ? [crestId_(ev.sport, ev.athlete), crestId_(ev.sport, "FC Porto")].map(i=>i && crestCached_(i) ? 1 : 0).join("") : ""), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null)]);
   if(sig === gameSig_) return;
   gameSig_ = sig;
 

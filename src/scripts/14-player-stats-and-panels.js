@@ -58,7 +58,7 @@ function renderPlayerStatsPanel(){
     }
 
     const tableHtml = rowsForTab.length === 0
-      ? `<div class="medal-empty">Sem jogadores aqui ainda.</div>`
+      ? `<div class="medal-empty">Sem ${gJog_(ev.sport,true)} aqui ainda.</div>`
       : `<div style="overflow-x:auto;">
           <table style="width:100%; border-collapse:collapse; font-size:12px; white-space:nowrap;">
             <thead>
@@ -90,9 +90,9 @@ function renderPlayerStatsPanel(){
         <button class="chip${activeTab==='adv'?' active':''}" data-stats-tab="adv">${ev.athlete || 'Adversário'}</button>
       </div>
       ${tableHtml}
-      ${temPresencas ? `<div style="font-size:12px; color:var(--text-dim); margin-top:10px;">👥 ${ev.presentes.length} jogadora${ev.presentes.length===1?'':'s'} em campo neste jogo</div>` : ''}
+      ${temPresencas ? `<div style="font-size:12px; color:var(--text-dim); margin-top:10px;">👥 ${ev.presentes.length} ${gJog_(ev.sport, ev.presentes.length!==1)} em campo neste jogo</div>` : ''}
       <div class="add-btn-row" style="margin-top:14px;">
-        ${!READONLY_MODE ? '<button class="add-save" id="editPlayerStatsBtn">✏️ Editar jogadores</button>' : ''}
+        ${!READONLY_MODE ? `<button class="add-save" id="editPlayerStatsBtn">✏️ Editar ${gJog_(ev.sport,true)}</button>` : ''}
         <button class="add-cancel" id="closePlayerStatsBtn">Fechar</button>
       </div>
     `;
@@ -119,12 +119,12 @@ function renderPlayerStatsPanel(){
   const rowsHtml = players.map((p, idx) => `
     <div style="border:1px solid var(--line); border-radius:8px; padding:10px; margin-bottom:8px;">
       <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
-        <input class="gate-input" data-player-name="${idx}" value="${(p.name||'').replace(/"/g,'&quot;')}" placeholder="Nome do jogador" list="playerNameSuggestions" style="flex:1;">
+        <input class="gate-input" data-player-name="${idx}" value="${(p.name||'').replace(/"/g,'&quot;')}" placeholder="Nome ${FEM_PLAYER_SPORTS.has(ev.sport)?"da":"do"} ${gJog_(ev.sport,false)}" list="playerNameSuggestions" style="flex:1;">
         <select class="gate-input" data-player-team="${idx}" style="width:auto;">
           <option value="fcp" ${p.team==='fcp'?'selected':''}>FC Porto</option>
           <option value="adv" ${p.team==='adv'?'selected':''}>${ev.athlete || 'Adversário'}</option>
         </select>
-        <button class="del-btn" data-remove-player="${idx}" title="Remover jogador">✕</button>
+        <button class="del-btn" data-remove-player="${idx}" title="Remover ${gJog_(ev.sport,false)}">✕</button>
       </div>
       <div style="display:flex; flex-wrap:wrap; gap:8px;">
         ${statNames.map(stat => `
@@ -149,7 +149,7 @@ function renderPlayerStatsPanel(){
   const presentesSet = new Set(ev.presentes);
 
   const presencasHtml = knownFcpPlayers.length === 0
-    ? `<div class="medal-empty">Ainda sem jogadoras conhecidas nesta modalidade — usa "+ Adicionar jogador" ou o campo abaixo primeiro.</div>`
+    ? `<div class="medal-empty">Ainda sem ${gJog_(ev.sport,true)} conhecid${FEM_PLAYER_SPORTS.has(ev.sport)?"a":"o"}s nesta modalidade — usa "+ Adicionar ${gJog_(ev.sport,false)}" ou o campo abaixo primeiro.</div>`
     : `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
         ${knownFcpPlayers.map(n=>`
           <label class="pres-chip${presentesSet.has(n) ? ' is-on' : ''}">
@@ -162,8 +162,8 @@ function renderPlayerStatsPanel(){
 
   panel.innerHTML = `
     ${headerHtml}
-    ${rowsHtml || '<div class="medal-empty">Ainda sem jogadores adicionados.</div>'}
-    <button class="add-save" id="addPlayerRowBtn" style="width:100%; margin-bottom:10px;">+ Adicionar jogador</button>
+    ${rowsHtml || `<div class="medal-empty">Ainda sem ${gJog_(ev.sport,true)} adicionad${FEM_PLAYER_SPORTS.has(ev.sport)?"a":"o"}s.</div>`}
+    <button class="add-save" id="addPlayerRowBtn" style="width:100%; margin-bottom:10px;">+ Adicionar ${gJog_(ev.sport,false)}</button>
     <div style="font-size:11px; color:var(--text-dim); margin-bottom:6px;">Estatísticas de ${ev.sport} (toca no ✕ para remover uma que não precises):</div>
     <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
       ${statNames.map(s=>`<span class="chip" style="cursor:default; display:inline-flex; align-items:center; gap:6px;">${s} <span data-remove-stattype="${s.replace(/"/g,'&quot;')}" style="cursor:pointer; opacity:0.75; font-weight:700;">✕</span></span>`).join("")}

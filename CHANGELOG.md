@@ -1,3 +1,6 @@
+## v206
+- Estatísticas do jogo: "jogadoras" no Futebol Feminino e no Voleibol, "jogadores" nas outras modalidades (textos, botões e campos; `gJog_` em `03-share-reel.js`). Antes dizia sempre "jogadores" (e "jogadoras em campo" em todas). Cache `dia22-cache-v284`.
+
 ## v205
 - Cronologia e estatísticas (Sofascore) traduzidas para português (dicionário `GD_STAT_PT_`/`GD_INC_PT_` em `46-game-details.js`; o que não estiver no dicionário fica como veio); lances sem nome de jogador mostram "Golo", "Cartão amarelo"… em vez de ficar em branco. Cache `dia22-cache-v283`.
 

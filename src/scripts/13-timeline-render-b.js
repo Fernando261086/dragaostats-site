@@ -458,7 +458,7 @@ function renderGoalScorersPanel(ev, panel, headerHtml, teamLabel){
         <button class="chip${activeTab==='adv'?' active':''}" data-stats-tab="adv">${ev.athlete || 'Adversário'}</button>
       </div>
       ${listHtml}
-      ${temPresencas ? `<div style="font-size:12px; color:var(--text-dim); margin-top:10px;">👥 ${ev.presentes.length} jogadora${ev.presentes.length===1?'':'s'} em campo neste jogo</div>` : ''}
+      ${temPresencas ? `<div style="font-size:12px; color:var(--text-dim); margin-top:10px;">👥 ${ev.presentes.length} ${gJog_(ev.sport, ev.presentes.length!==1)} em campo neste jogo</div>` : ''}
       <div class="add-btn-row" style="margin-top:14px;">
         ${!READONLY_MODE ? '<button class="add-save" id="editPlayerStatsBtn">✏️ Editar marcadores</button>' : ''}
         <button class="add-cancel" id="closePlayerStatsBtn">Fechar</button>
@@ -481,7 +481,7 @@ function renderGoalScorersPanel(ev, panel, headerHtml, teamLabel){
   // MODO DE EDIÇÃO — uma linha por golo: nome, equipa, minuto
   const rowsHtml = goals.map((g, idx) => `
     <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
-      <input class="gate-input" data-goal-name="${idx}" value="${(g.name||'').replace(/"/g,'&quot;')}" placeholder="Nome do jogador" list="playerNameSuggestions" style="flex:1;">
+      <input class="gate-input" data-goal-name="${idx}" value="${(g.name||'').replace(/"/g,'&quot;')}" placeholder="Nome ${FEM_PLAYER_SPORTS.has(ev.sport)?"da":"do"} ${gJog_(ev.sport,false)}" list="playerNameSuggestions" style="flex:1;">
       <select class="gate-input" data-goal-team="${idx}" style="width:auto;">
         <option value="fcp" ${g.team==='fcp'?'selected':''}>FC Porto</option>
         <option value="adv" ${g.team==='adv'?'selected':''}>${ev.athlete || 'Adversário'}</option>
@@ -502,7 +502,7 @@ function renderGoalScorersPanel(ev, panel, headerHtml, teamLabel){
   const presentesSet = new Set(ev.presentes);
 
   const presencasHtml = knownFcpPlayers.length === 0
-    ? `<div class="medal-empty">Ainda sem jogadoras conhecidas nesta modalidade — usa "+ Adicionar golo" ou o campo abaixo primeiro.</div>`
+    ? `<div class="medal-empty">Ainda sem ${gJog_(ev.sport,true)} conhecid${FEM_PLAYER_SPORTS.has(ev.sport)?"a":"o"}s nesta modalidade — usa "+ Adicionar golo" ou o campo abaixo primeiro.</div>`
     : `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
         ${knownFcpPlayers.map(n=>`
           <label class="pres-chip${presentesSet.has(n) ? ' is-on' : ''}">

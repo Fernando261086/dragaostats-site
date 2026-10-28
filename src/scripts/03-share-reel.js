@@ -863,6 +863,13 @@ function getStatTypesFor(sport){
 const MARCADORES_LABEL_SPORTS = new Set(["Futebol Feminino", "Futsal", "Equipa B"]);
 // Voleibol não tem estatísticas de jogadoras, só a pontuação de cada set
 const SET_SCORE_SPORTS = new Set(["Voleibol"]);
+// v206: equipas femininas dizem "jogadoras" (Futebol Feminino e Voleibol); as outras "jogadores"
+const FEM_PLAYER_SPORTS = new Set(["Futebol Feminino", "Voleibol"]);
+function gJog_(sport, plural, cap){
+  const fem = FEM_PLAYER_SPORTS.has(sport);
+  const t = fem ? (plural ? "jogadoras" : "jogadora") : (plural ? "jogadores" : "jogador");
+  return cap ? t.charAt(0).toUpperCase() + t.slice(1) : t;
+}
 function playerStatsCardLabel(sport){
   if(SET_SCORE_SPORTS.has(sport)) return "🏐 Pontuação dos Sets";
   return MARCADORES_LABEL_SPORTS.has(sport) ? "⚽ Marcadores" : "📊 Estatísticas do jogo";

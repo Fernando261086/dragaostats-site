@@ -2,7 +2,28 @@
 // Cabeçalho da modalidade + separadores "Jogos" e "Marcadores". Só lê dados que já existem.
 // Classificação vem do Apps Script v94 (ver 41-standings.js). O Plantel vem em `50-squad.js`.
 let sportPageSport_ = null, sportPageTab_ = "jogos", sportPageStat_ = null;
+// v202: histórico de navegação das páginas de detalhe (modalidade/jogo). "Voltar" regressa sempre à página imediatamente anterior.
+var navStack_ = [];
+function navSnap_(){ return { view: window.__curView_ || "inicio", sport: sportPageSport_, tab: sportPageTab_, evId: (typeof gameEvId_ !== "undefined" ? gameEvId_ : null), y: window.scrollY || 0 }; }
+function navPush_(){
+  const s = navSnap_();
+  const top = navStack_[navStack_.length - 1];
+  if(top && top.view === s.view && top.sport === s.sport && top.evId === s.evId) return;
+  navStack_.push(s);
+  if(navStack_.length > 30) navStack_.shift();
+}
+function navBack_(){
+  const s = navStack_.pop();
+  window.__navBacking_ = true;
+  try{
+    if(!s){ setView("inicio"); window.scrollTo(0, 0); return; }
+    if(s.view === "jogo"){ if(!EVENTS.some(e=>e.id === s.evId)){ setView("inicio"); window.scrollTo(0, 0); return; } gameEvId_ = s.evId; gameSig_ = ""; }
+    else if(s.view === "modalidade"){ sportPageSport_ = s.sport; sportPageTab_ = s.tab || "jogos"; sportPageStat_ = null; }
+    setView(s.view); window.scrollTo(0, s.y || 0);
+  } finally { window.__navBacking_ = false; }
+}
 function openSportPage_(sport, tab){
+  if(!(window.__curView_ === "modalidade" && sportPageSport_ === sport)) navPush_();
   sportPageSport_ = sport; sportPageTab_ = tab || "jogos"; sportPageStat_ = null;
   setView("modalidade");
   window.scrollTo(0, 0);
@@ -24,7 +45,7 @@ function renderSportPage_(){
 
   const next = upcoming[0];
   const head = `<div class="sp-head" style="--sc:${color};">
-    <button type="button" class="sp-back" id="spBack" aria-label="Voltar ao Início">‹</button>
+    <button type="button" class="sp-back" id="spBack" aria-label="Voltar">‹</button>
     <div class="sp-titles"><h2>${esc(sport)}</h2>
       <div class="sp-stats">
         <span><b>${evs.length}</b> jogos</span><span><b>${done.length}</b> com resultado</span>
@@ -105,7 +126,7 @@ function renderSportPage_(){
     try{ await navigator.clipboard.writeText(https); alert("Link copiado! No Google Calendar: Outros calendários › A partir do URL, e cola o link.\n\n" + https); }
     catch(e){ prompt("Copia este link e cola-o no teu calendário (A partir do URL):", https); }
   };
-  host.querySelector("#spBack").onclick = ()=>{ setView("inicio"); window.scrollTo(0, 0); };
+  host.querySelector("#spBack").onclick = ()=>navBack_();
   host.querySelectorAll("[data-sptab]").forEach(b=>{ b.onclick = ()=>{ sportPageTab_ = b.getAttribute("data-sptab"); renderSportPage_(); }; });
   host.querySelectorAll("[data-spstat]").forEach(b=>{ b.onclick = ()=>{ sportPageStat_ = b.getAttribute("data-spstat"); renderSportPage_(); }; });
   host.querySelectorAll("[data-go]").forEach(b=>{ b.onclick = ()=>goToEventCard(b.getAttribute("data-go")); });

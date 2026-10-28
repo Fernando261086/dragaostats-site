@@ -469,6 +469,7 @@ function renderMedals(){
 
 function setView(view){
   window.__curView_ = view; // v152: a página do jogo usa-o para saber para onde voltar
+  if(view !== "modalidade" && view !== "jogo" && !window.__navBacking_) navStack_ = []; // v202: ao ir para uma vista "de topo" esquece o caminho de voltar
   profileAthlete = null; // sair de qualquer vista fecha a ficha do atleta, se estiver aberta
   const cal = view === "calendario";
   const inicio = view === "inicio";

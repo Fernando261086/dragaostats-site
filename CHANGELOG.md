@@ -1,3 +1,6 @@
+## v202
+- "Voltar" e a seta ‹ (página da modalidade e página do jogo) regressam sempre à página imediatamente anterior (histórico `navStack_`), com a posição de scroll; ao ir para uma vista de topo (Início, Calendário…) o histórico limpa-se. Cache `dia22-cache-v280`.
+
 ## v201
 - Página do jogo: o "Voltar" regressa ao sítio de onde se veio (jogo anterior, página da modalidade, calendário…), com a posição de scroll; antes ia sempre para o Início quando se abria um jogo a partir de outro. Cache `dia22-cache-v279`.
 

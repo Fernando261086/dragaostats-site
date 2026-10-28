@@ -3,12 +3,14 @@
 // com o resultado em grande (ao vivo, com minutos ou pontos do set; ou final), os sets, a informação e as ações.
 // Endereço partilhável: ?comp=<competição>&jogo=<id> (o parâmetro "jogo" já abria o cartão certo a partir das notificações).
 let gameEvId_ = null, gamePrevView_ = null, gameSig_ = "";
+let gameStack_ = []; // v201: de onde se veio (vista + jogo + posição), para o "Voltar" voltar mesmo ao sítio anterior
 
 function openGamePage_(evId){
   const ev = EVENTS.find(e=>e.id === evId);
   if(!ev){ return false; }
   const cur = window.__curView_ || "inicio";
-  if(cur !== "jogo") gamePrevView_ = cur;
+  if(cur !== "jogo"){ gamePrevView_ = cur; gameStack_ = [{ view: cur, y: window.scrollY || 0 }]; }
+  else if(gameEvId_ && gameEvId_ !== evId){ gameStack_.push({ view: "jogo", evId: gameEvId_, y: window.scrollY || 0 }); }
   gameEvId_ = evId; gameSig_ = "";
   setView("jogo");
   window.scrollTo(0, 0);
@@ -191,8 +193,13 @@ function renderGamePage_(){
   </div>`;
 
   host.querySelector("#gpBack").onclick = ()=>{
-    const v = gamePrevView_ && gamePrevView_ !== "jogo" ? gamePrevView_ : "inicio";
-    setView(v); window.scrollTo(0, 0);
+    const prev = gameStack_.pop();
+    if(prev && prev.view === "jogo" && prev.evId && EVENTS.some(e=>e.id === prev.evId)){
+      gameEvId_ = prev.evId; gameSig_ = ""; setView("jogo"); window.scrollTo(0, prev.y || 0); return;
+    }
+    gameStack_ = [];
+    const v = prev && prev.view && prev.view !== "jogo" ? prev.view : (gamePrevView_ && gamePrevView_ !== "jogo" ? gamePrevView_ : "inicio");
+    setView(v); window.scrollTo(0, (prev && prev.y) || 0);
   };
   const icsBtn = host.querySelector("#gpIcs");
   if(icsBtn) icsBtn.onclick = ()=>addGameToCalendar_(ev);

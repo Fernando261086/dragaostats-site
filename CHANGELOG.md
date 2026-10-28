@@ -1,3 +1,6 @@
+## v201
+- Página do jogo: o "Voltar" regressa ao sítio de onde se veio (jogo anterior, página da modalidade, calendário…), com a posição de scroll; antes ia sempre para o Início quando se abria um jogo a partir de outro. Cache `dia22-cache-v279`.
+
 ## v200
 - Página do jogo: o bloco "Último confronto" (Antes do jogo) é clicável e abre a página desse jogo (`pregameWire_` em `49-pregame.js`). Cache `dia22-cache-v278`.
 

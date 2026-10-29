@@ -638,13 +638,19 @@ const PRIVACY_HTML = `
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">O que guardamos no teu telemóvel/computador</p>
   <ul style="margin:0 0 14px; padding-left:18px; font-size:13px; color:var(--text-dim);">
     <li>O teu nome, se acederes pelo link "só ver" — para sabermos quem visita, e para não teres de o escrever sempre</li>
-    <li>Preferências simples: tema claro/escuro, competição que preferes ver primeiro</li>
+    <li>Preferências simples: tema claro/escuro, competição que preferes ver primeiro, modalidade favorita, avisos já fechados</li>
+    <li>Cópias temporárias de dados públicos (escudos, calendário) para a app abrir mais depressa</li>
     <li>Nada disto é enviado a empresas de publicidade, nem usado para te seguir por outros sites. Não há cookies de publicidade nem de análise (tipo Google Analytics)</li>
   </ul>
 
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">O que guardamos nos nossos registos</p>
   <ul style="margin:0 0 14px; padding-left:18px; font-size:13px; color:var(--text-dim);">
     <li>Nome e data/hora de cada acesso pelo link "só ver" (o nome é o que a pessoa escrever, sem verificação de identidade)</li>
+    <li>Tempo aproximado que ficas no site e o número de ecrãs que vês em cada acesso, associados ao nome do acesso. É uma medição temporária, para percebermos se as pessoas ficam e navegam, e será retirada depois</li>
+    <li>Notificações e "Lembrar-me": se as ativares, guardamos o identificador do teu aparelho (token) e os jogos que escolheste, só para enviar os avisos. Podes desativar a qualquer momento nas definições do teu navegador ou da app</li>
+    <li>Reações, prognósticos e sondagens: guardamos a tua escolha e, nas reações e prognósticos, o nome que indicaste</li>
+    <li>Contagens anónimas de utilização (que secções são mais usadas), sem nome nem identificador do aparelho; são apagadas ao fim de 60 dias</li>
+    <li>O registo de acessos guarda apenas as entradas mais recentes (cerca de 300); as mais antigas vão sendo apagadas</li>
     <li>Bugs e sugestões reportadas: nome (opcional) e a mensagem enviada</li>
     <li>Email, só se te inscreveres no resumo semanal — usado exclusivamente para te enviar esse email; nunca é partilhado, vendido, nem usado para outro fim, e nunca passa por serviços de terceiros de email marketing (Mailchimp, E-goi, etc.) — é enviado diretamente pelo nosso Gmail. A base legal é o teu consentimento explícito (pedimos confirmação por email antes de começares a receber). Guardamos o teu email enquanto estiveres inscrito — assim que cancelares, é apagado dos nossos registos. Podes cancelar a qualquer momento através do link no fim de cada email, ou pedindo-nos diretamente</li>
   </ul>
@@ -653,12 +659,15 @@ const PRIVACY_HTML = `
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Estatísticas de utilização</p>
   <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">Para percebermos, de forma agregada, quantas pessoas visitam o site e que páginas veem, usamos o Cloudflare Web Analytics (o Cloudflare é também quem aloja o site). Não usa cookies, não guarda nada no teu aparelho, não cria perfis nem te segue por outros sites, e nunca é associado ao teu nome. As visitas de administração não são contadas.</p>
 
+  <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Serviços de terceiros</p>
+  <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">Para o site funcionar, o teu navegador liga-se a alguns serviços que, como em qualquer site, recebem o teu endereço IP: o Google Fonts (tipos de letra), o Cloudflare (alojamento e estatísticas agregadas) e, para mostrar as fotografias dos jogadores, os servidores do FC Porto. Os dados dos jogos vêm de fontes públicas (federações, Liga Portugal, Sofascore, entre outras) e não envolvem dados teus.</p>
+
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Os teus direitos</p>
   <p style="margin:0 0 6px; font-size:13px; color:var(--text-dim);">Podes, a qualquer momento, exercer os seguintes direitos sobre os dados que temos sobre ti: acesso, retificação, apagamento, limitação do tratamento, portabilidade, e retirar o consentimento dado (sem afetar a licitude do que já tenha sido feito antes disso). Para exercer qualquer um destes direitos, usa o botão "🐛 Reportar um bug ou sugestão" para nos contactares, ou escreve para <a href="mailto:dragaostats@gmail.com" style="color:var(--gold-dim);">dragaostats@gmail.com</a>.</p>
   <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">Se achares que os teus dados não estão a ser tratados corretamente, tens também o direito de apresentar uma reclamação à autoridade de controlo nacional — em Portugal, a <a href="https://www.cnpd.pt" target="_blank" rel="noopener" style="color:var(--gold-dim);">CNPD (Comissão Nacional de Proteção de Dados)</a>.</p>
 
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Alterações</p>
-  <p style="margin:0; font-size:13px; color:var(--text-dim);">Este texto pode ser atualizado; havendo uma mudança relevante, avisamos através do popup de novidades da app.</p>
+  <p style="margin:0; font-size:13px; color:var(--text-dim);">Este texto pode ser atualizado; havendo uma mudança relevante, avisamos na própria app.</p>
 `;
 
 document.getElementById("privacyBtn").onclick = ()=>{
@@ -685,7 +694,7 @@ const TERMS_HTML = `
   <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">Um projeto de adeptos, <b>sem qualquer ligação oficial ao FC Porto</b>. Não é um site do clube, nem tem qualquer patrocínio ou aprovação por parte dele.</p>
 
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Sem garantias</p>
-  <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">A informação (calendários, resultados, estatísticas) é inserida manualmente e pode conter erros ou atrasos. Não garantimos que os dados estejam sempre certos, atualizados, ou disponíveis a qualquer momento. Usa isto como complemento, não como fonte oficial única.</p>
+  <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">A informação (calendários, resultados, estatísticas, classificações, jogos ao vivo) é inserida por nós e obtida automaticamente de fontes públicas de terceiros (federações, Liga Portugal, Sofascore, entre outras), e pode conter erros ou atrasos. Essas fontes podem mudar ou deixar de funcionar sem aviso, e então alguns dados (por exemplo o ao vivo) podem não aparecer. Não garantimos que os dados estejam sempre certos, atualizados, ou disponíveis a qualquer momento. Usa isto como complemento, não como fonte oficial única.</p>
 
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Disponibilidade</p>
   <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">Este é um projeto pessoal, mantido no tempo livre de quem o criou. Pode ficar temporariamente indisponível, mudar, ou até ser descontinuado, sem aviso prévio.</p>
@@ -695,6 +704,9 @@ const TERMS_HTML = `
 
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Sem responsabilidade por danos</p>
   <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">Não nos responsabilizamos por decisões tomadas com base na informação aqui apresentada (ex: apostas, planeamento de viagens a jogos), nem por eventuais falhas técnicas.</p>
+
+  <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Marcas e imagens</p>
+  <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">Nomes, escudos, logótipos e fotografias pertencem aos respetivos titulares (clubes, federações, atletas). São usados apenas para identificar equipas e jogadores, sem fins comerciais. As fotografias dos jogadores são mostradas com autorização do clube. Se és titular de algum conteúdo e queres que seja retirado, escreve-nos e removemos.</p>
 
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Contacto</p>
   <p style="margin:0; font-size:13px; color:var(--text-dim);">Dúvidas ou problemas, usa o botão "🐛 Reportar um bug ou sugestão".</p>

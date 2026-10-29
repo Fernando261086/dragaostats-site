@@ -275,3 +275,6 @@ código para facilitar trabalhar nele.
 ## v148
 - Editor: novo campo opcional "ID do jogo ao vivo" (modo Modalidades). Aceita o número do FIBA LiveStats ou o endereço completo; guarda só o número em `ev.liveId`.
 - Apps Script v100: basquetebol ao vivo pelo FIBA LiveStats usando esse ID.
+
+## v219
+- Política de Privacidade e Termos de Uso atualizados (push/"Lembrar-me", tempo por visita, contadores anónimos, reações/prognósticos, conservação, serviços de terceiros, fontes automáticas, marcas e imagens). Cache v296.

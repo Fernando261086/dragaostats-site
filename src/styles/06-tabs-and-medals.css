@@ -1009,3 +1009,11 @@ html.theme-light .st-table tr.st-games td{ background:rgba(0,0,0,.04); }
 
 /* v213 */
 #nextSeasonBtn{ white-space:nowrap; }
+
+/* v214: em ecrã largo, "FC Porto vs Adversário" numa linha (quebra sozinho se o nome for comprido) */
+@media (min-width:700px){
+  .hv-hero-match{ flex-direction:row; flex-wrap:wrap; align-items:baseline; column-gap:14px; }
+  .hv-hero-match .hm-a, .hv-hero-match .hm-b{ white-space:normal; }
+  .hv-hero-match .hm-a{ flex:0 0 auto; max-width:100%; }
+  .hv-hero-match .hm-b{ flex:0 1 auto; min-width:0; max-width:100%; }
+}

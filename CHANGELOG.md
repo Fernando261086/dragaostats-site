@@ -1,3 +1,6 @@
+## v214
+- Início: o herói do próximo jogo mostra "FC Porto vs Adversário" numa linha em ecrãs com 700 px ou mais (nomes compridos passam sozinhos para a linha de baixo); telemóvel igual. Cache `dia22-cache-v292`.
+
 ## v213
 - Histórico: filtro por mês (lista "Todos os meses"), que também ajusta o balanço.
 - Cartão "Classificação depois do jogo": passa a ter a frase-resumo do FC Porto.

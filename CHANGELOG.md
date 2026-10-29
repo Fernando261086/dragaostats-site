@@ -1,3 +1,6 @@
+## v217
+- Editor: o botão da época seguinte passa a ser um ícone (⏭️) do mesmo tamanho dos outros, entre 📌 e 📥 (antes era um botão com texto que se sobrepunha a "+ Nova competição"). Cache `dia22-cache-v295`.
+
 ## v216
 - Início: cartão "Novo: jogos ao vivo!" (só no link "só ver", dispensável, não volta a aparecer; `LIVE_INTRO_ON_` / `LIVE_INTRO_KEY_` em `53-home-extras.js`). CORREÇÃO: o botão "➡️ Época seguinte" (v213) estava visível no link "só ver"; passa a estar escondido (`07-readonly-mode.css`) e sem efeito nesse modo. Cache `dia22-cache-v294`.
 

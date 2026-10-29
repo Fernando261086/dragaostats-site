@@ -180,3 +180,23 @@ function sportsGridHtml_(sportsAll, upcoming){
     if(typeof currentCompMode === "function" && currentCompMode() === "matches" && typeof openSearchSheet_ === "function"){ e.stopImmediatePropagation(); e.preventDefault(); openSearchSheet_(); }
   }, true);
 })();
+
+// ===================== AVISO "NOVO: JOGOS AO VIVO" (v216) =====================
+// Cartão no topo do Início (só no link "só ver"), dispensável com um toque e que não volta a aparecer nesse aparelho.
+// Para retirar de vez: LIVE_INTRO_ON_ = false. Para voltar a mostrar a toda a gente com uma novidade nova: mudar LIVE_INTRO_KEY_.
+const LIVE_INTRO_ON_ = true;
+const LIVE_INTRO_KEY_ = "dia22-live-intro-v1";
+function liveIntroHtml_(){
+  try{
+    if(!LIVE_INTRO_ON_ || !READONLY_MODE) return "";
+    if(localStorage.getItem(LIVE_INTRO_KEY_)) return "";
+    const canNotify = typeof notifyCtaVariant_ === "function" && notifyCtaVariant_() === "enable";
+    return `<div class="nc-card li-card"><span class="nc-ico">🔴</span><div class="nc-body"><b class="nc-t">Novo: jogos ao vivo!</b><span class="nc-s">Acompanha o resultado e o minuto dos jogos do FC Porto em direto, aqui no Dragão Stats.</span></div>
+      <div class="nc-btns">${canNotify ? `<button type="button" class="hv-btn hv-btn-main nc-yes" data-liyes="1">Ativar avisos</button>` : ""}<button type="button" class="nc-no" data-lino="1">${canNotify ? "Agora não" : "Percebi"}</button></div></div>`;
+  }catch(e){ return ""; }
+}
+function bindLiveIntro_(host, rerender){
+  const done = ()=>{ try{ localStorage.setItem(LIVE_INTRO_KEY_, String(Date.now())); }catch(e){} try{ rerender(); }catch(e){} };
+  host.querySelectorAll("[data-lino]").forEach(b=>{ b.onclick = done; });
+  host.querySelectorAll("[data-liyes]").forEach(b=>{ b.onclick = async ()=>{ try{ await enableNotifications(); }catch(e){} done(); }; });
+}

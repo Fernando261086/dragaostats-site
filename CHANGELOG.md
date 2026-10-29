@@ -1,3 +1,6 @@
+## v216
+- Início: cartão "Novo: jogos ao vivo!" (só no link "só ver", dispensável, não volta a aparecer; `LIVE_INTRO_ON_` / `LIVE_INTRO_KEY_` em `53-home-extras.js`). CORREÇÃO: o botão "➡️ Época seguinte" (v213) estava visível no link "só ver"; passa a estar escondido (`07-readonly-mode.css`) e sem efeito nesse modo. Cache `dia22-cache-v294`.
+
 ## v215
 - Tempo por visita (temporário, para perceber se as pessoas ficam): `57-visit-time.js` mede o tempo com o site à vista (pára ao sair do separador, retoma ao voltar) e os ecrãs vistos, e envia-os ao Apps Script v138 (`logVisitTime`). O Registo de acessos mostra "⏱️ 3 min · 4 ecrãs" em cada visita e um resumo por escalões no topo. Para retirar: `VISIT_TIME_ON_ = false`. Cache `dia22-cache-v293`.
 

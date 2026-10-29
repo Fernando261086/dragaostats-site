@@ -238,7 +238,7 @@ Depois de qualquer alteração: correr `node build.js`, testar visualmente
 
 **v198:** herói `.hv-hero-match` (`36-home-view.js`) também com o escudo da 2.ª equipa no fim; cache atual `dia22-cache-v276`.
 
-**v199:** cartão `TERMINOU` em `renderLiveNowBanner_` (`05-…`, `fimSemResultado`); Apps Script **v134** (`apps-script-v134.gs`): `verificarLigacaoAntes_`, `resumoMensalSeDevido_`; cache atual `dia22-cache-v293`.
+**v199:** cartão `TERMINOU` em `renderLiveNowBanner_` (`05-…`, `fimSemResultado`); Apps Script **v134** (`apps-script-v134.gs`): `verificarLigacaoAntes_`, `resumoMensalSeDevido_`; cache atual `dia22-cache-v294`.
 
 **Ideias adiadas (lembrar ao Fernando perto de julho):** botão no editor que cria a competição da época seguinte a partir da atual (modalidades e adversários habituais). Também por decidir: "forma" V/E/D (só do FC Porto e do próximo adversário; as fontes não dão a forma de todas as equipas da tabela).
 
@@ -267,34 +267,36 @@ parada, é quase sempre o endereço da fonte):
   Verificar o Início, o Histórico e os Marcadores (somam por competição), a sondagem em curso e a imagem/texto do `og`.
 - **Depois**: um jogo ao vivo de cada modalidade (ver "Ainda por fazer"), `sitemap.xml` (`lastmod`) e subir a cache em `public/sw.js`.
 
-**v200:** `pregameWire_(host)` (`49-pregame.js`, chamada no fim da ligação de eventos de `42-game-page.js`): o bloco "Último confronto" (`.pg-click[data-pgjogo]`) abre `openGamePage_` desse jogo; cache atual `dia22-cache-v293`.
+**v200:** `pregameWire_(host)` (`49-pregame.js`, chamada no fim da ligação de eventos de `42-game-page.js`): o bloco "Último confronto" (`.pg-click[data-pgjogo]`) abre `openGamePage_` desse jogo; cache atual `dia22-cache-v294`.
 
-**v201:** `gameStack_` (`42-game-page.js`): "Voltar" da página do jogo desfaz a cadeia (jogo → jogo → vista de origem) com scroll; cache atual `dia22-cache-v293`.
+**v201:** `gameStack_` (`42-game-page.js`): "Voltar" da página do jogo desfaz a cadeia (jogo → jogo → vista de origem) com scroll; cache atual `dia22-cache-v294`.
 
-**v202:** `navStack_/navPush_/navBack_` (`37-sport-page.js`): histórico das páginas de detalhe (modalidade/jogo) usado pelo "Voltar"/‹; `setView` (16) limpa-o em vistas de topo (exceto durante `__navBacking_`); substitui o `gameStack_` da v201; cache atual `dia22-cache-v293`.
+**v202:** `navStack_/navPush_/navBack_` (`37-sport-page.js`): histórico das páginas de detalhe (modalidade/jogo) usado pelo "Voltar"/‹; `setView` (16) limpa-o em vistas de topo (exceto durante `__navBacking_`); substitui o `gameStack_` da v201; cache atual `dia22-cache-v294`.
 
-**v203:** `showAthleteProfile` (14) guarda `navSnap_()`/`navStack_` e o "← Voltar" usa `navRestore_` (37); cache atual `dia22-cache-v293`.
+**v203:** `showAthleteProfile` (14) guarda `navSnap_()`/`navStack_` e o "← Voltar" usa `navRestore_` (37); cache atual `dia22-cache-v294`.
 
-**v204:** `navPush_` faz `history.pushState({dsNav:1})`; `popstate` (37) volta com `navRestore_`; `navUiBack_` (botões ‹/Voltar) usa `history.back()` se houver entrada; `navClear_` (chamada por `setView`) recua o histórico com `history.go(-n)` (`__navIgnore_` ignora o popstate); cache atual `dia22-cache-v293`.
+**v204:** `navPush_` faz `history.pushState({dsNav:1})`; `popstate` (37) volta com `navRestore_`; `navUiBack_` (botões ‹/Voltar) usa `history.back()` se houver entrada; `navClear_` (chamada por `setView`) recua o histórico com `history.go(-n)` (`__navIgnore_` ignora o popstate); cache atual `dia22-cache-v294`.
 
-**v205:** `gdTr_`, `GD_STAT_PT_`, `GD_INC_PT_` (`46-game-details.js`) traduzem estatísticas e tipos de lance do Sofascore; para um termo novo basta acrescentar ao dicionário; lances sem nome mostram o rótulo; cache atual `dia22-cache-v293`.
+**v205:** `gdTr_`, `GD_STAT_PT_`, `GD_INC_PT_` (`46-game-details.js`) traduzem estatísticas e tipos de lance do Sofascore; para um termo novo basta acrescentar ao dicionário; lances sem nome mostram o rótulo; cache atual `dia22-cache-v294`.
 
-**v206:** `gJog_(sport, plural, cap)` e `FEM_PLAYER_SPORTS` (`03-share-reel.js`): "jogadora(s)" no Futebol Feminino e Voleibol, "jogador(es)" nas restantes; usado nos painéis de estatísticas/golos (13, 14); cache atual `dia22-cache-v293`.
+**v206:** `gJog_(sport, plural, cap)` e `FEM_PLAYER_SPORTS` (`03-share-reel.js`): "jogadora(s)" no Futebol Feminino e Voleibol, "jogador(es)" nas restantes; usado nos painéis de estatísticas/golos (13, 14); cache atual `dia22-cache-v294`.
 
-**v207:** `gameDetailsHtml_` (`46-game-details.js`): "Lance a lance" em 2 colunas `.gd-row3` (FC Porto à esquerda se `ev.local !== "fora"`), resultado corrido nos golos (auto-golo conta para o lado de `x[2]`), 10 lances + `.gd-toggle` ("Ver todos"; estado em `GD_OPEN_`); cache atual `dia22-cache-v293`.
+**v207:** `gameDetailsHtml_` (`46-game-details.js`): "Lance a lance" em 2 colunas `.gd-row3` (FC Porto à esquerda se `ev.local !== "fora"`), resultado corrido nos golos (auto-golo conta para o lado de `x[2]`), 10 lances + `.gd-toggle` ("Ver todos"; estado em `GD_OPEN_`); cache atual `dia22-cache-v294`.
 
-**v208 / Apps Script v137:** `zonas`/`zonasN` em cada classificação (`[{a,b,k,t}]`): `zonasDeLinhas_`, `zonaPT_`/`ZONAS_PT_` (tradução), `zonasSofaDescobrir_` (tabela nacional do Sofascore com o mesmo nº de equipas e ≥60% de nomes iguais; falha → fica a última boa), `ZONAS_OCULTAR_` (Equipa B sem subida); Hóquei: cores `#6cf900` (playoff) e `#ff0400` (descida) das linhas; competições europeias também levam `zonas`. Site: `standingsZonasMap_` (`41-standings.js`) + CSS `.z-<k>`/`.zc-<k>`/`.st-leg` no fim de `06-tabs-and-medals.css`; só desenha se `zonasN` = nº de linhas; cache atual `dia22-cache-v293`.
+**v208 / Apps Script v137:** `zonas`/`zonasN` em cada classificação (`[{a,b,k,t}]`): `zonasDeLinhas_`, `zonaPT_`/`ZONAS_PT_` (tradução), `zonasSofaDescobrir_` (tabela nacional do Sofascore com o mesmo nº de equipas e ≥60% de nomes iguais; falha → fica a última boa), `ZONAS_OCULTAR_` (Equipa B sem subida); Hóquei: cores `#6cf900` (playoff) e `#ff0400` (descida) das linhas; competições europeias também levam `zonas`. Site: `standingsZonasMap_` (`41-standings.js`) + CSS `.z-<k>`/`.zc-<k>`/`.st-leg` no fim de `06-tabs-and-medals.css`; só desenha se `zonasN` = nº de linhas; cache atual `dia22-cache-v294`.
 
-**v209:** resumo do Histórico em linha discreta (`.hist-slim`, `16-admin-panels-b-views.js`); cache atual `dia22-cache-v293`.
+**v209:** resumo do Histórico em linha discreta (`.hist-slim`, `16-admin-panels-b-views.js`); cache atual `dia22-cache-v294`.
 
-**v210:** `.hist-slim` é um `<details>` ("📊 Balanço da época"); cache atual `dia22-cache-v293`.
+**v210:** `.hist-slim` é um `<details>` ("📊 Balanço da época"); cache atual `dia22-cache-v294`.
 
-**v211:** linhas do Histórico (`16`) abrem `goToEventCard` em modo Modalidades (antes `openPlayerStatsPanel`); cache atual `dia22-cache-v293`.
+**v211:** linhas do Histórico (`16`) abrem `goToEventCard` em modo Modalidades (antes `openPlayerStatsPanel`); cache atual `dia22-cache-v294`.
 
-**v212:** `41-standings.js`: `stSummaryHtml_` (frase-resumo, usa `zonas` para a descida), `stFormHtml_`/`stGames_` (forma do FC Porto e jogos contra uma equipa, a partir de `EVENTS`), nota da Equipa B (`.st-note`), listener global em `tr.st-click` que abre `tr.st-games` por baixo; cache atual `dia22-cache-v293`.
+**v212:** `41-standings.js`: `stSummaryHtml_` (frase-resumo, usa `zonas` para a descida), `stFormHtml_`/`stGames_` (forma do FC Porto e jogos contra uma equipa, a partir de `EVENTS`), nota da Equipa B (`.st-note`), listener global em `tr.st-click` que abre `tr.st-games` por baixo; cache atual `dia22-cache-v294`.
 
-**v213:** `historyFilterMonth` (14) + `#histMonthSel` em `renderHistoryView` (16); `miniStandingHtml_` leva `stSummaryHtml_`; `createCompetitionNow_`/`nextSeasonName_` e `#nextSeasonBtn` (17 + template 02): botão "Época seguinte" (confirmação + nome editável + sem repetidos); cache atual `dia22-cache-v293`. A ideia adiada da época seguinte está feita; as sugestões de modalidades/adversários já vêm de todas as competições.
+**v213:** `historyFilterMonth` (14) + `#histMonthSel` em `renderHistoryView` (16); `miniStandingHtml_` leva `stSummaryHtml_`; `createCompetitionNow_`/`nextSeasonName_` e `#nextSeasonBtn` (17 + template 02): botão "Época seguinte" (confirmação + nome editável + sem repetidos); cache atual `dia22-cache-v294`. A ideia adiada da época seguinte está feita; as sugestões de modalidades/adversários já vêm de todas as competições.
 
-**v214:** `.hv-hero-match` em linha (`flex-direction:row; flex-wrap`) a partir de 700 px, bloco `v214` no fim de `06-tabs-and-medals.css`; cache atual `dia22-cache-v293`.
+**v214:** `.hv-hero-match` em linha (`flex-direction:row; flex-wrap`) a partir de 700 px, bloco `v214` no fim de `06-tabs-and-medals.css`; cache atual `dia22-cache-v294`.
 
-**v215 / Apps Script v138:** `57-visit-time.js` (`VISIT_TIME_ON_`, `visitTimeStart_` chamada por `logVisit` em 14, sessão em `dia22-visit-sess`, `visitTimeText_`/`visitTimeSummaryHtml_` usados no Registo de acessos em 15); Apps Script `updateVisitTime_` acrescenta `d` (segundos) e `v` (ecrãs) à entrada do registo (mesmo nome e hora, nunca diminui). Temporário a pedido do Fernando: para retirar, `VISIT_TIME_ON_ = false` (o painel deixa de mostrar e o site deixa de medir); cache atual `dia22-cache-v293`.
+**v215 / Apps Script v138:** `57-visit-time.js` (`VISIT_TIME_ON_`, `visitTimeStart_` chamada por `logVisit` em 14, sessão em `dia22-visit-sess`, `visitTimeText_`/`visitTimeSummaryHtml_` usados no Registo de acessos em 15); Apps Script `updateVisitTime_` acrescenta `d` (segundos) e `v` (ecrãs) à entrada do registo (mesmo nome e hora, nunca diminui). Temporário a pedido do Fernando: para retirar, `VISIT_TIME_ON_ = false` (o painel deixa de mostrar e o site deixa de medir); cache atual `dia22-cache-v294`.
+
+**v216:** `liveIntroHtml_`/`bindLiveIntro_` (fim de `53-home-extras.js`, usados em `36-home-view.js`): cartão "Novo: jogos ao vivo!" no Início público, fechado fica guardado em `dia22-live-intro-v1`; `#nextSeasonBtn` escondido em `body.readonly-mode` (esquecimento da v213); cache atual `dia22-cache-v294`.

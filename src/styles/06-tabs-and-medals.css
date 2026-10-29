@@ -1017,3 +1017,9 @@ html.theme-light .st-table tr.st-games td{ background:rgba(0,0,0,.04); }
   .hv-hero-match .hm-a{ flex:0 0 auto; max-width:100%; }
   .hv-hero-match .hm-b{ flex:0 1 auto; min-width:0; max-width:100%; }
 }
+
+/* v216: aviso "Novo: jogos ao vivo" */
+.li-card{ border-color:#e5484d; background:rgba(229,72,77,.10); }
+.li-card .nc-ico{ animation:liPulse 1.6s ease-in-out infinite; }
+@keyframes liPulse{ 50%{ opacity:.45; } }
+@media (prefers-reduced-motion:reduce){ .li-card .nc-ico{ animation:none; } }

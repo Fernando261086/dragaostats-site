@@ -667,6 +667,7 @@ function nextSeasonName_(name){
   return "";
 }
 document.getElementById("nextSeasonBtn").onclick = async ()=>{
+  if(READONLY_MODE) return; // nunca no link "só ver"
   const comp = ALL.competitions.find(c=>c.id === activeCompId);
   if(!comp) return;
   const sug = nextSeasonName_(comp.name);

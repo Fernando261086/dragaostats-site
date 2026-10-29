@@ -1,3 +1,6 @@
+## v211
+- Histórico: tocar num jogo abre a página moderna do jogo (em vez do painel antigo de estatísticas). Cache `dia22-cache-v289`.
+
 ## v210
 - Histórico: o balanço fica atrás do botão "📊 Balanço da época" (fechado por defeito). Cache `dia22-cache-v288`.
 

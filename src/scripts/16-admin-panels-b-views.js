@@ -384,6 +384,8 @@ function renderHistoryView(){
     line.onclick = ()=>{
       const targetEv = EVENTS.find(e => e.id === line.getAttribute("data-ev-id"));
       if(targetEv){
+        // v211: em modo Modalidades abre a página moderna do jogo (tem o atalho das estatísticas em edição)
+        if(currentCompMode() === "matches" && typeof goToEventCard === "function"){ goToEventCard(targetEv.id); return; }
         statsOpenedFromWeekView = false;
         openPlayerStatsPanel(targetEv);
       }

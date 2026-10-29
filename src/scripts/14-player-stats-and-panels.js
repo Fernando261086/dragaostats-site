@@ -395,6 +395,7 @@ function renderGlobalSearchView(){
   );
 }
 
+let historyFilterMonth = "Todos"; // v213: filtro por mês (AAAA-MM) no Histórico
 let historyFilterSport = "Todos"; // filtro de modalidade dentro do separador Histórico
 
 // Painel para editar (neste dispositivo) o link da classificação geral de cada

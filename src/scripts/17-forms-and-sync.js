@@ -496,19 +496,8 @@ document.getElementById("compSelect").addEventListener("change", (e)=>{
   switchToCompetition(e.target.value);
 });
 
-document.getElementById("newCompBtn").onclick = async ()=>{
-  const name = prompt("Nome da nova competição (ex: Jogos Olímpicos 2028):");
-  if(!name || !name.trim()) return;
-  const trimmed = name.trim();
-  if(trimmed.length > 100 || /^[\{\[]/.test(trimmed) || /^\d+$/.test(trimmed)){
-    alert("Esse nome não parece válido — usa um nome curto e normal para a competição.");
-    return;
-  }
-  const wantsMatches = confirm(
-    'Criar em "Modo Modalidades" (jogos por jornada, com data completa e resultado)?\n\n' +
-    'OK = Modo Modalidades\nCancelar = Modo normal (provas/medalhas)'
-  );
-  const mode = wantsMatches ? "matches" : "medals";
+// criação efetiva (usada por "+ Nova competição" e por "Época seguinte")
+async function createCompetitionNow_(trimmed, mode){
   const id = "c" + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
   ALL.competitions.push({ id, name: trimmed, mode });
   ALL.data[id] = { events: [], status: {} };
@@ -531,6 +520,22 @@ document.getElementById("newCompBtn").onclick = async ()=>{
     alert("⚠️ Erro de rede ao criar a competição: " + e.message);
   }
   await switchToCompetition(id);
+}
+
+document.getElementById("newCompBtn").onclick = async ()=>{
+  const name = prompt("Nome da nova competição (ex: Jogos Olímpicos 2028):");
+  if(!name || !name.trim()) return;
+  const trimmed = name.trim();
+  if(trimmed.length > 100 || /^[\{\[]/.test(trimmed) || /^\d+$/.test(trimmed)){
+    alert("Esse nome não parece válido — usa um nome curto e normal para a competição.");
+    return;
+  }
+  const wantsMatches = confirm(
+    'Criar em "Modo Modalidades" (jogos por jornada, com data completa e resultado)?\n\n' +
+    'OK = Modo Modalidades\nCancelar = Modo normal (provas/medalhas)'
+  );
+  const mode = wantsMatches ? "matches" : "medals";
+  await createCompetitionNow_(trimmed, mode);
 };
 
 document.getElementById("deleteCompBtn").onclick = async ()=>{
@@ -651,3 +656,25 @@ backToTopBtn.onclick = ()=>{
 };
 
 // Tema claro/escuro — preferência guardada só neste dispositivo (localStorage)
+
+// v213: "Época seguinte" — cria uma competição nova e vazia (Modo Modalidades) com o nome da atual avançado um ano.
+// Nada é apagado nem arquivado. Modalidades e adversários habituais já vêm das sugestões de todas as competições.
+function nextSeasonName_(name){
+  const m = String(name || "").match(/(\d{2})\s*\/\s*(\d{2})/);
+  if(m){ const a = (parseInt(m[1], 10) + 1) % 100, b = (parseInt(m[2], 10) + 1) % 100, pad = n=>String(n).padStart(2, "0"); return String(name).replace(m[0], pad(a) + "/" + pad(b)); }
+  const y = String(name || "").match(/(20\d{2})\s*[-–/]\s*(20\d{2})/);
+  if(y) return String(name).replace(y[0], (parseInt(y[1], 10) + 1) + "-" + (parseInt(y[2], 10) + 1));
+  return "";
+}
+document.getElementById("nextSeasonBtn").onclick = async ()=>{
+  const comp = ALL.competitions.find(c=>c.id === activeCompId);
+  if(!comp) return;
+  const sug = nextSeasonName_(comp.name);
+  if(!confirm(`Criar a competição da época seguinte a partir de "${comp.name}"?\n\n• É criada uma competição NOVA e vazia (sem jogos).\n• Nada é apagado e "${comp.name}" fica como está.\n• Depois de criada, podes arquivar a antiga e fixar a nova (📌) quando quiseres.\n\nOK = continuar   |   Cancelar = não fazer nada`)) return;
+  const name = prompt("Nome da nova competição:", sug);
+  if(!name || !name.trim()) return;
+  const trimmed = name.trim();
+  if(trimmed.length > 100 || /^[\{\[]/.test(trimmed) || /^\d+$/.test(trimmed)){ alert("Esse nome não parece válido."); return; }
+  if(ALL.competitions.some(c=>String(c.name).trim().toLowerCase() === trimmed.toLowerCase())){ alert(`Já existe uma competição chamada "${trimmed}". Não foi criada nenhuma.`); return; }
+  await createCompetitionNow_(trimmed, "matches");
+};

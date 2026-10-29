@@ -1,3 +1,8 @@
+## v213
+- Histórico: filtro por mês (lista "Todos os meses"), que também ajusta o balanço.
+- Cartão "Classificação depois do jogo": passa a ter a frase-resumo do FC Porto.
+- Editor: botão "➡️ Época seguinte" cria uma competição nova e vazia com o nome avançado um ano (ex.: Época 26/27 → 27/28), com confirmação, nome editável e recusa de nomes repetidos; não apaga nem arquiva nada. Cache `dia22-cache-v291`.
+
 ## v212
 - Classificação: frase-resumo do FC Porto (distância ao 1.º e à zona de descida), forma V/E/D dos últimos 5 jogos na linha do FC Porto, nota "As equipas B não podem subir de divisão" na Equipa B, e tocar numa equipa mostra os jogos do FC Porto contra ela (abre o jogo ao tocar). Cache `dia22-cache-v290`.
 

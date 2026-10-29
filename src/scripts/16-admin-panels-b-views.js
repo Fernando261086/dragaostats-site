@@ -309,10 +309,27 @@ function renderHistoryView(){
     ${sports.map(s=>`<button class="chip${s===historyFilterSport?' active':''}" data-hsport="${s.replace(/"/g,'&quot;')}">${s}</button>`).join('')}
   </div>`;
 
+  // v213: meses com jogos passados (da modalidade escolhida), do mais recente para o mais antigo
+  const monthSet = new Set();
+  EVENTS.forEach(ev=>{
+    const d = new Date((ev.day||"") + "T" + (ev.t || "00:00") + ":00");
+    if(isNaN(d) || d >= now) return;
+    if(historyFilterSport !== "Todos" && ev.sport !== historyFilterSport) return;
+    monthSet.add((ev.day||"").slice(0,7));
+  });
+  const months = Array.from(monthSet).filter(Boolean).sort().reverse();
+  if(historyFilterMonth !== "Todos" && !months.includes(historyFilterMonth)) historyFilterMonth = "Todos";
+  const MESES_ = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  const monthLbl_ = ym=>{ const [y, m] = ym.split("-"); return (MESES_[parseInt(m, 10) - 1] || m) + " " + y; };
+  const monthHtml = months.length > 1
+    ? `<div style="margin:-6px 0 14px;"><select id="histMonthSel" class="gate-input" aria-label="Filtrar por mês" style="max-width:260px;"><option value="Todos">Todos os meses</option>${months.map(m=>`<option value="${m}"${m===historyFilterMonth?" selected":""}>${monthLbl_(m)}</option>`).join("")}</select></div>`
+    : "";
+
   let past = EVENTS.filter(ev=>{
     const d = new Date((ev.day||"") + "T" + (ev.t || "00:00") + ":00");
     if(isNaN(d) || d >= now) return false;
     if(historyFilterSport !== "Todos" && ev.sport !== historyFilterSport) return false;
+    if(historyFilterMonth !== "Todos" && (ev.day||"").slice(0,7) !== historyFilterMonth) return false;
     return true;
   }).sort((a,b)=>{
     const da = new Date((a.day||"")+"T"+(a.t||"00:00")+":00");
@@ -362,7 +379,7 @@ function renderHistoryView(){
     listHtml = summary + `<div class="hv-panel">${rowsHtml}</div>`;
   }
 
-  container.innerHTML = monthShareHtml + chipsHtml + listHtml;
+  container.innerHTML = monthShareHtml + chipsHtml + monthHtml + listHtml;
   const monthShareBtn = document.getElementById("monthShareBtn");
   if(monthShareBtn){
     monthShareBtn.onclick = ()=>{
@@ -372,6 +389,8 @@ function renderHistoryView(){
       if(opening) renderMonthShareBox_();
     };
   }
+  const histMonthSel = document.getElementById('histMonthSel');
+  if(histMonthSel) histMonthSel.onchange = ()=>{ historyFilterMonth = histMonthSel.value; renderHistoryView(); };
   container.querySelectorAll('[data-hsport]').forEach(btn=>{
     btn.onclick = ()=>{
       historyFilterSport = btn.getAttribute('data-hsport');

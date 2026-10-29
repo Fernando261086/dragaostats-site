@@ -302,3 +302,5 @@ parada, é quase sempre o endereço da fonte):
 **v216:** `liveIntroHtml_`/`bindLiveIntro_` (fim de `53-home-extras.js`, usados em `36-home-view.js`): cartão "Novo: jogos ao vivo!" no Início público, fechado fica guardado em `dia22-live-intro-v1`; `#nextSeasonBtn` escondido em `body.readonly-mode` (esquecimento da v213); cache atual `dia22-cache-v295`.
 
 **v217:** `#nextSeasonBtn` é um ícone `.comp-del` (⏭️) junto a 📌/📥 no template 02; cache atual `dia22-cache-v295`.
+
+**v218 (sem alterações ao site):** `apps-script/apps-script-v138.gs` passa a viver no repositório (versão atual do backend; ao criar a seguinte, copiar para aqui). `npm test` (`tests/smoke.js`): abre `dist/` com dados simulados em modo público e edição a 360/390/768 px e falha se houver erros de JS, deslize lateral ou botões de gestão visíveis no link «só ver». Correr SEMPRE depois de `node build.js` e antes de empacotar (`npm run pack` faz os dois). Precisa de `playwright` instalado.

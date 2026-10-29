@@ -1,3 +1,6 @@
+## v212
+- Classificação: frase-resumo do FC Porto (distância ao 1.º e à zona de descida), forma V/E/D dos últimos 5 jogos na linha do FC Porto, nota "As equipas B não podem subir de divisão" na Equipa B, e tocar numa equipa mostra os jogos do FC Porto contra ela (abre o jogo ao tocar). Cache `dia22-cache-v290`.
+
 ## v211
 - Histórico: tocar num jogo abre a página moderna do jogo (em vez do painel antigo de estatísticas). Cache `dia22-cache-v289`.
 

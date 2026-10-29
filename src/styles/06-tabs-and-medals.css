@@ -989,3 +989,20 @@ html.theme-light .hist-slim .hn-w b{ color:#2a7d48; }
 .hist-slim > summary::after{ content:"▾"; font-size:10px; }
 .hist-slim[open] > summary::after{ content:"▴"; }
 .hist-slim .hs-body{ display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px; padding:10px 4px 0; }
+
+/* v212: resumo, forma, nota e jogos na classificação */
+.st-sum{ font-size:13px; color:var(--text); padding:2px 4px 10px; line-height:1.4; }
+.st-sum b{ color:var(--text-dim); font-weight:600; margin-right:4px; }
+.st-note{ font-size:12px; color:var(--text-dim); padding:8px 4px 0; }
+.st-form{ display:flex; gap:3px; margin-top:3px; }
+.st-form .hv-tag{ min-width:16px; height:16px; font-size:10px; line-height:16px; padding:0 4px; }
+.st-table tr.st-click{ cursor:pointer; }
+.st-table tr.st-click .st-team::after{ content:"›"; margin-left:6px; opacity:.45; }
+.st-table tr.st-open .st-team::after{ content:"⌄"; }
+.st-table tr.st-games td{ background:rgba(255,255,255,.04); padding:8px 10px; white-space:normal; }
+html.theme-light .st-table tr.st-games td{ background:rgba(0,0,0,.04); }
+.st-g-head{ font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--text-dim); padding-bottom:4px; }
+.st-g{ display:grid; grid-template-columns:auto minmax(0,1fr) auto auto; gap:10px; align-items:center; width:100%; text-align:left; background:none; border:0; border-top:1px solid rgba(255,255,255,.08); color:var(--text); padding:8px 0; font:inherit; font-size:13px; cursor:pointer; min-height:44px; }
+.st-g-d{ color:var(--text-dim); font-size:12px; }
+.st-g-m{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-dim); font-size:12px; }
+.st-g-r{ font-weight:700; }

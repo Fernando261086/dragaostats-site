@@ -40,6 +40,42 @@ function standingsZonasMap_(s){
   }catch(e){ return null; }
 }
 // v172: tabela a partir de um objeto de classificação (opts: title, advName → destaca o adversário)
+// v212: jogos do FC Porto nesta modalidade (mais recente primeiro), contra uma equipa ou todos
+function stGames_(sport, team){
+  if(typeof EVENTS === "undefined" || !sport) return [];
+  const w = e=>{ const d = new Date(e.day + "T" + (e.t || "00:00") + ":00"); return isNaN(d) ? 0 : d.getTime(); };
+  return EVENTS.filter(e=>e.sport === sport && (!team || (typeof pgSameTeam_ === "function" && pgSameTeam_(e.athlete, team)))).sort((a, b)=>w(b) - w(a));
+}
+function stDone_(e){ const st = (typeof getEv === "function" && getEv(e.id)) || {}; return (st.resultado && String(st.resultado).trim()) ? st : null; }
+function stTag_(st){ return st.resultTag === "win" ? ["V", "win"] : st.resultTag === "loss" ? ["D", "loss"] : st.resultTag === "draw" ? ["E", "draw"] : null; }
+// forma do FC Porto (últimos 5 jogos com resultado), do mais antigo para o mais recente
+function stFormHtml_(sport){
+  const f = stGames_(sport).filter(e=>{ const d = stDone_(e); return d && stTag_(d); }).slice(0, 5).reverse();
+  if(f.length < 2) return "";
+  return `<span class="st-form">${f.map(e=>{ const t = stTag_(stDone_(e)); return `<span class="hv-tag hv-tag-${t[1]}">${t[0]}</span>`; }).join("")}</span>`;
+}
+// frase-resumo do FC Porto: distância ao 1.º e à zona de descida (só com as linhas e zonas da própria tabela)
+function stSummaryHtml_(s, zmap, esc){
+  try{
+    const iP = (s.cols || []).indexOf("Pts");
+    if(iP < 0) return "";
+    const num = r=>{ const v = parseFloat(String(r.c && r.c[iP]).replace(",", ".")); return isNaN(v) ? null : v; };
+    const me = s.rows.find(r=>r.me); if(!me) return "";
+    const mp = num(me); if(mp == null) return "";
+    const pl = x=>x === 1 ? "1 ponto" : x + " pontos";
+    const parts = [];
+    const first = s.rows[0], second = s.rows[1];
+    if(me === first && second && num(second) != null){ const d = mp - num(second); parts.push(d > 0 ? `Lidera com ${pl(d)} de vantagem` : "Lidera, empatado em pontos"); }
+    else if(first && num(first) != null){ const d = num(first) - mp; parts.push(d > 0 ? `A ${pl(d)} do 1.º` : "Empatado em pontos com o 1.º"); }
+    const z = (Array.isArray(s.zonas) && zmap) ? s.zonas.find(x=>/desce/.test(x.k)) : null;
+    if(z){
+      const inZ = Number(me.p) >= z.a;
+      if(!inZ){ const r = s.rows.find(x=>Number(x.p) === z.a); const rp = r ? num(r) : null; if(rp != null) parts.push(mp - rp > 0 ? `${pl(mp - rp)} acima da zona de descida` : "na linha da zona de descida"); }
+      else { const r = s.rows.find(x=>Number(x.p) === z.a - 1); const rp = r ? num(r) : null; if(rp != null) parts.push(`na zona de descida, a ${pl(Math.max(0, rp - mp))} da salvação`); }
+    }
+    return parts.length ? `<div class="st-sum"><b>FC Porto:</b> ${esc(parts.join(" · "))}</div>` : "";
+  }catch(e){ return ""; }
+}
 function standingsObjHtml_(s, opts){
   const esc = standingsEsc_;
   opts = opts || {};
@@ -47,13 +83,16 @@ function standingsObjHtml_(s, opts){
   const isAdv = r => !!(opts.advName && !r.me && typeof pgSameTeam_ === "function" && pgSameTeam_(r.t, opts.advName));
   const head = `<tr><th class="st-pos">#</th><th class="st-team">Equipa</th>${cols.map(c=>`<th class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc(c)}</th>`).join("")}</tr>`;
   const zmap = standingsZonasMap_(s);
-  const body = s.rows.map((r, ri)=>`<tr class="${r.me ? "is-me" : ""}${isAdv(r) ? " is-adv" : ""}${zmap ? zmap.cls(r, s.rows[ri - 1]) : ""}"><td class="st-pos">${esc(r.p)}</td><td class="st-team">${crestCell_(opts.sport, r)}${esc(r.t)}</td>${cols.map((c, i)=>`<td class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc((r.c || [])[i])}</td>`).join("")}</tr>`).join("");
+  const clickable = r => !!(opts.sport && !r.me && stGames_(opts.sport, r.t).length);
+  const body = s.rows.map((r, ri)=>`<tr class="${r.me ? "is-me" : ""}${isAdv(r) ? " is-adv" : ""}${zmap ? zmap.cls(r, s.rows[ri - 1]) : ""}${clickable(r) ? " st-click" : ""}"${clickable(r) ? ` data-stsport="${esc(opts.sport)}" data-stteam="${esc(r.t)}" tabindex="0"` : ""}><td class="st-pos">${esc(r.p)}</td><td class="st-team">${crestCell_(opts.sport, r)}${esc(r.t)}${r.me && opts.sport && !opts.noForm ? stFormHtml_(opts.sport) : ""}</td>${cols.map((c, i)=>`<td class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc((r.c || [])[i])}</td>`).join("")}</tr>`).join("");
   const sub = [s.comp, s.fase].filter(Boolean).join(" · ");
   const when = s.updated ? (s.manual ? "Atualizado à mão " + standingsAgo_(s.updated) : "Atualizado " + standingsAgo_(s.updated)) : "";
   return `<div class="hv-panel"><div class="hv-panel-head"><h3>${esc(opts.title || "Classificação")}</h3>${opts.editBtn || ""}</div>
     ${sub && !opts.hideSub ? `<div class="st-sub">${esc(sub)}</div>` : ""}
+    ${opts.sport ? stSummaryHtml_(s, zmap, esc) : ""}
     <div class="st-wrap"><table class="st-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>
     ${zmap ? zmap.legend : ""}
+    ${opts.sport === "Equipa B" ? `<div class="st-note">ℹ️ As equipas B não podem subir de divisão.</div>` : ""}
     <div class="st-foot">${esc(s.source || "")}${when ? " · " + esc(when) : ""}</div></div>`;
 }
 // v172: competições europeias/taças (Apps Script v123): { "Modalidade": [ {comp, fase, cols, rows, source, updated} ] }
@@ -174,3 +213,29 @@ function miniStandingHtml_(ev){
       <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpTable2" style="width:100%;margin-top:8px;">Ver classificação completa</button></div>`;
   }catch(e){ return ""; }
 }
+
+// v212: tocar numa equipa da tabela mostra os jogos do FC Porto contra ela (linha que abre por baixo)
+document.addEventListener("click", function(ev){
+  const tr = ev.target.closest && ev.target.closest("tr.st-click");
+  if(!tr) return;
+  const open = tr.nextElementSibling && tr.nextElementSibling.classList.contains("st-games");
+  if(open){ tr.nextElementSibling.remove(); tr.classList.remove("st-open"); return; }
+  const sport = tr.getAttribute("data-stsport"), team = tr.getAttribute("data-stteam");
+  const esc = standingsEsc_;
+  const lst = stGames_(sport, team);
+  if(!lst.length) return;
+  const rows = lst.map(e=>{
+    const st = stDone_(e), t = st ? stTag_(st) : null;
+    const loc = e.local === "fora" ? "Fora" : e.local === "neutro" ? "Neutro" : "Casa";
+    return `<button type="button" class="st-g" data-stg="${esc(e.id)}"><span class="st-g-d">${esc(typeof formatShortDate === "function" ? formatShortDate(e.day) : e.day)}</span><span class="st-g-m">${esc(loc)}${e.phase ? " · " + esc(e.phase) : ""}</span><span class="st-g-r">${st ? esc(String(st.resultado).trim()) : "por jogar"}</span>${t ? `<span class="hv-tag hv-tag-${t[1]}">${t[0]}</span>` : ""}</button>`;
+  }).join("");
+  const n = tr.children.length;
+  const row = document.createElement("tr");
+  row.className = "st-games";
+  row.innerHTML = `<td colspan="${n}"><div class="st-g-head">FC Porto vs ${esc(team)}</div>${rows}</td>`;
+  tr.after(row); tr.classList.add("st-open");
+  row.querySelectorAll("[data-stg]").forEach(b=>{ b.onclick = e2=>{ e2.stopPropagation(); if(typeof openGamePage_ === "function") openGamePage_(b.getAttribute("data-stg")); }; });
+});
+document.addEventListener("keydown", function(ev){
+  if((ev.key === "Enter" || ev.key === " ") && ev.target && ev.target.matches && ev.target.matches("tr.st-click")){ ev.preventDefault(); ev.target.click(); }
+});

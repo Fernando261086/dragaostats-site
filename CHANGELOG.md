@@ -281,3 +281,7 @@ código para facilitar trabalhar nele.
 
 ## v220
 - Página do jogo: se o jogo devia ter ao vivo (todas as modalidades menos Futsal), começou há mais de 20 min e não chegam dados, mostra "Ao vivo indisponível de momento — o resultado entra assim que for confirmado" em vez de "Resultado em breve". Cache v297.
+
+## v221
+- Origem das visitas: `?src=<nome>` (ex.: `https://dragaostats.pt/?src=instagram`) ou, sem isso, o site de onde veio; conta 1x por sessão, anónimo, aparece no resumo semanal como `origem_instagram`, `origem_direto`... (sem Apps Script novo).
+- SEO: títulos e descrições das 7 páginas de modalidade e da home com "calendário, resultados, classificação (e jogos ao vivo)"; sitemap lastmod. Cache v298.

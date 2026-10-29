@@ -200,3 +200,30 @@ function bindLiveIntro_(host, rerender){
   host.querySelectorAll("[data-lino]").forEach(b=>{ b.onclick = done; });
   host.querySelectorAll("[data-liyes]").forEach(b=>{ b.onclick = async ()=>{ try{ await enableNotifications(); }catch(e){} done(); }; });
 }
+
+
+// ===================== v221: DE ONDE VEM A VISITA (?src=) =====================
+// Conta, uma vez por sessão e sem identificar ninguém, a origem da visita: ?src=instagram (links que o Fernando
+// partilha) ou, sem isso, o site de onde veio (referrer). Aparece no resumo semanal como "origem_instagram: 12".
+(function origemVisita_(){
+  try{
+    if(!READONLY_MODE) return;
+    try{ if(sessionStorage.getItem("dia22-origem")) return; }catch(e){}
+    let o = "";
+    const src = (new URLSearchParams(location.search).get("src") || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 18);
+    if(src) o = src;
+    else{
+      let h = ""; try{ h = new URL(document.referrer).hostname.toLowerCase(); }catch(e){}
+      if(!h || h === location.hostname) o = "direto";
+      else if(/instagram\./.test(h)) o = "instagram";
+      else if(/facebook\.|fb\.com|fb\.me/.test(h)) o = "facebook";
+      else if(/google\./.test(h)) o = "google";
+      else if(/(^|\.)t\.co$|twitter\.|(^|\.)x\.com$/.test(h)) o = "x";
+      else if(/whatsapp\./.test(h)) o = "whatsapp";
+      else if(/bing\.|duckduckgo\./.test(h)) o = "pesquisa";
+      else o = "outro_site";
+    }
+    try{ sessionStorage.setItem("dia22-origem", o); }catch(e){}
+    if(typeof track_ === "function") track_("origem_" + o);
+  }catch(e){}
+})();

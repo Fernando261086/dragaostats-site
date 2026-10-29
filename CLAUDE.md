@@ -308,3 +308,5 @@ parada, é quase sempre o endereço da fonte):
 **v219:** textos `PRIVACY_HTML`/`TERMS_HTML` (14) atualizados; se mudar o que se recolhe, rever; cache atual `dia22-cache-v296`.
 
 **v220:** `42-game-page.js` (ramo `aDecorrer`): aviso "Ao vivo indisponível de momento" quando `hasLiveCoverage_` e passaram >20 min sem dados; cache atual `dia22-cache-v297`.
+
+**v221:** `origemVisita_` (fim de `53-home-extras.js`): `?src=` ou referrer → `track_("origem_<x>")` 1x por sessão (sessionStorage `dia22-origem`); aparece no resumo semanal pelo nome cru. Títulos/descrições SEO das páginas de modalidade reescritos; cache atual `dia22-cache-v298`.

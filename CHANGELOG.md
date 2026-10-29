@@ -1,3 +1,6 @@
+## v215
+- Tempo por visita (temporário, para perceber se as pessoas ficam): `57-visit-time.js` mede o tempo com o site à vista (pára ao sair do separador, retoma ao voltar) e os ecrãs vistos, e envia-os ao Apps Script v138 (`logVisitTime`). O Registo de acessos mostra "⏱️ 3 min · 4 ecrãs" em cada visita e um resumo por escalões no topo. Para retirar: `VISIT_TIME_ON_ = false`. Cache `dia22-cache-v293`.
+
 ## v214
 - Início: o herói do próximo jogo mostra "FC Porto vs Adversário" numa linha em ecrãs com 700 px ou mais (nomes compridos passam sozinhos para a linha de baixo); telemóvel igual. Cache `dia22-cache-v292`.
 

@@ -476,10 +476,12 @@ function logVisit(name, type){
   // usa a permissão REAL do browser (persiste entre sessões), não a variável
   // notificationsEnabled — essa começa sempre a false a cada carregamento da página
   const notify = ("Notification" in window) && Notification.permission === "granted";
+  const tIso = new Date().toISOString();
+  if(!type || type === "visit"){ try{ if(typeof visitTimeStart_ === "function") visitTimeStart_(name, tIso); }catch(e){} } // v213: começa a medir o tempo desta visita
   fetch(STORE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ logVisit: { name: name, t: new Date().toISOString(), type: type || "visit", notify: notify } })
+    body: JSON.stringify({ logVisit: { name: name, t: tIso, type: type || "visit", notify: notify } })
   }).catch(()=>{});
 }
 

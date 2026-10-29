@@ -630,7 +630,7 @@ function renderVisitsLogPanel(list){
     const icon = entry.type === "install" ? "📲" : entry.type === "support_click" ? "☕" : entry.type === "facebook_click" ? "📘" : entry.type === "instagram_click" ? "📸" : entry.type === "install_click" ? "⬇️" : ((entry.type === "gate_shown" || entry.name === "(sem nome)") ? "🚪" : "👁️");
     return `<div class="compact-line" style="cursor:default;">
       <span class="c-athlete">${icon} ${entry.name}${entry.notify ? ' 🔔' : ''}</span>
-      <span class="c-phase c-phase-datetime">${when}</span>
+      <span class="c-phase c-phase-datetime">${when}${(typeof visitTimeText_ === "function" && visitTimeText_(entry)) ? " · ⏱️ " + visitTimeText_(entry) : ""}</span>
     </div>`;
   }).join("");
 
@@ -640,6 +640,7 @@ function renderVisitsLogPanel(list){
       <br><span style="font-size:11px; opacity:0.75;">📲 = instalou a app · 👁️ = só visitou (o iPhone não avisa instalações, só Android/PC) · 🚪 = viu o pedido do nome e (até agora) não escreveu nada · 🔔 = tem os avisos ligados neste aparelho · ☕ = carregou em "Apoiar o projeto" (não confirma se chegou a doar, isso só o Ko-fi sabe) · 📘 / 📸 = carregou no logo do Facebook / Instagram · ⬇️ = carregou em "Instalar app"</span>
       ${gateShownCount > 0 ? `<br><span style="font-size:11px; opacity:0.85; color:var(--gold-dim);">📋 O aviso a pedir o nome apareceu ${gateShownCount} vez${gateShownCount===1?'':'es'} a quem ainda não tinha nome guardado neste aparelho.</span>` : ''}
     </div>
+    ${(typeof visitTimeSummaryHtml_ === "function") ? visitTimeSummaryHtml_(entries) : ""}
     ${rows || '<div class="medal-empty">Ainda sem acessos registados.</div>'}
     <div class="add-btn-row" style="margin-top:14px;">
       <button class="add-save" id="loadFullVisitsBtn">${visitsShowingFull ? 'A ver tudo ✓' : '📜 Ver histórico completo'}</button>

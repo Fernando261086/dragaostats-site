@@ -974,3 +974,10 @@ html.theme-light .pg-click:hover,html.theme-light .pg-click:active{ background:r
 .st-leg{ display:flex; flex-wrap:wrap; gap:6px 14px; padding:10px 4px 0; font-size:12px; color:var(--text-dim); }
 .st-leg-i{ display:inline-flex; align-items:center; gap:6px; }
 .st-leg .zd{ display:inline-block; width:10px; height:10px; border-radius:3px; background:var(--zc); }
+
+/* v209: resumo do Histórico discreto (uma linha) */
+.hist-slim{ display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px; padding:2px 4px 10px; font-size:12px; color:var(--text-dim); }
+.hist-slim b{ font-weight:700; color:var(--text); margin-right:2px; }
+.hist-slim .hn-w b{ color:var(--green); } .hist-slim .hn-l b{ color:var(--red); }
+.hist-slim .hs-sep{ opacity:.5; }
+html.theme-light .hist-slim .hn-w b{ color:#2a7d48; }

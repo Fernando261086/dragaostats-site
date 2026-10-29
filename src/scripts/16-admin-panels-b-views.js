@@ -337,9 +337,9 @@ function renderHistoryView(){
       else if(r==="loss"){ l++; if(local==="casa") lCasa++; else if(local==="fora") lFora++; }
       else semResultado++;
     });
-    const summary = `<div class="hv-panel hist-summary">
-      <div class="hist-nums"><span class="hn-w"><b>${w}</b> vitórias</span><span><b>${d}</b> empates</span><span class="hn-l"><b>${l}</b> derrotas</span></div>
-      <div class="hist-sub">🏠 Casa: ${wCasa}V ${dCasa}E ${lCasa}D &nbsp;·&nbsp; 🚌 Fora: ${wFora}V ${dFora}E ${lFora}D${neutros?` &nbsp;·&nbsp; 🏳️ ${neutros} em campo neutro`:''}${semResultado?` &nbsp;·&nbsp; ${semResultado} sem resultado registado`:''}</div>
+    const summary = `<div class="hist-summary hist-slim">
+      <span class="hn-w"><b>${w}</b>V</span> <span><b>${d}</b>E</span> <span class="hn-l"><b>${l}</b>D</span>
+      <span class="hs-sep">·</span> 🏠 ${wCasa}V ${dCasa}E ${lCasa}D <span class="hs-sep">·</span> 🚌 ${wFora}V ${dFora}E ${lFora}D${neutros?` <span class="hs-sep">·</span> 🏳️ ${neutros}`:''}${semResultado?` <span class="hs-sep">·</span> ${semResultado} sem resultado`:''}
     </div>`;
 
     const rowsHtml = past.map(ev=>{

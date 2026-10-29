@@ -1,3 +1,6 @@
+## v209
+- Histórico: resumo (vitórias/empates/derrotas, casa/fora) passa a uma linha discreta em vez de cartão grande. Cache `dia22-cache-v287`.
+
 ## v208
 - Classificações: linha de água, apuramentos e lugares europeus (barra de cor junto à posição, linha a separar as zonas e legenda em português por baixo). Dados do Apps Script **v137**: Sofascore (Futsal, competições europeias e, por posição, as tabelas das federações quando o nº de equipas e os nomes batem) e, no Hóquei, as cores da própria página. Equipa B sem zonas de subida. Cache `dia22-cache-v286`.
 

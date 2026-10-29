@@ -1,3 +1,6 @@
+## v210
+- Histórico: o balanço fica atrás do botão "📊 Balanço da época" (fechado por defeito). Cache `dia22-cache-v288`.
+
 ## v209
 - Histórico: resumo (vitórias/empates/derrotas, casa/fora) passa a uma linha discreta em vez de cartão grande. Cache `dia22-cache-v287`.
 

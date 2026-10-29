@@ -981,3 +981,11 @@ html.theme-light .pg-click:hover,html.theme-light .pg-click:active{ background:r
 .hist-slim .hn-w b{ color:var(--green); } .hist-slim .hn-l b{ color:var(--red); }
 .hist-slim .hs-sep{ opacity:.5; }
 html.theme-light .hist-slim .hn-w b{ color:#2a7d48; }
+
+/* v210: resumo do Histórico atrás de um botão */
+.hist-slim{ display:block; padding:0 0 10px; }
+.hist-slim > summary{ display:inline-flex; align-items:center; gap:6px; cursor:pointer; list-style:none; font-size:12px; font-weight:600; color:var(--text-dim); padding:6px 12px; border:1px solid var(--line,rgba(255,255,255,.14)); border-radius:999px; min-height:32px; }
+.hist-slim > summary::-webkit-details-marker{ display:none; }
+.hist-slim > summary::after{ content:"▾"; font-size:10px; }
+.hist-slim[open] > summary::after{ content:"▴"; }
+.hist-slim .hs-body{ display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px; padding:10px 4px 0; }

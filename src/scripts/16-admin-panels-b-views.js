@@ -337,10 +337,10 @@ function renderHistoryView(){
       else if(r==="loss"){ l++; if(local==="casa") lCasa++; else if(local==="fora") lFora++; }
       else semResultado++;
     });
-    const summary = `<div class="hist-summary hist-slim">
+    const summary = `<details class="hist-summary hist-slim"><summary>📊 Balanço da época</summary><div class="hs-body">
       <span class="hn-w"><b>${w}</b>V</span> <span><b>${d}</b>E</span> <span class="hn-l"><b>${l}</b>D</span>
       <span class="hs-sep">·</span> 🏠 ${wCasa}V ${dCasa}E ${lCasa}D <span class="hs-sep">·</span> 🚌 ${wFora}V ${dFora}E ${lFora}D${neutros?` <span class="hs-sep">·</span> 🏳️ ${neutros}`:''}${semResultado?` <span class="hs-sep">·</span> ${semResultado} sem resultado`:''}
-    </div>`;
+    </div></details>`;
 
     const rowsHtml = past.map(ev=>{
       const st = getEv(ev.id);

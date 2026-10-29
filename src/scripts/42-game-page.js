@@ -79,7 +79,9 @@ function renderGamePage_(){
   }else if(aDecorrer){
     pill = "A decorrer"; pillCls = " is-run";
     big = `<span class="gp-vs">vs</span>`;
-    sub = "Resultado em breve";
+    // v220: se devia haver ao vivo (começou há >20 min e não chegam dados), avisa em vez de parecer avariado
+    const semAoVivo_ = (typeof hasLiveCoverage_ === "function") && hasLiveCoverage_(ev) && (Date.now() - d.getTime() > 20 * 60 * 1000);
+    sub = semAoVivo_ ? "Ao vivo indisponível de momento — o resultado entra assim que for confirmado" : "Resultado em breve";
   }else{
     pill = gameCountdown_(d) || (isNaN(d) ? "" : "Agendado");
     big = `<span class="gp-time">${esc(ev.t || "--:--")}</span>`;

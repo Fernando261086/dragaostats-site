@@ -278,3 +278,6 @@ código para facilitar trabalhar nele.
 
 ## v219
 - Política de Privacidade e Termos de Uso atualizados (push/"Lembrar-me", tempo por visita, contadores anónimos, reações/prognósticos, conservação, serviços de terceiros, fontes automáticas, marcas e imagens). Cache v296.
+
+## v220
+- Página do jogo: se o jogo devia ter ao vivo (todas as modalidades menos Futsal), começou há mais de 20 min e não chegam dados, mostra "Ao vivo indisponível de momento — o resultado entra assim que for confirmado" em vez de "Resultado em breve". Cache v297.

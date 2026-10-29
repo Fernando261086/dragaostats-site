@@ -21,6 +21,24 @@ function crestCell_(sport, r){
     return crestHtml_(sport, nome, "st-crest") || '<span class="st-crest-ph"></span>';
   }catch(e){ return ""; }
 }
+// v208: zonas da tabela (linha de água, apuramentos, lugares europeus). Vêm do Apps Script v137 em s.zonas = [{a,b,k,t}]
+// (posições a..b, tipo/cor k, texto t) e só se aplicam se a tabela tiver o mesmo nº de equipas (s.zonasN).
+function standingsZonasMap_(s){
+  try{
+    const z = Array.isArray(s.zonas) ? s.zonas.filter(x=>x && x.a && x.b && x.k) : [];
+    if(!z.length || Number(s.zonasN) !== (s.rows || []).length) return null;
+    const of = p => z.find(x=>Number(p) >= x.a && Number(p) <= x.b) || null;
+    const esc = standingsEsc_;
+    return {
+      cls: (r, prev)=>{
+        const a = of(r.p), b = prev ? of(prev.p) : null;
+        const cut = prev && (a || b) && a !== b ? " z-cut zc-" + (a || b).k : "";
+        return (a ? " z-" + a.k : "") + cut;
+      },
+      legend: `<div class="st-leg">${z.map(x=>`<span class="st-leg-i"><i class="zd z-${esc(x.k)}"></i>${esc(x.t)} · ${x.a === x.b ? x.a + ".º" : x.a + ".º–" + x.b + ".º"}</span>`).join("")}</div>`
+    };
+  }catch(e){ return null; }
+}
 // v172: tabela a partir de um objeto de classificação (opts: title, advName → destaca o adversário)
 function standingsObjHtml_(s, opts){
   const esc = standingsEsc_;
@@ -28,12 +46,14 @@ function standingsObjHtml_(s, opts){
   const cols = s.cols || [];
   const isAdv = r => !!(opts.advName && !r.me && typeof pgSameTeam_ === "function" && pgSameTeam_(r.t, opts.advName));
   const head = `<tr><th class="st-pos">#</th><th class="st-team">Equipa</th>${cols.map(c=>`<th class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc(c)}</th>`).join("")}</tr>`;
-  const body = s.rows.map(r=>`<tr class="${r.me ? "is-me" : ""}${isAdv(r) ? " is-adv" : ""}"><td class="st-pos">${esc(r.p)}</td><td class="st-team">${crestCell_(opts.sport, r)}${esc(r.t)}</td>${cols.map((c, i)=>`<td class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc((r.c || [])[i])}</td>`).join("")}</tr>`).join("");
+  const zmap = standingsZonasMap_(s);
+  const body = s.rows.map((r, ri)=>`<tr class="${r.me ? "is-me" : ""}${isAdv(r) ? " is-adv" : ""}${zmap ? zmap.cls(r, s.rows[ri - 1]) : ""}"><td class="st-pos">${esc(r.p)}</td><td class="st-team">${crestCell_(opts.sport, r)}${esc(r.t)}</td>${cols.map((c, i)=>`<td class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc((r.c || [])[i])}</td>`).join("")}</tr>`).join("");
   const sub = [s.comp, s.fase].filter(Boolean).join(" · ");
   const when = s.updated ? (s.manual ? "Atualizado à mão " + standingsAgo_(s.updated) : "Atualizado " + standingsAgo_(s.updated)) : "";
   return `<div class="hv-panel"><div class="hv-panel-head"><h3>${esc(opts.title || "Classificação")}</h3>${opts.editBtn || ""}</div>
     ${sub && !opts.hideSub ? `<div class="st-sub">${esc(sub)}</div>` : ""}
     <div class="st-wrap"><table class="st-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>
+    ${zmap ? zmap.legend : ""}
     <div class="st-foot">${esc(s.source || "")}${when ? " · " + esc(when) : ""}</div></div>`;
 }
 // v172: competições europeias/taças (Apps Script v123): { "Modalidade": [ {comp, fase, cols, rows, source, updated} ] }

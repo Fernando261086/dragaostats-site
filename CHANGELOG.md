@@ -1,3 +1,6 @@
+## v208
+- Classificações: linha de água, apuramentos e lugares europeus (barra de cor junto à posição, linha a separar as zonas e legenda em português por baixo). Dados do Apps Script **v137**: Sofascore (Futsal, competições europeias e, por posição, as tabelas das federações quando o nº de equipas e os nomes batem) e, no Hóquei, as cores da própria página. Equipa B sem zonas de subida. Cache `dia22-cache-v286`.
+
 ## v207
 - Jogo: "Cronologia" passa a "Lance a lance", em duas colunas (casa à esquerda, fora à direita), com resultado corrido nos golos e botão "Ver todos (N)" (mostra os 10 lances mais recentes). Cache `dia22-cache-v285`.
 

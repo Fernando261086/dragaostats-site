@@ -861,7 +861,7 @@ function getStatTypesFor(sport){
 
 // Para modalidades onde só se costuma registar quem marcou, "Marcadores" é mais
 // intuitivo do que "Estatísticas do jogo" (que soa a algo mais completo/técnico)
-const MARCADORES_LABEL_SPORTS = new Set(["Futebol Feminino", "Futsal", "Equipa B"]);
+const MARCADORES_LABEL_SPORTS = new Set(["Futebol Feminino", "Futsal", "Equipa B", "Hóquei Patins"]);
 // Voleibol não tem estatísticas de jogadoras, só a pontuação de cada set
 const SET_SCORE_SPORTS = new Set(["Voleibol"]);
 // v206: equipas femininas dizem "jogadoras" (Futebol Feminino e Voleibol); as outras "jogadores"

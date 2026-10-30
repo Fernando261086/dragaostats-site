@@ -319,3 +319,6 @@ código para facilitar trabalhar nele.
 
 ## v223 / Apps Script v140
 - Notícias das modalidades: Apps Script `noticiasSeDevido_` (de hora a hora, Google News por modalidade, filtro por "Porto/Dragões" ou fonte FC Porto, máx. 12 por modalidade, 10 dias) + imagens de capa em melhor esforço (`noticiasImagensPendentes_`: resolve o link do Google e lê og:image). Site: `58-news.js`, separador "Notícias" na página de modalidade, bloco "Últimas notícias" no Início, "Esconder" só em modo edição (`ocultarNoticia`). Termos/Privacidade atualizados. Cache v300.
+
+## v231
+- Hóquei Patins passa a usar "Marcadores" (como Futebol Feminino, Futsal e Equipa B): botão, painel (um golo por linha) e página do jogo. `MARCADORES_LABEL_SPORTS` em `03-share-reel.js`. Cache v308.

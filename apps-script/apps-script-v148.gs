@@ -5869,10 +5869,11 @@ function hqEventoId_(adv) {
   for (let u = 0; u < urls.length; u++) {
     let html = "";
     try { html = UrlFetchApp.fetch(HQ_SITE_ + urls[u], { muteHttpExceptions: true, followRedirects: true, headers: { "User-Agent": "Mozilla/5.0" } }).getContentText() || ""; } catch (e) { continue; }
-    const re = /href=["'](?:https?:\/\/(?:www\.)?hoqueipatins\.pt)?\/evento\/(\d+)\/?["']/g; let m;
-    while ((m = re.exec(html))) {
-      const janela = norm(hqTxt_(html.substr(m.index, 1100)));
-      if (/porto/.test(janela) && toks.every(function(t) { return janela.indexOf(t) >= 0; })) return m[1];
+    // 1) cada jogo é uma linha <tr data-live-event="ID"> com as duas equipas (a ligação /evento/ID vem no fim da linha)
+    const reL = /<tr[^>]*data-live-event=["'](\d+)["'][\s\S]*?<\/tr>/g; let m;
+    while ((m = reL.exec(html))) {
+      const t = norm(hqTxt_(m[0]));
+      if (/porto/.test(t) && toks.every(function(x) { return t.indexOf(x) >= 0; })) return m[1];
     }
   }
   return "";
@@ -5982,6 +5983,12 @@ function testarHoqueiDetalheAgora() {
   Logger.log("Jogo: " + ult.day + " " + ult.t + " vs " + ult.athlete);
   const res = hqDetalheUm_({ id: ult.id, t: ult.t, adv: ult.athlete || "" }, Date.now(), true);
   Logger.log("Resultado: " + res);
+  if (/não encontrado/.test(res)) {
+    const h = hqLer_(HQ_SITE_ + "/resultados/").html;
+    const linhas = h.match(/<tr[^>]*data-live-event=["']\d+["'][\s\S]*?<\/tr>/g) || [];
+    Logger.log("HTTP/linhas em /resultados/: " + h.length + " caracteres, " + linhas.length + " jogos; ligações /evento/: " + ((h.match(/\/evento\/\d+/g) || []).length));
+    linhas.filter(function(l) { return /porto/i.test(hqTxt_(l)); }).slice(0, 3).forEach(function(l) { Logger.log("linha com Porto: " + hqTxt_(l).replace(/\s+/g, " ").slice(0, 260)); });
+  }
   let todos = {}; try { todos = JSON.parse(PropertiesService.getScriptProperties().getProperty(SOFA_DET_PROP_) || "{}"); } catch (e) {}
   const d = todos[ult.id];
   if (!d) { Logger.log("Nada guardado."); return; }

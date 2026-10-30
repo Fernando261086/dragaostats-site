@@ -7,6 +7,8 @@ let gameEvId_ = null, gamePrevView_ = null, gameSig_ = "";
 // nome do canal: o que foi escrito em "Onde ver"; sem nome, deduz-se do endereço (ex.: portocanal.sapo.pt → Porto Canal)
 function watchLabel_(ev){
   if (ev.watchName) return ev.watchName;
+  // quem escreveu o canal em "Observações" (curto) em vez de "Onde ver": usa esse nome
+  if (ev.notes && String(ev.notes).trim().length <= 40) return String(ev.notes).trim();
   try {
     const h = new URL(ev.watchUrl).hostname.replace(/^(www|m|live|play)\./, "").toLowerCase();
     const mapa = { "portocanal.sapo.pt":"Porto Canal", "fcporto.pt":"FC Porto TV", "youtube.com":"YouTube", "youtu.be":"YouTube", "sporttv.pt":"Sport TV", "dazn.com":"DAZN", "rtp.pt":"RTP Play", "fpf.pt":"FPF Play", "fpa.pt":"FPA", "fpb.pt":"FPB", "fpp.pt":"FPP", "fpv.pt":"FPV", "cev.eu":"CEV TV", "ehftv.com":"EHF TV", "fiba.basketball":"FIBA", "twitch.tv":"Twitch", "facebook.com":"Facebook", "sofascore.com":"Sofascore", "eleven.pt":"Eleven Sports", "elevensports.pt":"Eleven Sports", "ligaportugal.pt":"Liga Portugal", "tviplayer.iol.pt":"TVI Player", "sapo.pt":"SAPO" };

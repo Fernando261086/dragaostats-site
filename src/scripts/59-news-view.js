@@ -12,7 +12,7 @@ function renderNewsView_(){
     .concat(sports.map(sp=>`<button type="button" class="hv-pillbtn${sp === newsSport_ ? " active" : ""}" data-nwsport="${esc(sp)}">${esc(sp)}</button>`)).join("");
   let items = [];
   const seen = new Set();
-  sports.filter(sp=>!newsSport_ || sp === newsSport_).forEach(sp=>(NOTICIAS[sp] || []).forEach(n=>{ if(seen.has(n.id)) return; seen.add(n.id); items.push({ n, sp }); }));
+  sports.filter(sp=>!newsSport_ || sp === newsSport_).forEach(sp=>newsRecent_(sp).forEach(n=>{ if(seen.has(n.id)) return; seen.add(n.id); items.push({ n, sp }); }));
   items.sort((a, b)=>b.n.d - a.n.d);
   const cards = items.map(x=>newsCardHtml_(x.n, x.sp, !newsSport_)).join("");
   host.innerHTML = `<div class="hv-top"><div class="cls-head"><h2>Notícias</h2></div><div class="hv-pills">${pills}</div><div class="hv-panel nw-panel">${cards}${NEWS_NOTE_}</div></div>`;

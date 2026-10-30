@@ -207,6 +207,24 @@ function isLeagueGame_(ev){
   if(/taca|supertaca|champions|europa|cup|torneio|amigavel|apresentacao|iberica|mundial|final four|playoff|play-off/.test(d)) return false;
   return /^(campeonato|\d\S* ?(divisao|liga)|liga\b|primeira|segunda|terceira)/.test(d);
 }
+// v229: percurso numa competição que não é campeonato (Elite Cup: Quartos → Meia final → Final). Só usa os jogos que o site já tem.
+function compPathHtml_(ev){
+  try{
+    if(!ev || !ev.detail || isLeagueGame_(ev) || typeof EVENTS === "undefined") return "";
+    if(/amigavel|apresentacao/.test(String(ev.detail).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) return "";
+    const esc = standingsEsc_, t0 = pgWhen_(ev), JANELA = 21 * 86400000;
+    const jogos = EVENTS.filter(e=>e.sport === ev.sport && e.detail === ev.detail && (e.id === ev.id || Math.abs(pgWhen_(e) - t0) <= JANELA)).sort((a, b)=>pgWhen_(a) - pgWhen_(b));
+    if(jogos.length < 2) return "";
+    const rows = jogos.map(e=>{
+      const st = pgDone_(e), tg = st ? pgTag_(st) : "";
+      const dt = String(e.day || "").split("-"), data = dt.length === 3 ? dt[2] + "/" + dt[1] : "";
+      const dir = st ? `<b class="cp-r ${tg ? "cp-" + tg : ""}">${esc(String(st.resultado).trim())}</b>` : `<span class="cp-d">${esc(data)}${e.t ? " · " + esc(e.t) : ""}</span>`;
+      const me = e.id === ev.id;
+      return `<div class="cp-row${me ? " is-me" : ""}${me ? "" : " pg-click"}" ${me ? "" : `data-pgjogo="${esc(e.id)}" role="link" tabindex="0"`}><span class="cp-ph">${esc(e.phase || "")}</span><span class="cp-opp">${esc(typeof homeOpp_ === "function" ? homeOpp_(e) : e.athlete)}</span>${dir}</div>`;
+    }).join("");
+    return `<div class="gp-card cp-card"><h3>${esc(ev.detail)} · percurso</h3>${rows}</div>`;
+  }catch(e){ return ""; }
+}
 function miniStandingHtml_(ev){
   try{
     const sComp = (typeof compStandingForGame_ === "function") ? compStandingForGame_(ev) : null;
@@ -214,7 +232,7 @@ function miniStandingHtml_(ev){
     const S = sComp || (liga && typeof STANDINGS === "object" && STANDINGS ? STANDINGS[ev.sport] : null);
     if(!S || !Array.isArray(S.rows) || !S.rows.length){
       if(liga || !(ev.detail || ev.phase)) return "";
-      return `<div class="gp-card"><h3>Competição</h3><div style="font-weight:700;">${standingsEsc_([ev.detail, ev.phase].filter(Boolean).join(" · "))}</div></div>`;
+      return compPathHtml_(ev) || `<div class="gp-card"><h3>Competição</h3><div style="font-weight:700;">${standingsEsc_([ev.detail, ev.phase].filter(Boolean).join(" · "))}</div></div>`;
     }
     const i = S.rows.findIndex(r=>r.me);
     if(i < 0) return "";

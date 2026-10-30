@@ -47,11 +47,11 @@ function vtSend_(final){
       const orig = setView;
       setView = function(){ try{ if(vtSess_){ vtSess_.views = Math.min(99, (vtSess_.views || 0) + 1); } }catch(e){} return orig.apply(this, arguments); };
     }
-    // envios intermédios aos 45 s, 3 min e 10 min (para o caso de o telemóvel não avisar quando a pessoa sai)
+    // envios intermédios aos 15 s, 45 s, 3 min e 10 min (para o caso de o telemóvel não avisar quando a pessoa sai)
     setInterval(()=>{
       if(document.hidden || !vtSess_) return;
       const s = vtActiveSecs_();
-      [45, 180, 600].forEach(m=>{ if(s >= m && !vtMarks_[vtSess_.t + m]){ vtMarks_[vtSess_.t + m] = 1; vtSend_(false); } });
+      [15, 45, 180, 600].forEach(m=>{ if(s >= m && !vtMarks_[vtSess_.t + m]){ vtMarks_[vtSess_.t + m] = 1; vtSend_(false); } });
     }, 5000);
   }catch(e){}
 })();

@@ -1,6 +1,12 @@
 ## Apps Script v141 — notícias certas
 - Ligação real da notícia (sem cortar endereços), classificação por conteúdo da página, exclusão de futebol masculino, cadência 15 min, `noticiasAtualizarAgora` com Registo detalhado.
 
+## v229
+- Página do jogo: **percurso na competição** (`compPathHtml_`, `41-standings.js`) nos jogos que não são de campeonato (Elite Cup: Quartos → Meia final → Final, com resultados e ligações; ignora amigáveis/apresentações; janela de 21 dias); **notícias do jogo** (`newsForGame_`/`gameNewsHtml_`, `58-news.js`, pelas etiquetas do adversário) e botão **🎟️ Bilhetes** (`newsTicketForGame_`) nos jogos por jogar.
+- Início/Notícias: a modalidade favorita (★) vem primeiro; as listas mostram só 3 dias (`NEWS_LIST_DAYS_`), as notícias do jogo usam até 14.
+- Medição de visitas também aos 15 s (`57-visit-time.js`).
+- Apps Script v147: notícias oficiais guardam 14 dias, até 14 por modalidade e as etiquetas (`g`). Sem v147 o site funciona, mas sem «Notícias do jogo». Cache `dia22-cache-v306`.
+
 ## v228
 - Jogos que não são de campeonato (Elite Cup, Taça de Portugal/da Liga, Supertaça, Taça Ibérica, torneios, amigáveis, apresentação, europeias) já não mostram a classificação do campeonato na página do jogo («Classificação depois do jogo», «Antes do jogo» e botão 🏆). Nas europeias com tabela de grupo mostra a do grupo; nos outros aparece um cartão «Competição» (ex.: Elite Cup · Quartos de Final). `isLeagueGame_` em `41-standings.js` decide pelo campo «Competição»; vazio = campeonato. Cache `dia22-cache-v305`.
 

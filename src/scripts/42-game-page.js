@@ -177,6 +177,7 @@ function renderGamePage_(){
     ${((resultado && fim) || READONLY_MODE) ? "" : `<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ ${resultado ? "Imagem do resultado" : "Imagem para promover"}</button>
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 ${resultado ? "Reel do resultado" : "Reel para promover"}</button>`}
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpStats">📊 Estatísticas</button>
+    ${(futuro && typeof newsTicketForGame_ === "function" && newsTicketForGame_(ev)) ? `<a class="hv-btn hv-btn-ghost gp-act" href="${esc(newsTicketForGame_(ev).u)}" target="_blank" rel="noopener">🎟️ Bilhetes</a>` : ""}
     ${classif}
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpCal">${READONLY_MODE ? "Ver no calendário" : "Editar no calendário"}</button>
   </div>`;
@@ -185,7 +186,7 @@ function renderGamePage_(){
     <button type="button" class="hv-btn hv-btn-main gp-act" id="gpShare">↗ Partilhar</button>
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ Imagem do resultado</button>
     ${READONLY_MODE ? "" : '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 Reel do resultado</button>'}</div></div>` : "";
-  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, ev.watchName, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof REACTIONS === "object" && REACTIONS && REACTIONS[activeCompId] && REACTIONS[activeCompId][ev.id]) || null), JSON.stringify((typeof DETALHES === "object" && DETALHES && DETALHES[ev.id]) || null), (typeof crestId_ === "function" ? [crestId_(ev.sport, ev.athlete), crestId_(ev.sport, "FC Porto")].map(i=>i && crestCached_(i) ? 1 : 0).join("") : ""), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null)]);
+  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, ev.watchName, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof REACTIONS === "object" && REACTIONS && REACTIONS[activeCompId] && REACTIONS[activeCompId][ev.id]) || null), JSON.stringify((typeof DETALHES === "object" && DETALHES && DETALHES[ev.id]) || null), (typeof crestId_ === "function" ? [crestId_(ev.sport, ev.athlete), crestId_(ev.sport, "FC Porto")].map(i=>i && crestCached_(i) ? 1 : 0).join("") : ""), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null), (typeof newsForGame_ === "function" ? newsForGame_(ev).map(n=>n.id).join(",") : ""), (typeof compPathHtml_ === "function" ? compPathHtml_(ev).length : 0)]);
   if(sig === gameSig_) return;
   gameSig_ = sig;
 
@@ -201,13 +202,14 @@ function renderGamePage_(){
       </div>
       ${sub ? `<div class="gp-sub">${sub}</div>` : ""}
     </div>
-    ${partilhaCard}${setsBlock}${extraBlock}${(!fim && !liveData && !aDecorrer && typeof pregameHtml_ === "function") ? pregameHtml_(ev) : ""}${(typeof gameDetailsHtml_ === "function") ? gameDetailsHtml_(ev) : ""}${(typeof compStandingForGame_ === "function" && compStandingForGame_(ev)) ? standingsObjHtml_(compStandingForGame_(ev), { title: "Classificação do grupo", advName: ev.athlete, sport: ev.sport }) : ""}${(!fim && typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo") : ""}${info}${acoes}
+    ${partilhaCard}${setsBlock}${extraBlock}${(!fim && !liveData && !aDecorrer && typeof pregameHtml_ === "function") ? pregameHtml_(ev) : ""}${(!fim && typeof compPathHtml_ === "function") ? compPathHtml_(ev) : ""}${(typeof gameDetailsHtml_ === "function") ? gameDetailsHtml_(ev) : ""}${(typeof gameNewsHtml_ === "function") ? gameNewsHtml_(ev) : ""}${(typeof compStandingForGame_ === "function" && compStandingForGame_(ev)) ? standingsObjHtml_(compStandingForGame_(ev), { title: "Classificação do grupo", advName: ev.athlete, sport: ev.sport }) : ""}${(!fim && typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo") : ""}${info}${acoes}
   </div>`;
 
   host.querySelector("#gpBack").onclick = ()=>navUiBack_();
   const icsBtn = host.querySelector("#gpIcs");
   if(icsBtn) icsBtn.onclick = ()=>addGameToCalendar_(ev);
   if(typeof pregameWire_ === "function") pregameWire_(host);
+  if(typeof bindNews_ === "function") bindNews_(host);
   const sh = host.querySelector("#gpShare");
   if(sh) sh.onclick = ()=>{ if(typeof track_ === "function") track_("partilhar_clique"); shareGameFan_(ev); };
   const cor = (typeof SPORT_COLORS !== "undefined" && SPORT_COLORS[ev.sport]) || "#e3b23c";

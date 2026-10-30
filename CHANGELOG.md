@@ -1,6 +1,9 @@
 ## Apps Script v141 — notícias certas
 - Ligação real da notícia (sem cortar endereços), classificação por conteúdo da página, exclusão de futebol masculino, cadência 15 min, `noticiasAtualizarAgora` com Registo detalhado.
 
+## v225
+- Transmissão: sem nome em «Onde ver», o nome do canal deduz-se do endereço (`watchLabel_`: Porto Canal, YouTube, Sport TV…; senão o domínio); o botão «Ver transmissão» em baixo volta a existir. Cache `dia22-cache-v302`.
+
 ## v224
 - Página do jogo: o nome do canal (ex.: Porto Canal) é o próprio link clicável na linha «Transmissão»; removido o botão grande «Ver transmissão». Cache `dia22-cache-v301`.
 

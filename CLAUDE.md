@@ -320,3 +320,5 @@ parada, é quase sempre o endereço da fonte):
 **Apps Script v141 (`apps-script/apps-script-v141.gs`, sem alterações ao site):** notícias certas. Cada candidato do Google News tem o endereço real resolvido (nunca truncado; se falhar, fica a ligação completa do Google) e a página lida; `noticiasClassificar_` pontua as 7 modalidades por título + endereço + descrição/keywords + início do texto, exclui futebol masculino (`NOTICIAS_EXCLUIR_`), exige "Porto/Dragões" no topo (exceto fonte "FC Porto") e só aceita com ≥3 pontos e vantagem ≥1; na dúvida, fica de fora. Cadência 15 min, `NOTICIAS_VERSAO_="3"` limpa os dados antigos uma vez. Testes: `noticiasAtualizarAgora` (Registo "ENTRA em…/fica de fora: motivo"), `noticiasLimparTudo`. Resolução do Google e leitura de páginas por confirmar em produção (O Jogo dá 403 → só título, regras estritas).
 
 **v224:** linha «Transmissão» (`42-game-page.js`): o nome do canal é o link; sem botão «Ver transmissão»; cache atual `dia22-cache-v301`.
+
+**v225:** `watchLabel_(ev)` (`42-game-page.js`): nome do canal = `ev.watchName` ou deduzido do endereço; botão «Ver transmissão» nas ações mantém-se; cache atual `dia22-cache-v302`.

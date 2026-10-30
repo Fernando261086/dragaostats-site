@@ -4,6 +4,16 @@
 // Endereço partilhável: ?comp=<competição>&jogo=<id> (o parâmetro "jogo" já abria o cartão certo a partir das notificações).
 let gameEvId_ = null, gamePrevView_ = null, gameSig_ = "";
 
+// nome do canal: o que foi escrito em "Onde ver"; sem nome, deduz-se do endereço (ex.: portocanal.sapo.pt → Porto Canal)
+function watchLabel_(ev){
+  if (ev.watchName) return ev.watchName;
+  try {
+    const h = new URL(ev.watchUrl).hostname.replace(/^(www|m|live|play)\./, "").toLowerCase();
+    const mapa = { "portocanal.sapo.pt":"Porto Canal", "fcporto.pt":"FC Porto TV", "youtube.com":"YouTube", "youtu.be":"YouTube", "sporttv.pt":"Sport TV", "dazn.com":"DAZN", "rtp.pt":"RTP Play", "fpf.pt":"FPF Play", "fpa.pt":"FPA", "fpb.pt":"FPB", "fpp.pt":"FPP", "fpv.pt":"FPV", "cev.eu":"CEV TV", "ehftv.com":"EHF TV", "fiba.basketball":"FIBA", "twitch.tv":"Twitch", "facebook.com":"Facebook", "sofascore.com":"Sofascore", "eleven.pt":"Eleven Sports", "elevensports.pt":"Eleven Sports", "ligaportugal.pt":"Liga Portugal", "tviplayer.iol.pt":"TVI Player", "sapo.pt":"SAPO" };
+    for (const k in mapa) if (h === k || h.endsWith("." + k)) return mapa[k];
+    return h;
+  } catch(e){ return "Ver transmissão"; }
+}
 function openGamePage_(evId){
   const ev = EVENTS.find(e=>e.id === evId);
   if(!ev){ return false; }
@@ -148,7 +158,7 @@ function renderGamePage_(){
       ${isNaN(d) ? "" : `<div><i>Data</i><b>${esc(homeLongDate_(d))}${ev.t ? " · " + esc(ev.t) : ""}</b></div>`}
       ${detail ? `<div><i>Competição</i><b>${esc(detail)}</b></div>` : ""}
       ${place ? `<div><i>Local</i><b>${esc(place)}</b></div>` : ""}
-      ${(!resultado && (ev.watchUrl || ev.watchName)) ? `<div><i>Transmissão</i><b>${ev.watchUrl ? `<a class="gp-watch" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">${esc(ev.watchName || "Ver transmissão")} ↗</a>` : esc(ev.watchName)}</b></div>` : ""}
+      ${(!resultado && (ev.watchUrl || ev.watchName)) ? `<div><i>Transmissão</i><b>${ev.watchUrl ? `<a class="gp-watch" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">${esc(watchLabel_(ev))} ↗</a>` : esc(ev.watchName)}</b></div>` : ""}
     </div></div>`;
 
   // ---- ações
@@ -159,6 +169,7 @@ function renderGamePage_(){
     ? `<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpTable">🏆 Classificação</button>` : "";
   const acoes = `<div class="gp-actions">
     ${lembrete}
+    ${ev.watchUrl ? `<a class="hv-btn hv-btn-main gp-act" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">📺 Ver transmissão</a>` : ""}
     ${(resultado && fim) ? "" : '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpShare">↗ Partilhar</button>'}
     ${(!resultado && !liveData) ? '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpIcs">📅 Adicionar ao calendário</button>' : ""}
     ${((resultado && fim) || READONLY_MODE) ? "" : `<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ ${resultado ? "Imagem do resultado" : "Imagem para promover"}</button>

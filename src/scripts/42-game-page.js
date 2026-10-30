@@ -148,7 +148,7 @@ function renderGamePage_(){
       ${isNaN(d) ? "" : `<div><i>Data</i><b>${esc(homeLongDate_(d))}${ev.t ? " · " + esc(ev.t) : ""}</b></div>`}
       ${detail ? `<div><i>Competição</i><b>${esc(detail)}</b></div>` : ""}
       ${place ? `<div><i>Local</i><b>${esc(place)}</b></div>` : ""}
-      ${(!resultado && (ev.watchUrl || ev.watchName)) ? `<div><i>Transmissão</i><b>${ev.watchUrl ? `<a class="gp-watch" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">📺 ${esc(ev.watchName || "Ver transmissão")} ↗</a>` : esc(ev.watchName)}</b></div>` : ""}
+      ${(!resultado && (ev.watchUrl || ev.watchName)) ? `<div><i>Transmissão</i><b>${ev.watchUrl ? `<a class="gp-watch" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">${esc(ev.watchName || "Ver transmissão")} ↗</a>` : esc(ev.watchName)}</b></div>` : ""}
     </div></div>`;
 
   // ---- ações
@@ -159,7 +159,6 @@ function renderGamePage_(){
     ? `<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpTable">🏆 Classificação</button>` : "";
   const acoes = `<div class="gp-actions">
     ${lembrete}
-    ${ev.watchUrl ? `<a class="hv-btn hv-btn-main gp-act" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">📺 Ver transmissão</a>` : ""}
     ${(resultado && fim) ? "" : '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpShare">↗ Partilhar</button>'}
     ${(!resultado && !liveData) ? '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpIcs">📅 Adicionar ao calendário</button>' : ""}
     ${((resultado && fim) || READONLY_MODE) ? "" : `<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ ${resultado ? "Imagem do resultado" : "Imagem para promover"}</button>

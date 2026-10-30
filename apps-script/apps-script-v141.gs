@@ -5374,13 +5374,14 @@ const NOTICIAS_KW_ = {
   "Basquetebol": [["basquetebol", 3], ["basquete", 3], ["triplos", 2], ["triplo", 1], ["liga betclic", 1], ["fpb", 1], ["cesto", 1]],
   "Voleibol": [["voleibol", 3], ["volei", 3], ["liga solverde", 3], ["cev", 2], ["libero", 2]],
   "Hóquei Patins": [["hoquei em patins", 3], ["hoquei", 3], ["patins", 2], ["liga placard", 3], ["elite cup", 3], ["placard", 1]],
-  "Futebol Feminino": [["futebol feminino", 3], ["liga bpi", 3], ["taca feminina", 3], ["equipa feminina", 1], ["futebolistas", 1], ["feminino", 1], ["feminina", 1]],
+  "Futebol Feminino": [["futebol feminino", 3], ["liga bpi", 3], ["taca feminina", 3], ["taca de portugal feminina", 3], ["taca da liga feminina", 3], ["equipa feminina", 1], ["futebolistas", 1], ["feminino", 1], ["feminina", 1]],
   "Futsal": [["futsal", 3]],
   "Equipa B": [["equipa b", 3], ["fc porto b", 3], ["porto b", 2], ["liga meu super", 3], ["liga 2", 2], ["sub 23", 1]]
 };
 // sinais de futebol masculino da equipa principal: fora
 const NOTICIAS_EXCLUIR_TIT_ = /^(ficha de jogo|plantel|resumo|fotografias|campeonato nacional)\b/;
-const NOTICIAS_EXCLUIR_ = /\b(futebol nacional|farioli|equipa principal|liga portugal betclic|smalling|duran|liga europa|europa league|taca de portugal|taca da liga)\b/;
+const NOTICIAS_EXCLUIR_ = /\b(futebol nacional|farioli|equipa principal|liga portugal betclic|smalling|duran|evanilson)\b/;
+const NOTICIAS_EXCLUIR_TACAS_ = /\b(liga europa|europa league|taca de portugal|taca da liga)\b/; // só vale se o título não for do futebol feminino
 const NOTICIAS_MAX_POR_MODALIDADE_ = 10;
 const NOTICIAS_EVERY_MINUTES_ = 15;
 const NOTICIAS_DIAS_ = 10;
@@ -5444,14 +5445,20 @@ function noticiasPontos_(texto) {
   return out;
 }
 
+// há alguma palavra de peso 3 da modalidade no texto?
+function noticiasPontosFortes_(texto, sp) {
+  return NOTICIAS_KW_[sp].some(function(k) { return k[1] >= 3 && new RegExp("(^| )" + k[0] + "( |$)").test(texto); });
+}
+
 // Decide a modalidade. n = { t: título, u: endereço, desc, corpo, fonte }. Devolve { sp: "Andebol"|"" , motivo }.
 function noticiasClassificar_(n) {
   const tit = noticiasNorm_(n.t), ur = noticiasNorm_(n.u || ""), de = noticiasNorm_(n.desc || ""), co = noticiasNorm_(n.corpo || "");
   const oficial = /^fc porto$/i.test(String(n.fonte || "").trim());
-  if (NOTICIAS_EXCLUIR_.test(tit) || NOTICIAS_EXCLUIR_.test(ur)) return { sp: "", motivo: "futebol masculino / outras competições" };
+  const fem = /feminin/.test(tit);
+  if (NOTICIAS_EXCLUIR_.test(tit) || NOTICIAS_EXCLUIR_.test(ur) || (!fem && (NOTICIAS_EXCLUIR_TACAS_.test(tit) || NOTICIAS_EXCLUIR_TACAS_.test(ur)))) return { sp: "", motivo: "futebol masculino / outras competições" };
   if (NOTICIAS_EXCLUIR_TIT_.test(tit)) return { sp: "", motivo: "não é uma notícia (ficha/plantel/resumo)" };
-  // o FC Porto tem de estar no título ou na descrição (só no texto não chega: muitas notícias de outros clubes citam o Porto)
-  if (!oficial && !/(^| )(fc porto|porto b|dragoes|dragao|portista|portistas)( |$)/.test(tit + " " + de)) return { sp: "", motivo: "o FC Porto não está no título/descrição" };
+  // o FC Porto tem de estar no TÍTULO (a descrição/texto citam o Porto em resumos de outros clubes); a fonte oficial dispensa
+  if (!oficial && !/(^| )(fc porto|porto b|dragoes|dragao|portista|portistas)( |$)/.test(tit)) return { sp: "", motivo: "o FC Porto não está no título" };
   const amb = /(champions|liga dos campeoes|champions league) feminina/g; // ambíguo: voleibol ou futebol
   const limpa = function(t) { return t.replace(amb, " "); };
   const pT = noticiasPontos_(limpa(tit)), pU = noticiasPontos_(ur), pD = noticiasPontos_(limpa(de)), pC = noticiasPontos_(limpa(co));
@@ -5460,6 +5467,8 @@ function noticiasClassificar_(n) {
   const ord = Object.keys(tot).sort(function(a, b) { return tot[b] - tot[a]; });
   const melhor = ord[0], seg = ord[1];
   if (tot[melhor] < 3) return { sp: "", motivo: "sem sinal claro de modalidade (" + tot[melhor] + ")" };
+  const forte = noticiasPontosFortes_(limpa(tit) + " " + ur + " " + limpa(de) + " " + limpa(co.substring(0, 700)), melhor);
+  if (!forte) return { sp: "", motivo: "sem palavra clara de " + melhor + " (só pistas fracas)" };
   const gap = tot[melhor] - tot[seg];
   if (gap < (tot[seg] >= 2 ? 4 : 1)) return { sp: "", motivo: "dúvida entre " + melhor + " e " + seg };
   return { sp: melhor, motivo: melhor + " (" + tot[melhor] + " vs " + tot[seg] + ")" };
@@ -5547,7 +5556,7 @@ function noticiasAtualizar_(verbose) {
   const t0 = Date.now(), tempoMs = verbose ? 150000 : 50000;
   const props = PropertiesService.getScriptProperties();
   const vistos = noticiasVistosLer_();
-  const cands = noticiasCandidatos_().filter(function(c) { return !vistos[c.id]; });
+  const cands = noticiasCandidatos_().filter(function(c) { return vistos[c.id] !== 1; });
   const limiteMs = Date.now() - NOTICIAS_DIAS_ * 86400000;
   const porSport = {};
   NOTICIAS_CONSULTAS_.forEach(function(c) { porSport[c.sport] = noticiasLer_(c.sport); });
@@ -5558,8 +5567,13 @@ function noticiasAtualizar_(verbose) {
     const c = cands[i];
     const real = noticiasResolverGoogle_(c.g);
     const pag = real ? noticiasPagina_(real) : null;
+    if (!pag) { // sem página (Google a limitar, site lento): tenta de novo nas próximas execuções, no máximo 3 vezes
+      const n = (vistos[c.id] < 0 ? -vistos[c.id] : 0) + 1;
+      if (n < 3) { vistos[c.id] = -n; feitas++; if (verbose) linhas.push("adiada (sem página, tentativa " + n + ") | " + c.t.substring(0, 80) + " [" + c.f + "]"); Utilities.sleep(300); continue; }
+    }
     const res = noticiasClassificar_({ t: c.t, u: real || "", desc: pag ? (pag.desc + " " + pag.kw) : "", corpo: pag ? pag.corpo : "", fonte: c.f, pagina: !!pag });
     vistos[c.id] = 1; feitas++;
+    Utilities.sleep(250);
     if (res.sp) {
       const lista = porSport[res.sp] || [];
       if (noticiasParecida_(c.t, lista)) { rejeitadas++; if (verbose) linhas.push("fica de fora: repetida (mesma história de outro jornal) | " + c.t.substring(0, 80) + " [" + c.f + "]"); continue; }

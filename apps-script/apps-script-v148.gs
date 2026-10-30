@@ -5914,7 +5914,10 @@ function hqParseEvento_(html) {
         if (/^Grande Penalidade/i.test(x)) { inc.push([ultimoMin, "O", lado, "", "Grande penalidade"]); continue; }
         if ((q = x.match(/^Pen[aá]lti falhado (.+)$/i))) { inc.push([ultimoMin, "O", lado, hqNome_(q[1]), "Penálti falhado"]); continue; }
         if ((q = x.match(/^Defesa de pen[aá]lti (.+)$/i))) { inc.push([ultimoMin, "O", lado, hqNome_(q[1]), "Defesa de penálti"]); continue; }
-        if (/VAR/.test(x)) { inc.push([ultimoMin, "O", lado, "", "Revisão VAR"]); continue; }
+        if (/VAR/.test(x)) { // a revisão fica do lado da equipa a favor de quem era o lance (se o texto o disser)
+          const fv = x.match(/a favor d[ao]s? ([^,.]+)/i);
+          inc.push([ultimoMin, "O", fv ? (/porto/i.test(fv[1]) ? 0 : 1) : lado, "", "Revisão VAR"]); continue;
+        }
       }
     });
   });

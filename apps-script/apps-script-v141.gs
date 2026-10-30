@@ -5371,7 +5371,7 @@ const NOTICIAS_CONSULTAS_ = [
 // palavras de cada modalidade e o peso de cada uma (3 = prova forte)
 const NOTICIAS_KW_ = {
   "Andebol": [["andebol", 3], ["andebolista", 3], ["andebolistas", 3], ["ehf", 2], ["fpa", 1]],
-  "Basquetebol": [["basquetebol", 3], ["basquete", 3], ["triplos", 2], ["triplo", 1], ["fpb", 1], ["cesto", 1]],
+  "Basquetebol": [["basquetebol", 3], ["basquete", 3], ["triplos", 2], ["triplo", 1], ["liga betclic", 1], ["fpb", 1], ["cesto", 1]],
   "Voleibol": [["voleibol", 3], ["volei", 3], ["liga solverde", 3], ["cev", 2], ["libero", 2]],
   "Hóquei Patins": [["hoquei em patins", 3], ["hoquei", 3], ["patins", 2], ["liga placard", 3], ["elite cup", 3], ["placard", 1]],
   "Futebol Feminino": [["futebol feminino", 3], ["liga bpi", 3], ["taca feminina", 3], ["equipa feminina", 1], ["futebolistas", 1], ["feminino", 1], ["feminina", 1]],

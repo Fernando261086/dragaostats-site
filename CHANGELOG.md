@@ -1,3 +1,6 @@
+## Apps Script v141 — notícias certas
+- Ligação real da notícia (sem cortar endereços), classificação por conteúdo da página, exclusão de futebol masculino, cadência 15 min, `noticiasAtualizarAgora` com Registo detalhado.
+
 ## v217
 - Editor: o botão da época seguinte passa a ser um ícone (⏭️) do mesmo tamanho dos outros, entre 📌 e 📥 (antes era um botão com texto que se sobrepunha a "+ Nova competição"). Cache `dia22-cache-v295`.
 

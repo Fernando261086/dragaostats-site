@@ -5458,7 +5458,7 @@ function noticiasClassificar_(n) {
   if (NOTICIAS_EXCLUIR_.test(tit) || NOTICIAS_EXCLUIR_.test(ur) || (!fem && (NOTICIAS_EXCLUIR_TACAS_.test(tit) || NOTICIAS_EXCLUIR_TACAS_.test(ur)))) return { sp: "", motivo: "futebol masculino / outras competições" };
   if (NOTICIAS_EXCLUIR_TIT_.test(tit)) return { sp: "", motivo: "não é uma notícia (ficha/plantel/resumo)" };
   // o FC Porto tem de estar no TÍTULO (a descrição/texto citam o Porto em resumos de outros clubes); a fonte oficial dispensa
-  if (!oficial && !/(^| )(fc porto|porto b|dragoes|dragao|portista|portistas)( |$)/.test(tit)) return { sp: "", motivo: "o FC Porto não está no título" };
+  if (!oficial && !/(^| )(fc porto|porto b|dragoes|portista|portistas)( |$)/.test(tit)) return { sp: "", motivo: "o FC Porto não está no título" };
   const amb = /(champions|liga dos campeoes|champions league) feminina/g; // ambíguo: voleibol ou futebol
   const limpa = function(t) { return t.replace(amb, " "); };
   const pT = noticiasPontos_(limpa(tit)), pU = noticiasPontos_(ur), pD = noticiasPontos_(limpa(de)), pC = noticiasPontos_(limpa(co));

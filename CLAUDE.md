@@ -328,3 +328,5 @@ parada, é quase sempre o endereço da fonte):
 **v226:** `watchLabel_` (`42-game-page.js`): `ev.watchName` → `ev.notes` (≤40 car.) → deduzido do endereço; cache atual `dia22-cache-v303`.
 
 **Apps Script v141 (2.ª afinação, Registo de 30/10/2026):** o FC Porto tem de estar no **título** (fonte «FC Porto» dispensa); a modalidade precisa de uma palavra forte (peso 3) no título/endereço/descrição/início do texto; `NOTICIAS_EXCLUIR_TACAS_` (Taça de Portugal/da Liga, Liga Europa) não se aplica a títulos «feminin…» (Taça de Portugal feminina entra no Futebol Feminino); `evanilson` excluído; notícias sem página lida (Google a limitar) ficam «adiadas» e tentam de novo até 3 vezes (`vistos[id]` negativo = tentativas, 1 = feito) em vez de serem classificadas só pelo título.
+
+**Apps Script v141 (3.ª afinação):** «dragão» sozinho no título já não conta como FC Porto (Dragão Arena/Dragão = estádio); só `fc porto|porto b|dragões|portista(s)`.

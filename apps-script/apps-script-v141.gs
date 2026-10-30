@@ -5371,15 +5371,16 @@ const NOTICIAS_CONSULTAS_ = [
 // palavras de cada modalidade e o peso de cada uma (3 = prova forte)
 const NOTICIAS_KW_ = {
   "Andebol": [["andebol", 3], ["andebolista", 3], ["andebolistas", 3], ["ehf", 2], ["fpa", 1]],
-  "Basquetebol": [["basquetebol", 3], ["basquete", 3], ["triplos", 2], ["triplo", 1], ["liga betclic", 1], ["fpb", 1], ["cesto", 1]],
+  "Basquetebol": [["basquetebol", 3], ["basquete", 3], ["triplos", 2], ["triplo", 1], ["fpb", 1], ["cesto", 1]],
   "Voleibol": [["voleibol", 3], ["volei", 3], ["liga solverde", 3], ["cev", 2], ["libero", 2]],
   "Hóquei Patins": [["hoquei em patins", 3], ["hoquei", 3], ["patins", 2], ["liga placard", 3], ["elite cup", 3], ["placard", 1]],
-  "Futebol Feminino": [["futebol feminino", 3], ["liga bpi", 3], ["taca feminina", 3], ["equipa feminina", 2], ["futebolistas", 1], ["feminino", 1], ["feminina", 1]],
+  "Futebol Feminino": [["futebol feminino", 3], ["liga bpi", 3], ["taca feminina", 3], ["equipa feminina", 1], ["futebolistas", 1], ["feminino", 1], ["feminina", 1]],
   "Futsal": [["futsal", 3]],
   "Equipa B": [["equipa b", 3], ["fc porto b", 3], ["porto b", 2], ["liga meu super", 3], ["liga 2", 2], ["sub 23", 1]]
 };
 // sinais de futebol masculino da equipa principal: fora
-const NOTICIAS_EXCLUIR_ = /\b(farioli|equipa principal|liga portugal betclic|smalling|duran|liga europa|europa league|taca de portugal|taca da liga)\b/;
+const NOTICIAS_EXCLUIR_TIT_ = /^(ficha de jogo|plantel|resumo|fotografias|campeonato nacional)\b/;
+const NOTICIAS_EXCLUIR_ = /\b(futebol nacional|farioli|equipa principal|liga portugal betclic|smalling|duran|liga europa|europa league|taca de portugal|taca da liga)\b/;
 const NOTICIAS_MAX_POR_MODALIDADE_ = 10;
 const NOTICIAS_EVERY_MINUTES_ = 15;
 const NOTICIAS_DIAS_ = 10;
@@ -5443,21 +5444,37 @@ function noticiasPontos_(texto) {
   return out;
 }
 
-// Decide a modalidade. n = { t: título, u: endereço, desc, corpo, fonte, pagina: true/false }. Devolve { sp: "Andebol"|"" , motivo }.
+// Decide a modalidade. n = { t: título, u: endereço, desc, corpo, fonte }. Devolve { sp: "Andebol"|"" , motivo }.
 function noticiasClassificar_(n) {
   const tit = noticiasNorm_(n.t), ur = noticiasNorm_(n.u || ""), de = noticiasNorm_(n.desc || ""), co = noticiasNorm_(n.corpo || "");
   const oficial = /^fc porto$/i.test(String(n.fonte || "").trim());
   if (NOTICIAS_EXCLUIR_.test(tit) || NOTICIAS_EXCLUIR_.test(ur)) return { sp: "", motivo: "futebol masculino / outras competições" };
-  const topo = tit + " " + de + " " + co.substring(0, 700);
-  if (!oficial && !/(^| )(porto|dragoes|dragao)( |$)/.test(topo)) return { sp: "", motivo: "não fala do FC Porto" };
-  const pT = noticiasPontos_(tit), pU = noticiasPontos_(ur), pD = noticiasPontos_(de), pC = noticiasPontos_(co);
+  if (NOTICIAS_EXCLUIR_TIT_.test(tit)) return { sp: "", motivo: "não é uma notícia (ficha/plantel/resumo)" };
+  // o FC Porto tem de estar no título ou na descrição (só no texto não chega: muitas notícias de outros clubes citam o Porto)
+  if (!oficial && !/(^| )(fc porto|porto b|dragoes|dragao|portista|portistas)( |$)/.test(tit + " " + de)) return { sp: "", motivo: "o FC Porto não está no título/descrição" };
+  const amb = /(champions|liga dos campeoes|champions league) feminina/g; // ambíguo: voleibol ou futebol
+  const limpa = function(t) { return t.replace(amb, " "); };
+  const pT = noticiasPontos_(limpa(tit)), pU = noticiasPontos_(ur), pD = noticiasPontos_(limpa(de)), pC = noticiasPontos_(limpa(co));
   const tot = {};
   Object.keys(NOTICIAS_KW_).forEach(function(sp) { tot[sp] = pT[sp] + pU[sp] + pD[sp] + Math.min(2, pC[sp] * 0.5); });
   const ord = Object.keys(tot).sort(function(a, b) { return tot[b] - tot[a]; });
   const melhor = ord[0], seg = ord[1];
   if (tot[melhor] < 3) return { sp: "", motivo: "sem sinal claro de modalidade (" + tot[melhor] + ")" };
-  if (tot[melhor] - tot[seg] < 1) return { sp: "", motivo: "dúvida entre " + melhor + " e " + seg };
+  const gap = tot[melhor] - tot[seg];
+  if (gap < (tot[seg] >= 2 ? 4 : 1)) return { sp: "", motivo: "dúvida entre " + melhor + " e " + seg };
   return { sp: melhor, motivo: melhor + " (" + tot[melhor] + " vs " + tot[seg] + ")" };
+}
+
+// parecido com outra notícia já guardada (mesma história em jornais diferentes)?
+function noticiasParecida_(titulo, lista) {
+  const pal = function(t) { return noticiasNorm_(t).split(" ").filter(function(w) { return w.length > 3; }); };
+  const a = pal(titulo);
+  if (!a.length) return false;
+  return lista.some(function(n) {
+    const b = pal(n.t);
+    const comuns = a.filter(function(w) { return b.indexOf(w) >= 0; }).length;
+    return comuns / Math.max(1, Math.min(a.length, b.length)) >= 0.7;
+  });
 }
 
 // ---- endereço real e página
@@ -5545,6 +5562,7 @@ function noticiasAtualizar_(verbose) {
     vistos[c.id] = 1; feitas++;
     if (res.sp) {
       const lista = porSport[res.sp] || [];
+      if (noticiasParecida_(c.t, lista)) { rejeitadas++; if (verbose) linhas.push("fica de fora: repetida (mesma história de outro jornal) | " + c.t.substring(0, 80) + " [" + c.f + "]"); continue; }
       lista.push({ id: c.id, t: c.t, f: c.f, u: (real || c.g), d: c.d, i: pag ? pag.img : "" });
       porSport[res.sp] = lista; aceites++;
     } else rejeitadas++;

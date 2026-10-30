@@ -322,3 +322,5 @@ parada, é quase sempre o endereço da fonte):
 **v224:** linha «Transmissão» (`42-game-page.js`): o nome do canal é o link; sem botão «Ver transmissão»; cache atual `dia22-cache-v301`.
 
 **v225:** `watchLabel_(ev)` (`42-game-page.js`): nome do canal = `ev.watchName` ou deduzido do endereço; botão «Ver transmissão» nas ações mantém-se; cache atual `dia22-cache-v302`.
+
+**Apps Script v141 (afinação após o 1.º Registo real):** resolução de endereços e imagens funcionam (159 analisadas; 50 entravam, várias erradas). Regras apertadas: o FC Porto (`fc porto|porto b|dragões|portista`) tem de estar no título ou na descrição (só no texto não conta); `futebol nacional` no endereço = futebol masculino; "liga betclic" deixou de contar para o Basquetebol; fora fichas de jogo/planteis/resumos; "Champions feminina" é ambíguo e não conta para o Futebol Feminino; vantagem mínima de 4 pontos se o 2.º tem ≥2; `noticiasParecida_` tira a mesma história de jornais diferentes. Ruído conhecido: notícias sobre jogadores da equipa principal que citam a equipa B (ex.: Evanilson).

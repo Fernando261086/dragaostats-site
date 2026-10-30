@@ -1,6 +1,9 @@
 ## Apps Script v141 — notícias certas
 - Ligação real da notícia (sem cortar endereços), classificação por conteúdo da página, exclusão de futebol masculino, cadência 15 min, `noticiasAtualizarAgora` com Registo detalhado.
 
+## v227
+- Separador «Notícias» (`59-news-view.js`, `#newsView`, botão `#viewNewsBtn`): todas as notícias com pílulas por modalidade; está nos separadores do computador, na folha «Mais» do telemóvel e no «Ver todas →» do painel do Início. Apps Script v141: bloqueio (`LockService`) para o gatilho de 5 min não correr em paralelo com `noticiasAtualizarAgora` e sobrepor os resultados (causa de só aparecerem 2 notícias). Teste automático cobre o separador. Cache `dia22-cache-v304`.
+
 ## v226
 - Transmissão: o nome do canal vem de «Onde ver»; se estiver vazio, usa «Observações» (curto, ≤40 caracteres); só depois deduz do endereço. Cache `dia22-cache-v303`.
 

@@ -6,6 +6,7 @@ const { chromium } = require('playwright');
 const DIST = path.join(__dirname, '..', 'dist');
 const MIME = { '.html':'text/html', '.js':'text/javascript', '.json':'application/json', '.png':'image/png', '.css':'text/css' };
 const mock = { ok:true, hasAdminAuth:false, competitions:[{id:'c1',name:'Época 26/27',mode:'matches'}],
+  noticias:{ 'Andebol':[{id:'n1',t:'Andebol: FC Porto vence em casa e segue na prova com um título bastante comprido para testar',f:'Record',u:'https://example.com/a',d:Date.now()-3600e3,i:''}], 'Equipa B':[{id:'n2',t:'Equipa B prepara jogo',f:'FC Porto',u:'https://example.com/b',d:Date.now()-7200e3,i:''}] },
   data:{ c1:{ events:[
     {id:'e1',day:'2026-10',sport:'Andebol',opponent:'Sporting',status:'Passou',result:'28-24',data:'2026-10-20',local:'casa'},
     {id:'e2',day:'2026-11',sport:'Basquetebol',opponent:'Benfica',status:'Marcado',data:'2026-11-20',hora:'20:00',local:'fora'} ], status:{} } } };
@@ -35,6 +36,13 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
       errs.length ? bad(`${tag}: erros JS → ${errs.join(' | ')}`) : ok(`${tag}: sem erros JS`);
       const ov = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       ov > 1 ? bad(`${tag}: deslize lateral de ${ov}px`) : ok(`${tag}: sem deslize lateral`);
+      await page.evaluate(() => { try { setView('noticias'); } catch (e) {} });
+      await page.waitForTimeout(300);
+      const nCards = await page.evaluate(() => document.querySelectorAll('#newsView .nw-card').length);
+      nCards === 2 ? ok(`${tag}: separador Notícias mostra 2 cartões`) : bad(`${tag}: separador Notícias mostra ${nCards} cartões (esperado 2)`);
+      const ov2 = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      ov2 > 1 ? bad(`${tag}: Notícias com deslize lateral de ${ov2}px`) : ok(`${tag}: Notícias sem deslize lateral`);
+      await page.evaluate(() => { try { setView('inicio'); } catch (e) {} });
       if (label === 'público') {
         const vis = await page.evaluate(ids => ids.filter(i => { const e = document.getElementById(i); return e && e.offsetParent !== null; }), ADMIN_IDS);
         vis.length ? bad(`${tag}: botões de gestão visíveis → ${vis}`) : ok(`${tag}: nenhum botão de gestão visível`);

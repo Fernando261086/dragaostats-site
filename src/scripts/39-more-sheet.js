@@ -27,6 +27,7 @@
     ["🔔", "Notificações", "notifyToggleBtn"],
     ["📲", "Instalar app", "installAppBtn"],
     ["🌓", "Tema claro / escuro", "themeToggleBtn"],
+    ["📰", "Notícias", "viewNewsBtn"],
     ["🌍", "Esta semana", "viewTodayAllBtn"],
     ["🌐", "Pesquisar em tudo", "globalSearchBtn"],
     ["🏆", "Marcadores", "viewLeaderboardBtn"],

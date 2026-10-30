@@ -970,6 +970,8 @@ function updateModeVisibleTabs(){
   document.getElementById("viewLeaderboardBtn").style.display = matches ? "" : "none";
   const stBtn_ = document.getElementById("viewStandingsBtn");
   if(stBtn_) stBtn_.style.display = matches ? "" : "none"; // v184: igual para quem edita e para quem vê
+  const nwBtn_ = document.getElementById("viewNewsBtn");
+  if(nwBtn_) nwBtn_.style.display = matches ? "" : "none"; // v227: separador Notícias
   document.getElementById("summaryBtn").textContent = matches ? "📋 Resumo da semana (falado)" : "📋 Resumo do dia (falado)";
   document.getElementById("sportLinksBtn").style.display = matches ? "" : "none";
   document.getElementById("gridToggleBtn").style.display = matches ? "" : "none";

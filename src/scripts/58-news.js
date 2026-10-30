@@ -40,7 +40,7 @@ function newsHomeHtml_(){
   all.sort((a, b)=>b.n.d - a.n.d);
   const seen = new Set(), top = [];
   for(const x of all){ if(seen.has(x.n.id)) continue; seen.add(x.n.id); top.push(x); if(top.length >= 5) break; }
-  return `<div class="hv-panel nw-panel"><div class="hv-panel-head"><h3>Últimas notícias</h3></div>${top.map(x=>newsCardHtml_(x.n, x.sp, true)).join("")}${NEWS_NOTE_}</div>`;
+  return `<div class="hv-panel nw-panel"><div class="hv-panel-head"><h3>Últimas notícias</h3><button type="button" class="nw-all" data-newsall="1">Ver todas →</button></div>${top.map(x=>newsCardHtml_(x.n, x.sp, true)).join("")}${NEWS_NOTE_}</div>`;
 }
 // imagens que falham a carregar: caem para o bloco de cor (o evento "error" não sobe, por isso usa-se a fase de captura)
 document.addEventListener("error", e=>{
@@ -48,6 +48,7 @@ document.addEventListener("error", e=>{
   if(t && t.tagName === "IMG" && t.parentNode && t.parentNode.classList && t.parentNode.classList.contains("nw-img")){ t.parentNode.classList.add("nw-noimg"); t.remove(); }
 }, true);
 function bindNews_(host, rerender){
+  host.querySelectorAll("[data-newsall]").forEach(b=>{ b.onclick = ()=>{ if(typeof setView === "function"){ setView("noticias"); window.scrollTo(0, 0); } }; });
   host.querySelectorAll("[data-news]").forEach(a=>{ a.addEventListener("click", ()=>{ if(typeof track_ === "function") track_("noticia_aberta"); }); });
   host.querySelectorAll("[data-nhide]").forEach(b=>{
     b.onclick = async e=>{

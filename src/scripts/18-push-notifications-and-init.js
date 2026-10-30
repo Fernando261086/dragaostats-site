@@ -239,6 +239,7 @@ function showStaleDataBanner_(at){
     renderProgress();
     renderTimeline();
     if(typeof renderHomeView_ === "function") renderHomeView_();
+    if(typeof renderNewsView_ === "function") renderNewsView_();
     if(document.getElementById("medalsView").style.display !== "none"){
       renderMedals();
     }

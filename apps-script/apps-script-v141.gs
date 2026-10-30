@@ -5407,7 +5407,7 @@ function noticiasLimparTudo() {
   const props = PropertiesService.getScriptProperties();
   NOTICIAS_CONSULTAS_.forEach(function(c) { props.deleteProperty(noticiasChave_(c.sport)); });
   props.deleteProperty("noticiasVistos");
-  props.deleteProperty("noticiasUltimo");
+  props.setProperty("noticiasUltimo", String(Date.now())); // não deixa o gatilho de 5 min correr em paralelo e sobrepor os resultados
   props.setProperty("noticiasVersao", NOTICIAS_VERSAO_);
   Logger.log("Notícias apagadas; voltam a ser calculadas na próxima execução.");
 }
@@ -5553,6 +5553,11 @@ function noticiasCandidatos_() {
 
 // Processa candidatos novos (os mais recentes primeiro) dentro de um tempo máximo; o resto fica para a execução seguinte.
 function noticiasAtualizar_(verbose) {
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(verbose ? 60000 : 2000)) return "ocupado (outra execução de notícias a decorrer)";
+  try { return noticiasAtualizarLocked_(verbose); } finally { try { lock.releaseLock(); } catch (e) {} }
+}
+function noticiasAtualizarLocked_(verbose) {
   const t0 = Date.now(), tempoMs = verbose ? 150000 : 50000;
   const props = PropertiesService.getScriptProperties();
   const vistos = noticiasVistosLer_();

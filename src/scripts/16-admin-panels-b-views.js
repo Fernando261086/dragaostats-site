@@ -502,6 +502,7 @@ function setView(view){
   const history = view === "historico";
   const leaderboard = view === "marcadores";
   const cls = view === "classificacoes";
+  const nws = view === "noticias";
 
   const hb = document.getElementById("viewHomeBtn");
   if(hb) hb.classList.toggle("active", inicio || sportpg || gamepg);
@@ -513,11 +514,15 @@ function setView(view){
   if(gv) gv.style.display = gamepg ? "block" : "none";
   const cv = document.getElementById("clsView");
   if(cv) cv.style.display = cls ? "block" : "none";
+  const nv = document.getElementById("newsView");
+  if(nv) nv.style.display = nws ? "block" : "none";
+  const nb = document.getElementById("viewNewsBtn");
+  if(nb) nb.classList.toggle("active", nws);
   const sb = document.getElementById("viewStandingsBtn");
   if(sb) sb.classList.toggle("active", cls);
   document.body.classList.toggle("view-home", inicio);
   document.body.classList.toggle("view-cal", cal);
-  document.body.classList.toggle("view-inicio", inicio || sportpg || gamepg || cls);
+  document.body.classList.toggle("view-inicio", inicio || sportpg || gamepg || cls || nws);
   document.body.classList.toggle("view-jogo", gamepg);
   document.getElementById("viewCalendarBtn").classList.toggle("active", cal);
   document.getElementById("viewMedalsBtn").classList.toggle("active", medals);
@@ -550,6 +555,7 @@ function setView(view){
   if(stats) renderStatsView();
   if(history) renderHistoryView();
   if(cls && typeof renderClsView_ === "function") renderClsView_();
+  if(nws && typeof renderNewsView_ === "function") renderNewsView_();
   if(leaderboard) renderLeaderboardView();
 }
 document.getElementById("viewCalendarBtn").onclick = ()=>setView("calendario");
@@ -558,6 +564,7 @@ document.getElementById("viewMedalsBtn").onclick = ()=>setView("medalhas");
 document.getElementById("viewHistoryBtn").onclick = ()=>setView("historico");
 document.getElementById("viewLeaderboardBtn").onclick = ()=>setView("marcadores");
 if(document.getElementById("viewStandingsBtn")) document.getElementById("viewStandingsBtn").onclick = ()=>{ setView("classificacoes"); window.scrollTo(0, 0); };
+if(document.getElementById("viewNewsBtn")) document.getElementById("viewNewsBtn").onclick = ()=>{ setView("noticias"); window.scrollTo(0, 0); };
 document.getElementById("viewTodayAllBtn").onclick = ()=>{ weekOffset = 0; weekDay_ = null; setView("hoje-todas"); };
 document.getElementById("viewStatsBtn").onclick = ()=>setView("estatisticas");
 

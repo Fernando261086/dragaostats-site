@@ -5384,7 +5384,7 @@ const NOTICIAS_EXCLUIR_ = /\b(futebol nacional|farioli|equipa principal|liga por
 const NOTICIAS_EXCLUIR_TACAS_ = /\b(liga europa|europa league|taca de portugal|taca da liga)\b/; // só vale se o título não for do futebol feminino
 const NOTICIAS_MAX_POR_MODALIDADE_ = 10;
 const NOTICIAS_EVERY_MINUTES_ = 15;
-const NOTICIAS_DIAS_ = 10;
+const NOTICIAS_DIAS_ = 3;
 const NOTICIAS_VERSAO_ = "3";
 
 function noticiasChave_(sport) { return "noticias_" + sport.replace(/[^A-Za-z]/g, ""); }

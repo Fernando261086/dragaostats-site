@@ -332,3 +332,5 @@ parada, é quase sempre o endereço da fonte):
 **Apps Script v141 (3.ª afinação):** «dragão» sozinho no título já não conta como FC Porto (Dragão Arena/Dragão = estádio); só `fc porto|porto b|dragões|portista(s)`.
 
 **v227:** separador Notícias (`59-news-view.js`, `renderNewsView_`, `setView("noticias")`, `#newsView`/`#viewNewsBtn`; fica na folha «Mais» e no «Ver todas →» do Início, não na barra de baixo por falta de espaço); Apps Script v141 com `LockService` em `noticiasAtualizar_` e `noticiasLimparTudo` a não apagar `noticiasUltimo` (evitava a corrida com o gatilho que deixava só 2 notícias); cache atual `dia22-cache-v304`.
+
+**Apps Script v141:** `NOTICIAS_DIAS_` = 3 (só notícias das últimas 72 h; as candidatas do Google News já vêm com `when:7d`, o filtro de 3 dias aplica-se ao guardar e ao mostrar). Se ficar curto, subir este número.

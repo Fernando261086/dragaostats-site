@@ -5565,18 +5565,19 @@ function noticiasAtualizarLocked_(verbose) {
   const limiteMs = Date.now() - NOTICIAS_DIAS_ * 86400000;
   const porSport = {};
   NOTICIAS_CONSULTAS_.forEach(function(c) { porSport[c.sport] = noticiasLer_(c.sport); });
-  let aceites = 0, rejeitadas = 0, feitas = 0;
+  let aceites = 0, rejeitadas = 0, feitas = 0, falhasSeguidas = 0;
   const linhas = [];
   for (let i = 0; i < cands.length; i++) {
     if (Date.now() - t0 > tempoMs) break;
     const c = cands[i];
-    const real = noticiasResolverGoogle_(c.g);
+    let real = "";
+    if (falhasSeguidas < 6) { real = noticiasResolverGoogle_(c.g); falhasSeguidas = real ? 0 : falhasSeguidas + 1; } // Google a limitar? depois de 6 falhas seguidas deixa de insistir nesta execução
     const pag = real ? noticiasPagina_(real) : null;
-    if (!pag) { // sem página (Google a limitar, site lento): tenta de novo nas próximas execuções, no máximo 3 vezes
-      const n = (vistos[c.id] < 0 ? -vistos[c.id] : 0) + 1;
-      if (n < 3) { vistos[c.id] = -n; feitas++; if (verbose) linhas.push("adiada (sem página, tentativa " + n + ") | " + c.t.substring(0, 80) + " [" + c.f + "]"); Utilities.sleep(300); continue; }
-    }
     const res = noticiasClassificar_({ t: c.t, u: real || "", desc: pag ? (pag.desc + " " + pag.kw) : "", corpo: pag ? pag.corpo : "", fonte: c.f, pagina: !!pag });
+    if (!pag && !res.sp) { // sem página e só o título não chega: tenta de novo nas próximas execuções (máx. 3 vezes)
+      const n = (vistos[c.id] < 0 ? -vistos[c.id] : 0) + 1;
+      if (n < 3) { vistos[c.id] = -n; feitas++; if (verbose) linhas.push("adiada (" + (real ? "página não abriu" : "endereço real não obtido") + ", tentativa " + n + ") | " + c.t.substring(0, 80) + " [" + c.f + "]"); continue; }
+    }
     vistos[c.id] = 1; feitas++;
     Utilities.sleep(250);
     if (res.sp) {

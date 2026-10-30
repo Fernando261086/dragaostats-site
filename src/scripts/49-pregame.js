@@ -46,7 +46,7 @@ function pregameHtml_(ev){
 
   // classificação (a da competição europeia/taça, se o adversário jogar no mesmo grupo; senão a do campeonato)
   const sComp = (typeof compStandingForGame_ === "function") ? compStandingForGame_(ev) : null;
-  const s = sComp || ((typeof STANDINGS === "object" && STANDINGS) ? STANDINGS[ev.sport] : null);
+  const s = sComp || ((typeof STANDINGS === "object" && STANDINGS && (typeof isLeagueGame_ !== "function" || isLeagueGame_(ev))) ? STANDINGS[ev.sport] : null);
   if(s && Array.isArray(s.rows) && s.rows.length){
     const me = s.rows.find(r=>r.me);
     const adv = s.rows.find(r=>!r.me && pgSameTeam_(r.t, ev.athlete));

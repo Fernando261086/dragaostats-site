@@ -167,7 +167,7 @@ function renderGamePage_(){
   const futuro = !liveData && !fim && !aDecorrer && !isNaN(d) && d > new Date();
   const lembrete = (futuro && typeof hasGameReminder_ === "function")
     ? `<button type="button" class="hv-btn hv-btn-main gp-act${hasGameReminder_(ev.id) ? " is-on" : ""}" data-remind="${esc(ev.id)}">${hasGameReminder_(ev.id) ? "✓ Lembrete ativo" : "🔔 Lembrar-me"}</button>` : "";
-  const classif = (typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).length)
+  const classif = ((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).length && (typeof isLeagueGame_ !== "function" || isLeagueGame_(ev))) || (typeof compStandingForGame_ === "function" && compStandingForGame_(ev)))
     ? `<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpTable">🏆 Classificação</button>` : "";
   const acoes = `<div class="gp-actions">
     ${lembrete}

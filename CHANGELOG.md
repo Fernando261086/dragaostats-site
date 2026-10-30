@@ -1,6 +1,9 @@
 ## Apps Script v141 — notícias certas
 - Ligação real da notícia (sem cortar endereços), classificação por conteúdo da página, exclusão de futebol masculino, cadência 15 min, `noticiasAtualizarAgora` com Registo detalhado.
 
+## v228
+- Jogos que não são de campeonato (Elite Cup, Taça de Portugal/da Liga, Supertaça, Taça Ibérica, torneios, amigáveis, apresentação, europeias) já não mostram a classificação do campeonato na página do jogo («Classificação depois do jogo», «Antes do jogo» e botão 🏆). Nas europeias com tabela de grupo mostra a do grupo; nos outros aparece um cartão «Competição» (ex.: Elite Cup · Quartos de Final). `isLeagueGame_` em `41-standings.js` decide pelo campo «Competição»; vazio = campeonato. Cache `dia22-cache-v305`.
+
 ## v227
 - Separador «Notícias» (`59-news-view.js`, `#newsView`, botão `#viewNewsBtn`): todas as notícias com pílulas por modalidade; está nos separadores do computador, na folha «Mais» do telemóvel e no «Ver todas →» do painel do Início. Apps Script v141: bloqueio (`LockService`) para o gatilho de 5 min não correr em paralelo com `noticiasAtualizarAgora` e sobrepor os resultados (causa de só aparecerem 2 notícias). Teste automático cobre o separador. Cache `dia22-cache-v304`.
 

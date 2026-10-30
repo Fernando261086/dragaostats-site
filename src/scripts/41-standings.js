@@ -198,10 +198,24 @@ function openStandingsEditor_(sport){
 }
 
 // v177: mini-tabela depois do jogo — 5 linhas à volta do FC Porto, com J e Pts, e ligação à tabela completa
+// v228: só os jogos de CAMPEONATO usam a classificação do campeonato. Taças, torneios, amigáveis e europeias não.
+// Nomes reconhecidos em ev.detail (campo "Competição"): Campeonato…, 1ª Divisão, 2ª Liga, 3ª Divisão, Liga Portuguesa/BPI/… (menos "Taça da Liga").
+// Campo vazio = campeonato (como antes).
+function isLeagueGame_(ev){
+  const d = String((ev && ev.detail) || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+  if(!d) return true;
+  if(/taca|supertaca|champions|europa|cup|torneio|amigavel|apresentacao|iberica|mundial|final four|playoff|play-off/.test(d)) return false;
+  return /^(campeonato|\d\S* ?(divisao|liga)|liga\b|primeira|segunda|terceira)/.test(d);
+}
 function miniStandingHtml_(ev){
   try{
-    const S = (typeof STANDINGS === "object" && STANDINGS) ? STANDINGS[ev.sport] : null;
-    if(!S || !Array.isArray(S.rows) || !S.rows.length) return "";
+    const sComp = (typeof compStandingForGame_ === "function") ? compStandingForGame_(ev) : null;
+    const liga = isLeagueGame_(ev);
+    const S = sComp || (liga && typeof STANDINGS === "object" && STANDINGS ? STANDINGS[ev.sport] : null);
+    if(!S || !Array.isArray(S.rows) || !S.rows.length){
+      if(liga || !(ev.detail || ev.phase)) return "";
+      return `<div class="gp-card"><h3>Competição</h3><div style="font-weight:700;">${standingsEsc_([ev.detail, ev.phase].filter(Boolean).join(" · "))}</div></div>`;
+    }
     const i = S.rows.findIndex(r=>r.me);
     if(i < 0) return "";
     const esc = standingsEsc_, cols = S.cols || [], iP = cols.indexOf("Pts"), iJ = cols.indexOf("J");
@@ -209,8 +223,9 @@ function miniStandingHtml_(ev){
     const rows = S.rows.slice(a, b);
     const body = rows.map(r=>`<tr class="${r.me ? "is-me" : ""}"><td class="st-pos">${esc(r.p)}</td><td class="st-team">${crestCell_(ev.sport, r)}${esc(r.t)}</td><td>${iJ >= 0 ? esc((r.c || [])[iJ]) : ""}</td><td class="st-pts">${iP >= 0 ? esc((r.c || [])[iP]) : ""}</td></tr>`).join("");
     const zm = (typeof standingsZonasMap_ === "function") ? standingsZonasMap_(S) : null;
-    const sum = stSummaryHtml_(S, zm, esc);
-    return `<div class="gp-card"><h3>Classificação depois do jogo</h3>
+    const sum = sComp ? "" : stSummaryHtml_(S, zm, esc);
+    const subC = sComp ? [S.comp, S.fase].filter(Boolean).join(" · ") : "";
+    return `<div class="gp-card"><h3>Classificação depois do jogo</h3>${subC ? `<div class="st-note" style="margin:0 0 6px;">${esc(subC)}</div>` : ""}
       ${sum}
       <div class="st-wrap"><table class="st-table"><thead><tr><th class="st-pos">#</th><th class="st-team">Equipa</th><th>J</th><th class="st-pts">Pts</th></tr></thead><tbody>${body}</tbody></table></div>
       <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpTable2" style="width:100%;margin-top:8px;">Ver classificação completa</button></div>`;

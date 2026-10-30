@@ -285,3 +285,6 @@ código para facilitar trabalhar nele.
 ## v221
 - Origem das visitas: `?src=<nome>` (ex.: `https://dragaostats.pt/?src=instagram`) ou, sem isso, o site de onde veio; conta 1x por sessão, anónimo, aparece no resumo semanal como `origem_instagram`, `origem_direto`... (sem Apps Script novo).
 - SEO: títulos e descrições das 7 páginas de modalidade e da home com "calendário, resultados, classificação (e jogos ao vivo)"; sitemap lastmod. Cache v298.
+
+## v222
+- Página do jogo: nova linha "Transmissão" na caixa Informação, por baixo de Local, com o canal/sítio (campo novo "Onde ver" no editor, `ev.watchName`) clicável quando há link da transmissão. Só aparece antes do jogo acabar. Cache v299.

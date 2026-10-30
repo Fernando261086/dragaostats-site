@@ -305,6 +305,7 @@ function openEditForm(ev){
   document.getElementById("fDetalhe").value = ev.detail || "";
   document.getElementById("fFase").value = ev.phase || "";
   document.getElementById("fWatch").value = ev.watchUrl || "";
+  document.getElementById("fWatchName").value = ev.watchName || "";
   document.getElementById("fLocal").value = ev.local || "casa";
   document.getElementById("fVenue").value = ev.venue || "";
   document.getElementById("fLiveId").value = ev.liveId || "";
@@ -331,6 +332,7 @@ function openDuplicateForm(ev){
   document.getElementById("fDetalhe").value = ev.detail || "";
   document.getElementById("fFase").value = ev.phase || "";
   document.getElementById("fWatch").value = ev.watchUrl || "";
+  document.getElementById("fWatchName").value = ev.watchName || "";
   document.getElementById("fLocal").value = ev.local || "casa";
   document.getElementById("fVenue").value = ev.venue || "";
   document.getElementById("fLiveId").value = ""; // cada jogo tem o seu ID: não se copia ao duplicar
@@ -354,7 +356,7 @@ function closeEditForm(){
   editingId = null;
   document.getElementById("addSaveBtn").textContent = "Guardar prova";
   document.getElementById("addCancelBtn").style.display = "none";
-  ["fDia","fHora","fSport","fAtleta","fDetalhe","fFase","fWatch","fLiveId","fVenue","fNotes","fClassLink"].forEach(id=>document.getElementById(id).value = "");
+  ["fDia","fHora","fSport","fAtleta","fDetalhe","fFase","fWatch","fWatchName","fLiveId","fVenue","fNotes","fClassLink"].forEach(id=>document.getElementById(id).value = "");
   document.getElementById("fApprox").checked = false;
   document.getElementById("fCond").checked = false;
   document.getElementById("fNoAuto").checked = false;
@@ -380,6 +382,7 @@ document.getElementById("addSaveBtn").onclick = async ()=>{
     detail: document.getElementById("fDetalhe").value.trim(),
     phase: document.getElementById("fFase").value.trim(),
     watchUrl: document.getElementById("fWatch").value.trim(),
+    watchName: document.getElementById("fWatchName").value.trim(),
     local: document.getElementById("fLocal").value,
     venue: document.getElementById("fVenue").value.trim(),
     liveId: liveIdFromText_(document.getElementById("fLiveId").value),

@@ -312,3 +312,5 @@ parada, é quase sempre o endereço da fonte):
 **v221:** `origemVisita_` (fim de `53-home-extras.js`): `?src=` ou referrer → `track_("origem_<x>")` 1x por sessão (sessionStorage `dia22-origem`); aparece no resumo semanal pelo nome cru. Títulos/descrições SEO das páginas de modalidade reescritos; cache atual `dia22-cache-v298`.
 
 **Apps Script v139 (teste, `apps-script/apps-script-v139.gs`):** v138 + `testarNoticiasAgora` (só lê: Google News por modalidade, feeds RSS de jornais/federações, feeds anunciados nas páginas e endpoints possíveis de notícias em `api.app.fcporto.pt`); serve para decidir a fonte da futura secção "Notícias". Nada mudou no site.
+
+**v222:** `ev.watchName` ("Onde ver", input `#fWatchName` no template 02 / `17-forms-and-sync.js`); linha "Transmissão" em `gp-info` (`42-game-page.js`, `.gp-watch`), clicável com `ev.watchUrl`; cache atual `dia22-cache-v299`. Sem Apps Script novo (os campos do jogo passam tal e qual).

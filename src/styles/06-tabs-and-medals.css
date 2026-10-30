@@ -1022,3 +1022,7 @@ html.theme-light .st-table tr.st-games td{ background:rgba(0,0,0,.04); }
 .li-card .nc-ico{ animation:liPulse 1.6s ease-in-out infinite; }
 @keyframes liPulse{ 50%{ opacity:.45; } }
 @media (prefers-reduced-motion:reduce){ .li-card .nc-ico{ animation:none; } }
+
+/* v222: linha "Transmissão" na página do jogo */
+.gp-info b a.gp-watch{ color:#5bb4f0; text-decoration:underline; text-underline-offset:3px; font-weight:700; }
+html.theme-light .gp-info b a.gp-watch{ color:#0a3fa8; }

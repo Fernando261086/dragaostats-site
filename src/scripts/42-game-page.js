@@ -148,6 +148,7 @@ function renderGamePage_(){
       ${isNaN(d) ? "" : `<div><i>Data</i><b>${esc(homeLongDate_(d))}${ev.t ? " · " + esc(ev.t) : ""}</b></div>`}
       ${detail ? `<div><i>Competição</i><b>${esc(detail)}</b></div>` : ""}
       ${place ? `<div><i>Local</i><b>${esc(place)}</b></div>` : ""}
+      ${(!resultado && (ev.watchUrl || ev.watchName)) ? `<div><i>Transmissão</i><b>${ev.watchUrl ? `<a class="gp-watch" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">📺 ${esc(ev.watchName || "Ver transmissão")} ↗</a>` : esc(ev.watchName)}</b></div>` : ""}
     </div></div>`;
 
   // ---- ações
@@ -172,7 +173,7 @@ function renderGamePage_(){
     <button type="button" class="hv-btn hv-btn-main gp-act" id="gpShare">↗ Partilhar</button>
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ Imagem do resultado</button>
     ${READONLY_MODE ? "" : '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 Reel do resultado</button>'}</div></div>` : "";
-  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof REACTIONS === "object" && REACTIONS && REACTIONS[activeCompId] && REACTIONS[activeCompId][ev.id]) || null), JSON.stringify((typeof DETALHES === "object" && DETALHES && DETALHES[ev.id]) || null), (typeof crestId_ === "function" ? [crestId_(ev.sport, ev.athlete), crestId_(ev.sport, "FC Porto")].map(i=>i && crestCached_(i) ? 1 : 0).join("") : ""), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null)]);
+  const sig = JSON.stringify([ev.id, pill, sub, big, setsHtml, ev.watchUrl, ev.watchName, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof REACTIONS === "object" && REACTIONS && REACTIONS[activeCompId] && REACTIONS[activeCompId][ev.id]) || null), JSON.stringify((typeof DETALHES === "object" && DETALHES && DETALHES[ev.id]) || null), (typeof crestId_ === "function" ? [crestId_(ev.sport, ev.athlete), crestId_(ev.sport, "FC Porto")].map(i=>i && crestCached_(i) ? 1 : 0).join("") : ""), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null)]);
   if(sig === gameSig_) return;
   gameSig_ = sig;
 

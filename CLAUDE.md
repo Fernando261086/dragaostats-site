@@ -310,3 +310,5 @@ parada, é quase sempre o endereço da fonte):
 **v220:** `42-game-page.js` (ramo `aDecorrer`): aviso "Ao vivo indisponível de momento" quando `hasLiveCoverage_` e passaram >20 min sem dados; cache atual `dia22-cache-v297`.
 
 **v221:** `origemVisita_` (fim de `53-home-extras.js`): `?src=` ou referrer → `track_("origem_<x>")` 1x por sessão (sessionStorage `dia22-origem`); aparece no resumo semanal pelo nome cru. Títulos/descrições SEO das páginas de modalidade reescritos; cache atual `dia22-cache-v298`.
+
+**Apps Script v139 (teste, `apps-script/apps-script-v139.gs`):** v138 + `testarNoticiasAgora` (só lê: Google News por modalidade, feeds RSS de jornais/federações, feeds anunciados nas páginas e endpoints possíveis de notícias em `api.app.fcporto.pt`); serve para decidir a fonte da futura secção "Notícias". Nada mudou no site.

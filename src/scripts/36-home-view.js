@@ -78,7 +78,7 @@ function renderHomeView_(force){
   const sportsAll = Array.from(new Set(withD.map(x=>x.ev.sport))).sort((a, b)=>a.localeCompare(b, "pt"));
   if(homeSport_ !== "Todas" && !sportsAll.includes(homeSport_)) homeSport_ = "Todas";
 
-  const sig = JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, liveOf(x.ev), (typeof cevLiveText_ === "function" && liveOf(x.ev)) ? cevLiveText_(x.ev, cevLiveFor_(x.ev)) : ""]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_, (typeof ESCUDOS === "object" && ESCUDOS ? Object.keys(ESCUDOS).length : 0), (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), Object.keys(STANDINGS || {}).map(k=>[k, ((STANDINGS[k] || {}).updated || 0)])]);
+  const sig = JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, liveOf(x.ev), (typeof cevLiveText_ === "function" && liveOf(x.ev)) ? cevLiveText_(x.ev, cevLiveFor_(x.ev)) : ""]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_, (typeof newsSig_ === "function" ? newsSig_() : ""), (typeof ESCUDOS === "object" && ESCUDOS ? Object.keys(ESCUDOS).length : 0), (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), Object.keys(STANDINGS || {}).map(k=>[k, ((STANDINGS[k] || {}).updated || 0)])]);
   if(!force && sig === homeSig_) return;
   homeSig_ = sig;
   if(typeof favApplyOnce_ === "function") favApplyOnce_(sportsAll);
@@ -148,10 +148,11 @@ function renderHomeView_(force){
   }).join("");
   if(clsCards) clsHtml = `<div class="hv-panel hv-cls-panel"><div class="hv-panel-head"><h3>🏆 Classificações</h3><span class="hv-cls-hint">Toca para ver a tabela</span></div><div class="hv-cls-grid">${clsCards}</div></div>`;
 
-  const html = `<div class="hv-top"><button type="button" class="hv-search" data-search="1"><span aria-hidden="true">🔎</span> Procurar jogo, adversário, mês…</button>${(typeof liveIntroHtml_ === "function") ? liveIntroHtml_() : ""}${(typeof todayStripHtml_ === "function") ? todayStripHtml_(withD) : ""}${homeHeroHtml_(hero)}${(typeof winInviteHtml_ === "function") ? winInviteHtml_(done) : ""}${(typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("inicio") : ""}${week}${(typeof sportsGridHtml_ === "function") ? sportsGridHtml_(sportsAll, upcoming) : ""}${resultsHtml}${clsHtml}</div>`;
+  const html = `<div class="hv-top"><button type="button" class="hv-search" data-search="1"><span aria-hidden="true">🔎</span> Procurar jogo, adversário, mês…</button>${(typeof liveIntroHtml_ === "function") ? liveIntroHtml_() : ""}${(typeof todayStripHtml_ === "function") ? todayStripHtml_(withD) : ""}${homeHeroHtml_(hero)}${(typeof winInviteHtml_ === "function") ? winInviteHtml_(done) : ""}${(typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("inicio") : ""}${week}${(typeof sportsGridHtml_ === "function") ? sportsGridHtml_(sportsAll, upcoming) : ""}${(typeof newsHomeHtml_ === "function") ? newsHomeHtml_() : ""}${resultsHtml}${clsHtml}</div>`;
   host.innerHTML = html;
   if(typeof bindNotifyCta_ === "function") bindNotifyCta_(host, ()=>renderHomeView_(true));
   if(typeof bindLiveIntro_ === "function") bindLiveIntro_(host, ()=>renderHomeView_(true));
+  if(typeof bindNews_ === "function") bindNews_(host, ()=>renderHomeView_(true));
   host.querySelectorAll("[data-search]").forEach(b=>{ b.onclick = ()=>{ if(typeof openSearchSheet_ === "function") openSearchSheet_(); }; });
   host.querySelectorAll("[data-go]").forEach(b=>{ b.onclick = ()=>goToEventCard(b.getAttribute("data-go")); });
   host.querySelectorAll("[data-remind]").forEach(b=>{ b.onclick = ()=>toggleGameReminder_(b.getAttribute("data-remind"), b); });

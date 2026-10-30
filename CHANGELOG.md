@@ -288,3 +288,6 @@ código para facilitar trabalhar nele.
 
 ## v222
 - Página do jogo: nova linha "Transmissão" na caixa Informação, por baixo de Local, com o canal/sítio (campo novo "Onde ver" no editor, `ev.watchName`) clicável quando há link da transmissão. Só aparece antes do jogo acabar. Cache v299.
+
+## v223 / Apps Script v140
+- Notícias das modalidades: Apps Script `noticiasSeDevido_` (de hora a hora, Google News por modalidade, filtro por "Porto/Dragões" ou fonte FC Porto, máx. 12 por modalidade, 10 dias) + imagens de capa em melhor esforço (`noticiasImagensPendentes_`: resolve o link do Google e lê og:image). Site: `58-news.js`, separador "Notícias" na página de modalidade, bloco "Últimas notícias" no Início, "Esconder" só em modo edição (`ocultarNoticia`). Termos/Privacidade atualizados. Cache v300.

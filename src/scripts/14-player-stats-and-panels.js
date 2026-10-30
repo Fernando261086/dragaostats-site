@@ -660,7 +660,7 @@ const PRIVACY_HTML = `
   <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">Para percebermos, de forma agregada, quantas pessoas visitam o site e que páginas veem, usamos o Cloudflare Web Analytics (o Cloudflare é também quem aloja o site). Não usa cookies, não guarda nada no teu aparelho, não cria perfis nem te segue por outros sites, e nunca é associado ao teu nome. As visitas de administração não são contadas.</p>
 
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Serviços de terceiros</p>
-  <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">Para o site funcionar, o teu navegador liga-se a alguns serviços que, como em qualquer site, recebem o teu endereço IP: o Google Fonts (tipos de letra), o Cloudflare (alojamento e estatísticas agregadas) e, para mostrar as fotografias dos jogadores, os servidores do FC Porto. Os dados dos jogos vêm de fontes públicas (federações, Liga Portugal, Sofascore, entre outras) e não envolvem dados teus.</p>
+  <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">Para o site funcionar, o teu navegador liga-se a alguns serviços que, como em qualquer site, recebem o teu endereço IP: o Google Fonts (tipos de letra), o Cloudflare (alojamento e estatísticas agregadas) e, para mostrar as fotografias dos jogadores, os servidores do FC Porto. Nas notícias, as imagens de capa são carregadas dos sites dos próprios jornais, e ao abrires uma notícia passas para o site deles, que tem a sua própria política de privacidade. Os dados dos jogos vêm de fontes públicas (federações, Liga Portugal, Sofascore, entre outras) e não envolvem dados teus.</p>
 
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Os teus direitos</p>
   <p style="margin:0 0 6px; font-size:13px; color:var(--text-dim);">Podes, a qualquer momento, exercer os seguintes direitos sobre os dados que temos sobre ti: acesso, retificação, apagamento, limitação do tratamento, portabilidade, e retirar o consentimento dado (sem afetar a licitude do que já tenha sido feito antes disso). Para exercer qualquer um destes direitos, usa o botão "🐛 Reportar um bug ou sugestão" para nos contactares, ou escreve para <a href="mailto:dragaostats@gmail.com" style="color:var(--gold-dim);">dragaostats@gmail.com</a>.</p>
@@ -704,6 +704,9 @@ const TERMS_HTML = `
 
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Sem responsabilidade por danos</p>
   <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">Não nos responsabilizamos por decisões tomadas com base na informação aqui apresentada (ex: apostas, planeamento de viagens a jogos), nem por eventuais falhas técnicas.</p>
+
+  <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Notícias</p>
+  <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">As notícias que aparecem na app são de sites de terceiros (jornais, clube, federações). Mostramos apenas o título, a fonte, a data e, quando existe, a imagem de capa, e a ligação leva-te ao site original, onde está o texto completo. Os conteúdos pertencem aos respetivos autores e não temos responsabilidade sobre eles. Se és titular de um conteúdo e queres que deixe de aparecer, escreve-nos e retiramos.</p>
 
   <p style="margin:0 0 4px; font-weight:700; color:var(--text);">Marcas e imagens</p>
   <p style="margin:0 0 14px; font-size:13px; color:var(--text-dim);">Nomes, escudos, logótipos e fotografias pertencem aos respetivos titulares (clubes, federações, atletas). São usados apenas para identificar equipas e jogadores, sem fins comerciais. As fotografias dos jogadores são mostradas com autorização do clube. Se és titular de algum conteúdo e queres que seja retirado, escreve-nos e removemos.</p>

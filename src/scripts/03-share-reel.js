@@ -422,6 +422,7 @@ async function fetchAll(){
       COMP_STANDINGS = (raw.classificacoesComp && typeof raw.classificacoesComp === "object") ? raw.classificacoesComp : {};
       PLANTEL = (raw.plantel && typeof raw.plantel === "object") ? raw.plantel : {};
       FORMAS = (raw.formas && typeof raw.formas === "object") ? raw.formas : {};
+      NOTICIAS = (raw.noticias && typeof raw.noticias === "object") ? raw.noticias : {};
       DETALHES = (raw.detalhes && typeof raw.detalhes === "object") ? raw.detalhes : {};
       ESCUDOS = (raw.escudos && typeof raw.escudos === "object") ? raw.escudos : {};
       try{ DATA_FRESH_ = true; extrasSave_(); }catch(e){} // v179: dados do servidor chegaram; guarda uma cópia para a próxima visita abrir já preenchida

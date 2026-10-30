@@ -72,7 +72,7 @@ function renderSportPage_(){
       </div>
     </div>
   </div>`;
-  const tabs = `<div class="sp-tabs"><button type="button" class="${sportPageTab_ === "jogos" ? "active" : ""}" data-sptab="jogos">Jogos</button><button type="button" class="${sportPageTab_ === "classificacao" ? "active" : ""}" data-sptab="classificacao">Classificação</button><button type="button" class="${sportPageTab_ === "marcadores" ? "active" : ""}" data-sptab="marcadores">Marcadores</button>${(typeof squadHas_ === "function" && squadHas_(sport)) ? `<button type="button" class="${sportPageTab_ === "plantel" ? "active" : ""}" data-sptab="plantel">Plantel</button>` : ""}</div>`;
+  const tabs = `<div class="sp-tabs"><button type="button" class="${sportPageTab_ === "jogos" ? "active" : ""}" data-sptab="jogos">Jogos</button><button type="button" class="${sportPageTab_ === "classificacao" ? "active" : ""}" data-sptab="classificacao">Classificação</button><button type="button" class="${sportPageTab_ === "marcadores" ? "active" : ""}" data-sptab="marcadores">Marcadores</button>${(typeof newsHas_ === "function" && newsHas_(sport)) ? `<button type="button" class="${sportPageTab_ === "noticias" ? "active" : ""}" data-sptab="noticias">Notícias</button>` : ""}${(typeof squadHas_ === "function" && squadHas_(sport)) ? `<button type="button" class="${sportPageTab_ === "plantel" ? "active" : ""}" data-sptab="plantel">Plantel</button>` : ""}</div>`;
   let heroHtml = (sportPageTab_ === "jogos" && typeof homeHeroHtml_ === "function") ? `<div class="sp-hero">${homeHeroHtml_(next)}</div>` : "";
   if(sportPageTab_ === "jogos" && !next && done.length){
     // v159: sem próximo jogo marcado → em vez de um destaque vazio, mostra o último resultado
@@ -100,6 +100,8 @@ function renderSportPage_(){
     const nextRest = upcoming.slice(1);
     body = `${nextRest.length ? `<div class="hv-panel"><div class="hv-panel-head"><h3>Calendário</h3></div>${nextRest.map(row).join("")}</div>` : ""}
       <div class="hv-panel"><div class="hv-panel-head"><h3>Resultados</h3></div>${done.length ? done.map(row).join("") : '<div class="hv-empty">Ainda sem resultados.</div>'}</div>`;
+  }else if(sportPageTab_ === "noticias"){
+    body = (typeof newsPanelHtml_ === "function") ? newsPanelHtml_(sport) : "";
   }else if(sportPageTab_ === "plantel"){
     body = (typeof squadPanelHtml_ === "function") ? squadPanelHtml_(sport) : "";
   }else if(sportPageTab_ === "classificacao"){
@@ -145,6 +147,7 @@ function renderSportPage_(){
     try{ await navigator.clipboard.writeText(https); alert("Link copiado! No Google Calendar: Outros calendários › A partir do URL, e cola o link.\n\n" + https); }
     catch(e){ prompt("Copia este link e cola-o no teu calendário (A partir do URL):", https); }
   };
+  if(typeof bindNews_ === "function") bindNews_(host, ()=>renderSportPage_());
   host.querySelector("#spBack").onclick = ()=>navUiBack_();
   host.querySelectorAll("[data-sptab]").forEach(b=>{ b.onclick = ()=>{ sportPageTab_ = b.getAttribute("data-sptab"); renderSportPage_(); }; });
   host.querySelectorAll("[data-spstat]").forEach(b=>{ b.onclick = ()=>{ sportPageStat_ = b.getAttribute("data-spstat"); renderSportPage_(); }; });

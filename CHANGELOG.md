@@ -1,6 +1,10 @@
 ## Apps Script v141 — notícias certas
 - Ligação real da notícia (sem cortar endereços), classificação por conteúdo da página, exclusão de futebol masculino, cadência 15 min, `noticiasAtualizarAgora` com Registo detalhado.
 
+## v230
+- Hóquei: o «Lance a lance» e as estatísticas vêm da página do jogo no hoqueipatins.pt (Apps Script v148). Minuto com a parte («1ªP 5'»), ícone 🏒, «Intervalo» sem apóstrofo e fonte «hoqueipatins.pt» (`46-game-details.js`). Cache `dia22-cache-v307`.
+- Apps Script v148: `hqDetalhesDosAtivos_`/`hqParseEvento_`/`hqEventoId_` (cronologia do `hoqueipatins.pt/evento/<id>/`: golos+assistência, cartões azul/amarelo/vermelho, power play, timeouts, penáltis, VAR, trocas de guarda-redes); teste `testarHoqueiDetalheAgora`.
+
 ## v229
 - Página do jogo: **percurso na competição** (`compPathHtml_`, `41-standings.js`) nos jogos que não são de campeonato (Elite Cup: Quartos → Meia final → Final, com resultados e ligações; ignora amigáveis/apresentações; janela de 21 dias); **notícias do jogo** (`newsForGame_`/`gameNewsHtml_`, `58-news.js`, pelas etiquetas do adversário) e botão **🎟️ Bilhetes** (`newsTicketForGame_`) nos jogos por jogar.
 - Início/Notícias: a modalidade favorita (★) vem primeiro; as listas mostram só 3 dias (`NEWS_LIST_DAYS_`), as notícias do jogo usam até 14.

@@ -32,7 +32,9 @@ function gameDetailsHtml_(ev){
   const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
   const inc = Array.isArray(d.inc) ? d.inc : [], st = Array.isArray(d.st) ? d.st : [];
   if(!inc.length && !st.length) return "";
-  const icone = {G:"⚽", GP:"⚽", AG:"⚽", CA:"🟨", CV:"🟥", CA2:"🟥", S:"🔄", O:"•"};
+  const hoq = ev.sport === "Hóquei Patins", golo = hoq ? "🏒" : "⚽"; // v230: hóquei (cronologia do hoqueipatins.pt)
+  const mn = m=>(/\d$/.test(String(m)) ? esc(m) + "'" : esc(m)); // "Intervalo" não leva apóstrofo
+  const icone = {G:golo, GP:golo, AG:golo, CA:"🟨", CV:"🟥", CA2:"🟥", S:"🔄", O:"•"};
   let html = "";
   if(inc.length){
     // v207: "Lance a lance" em duas colunas — quem joga em casa à esquerda, quem joga fora à direita; resultado corrido nos golos
@@ -60,8 +62,8 @@ function gameDetailsHtml_(ev){
       if(!nome && !extra){ const rotulo = { G:"Golo", GP:"Golo de penálti", AG:"Auto-golo", CA:"Cartão amarelo", CV:"Cartão vermelho", CA2:"2.º amarelo", S:"Substituição" }[tipo]; if(rotulo) txt = `<b>${rotulo}</b>`; }
       else if(!nome && tipo === "G") txt = `<b>Golo</b>${extra ? ` <i>(ass. ${extra})</i>` : ""}`;
       const ic = `<span class="gd-ic">${icone[tipo] || "•"}</span>`;
-      const cel = it.esq ? `<span class="gd-c gd-l">${ic}<span class="gd-tx">${txt}</span></span><span class="gd-mid"><b class="gd-min">${min}'</b>${it.placar ? `<em class="gd-sc">${it.placar}</em>` : ""}</span><span class="gd-c"></span>`
-                         : `<span class="gd-c"></span><span class="gd-mid"><b class="gd-min">${min}'</b>${it.placar ? `<em class="gd-sc">${it.placar}</em>` : ""}</span><span class="gd-c gd-r"><span class="gd-tx">${txt}</span>${ic}</span>`;
+      const cel = it.esq ? `<span class="gd-c gd-l">${ic}<span class="gd-tx">${txt}</span></span><span class="gd-mid"><b class="gd-min">${mn(x[0])}</b>${it.placar ? `<em class="gd-sc">${it.placar}</em>` : ""}</span><span class="gd-c"></span>`
+                         : `<span class="gd-c"></span><span class="gd-mid"><b class="gd-min">${mn(x[0])}</b>${it.placar ? `<em class="gd-sc">${it.placar}</em>` : ""}</span><span class="gd-c gd-r"><span class="gd-tx">${txt}</span>${ic}</span>`;
       return `<div class="gd-row3${k >= LIM ? " gd-hide" : ""}">${cel}</div>`;
     }).join("");
     const cab = `<div class="gd-head"><span class="gd-hl">${typeof crestName_ === "function" ? crestName_(ev, t.home) : esc(t.home)}</span><span></span><span class="gd-hr">${typeof crestNameEnd_ === "function" ? crestNameEnd_(ev, t.away) : esc(t.away)}</span></div>`;
@@ -76,7 +78,7 @@ function gameDetailsHtml_(ev){
     }).join("");
     html += `<div class="gp-card"><h3>Estatísticas</h3>${linhas}</div>`;
   }
-  return html + `<div class="gd-src">Cronologia e estatísticas: Sofascore, podem ter atraso. O resultado oficial é o do site.</div>`;
+  return html + `<div class="gd-src">Cronologia e estatísticas: ${hoq ? "hoqueipatins.pt" : "Sofascore"}, podem ter atraso. O resultado oficial é o do site.</div>`;
 }
 
 // v177: últimos acontecimentos no cartão "ao vivo" do Início (3 mais recentes da cronologia, se houver)

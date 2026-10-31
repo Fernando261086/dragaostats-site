@@ -51,7 +51,9 @@ function renderSportCards_(){
       activeSport = sport;
       if(item && item.next){
         const month = (item.next.day || "").slice(0, 7);
-        if(month && month !== activeDay){
+        // v232: só muda de mês se a modalidade não tiver jogos no mês aberto (nem em "Todos os meses")
+        const temNoMes = (activeDay === "todos") || (sport === "Todos") || EVENTS.some(e=>e.sport === sport && (e.day||"").slice(0,7) === activeDay);
+        if(month && month !== activeDay && !temNoMes){
           activeDay = month;
           gridSelectedDay = null;
           document.getElementById("dayNum").textContent = activeDay;

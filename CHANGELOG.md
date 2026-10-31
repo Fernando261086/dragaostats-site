@@ -322,3 +322,6 @@ código para facilitar trabalhar nele.
 
 ## v231
 - Hóquei Patins passa a usar "Marcadores" (como Futebol Feminino, Futsal e Equipa B): botão, painel (um golo por linha) e página do jogo. `MARCADORES_LABEL_SPORTS` em `03-share-reel.js`. Cache v308.
+
+## v232
+- Calendário (Modo Modalidades): mudar de mês mantém a modalidade escolhida; separador novo "Todos os meses" (`activeDay === "todos"`); modalidade sem jogos no mês mostra aviso + botão para o mês mais próximo; as modalidades do filtro são as da competição toda; escolher modalidade só muda de mês se ela não tiver jogos no mês aberto. Cache v309.

@@ -295,12 +295,14 @@ function wrapCenteredText(ctx, text, cx, y, maxWidth){
 // Modalidades isso é o MÊS (ev.day é uma data completa "YYYY-MM-DD"), no modo
 // normal continua a ser o dia exato, tal como sempre foi.
 function belongsToActiveDay(ev){
-  if(currentCompMode()==="matches") return (ev.day||"").slice(0,7) === activeDay;
+  if(currentCompMode()==="matches") return activeDay === "todos" || (ev.day||"").slice(0,7) === activeDay; // v232: "todos" = todos os meses
   return ev.day === activeDay;
 }
 
 function getSportsPresent(){
-  return ["Todos", ...Array.from(new Set(EVENTS.filter(belongsToActiveDay).map(e=>e.sport)))];
+  // v232: em Modo Modalidades as modalidades são as da competição toda (mudar de mês não as faz desaparecer)
+  const base = (currentCompMode()==="matches") ? EVENTS : EVENTS.filter(belongsToActiveDay);
+  return ["Todos", ...Array.from(new Set(base.map(e=>e.sport).filter(Boolean)))];
 }
 function getDaysPresent(){
   if(currentCompMode()==="matches"){
@@ -1007,18 +1009,19 @@ function renderDayTabs(){
   const isMatches = currentCompMode()==="matches";
   const todayNum = new Date().getDate();
   const todayMonthKey = new Date().toISOString().slice(0,7);
-  getDaysPresent().forEach(d=>{
+  (isMatches ? ["todos"].concat(getDaysPresent()) : getDaysPresent()).forEach(d=>{
     const b = document.createElement("button");
     b.className = "day-tab" + (d===activeDay ? " active":"");
-    if(isMatches){
+    if(isMatches && d === "todos"){
+      b.textContent = "Todos os meses";
+    }else if(isMatches){
       b.innerHTML = monthLabel(d) + (d===todayMonthKey ? ' <span class="today-dot">Este mês</span>' : "");
     }else{
       b.innerHTML = "Dia " + d + (parseInt(d,10)===todayNum ? ' <span class="today-dot">Hoje</span>' : "");
     }
     b.onclick = ()=>{
       activeDay = d;
-      activeSport = "Todos";
-      gridSelectedDay = null;
+      gridSelectedDay = null; // v232: a modalidade escolhida mantém-se ao mudar de mês
       document.getElementById("dayNum").textContent = d;
       renderDayTabs();
       renderFilters();

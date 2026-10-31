@@ -159,13 +159,14 @@ function renderTimeline(){
   renderPendingResultsBanner(matchesMode);
 
   const monthEvents = EVENTS.filter(belongsToActiveDay);
-  document.getElementById("calendarGrid").style.display = (matchesMode && calendarGridMode) ? "block" : "none";
-  if(matchesMode && calendarGridMode){
+  const gridOn_ = matchesMode && calendarGridMode && activeDay !== "todos";
+  document.getElementById("calendarGrid").style.display = gridOn_ ? "block" : "none";
+  if(gridOn_){
     renderCalendarGrid(monthEvents);
   }
 
   let filtered = monthEvents;
-  if(matchesMode && calendarGridMode && gridSelectedDay){
+  if(gridOn_ && gridSelectedDay){
     filtered = filtered.filter(ev=>{
       const d = new Date(ev.day + "T00:00:00");
       return !isNaN(d) && d.getDate() === gridSelectedDay;
@@ -242,6 +243,24 @@ function renderTimeline(){
     const empty = document.createElement("div");
     empty.className = "timeline-empty";
     empty.innerHTML = `<div class="timeline-empty-icon">🔍</div><div>Sem provas para mostrar com estes filtros.</div>`;
+    // v232: modalidade sem jogos neste mês → diz-o e oferece o mês mais próximo que tenha
+    if(matchesMode && activeSport !== "Todos" && activeDay !== "todos"){
+      const meses = Array.from(new Set(EVENTS.filter(e=>e.sport===activeSport).map(e=>(e.day||"").slice(0,7)).filter(Boolean))).sort();
+      const ix = (k)=>parseInt(k.slice(0,4),10)*12 + parseInt(k.slice(5,7),10);
+      meses.sort((a,b)=>Math.abs(ix(a)-ix(activeDay)) - Math.abs(ix(b)-ix(activeDay)) || a.localeCompare(b));
+      empty.innerHTML = `<div class="timeline-empty-icon">🔍</div><div>Sem jogos de ${activeSport} em ${monthNameLower_(activeDay)}.</div>`;
+      if(meses.length){
+        const mb = document.createElement("button");
+        mb.className = "add-save"; mb.style.cssText = "margin-top:12px;";
+        mb.textContent = "Ver " + monthNameLower_(meses[0]) + " →";
+        mb.onclick = ()=>{
+          activeDay = meses[0]; gridSelectedDay = null;
+          document.getElementById("dayNum").textContent = activeDay;
+          renderDayTabs(); renderFilters(); renderProgress(); renderTimeline();
+        };
+        empty.appendChild(mb);
+      }
+    }
     container.appendChild(empty);
     appendNextMonthBtn();
     return;

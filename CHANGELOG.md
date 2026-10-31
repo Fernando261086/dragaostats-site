@@ -332,3 +332,7 @@ código para facilitar trabalhar nele.
 
 ## v234
 - Traduções das estatísticas de futebol da equipa principal; Apps Script v149 ignora estatísticas repetidas do Sofascore. Cache v311.
+
+## Apps Script v150 (sem alterações ao site)
+- `PLANTEL_FCP_["Futebol"] = {classe:1, equipa:1}` (30 jogadores confirmado em 31/10/2026).
+- `ZONAS_PT_`: "Europa League Qualification" e "Conference League Qualification" (Liga Portugal) traduzidas.

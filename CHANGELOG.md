@@ -344,3 +344,6 @@ código para facilitar trabalhar nele.
 
 ## v236 / Apps Script v152 — a equipa principal chama-se «Equipa A»
 - O nome da modalidade no site é **"Equipa A"** (Fernando). Apps Script v152: todas as chaves "Futebol" → "Equipa A" (`SOFA_SPORTS_`, classificação, plantel, detalhes, avisos, alertas, testes). Site: cor, estatísticas, perguntas-modelo, `MARCADORES_LABEL_SPORTS`, duração, slugs (`/futebol` → "Equipa A"), `_worker.js`, `public/futebol.html` (`SPORT`). "Futebol" fica só como legado. Cache `dia22-cache-v313`.
+
+## Apps Script v153 (sem alterações ao site)
+- `parseStandingsSofascore_` guarda o id Sofascore de cada equipa (`row.i`); `escudosComTabelas_` usa-o diretamente → escudos na classificação da Equipa A e do Futsal.

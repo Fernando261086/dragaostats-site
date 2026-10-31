@@ -366,3 +366,5 @@ parada, é quase sempre o endereço da fonte):
 **v235 / Apps Script v151 (`apps-script/apps-script-v151.gs`):** Basquetebol com estatísticas e ficha de jogadores do Sofascore (`jg` em `sofaDetalhes`/`detalhes`; site `46-game-details.js`, cartão «Jogadores», `.gd-jg*`). Mapa de lançamentos: 404 na API (só na app). `liveId` do basquetebol (FIBA) não é usado no Sofascore sem `#id:`. Equipa 208083 confirmada (31/10/2026: Ovarense–Porto, event 16577097). Cache atual `dia22-cache-v312`.
 
 **v236 / Apps Script v152 (`apps-script/apps-script-v152.gs`):** a modalidade da equipa principal chama-se **"Equipa A"** (não "Futebol"); `"Futebol"` fica só como legado (jogos antigos). A URL pública continua `/futebol`. Tudo o que as notas v233–v235 dizem de «Futebol» vale para "Equipa A". Cache atual `dia22-cache-v313`.
+
+**Apps Script v153 (`apps-script/apps-script-v153.gs`, sem alterações ao site):** `parseStandingsSofascore_` põe `i` (id da equipa no Sofascore) em cada linha; `escudosComTabelas_` usa-o (antes só reconhecia por nome, e a Liga quase não batia com os adversários do calendário). Vale para a Equipa A e o Futsal.

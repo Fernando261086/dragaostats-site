@@ -10,7 +10,8 @@ const GD_STAT_PT_ = {
   "fast break goals":"Golos de contra-ataque","fastbreak goals":"Golos de contra-ataque","breakthrough goals":"Golos de penetração","6m goals":"Golos de 6 m","9m goals":"Golos de 9 m","pivot goals":"Golos de pivô","blocks":"Bloqueios","turnovers":"Perdas de bola","timeouts":"Desconto de tempo","time-outs":"Desconto de tempo","time outs":"Desconto de tempo","assists":"Assistências","goals":"Golos","shots":"Remates","shots on target":"Remates enquadrados","total shots":"Remates","fouls":"Faltas","disqualifications":"Desqualificações","suspensions":"Exclusões",
   "ball possession":"Posse de bola","possession":"Posse de bola","big chances":"Grandes oportunidades","total shots ":"Remates","shots off target":"Remates ao lado","blocked shots":"Remates bloqueados","shots inside box":"Remates dentro da área","shots outside box":"Remates fora da área","corner kicks":"Cantos","corners":"Cantos","offsides":"Foras de jogo","free kicks":"Livres","throw-ins":"Lançamentos de linha lateral","goalkeeper saves":"Defesas do guarda-redes","goal kicks":"Pontapés de baliza","passes":"Passes","accurate passes":"Passes certos","tackles":"Desarmes","interceptions":"Intercepções","clearances":"Cortes","duels":"Duelos","ground duels":"Duelos no chão","aerial duels":"Duelos aéreos","dribbles":"Dribles","crosses":"Cruzamentos","long balls":"Bolas longas","final third entries":"Entradas no último terço","touches in penalty area":"Toques na área","hit woodwork":"Bolas nos ferros","expected goals":"Golos esperados","big chances missed":"Grandes oportunidades falhadas","big chances scored":"Grandes oportunidades marcadas","penalties":"Penáltis","own goals":"Autogolos","substitutions":"Substituições",
   "aces":"Ases","service errors":"Erros de serviço","attack points":"Pontos de ataque","block points":"Pontos de bloco","points won":"Pontos ganhos","max points in a row":"Máx. de pontos seguidos",
-  "total shots":"Remates","average rating":"Nota média","fouled in final third":"Faltas sofridas no terço final","final third phase":"Fase no terço final","dispossessed":"Bolas perdidas","tackles won":"Desarmes ganhos","total tackles":"Desarmes","recoveries":"Recuperações de bola","errors lead to a shot":"Erros que deram remate","errors lead to a goal":"Erros que deram golo","goals prevented":"Golos evitados","punches":"Socos","high claims":"Saídas a cruzamentos"
+  "total shots":"Remates","average rating":"Nota média","fouled in final third":"Faltas sofridas no terço final","final third phase":"Fase no terço final","dispossessed":"Bolas perdidas","tackles won":"Desarmes ganhos","total tackles":"Desarmes","recoveries":"Recuperações de bola","errors lead to a shot":"Erros que deram remate","errors lead to a goal":"Erros que deram golo","goals prevented":"Golos evitados","punches":"Socos","high claims":"Saídas a cruzamentos",
+  "free throws":"Lances livres","2 pointers":"2 pontos","3 pointers":"Triplos","field goals":"Lançamentos","rebounds":"Ressaltos","defensive rebounds":"Ressaltos defensivos","offensive rebounds":"Ressaltos ofensivos","time spent in lead":"Tempo na liderança","lead changes":"Mudanças na liderança","biggest lead":"Maior vantagem"
 };
 const GD_INC_PT_ = {
   "suspension":"Exclusão","suspension twominutes":"Exclusão de 2 minutos","twominutes":"2 minutos","two minutes":"2 minutos","suspension 2 minutes":"Exclusão de 2 minutos","disqualification":"Desqualificação","red card":"Cartão vermelho","yellow card":"Cartão amarelo","blue card":"Cartão azul","timeout":"Desconto de tempo","time-out":"Desconto de tempo","penalty":"Penálti","penalty missed":"Penálti falhado","missed penalty":"Penálti falhado","seven meter":"Livre de 7 m","seven meter missed":"Livre de 7 m falhado","goal":"Golo","own goal":"Autogolo","substitution":"Substituição","injury":"Lesão","var":"VAR"
@@ -31,8 +32,8 @@ function gameDetailsHtml_(ev){
   const d = (DETALHES && typeof DETALHES === "object") ? DETALHES[ev.id] : null;
   if(!d) return "";
   const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
-  const inc = Array.isArray(d.inc) ? d.inc : [], st = Array.isArray(d.st) ? d.st : [];
-  if(!inc.length && !st.length) return "";
+  const inc = Array.isArray(d.inc) ? d.inc : [], st = Array.isArray(d.st) ? d.st : [], jg = Array.isArray(d.jg) ? d.jg : [];
+  if(!inc.length && !st.length && !jg.length) return "";
   const hoq = ev.sport === "Hóquei Patins", golo = hoq ? "🏒" : "⚽"; // v230: hóquei (cronologia do hoqueipatins.pt)
   const mn = m=>(/\d$/.test(String(m)) ? esc(m) + "'" : esc(m)); // "Intervalo" não leva apóstrofo
   const icone = {G:golo, GP:golo, AG:golo, CA:"🟨", CV:"🟥", CA2:"🟥", S:"🔄", O:"•"};
@@ -73,11 +74,23 @@ function gameDetailsHtml_(ev){
   }
   if(st.length){
     const linhas = st.map(x=>{
-      const a = parseFloat(String(x[1]).replace(",", ".")) || 0, b = parseFloat(String(x[2]).replace(",", ".")) || 0, tot = a + b;
+      const num = v=>{ v = String(v == null ? "" : v); const pc = v.match(/\((\d+)%\)/); if(pc) return parseFloat(pc[1]); const mm = v.match(/^(\d+):(\d\d)$/); if(mm) return (+mm[1]) * 60 + (+mm[2]); return parseFloat(v.replace(",", ".")) || 0; }; // v235: "14/16 (87%)" usa a percentagem; "26:03" são segundos
+      const a = num(x[1]), b = num(x[2]), tot = a + b;
       const pa = tot > 0 ? Math.round(a / tot * 100) : 50;
       return `<div class="gd-st"><div class="gd-st-t"><b>${esc(x[1])}</b><span>${esc(gdTr_(x[0], GD_STAT_PT_))}</span><b>${esc(x[2])}</b></div><div class="gd-bar"><i style="width:${pa}%"></i></div></div>`;
     }).join("");
     html += `<div class="gp-card"><h3>Estatísticas</h3>${linhas}</div>`;
+  }
+  if(jg.length){
+    // v235 (Basquetebol): ficha de cada jogador — [nome, camisola, lado(0=FC Porto), min, pts, res, ass, rou, +/-, nota, lançamentos]
+    const t = (typeof postTeams_ === "function") ? postTeams_(ev) : { home: "FC Porto", away: ev.athlete || "" };
+    const tab = (lado, nomeEq)=>{
+      const rows = jg.filter(x=>(x[2] === 1 ? 1 : 0) === lado);
+      if(!rows.length) return "";
+      const pm = v=>(v === "" || v == null) ? "" : (v > 0 ? "+" + v : String(v));
+      return `<div class="gd-jg-t">${esc(nomeEq)}</div><div class="gd-jg-w"><table class="gd-jg"><thead><tr><th>Jogador</th><th>Min</th><th>Pts</th><th>Res</th><th>Ass</th><th>Rou</th><th>Lanç.</th><th>+/−</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${x[1] ? `<i>${esc(x[1])}</i> ` : ""}${esc(x[0])}</td><td>${esc(x[3])}</td><td><b>${esc(x[4])}</b></td><td>${esc(x[5])}</td><td>${esc(x[6])}</td><td>${esc(x[7])}</td><td>${esc(x[10] || "")}</td><td>${esc(pm(x[8]))}</td></tr>`).join("")}</tbody></table></div>`;
+    };
+    html += `<div class="gp-card"><h3>Jogadores</h3>${tab(0, "FC Porto")}${tab(1, ev.athlete || t.away || "Adversário")}</div>`;
   }
   return html + `<div class="gd-src">Cronologia e estatísticas: ${hoq ? "hoqueipatins.pt" : "Sofascore"}, podem ter atraso. O resultado oficial é o do site.</div>`;
 }

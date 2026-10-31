@@ -1058,3 +1058,13 @@ html.theme-light .nw-meta, html.theme-light .nw-note{ color:#5b6b88; }
 .cp-win{ color:#3ddc84; } .cp-loss{ color:#ff6b6b; }
 html.theme-light .cp-row.is-me{ background:rgba(20,110,200,.10); }
 html.theme-light .cp-win{ color:#12803f; } html.theme-light .cp-loss{ color:#c62828; }
+
+/* v235: ficha dos jogadores (Basquetebol) */
+.gd-jg-t{font-weight:700;margin:10px 0 4px}
+.gd-jg-w{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.gd-jg{width:100%;border-collapse:collapse;font-size:13px}
+.gd-jg th,.gd-jg td{padding:5px 6px;text-align:right;white-space:nowrap}
+.gd-jg th:first-child,.gd-jg td:first-child{text-align:left;position:sticky;left:0;background:inherit}
+.gd-jg th{opacity:.7;font-weight:600;font-size:11px}
+.gd-jg tbody tr+tr td{border-top:1px solid rgba(128,128,128,.18)}
+.gd-jg td i{opacity:.55;font-style:normal;margin-right:2px}

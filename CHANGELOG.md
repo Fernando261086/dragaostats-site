@@ -336,3 +336,8 @@ código para facilitar trabalhar nele.
 ## Apps Script v150 (sem alterações ao site)
 - `PLANTEL_FCP_["Futebol"] = {classe:1, equipa:1}` (30 jogadores confirmado em 31/10/2026).
 - `ZONAS_PT_`: "Europa League Qualification" e "Conference League Qualification" (Liga Portugal) traduzidas.
+
+## v235 / Apps Script v151 — estatísticas do Basquetebol
+- Apps Script `apps-script-v151.gs`: `Basquetebol` em `SOFA_DET_SPORTS_` (estatísticas de equipa do Sofascore, até 24) + `jg` (ficha de cada jogador via `event/<id>/lineups`: min, pts, res, ass, rou, +/-, nota, lançamentos); os ~85 lances de pontos não se guardam. No basquetebol o `liveId` (FIBA) já não vai para o Sofascore, só se tiver `#id:`.
+- Site: `46-game-details.js` (traduções, barras com a percentagem/tempo, cartão "Jogadores"), CSS `.gd-jg*`; cache `dia22-cache-v312`.
+- Mapa de lançamentos: não existe na API aberta do Sofascore (shotmap = 404).

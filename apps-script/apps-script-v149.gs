@@ -4099,6 +4099,7 @@ function sofaGuardarDetalhe_(evId, e, agora, sportDet) {
   ((per && per.groups) || []).forEach(function(g) {
     (g.statisticsItems || []).forEach(function(i) {
       if (st.length >= (SOFA_DET_MAX_ST_[sportDet] || 14) || !i.name) return;
+      if (st.some(function(x) { return x[0] === String(i.name); })) return; // v149: o Sofascore repete algumas (Total shots, Expected goals) em grupos diferentes
       st.push([String(i.name), String(casaFcp ? i.home : i.away), String(casaFcp ? i.away : i.home)]);
     });
   });

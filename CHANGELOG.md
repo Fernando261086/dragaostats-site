@@ -329,3 +329,6 @@ código para facilitar trabalhar nele.
 ## v233 / Apps Script v149
 - Nova modalidade "Futebol" (equipa principal do FC Porto): cor, duração (110 min), perguntas de prognóstico, "Marcadores", slug `futebol` (?sport= e calendário .ics), página SEO `public/futebol.html`, `og/futebol.png`, sitemap, ligações entre páginas SEO, `_worker.js`. Cache v310.
 - Apps Script v149: `SOFA_SPORTS_["Futebol"]` (equipa 3002, a confirmar), lance a lance e até 26 estatísticas (`SOFA_DET_MAX_ST_`), avisos de golos, alertas, classificação da Liga Portugal por Sofascore (`sofaLigaUrl_`, `urlFn`), teste `testarFutebolAgora`. Plantel e notícias da equipa principal ficam para depois do Registo do teste.
+
+## v234
+- Traduções das estatísticas de futebol da equipa principal; Apps Script v149 ignora estatísticas repetidas do Sofascore. Cache v311.

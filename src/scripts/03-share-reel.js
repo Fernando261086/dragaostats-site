@@ -700,6 +700,7 @@ const DEFAULT_SPORT_LINKS = {
 // disponível também nos jogos seguintes dessa modalidade (e sincroniza com o outro dispositivo).
 const DEFAULT_STAT_TYPES = {
   "Futebol": ["Golos", "Assistências"],
+  "Equipa A": ["Golos", "Assistências"],
   "Futsal": ["Golos", "Assistências"],
   "Hóquei Patins": ["Golos"],
   "Andebol": ["Golos"],
@@ -713,6 +714,13 @@ let STAT_TYPES = { ...DEFAULT_STAT_TYPES };
 // para se preencher ao escolher a pergunta para um jogo específico.
 const DEFAULT_QUESTION_TEMPLATES = {
   "Futebol": [
+    { type: "livre", text: "Match Predictor — qual vai ser o resultado?" },
+    { type: "livre", text: "Quem marca primeiro?" },
+    { type: "simnao", text: "Jogo sem sofrer golos?" },
+    { type: "simnao", text: "Alguém bisa?" },
+    { type: "simnao", text: "Há cartão vermelho?" }
+  ],
+  "Equipa A": [
     { type: "livre", text: "Match Predictor — qual vai ser o resultado?" },
     { type: "livre", text: "Quem marca primeiro?" },
     { type: "simnao", text: "Jogo sem sofrer golos?" },
@@ -870,7 +878,7 @@ function getStatTypesFor(sport){
 
 // Para modalidades onde só se costuma registar quem marcou, "Marcadores" é mais
 // intuitivo do que "Estatísticas do jogo" (que soa a algo mais completo/técnico)
-const MARCADORES_LABEL_SPORTS = new Set(["Futebol", "Futebol Feminino", "Futsal", "Equipa B", "Hóquei Patins"]);
+const MARCADORES_LABEL_SPORTS = new Set(["Equipa A", "Futebol", "Futebol Feminino", "Futsal", "Equipa B", "Hóquei Patins"]);
 // Voleibol não tem estatísticas de jogadoras, só a pontuação de cada set
 const SET_SCORE_SPORTS = new Set(["Voleibol"]);
 // v206: equipas femininas dizem "jogadoras" (Futebol Feminino e Voleibol); as outras "jogadores"

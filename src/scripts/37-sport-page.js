@@ -136,7 +136,7 @@ function renderSportPage_(){
     }).join("") : '<div class="hv-empty">Ainda sem estatísticas registadas nesta modalidade.</div>'}</div>`;
   }
   // v196: subscrever o calendário desta modalidade (ficheiro .ics servido pelo _worker.js; atualiza sozinho no telemóvel)
-  const icsSlug = { "Andebol":"andebol", "Basquetebol":"basquetebol", "Hóquei Patins":"hoquei-em-patins", "Voleibol":"voleibol", "Futebol Feminino":"futebol-feminino", "Futebol":"futebol", "Futsal":"futsal", "Equipa B":"equipa-b" }[sport];
+  const icsSlug = { "Andebol":"andebol", "Basquetebol":"basquetebol", "Hóquei Patins":"hoquei-em-patins", "Voleibol":"voleibol", "Futebol Feminino":"futebol-feminino", "Futebol":"futebol", "Equipa A":"futebol", "Futsal":"futsal", "Equipa B":"equipa-b" }[sport];
   const subBtn = icsSlug ? `<div class="sp-sub"><button type="button" class="hv-btn hv-btn-ghost" id="spSub">📆 Subscrever calendário de ${esc(sport)}</button><p>Os jogos aparecem sozinhos no calendário do telemóvel e mudam se a hora mudar.</p></div>` : "";
   host.innerHTML = head + tabs + heroHtml + body + subBtn;
   const bSub = host.querySelector("#spSub");

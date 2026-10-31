@@ -26,7 +26,7 @@ function getHeadToHeadRecord_(sport, athlete, excludeId){
 // a sensação de "isto está a decorrer agora"; não é um placar ao vivo a sério.
 const SPORT_DURATION_MIN_ = {
   "Andebol": 75, "Basquetebol": 110, "Hóquei Patins": 70, "Voleibol": 110,
-  "Futebol Feminino": 100, "Futsal": 70, "Equipa B": 100, "Futebol": 110
+  "Futebol Feminino": 100, "Futsal": 70, "Equipa B": 100, "Futebol": 110, "Equipa A": 110
 };
 // ===================== "AO VIVO" (1) — marcador a sério, vindo da CEV =====================
 // O Apps Script lê o site oficial da CEV de minuto a minuto durante os jogos de voleibol

@@ -17,7 +17,7 @@ function postSportEmoji_(sport){
   if(s.includes("basquet")) return "🏀";
   if(s.includes("hóquei") || s.includes("hoquei")) return "🏒";
   if(s.includes("volei")) return "🏐";
-  if(s.includes("futsal") || s.includes("futebol") || s.includes("equipa b")) return "⚽";
+  if(s.includes("futsal") || s.includes("futebol") || s.includes("equipa b") || s.includes("equipa a")) return "⚽";
   return "🏅";
 }
 function postSportHashtag_(sport){

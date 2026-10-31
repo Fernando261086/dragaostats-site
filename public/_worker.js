@@ -17,7 +17,7 @@ const SPORT_PAGES = {
   "/basquetebol.html": ["Basquetebol", "🏀"],
   "/hoquei-em-patins.html": ["Hóquei Patins", "🏒"],
   "/voleibol.html": ["Voleibol", "🏐"],
-  "/futebol.html": ["Futebol", "⚽"],
+  "/futebol.html": ["Equipa A", "⚽"],
   "/futebol-feminino.html": ["Futebol Feminino", "⚽"],
   "/futsal.html": ["Futsal", "⚽"],
   "/equipa-b.html": ["Equipa B", "⚽"]
@@ -148,7 +148,7 @@ function emoji_(sport) {
   if (s.includes("basquet")) return "🏀";
   if (s.includes("hóquei") || s.includes("hoquei")) return "🏒";
   if (s.includes("volei")) return "🏐";
-  if (s.includes("futsal") || s.includes("futebol") || s.includes("equipa b")) return "⚽";
+  if (s.includes("futsal") || s.includes("futebol") || s.includes("equipa b") || s.includes("equipa a")) return "⚽";
   return "🏅";
 }
 function teams_(ev) { return ev.fora ? { home: ev.adv, away: "FC Porto" } : { home: "FC Porto", away: ev.adv }; }

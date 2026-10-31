@@ -341,3 +341,6 @@ código para facilitar trabalhar nele.
 - Apps Script `apps-script-v151.gs`: `Basquetebol` em `SOFA_DET_SPORTS_` (estatísticas de equipa do Sofascore, até 24) + `jg` (ficha de cada jogador via `event/<id>/lineups`: min, pts, res, ass, rou, +/-, nota, lançamentos); os ~85 lances de pontos não se guardam. No basquetebol o `liveId` (FIBA) já não vai para o Sofascore, só se tiver `#id:`.
 - Site: `46-game-details.js` (traduções, barras com a percentagem/tempo, cartão "Jogadores"), CSS `.gd-jg*`; cache `dia22-cache-v312`.
 - Mapa de lançamentos: não existe na API aberta do Sofascore (shotmap = 404).
+
+## v236 / Apps Script v152 — a equipa principal chama-se «Equipa A»
+- O nome da modalidade no site é **"Equipa A"** (Fernando). Apps Script v152: todas as chaves "Futebol" → "Equipa A" (`SOFA_SPORTS_`, classificação, plantel, detalhes, avisos, alertas, testes). Site: cor, estatísticas, perguntas-modelo, `MARCADORES_LABEL_SPORTS`, duração, slugs (`/futebol` → "Equipa A"), `_worker.js`, `public/futebol.html` (`SPORT`). "Futebol" fica só como legado. Cache `dia22-cache-v313`.

@@ -191,7 +191,7 @@ function showStaleDataBanner_(at){
   const linkedSport = params.get("sport");
   if(linkedSport){
     const SPORT_SLUGS = { andebol:"Andebol", basquetebol:"Basquetebol", "hoquei-em-patins":"Hóquei Patins",
-      voleibol:"Voleibol", "futebol-feminino":"Futebol Feminino", futsal:"Futsal", "equipa-b":"Equipa B" };
+      voleibol:"Voleibol", "futebol-feminino":"Futebol Feminino", futebol:"Futebol", futsal:"Futsal", "equipa-b":"Equipa B" };
     const wanted = SPORT_SLUGS[linkedSport.toLowerCase()];
     if(wanted && getSportsPresent().includes(wanted)) activeSport = wanted;
   }

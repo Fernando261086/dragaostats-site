@@ -53,7 +53,7 @@ let EVENTS = []; // populado a partir da Google Sheet (ou dos DEFAULT_EVENTS na 
 const SPORT_COLORS = {
   "Natação":"#4fb3e8",
   "Boules":"#c9a86a",
-  "Futebol":"#e35cb8",
+  "Futebol":"#3b6fe0",
   "Wrestling":"#d3564a",
   "Taekwondo":"#b98ee0",
   "Badminton":"#e3b23c",

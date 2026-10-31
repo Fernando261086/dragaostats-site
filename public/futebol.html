@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Futebol FC Porto: calendário, resultados e jogos ao vivo | Dragão Stats</title>
+<meta name="description" content="Calendário, resultados, classificação e jogos ao vivo da equipa principal de futebol do FC Porto. Lances, estatísticas, marcadores e notificações para não perderes nenhum jogo.">
+<link rel="canonical" href="https://dragaostats.pt/futebol">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Futebol FC Porto: calendário, resultados e jogos ao vivo — Dragão Stats">
+<meta property="og:description" content="Calendário, resultados, classificação e jogos ao vivo da equipa principal de futebol do FC Porto.">
+<meta property="og:image" content="https://dragaostats.pt/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://dragaostats.pt/futebol">
+
+<meta name="theme-color" content="#0a1628">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Bebas+Neue&display=swap');
+:root{
+  --bg:#0a1628; --panel:#12243f; --line:#223a63;
+  --accent:#5bb4f0; --text:#eaf0fb; --text-dim:#93a2bd;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; background:var(--bg);
+  color:var(--text); font-family:'Archivo',sans-serif;
+  min-height:100vh; display:flex; flex-direction:column; align-items:center;
+  padding:env(safe-area-inset-top,0px) 20px calc(env(safe-area-inset-bottom,0px) + 24px);
+}
+.wrap{max-width:560px; width:100%; margin:0 auto; padding-top:28px;}
+.brand{display:flex; align-items:center; gap:12px; margin-bottom:28px; flex-wrap:nowrap; padding-bottom:16px; border-bottom:1px solid var(--line);}
+.brand img{width:48px; height:48px; border-radius:50%; flex-shrink:0; border:2px solid rgba(91,180,240,.55);}
+.brand-name{font-family:'Bebas Neue',sans-serif; font-weight:400; font-size:28px; letter-spacing:0.02em; white-space:nowrap;}
+.emoji{font-size:40px; line-height:1; margin-bottom:12px;}
+h1{font-family:'Bebas Neue',sans-serif; font-weight:400; font-size:44px; line-height:1.02; letter-spacing:0.01em; margin:0 0 14px;}
+h1 b{color:var(--accent); font-weight:400;}
+p{font-size:15px; line-height:1.65; color:var(--text-dim); margin:0 0 26px;}
+.cta{
+  display:block; text-align:center; background:var(--accent); color:#0a1a30;
+  font-family:'Archivo',sans-serif; font-weight:700; font-size:16px;
+  text-decoration:none; padding:16px 20px; border-radius:14px; margin-bottom:14px;
+}
+.cta-sub{font-size:12.5px; color:var(--text-dim); text-align:center; margin:0 0 36px;}
+.other{border-top:1px solid var(--line); padding-top:20px;}
+.other-title{font-weight:700; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:12px;}
+.other-grid{display:flex; flex-wrap:wrap; gap:8px;}
+.other-grid a{
+  color:var(--text); text-decoration:none; font-size:13px; font-weight:600;
+  background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:8px 14px;
+}
+.other-grid a.current{background:var(--accent); border-color:var(--accent); color:#0a1a30;}
+footer{margin-top:36px; font-size:11.5px; color:var(--text-dim); text-align:center; opacity:0.8;}
+footer a{color:var(--text-dim);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><img src="header-emblem.png" alt="Dragão Stats"><span class="brand-name">DRAGÃO STATS</span></div>
+
+  <div class="emoji">⚽</div>
+  <h1>Futebol do <b>FC Porto</b></h1>
+  <p>A equipa principal de futebol do FC Porto disputa a Liga Portugal, a Taça de Portugal, a Taça da Liga e as competições europeias. Acompanha aqui o calendário, os resultados e a classificação, jornada a jornada, e segue os jogos em direto com lances e estatísticas.</p>
+
+  <div id="ultimos" style="display:none;margin:18px auto 6px;max-width:460px;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px 16px;"><div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.7;margin-bottom:6px;">Últimos resultados</div><div id="ultimosLista"></div></div>
+
+  <a class="cta" href="/?sport=futebol">Ver calendário e resultados ao vivo →</a>
+  <p class="cta-sub">Sem fins lucrativos, sem ligação oficial ao FC Porto.</p>
+
+  <div class="other">
+    <div class="other-title">Outras modalidades</div>
+    <div class="other-grid">
+      <a href="/futebol" class="current">Futebol</a>
+      <a href="/andebol">Andebol</a>
+      <a href="/basquetebol">Basquetebol</a>
+      <a href="/hoquei-em-patins">Hóquei em Patins</a>
+      <a href="/voleibol">Voleibol</a>
+      <a href="/futebol-feminino">Futebol Feminino</a>
+      <a href="/futsal">Futsal</a>
+      <a href="/equipa-b">Equipa B</a>
+    </div>
+  </div>
+
+  <footer>Dragão Stats — projeto de adeptos, sem ligação oficial ao FC Porto.<br><a href="/">dragaostats.pt</a></footer>
+</div>
+<script>
+/* Últimos resultados desta modalidade (preenchido ao abrir; se falhar, a caixa fica escondida e a página fica como estava) */
+(function(){
+  var SPORT = "Futebol", URL_ = "https://script.google.com/macros/s/AKfycbzsPW_XhIwE-fq9GGd9rn_wPQkkOoH__dbJ6MBvRIW3mZE_kiw2JT3HszxUqCIcgOC9pw/exec";
+  fetch(URL_ + "?_=" + Date.now(), { cache: "no-store" }).then(function(r){ return r.json(); }).then(function(d){
+    var out = [];
+    (d.competitions || []).forEach(function(c){
+      if (c.mode !== "matches" || c.archived) return;
+      var dd = (d.data || {})[c.id] || {};
+      (dd.events || []).forEach(function(ev){
+        if (ev.sport !== SPORT) return;
+        var st = (dd.status || {})[ev.id] || {};
+        var res = st.resultado && String(st.resultado).trim();
+        if (res) out.push({ ev: ev, res: res });
+      });
+    });
+    out.sort(function(a, b){ return (b.ev.day + (b.ev.t || "")).localeCompare(a.ev.day + (a.ev.t || "")); });
+    out = out.slice(0, 3);
+    if (!out.length) return;
+    var box = document.getElementById("ultimos"), list = document.getElementById("ultimosLista");
+    var M = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+    out.forEach(function(x){
+      var fora = x.ev.local === "fora", home = fora ? x.ev.athlete : "FC Porto", away = fora ? "FC Porto" : x.ev.athlete;
+      var p = String(x.ev.day).split("-"), data = p.length === 3 ? (Number(p[2]) + " " + M[Number(p[1]) - 1]) : "";
+      var row = document.createElement("div");
+      row.style.cssText = "display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:15px;";
+      var a = document.createElement("span"); a.textContent = home + " " + x.res + " " + away;
+      var b = document.createElement("span"); b.textContent = data; b.style.opacity = ".6";
+      row.appendChild(a); row.appendChild(b); list.appendChild(row);
+    });
+    box.style.display = "block";
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>

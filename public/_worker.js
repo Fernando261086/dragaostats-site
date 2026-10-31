@@ -17,6 +17,7 @@ const SPORT_PAGES = {
   "/basquetebol.html": ["Basquetebol", "🏀"],
   "/hoquei-em-patins.html": ["Hóquei Patins", "🏒"],
   "/voleibol.html": ["Voleibol", "🏐"],
+  "/futebol.html": ["Futebol", "⚽"],
   "/futebol-feminino.html": ["Futebol Feminino", "⚽"],
   "/futsal.html": ["Futsal", "⚽"],
   "/equipa-b.html": ["Equipa B", "⚽"]

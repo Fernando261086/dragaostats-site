@@ -325,3 +325,7 @@ código para facilitar trabalhar nele.
 
 ## v232
 - Calendário (Modo Modalidades): mudar de mês mantém a modalidade escolhida; separador novo "Todos os meses" (`activeDay === "todos"`); modalidade sem jogos no mês mostra aviso + botão para o mês mais próximo; as modalidades do filtro são as da competição toda; escolher modalidade só muda de mês se ela não tiver jogos no mês aberto. Cache v309.
+
+## v233 / Apps Script v149
+- Nova modalidade "Futebol" (equipa principal do FC Porto): cor, duração (110 min), perguntas de prognóstico, "Marcadores", slug `futebol` (?sport= e calendário .ics), página SEO `public/futebol.html`, `og/futebol.png`, sitemap, ligações entre páginas SEO, `_worker.js`. Cache v310.
+- Apps Script v149: `SOFA_SPORTS_["Futebol"]` (equipa 3002, a confirmar), lance a lance e até 26 estatísticas (`SOFA_DET_MAX_ST_`), avisos de golos, alertas, classificação da Liga Portugal por Sofascore (`sofaLigaUrl_`, `urlFn`), teste `testarFutebolAgora`. Plantel e notícias da equipa principal ficam para depois do Registo do teste.

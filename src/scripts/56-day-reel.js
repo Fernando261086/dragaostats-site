@@ -20,7 +20,9 @@ function buildDayReelText_(games, live){
   const tags = ["#FCPorto", "#DragaoStats"];
   sports.forEach(s=>{ const h = postSportHashtag_(s); if(h && tags.indexOf(h) === -1) tags.push(h); });
   const temLive = live && games.some(hasLiveCoverage_);
-  return `💙 Hoje ${n === 1 ? "há 1 jogo" : "há " + n + " jogos"} do FC Porto!\n\n${linha}\n\n` +
+  const w = dayShareWord_(), quando = w === "ontem" ? "Ontem" : w === "amanhã" ? "Amanhã" : w === "hoje" ? "Hoje" : dayShareDateLabel_();
+  const verbo = w === "ontem" ? (n === 1 ? "houve 1 jogo" : "houve " + n + " jogos") : (n === 1 ? "há 1 jogo" : "há " + n + " jogos");
+  return `💙 ${quando} ${verbo} do FC Porto!\n\n${linha}\n\n` +
     (temLive ? "🔴 Acompanha o resultado em direto em https://dragaostats.pt" : "Horas e onde ver em https://dragaostats.pt") + "\n\n" + tags.join(" ");
 }
 
@@ -94,7 +96,7 @@ async function generateDayReel_(games, live){
   function drawIntro(lt){
     const a = ease(lt / 0.8), b = ease((lt - 0.5) / 0.8), c = ease((lt - 1.1) / 0.8);
     ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
-    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = "#eef2f8"; bigText("HOJE HÁ", W/2, 820 + (1 - a) * 40, 170, 900); ctx.restore();
+    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = "#eef2f8"; bigText((dayShareWord_() === "ontem" ? "ONTEM HOUVE" : dayShareWord_() === "amanhã" ? "AMANHÃ HÁ" : dayShareWord_() === "hoje" ? "HOJE HÁ" : "NO DIA HÁ"), W/2, 820 + (1 - a) * 40, 170, 900); ctx.restore();
     ctx.save(); ctx.globalAlpha = b; ctx.fillStyle = "#e3b23c"; bigText(games.length === 1 ? "JOGO!" : "JOGOS!", W/2, 1040 + (1 - b) * 40, 230, 900); ctx.restore();
     ctx.save(); ctx.globalAlpha = c; ctx.fillStyle = "#cdd8e8"; ctx.font = `600 44px ${FONT}`; ctx.fillText(dayShareDateLabel_(), W/2, 1150);
     const sportsN = new Set(games.map(g=>g.sport)).size;
@@ -105,7 +107,7 @@ async function generateDayReel_(games, live){
   function drawSlide(sl, lt){
     const aHead = ease(lt / 0.5);
     ctx.save(); ctx.globalAlpha = aHead; ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
-    ctx.fillStyle = "#e3b23c"; bigText("JOGOS DE HOJE", W/2, 470 + (1 - aHead) * 30, 170, 900);
+    ctx.fillStyle = "#e3b23c"; bigText("JOGOS " + dayShareDe_().toUpperCase(), W/2, 470 + (1 - aHead) * 30, 170, 900);
     ctx.fillStyle = "#cdd8e8"; ctx.font = `600 40px ${FONT}`; ctx.fillText(dayShareDateLabel_() + (sl.more ? " · continuação" : ""), W/2, 540);
     ctx.restore();
     const rowH = 250, gap = 26, top = 620;
@@ -197,7 +199,7 @@ async function generateDayReel_(games, live){
     await finished;
     blob = new Blob(chunks, { type: "video/webm" });
   }
-  const fileName = `dragaostats-hoje${live ? "-aovivo" : ""}-${todayISO_()}.webm`;
+  const fileName = `dragaostats-hoje${live ? "-aovivo" : ""}-${dayShareISO_()}.webm`;
   const file = new File([blob], fileName, { type: "video/webm" });
   if(navigator.canShare && navigator.canShare({ files: [file] })){
     try{ await navigator.share({ files: [file], title: "Dragão Stats" }); return; }catch(e){ /* cancelou: cai para descarregar */ }
@@ -214,7 +216,7 @@ async function startDayReel_(live){
   const sb = document.getElementById("dayShareBox"); if(sb) sb.style.display = "none";
   const games = getDayShareGames_();
   box.style.display = "block";
-  if(!games.length || (live && !games.some(hasLiveCoverage_))){ box.innerHTML = `<div class="medal-empty" style="margin-top:10px;">Não há jogos de hoje ${live ? "com acompanhamento ao vivo " : ""}por realizar para gerar o reel.</div>`; return; }
+  if(!games.length || (live && !games.some(hasLiveCoverage_))){ box.innerHTML = `<div class="medal-empty" style="margin-top:10px;">Não há jogos ${dayShareDe_()} ${live ? "com acompanhamento ao vivo " : ""}por realizar para gerar o reel.</div>`; return; }
   const esc = s=>String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const secs = Math.ceil(dayReelDuration_(games));
   const taStyle = "width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:8px; padding:8px; font-size:13px; color:var(--text); resize:vertical; font-family:inherit;";

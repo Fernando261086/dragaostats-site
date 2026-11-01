@@ -347,3 +347,7 @@ código para facilitar trabalhar nele.
 
 ## Apps Script v153 (sem alterações ao site)
 - `parseStandingsSofascore_` guarda o id Sofascore de cada equipa (`row.i`); `escudosComTabelas_` usa-o diretamente → escudos na classificação da Equipa A e do Futsal.
+
+## v237 — painel «📣 Partilhar» na Gestão
+- Novo `60-share-hub.js`: botão «📣 Partilhar» ao lado de «🛠️ Gestão» (só modo edição). Escolhe o dia (Ontem/Hoje/Amanhã/data) e gera imagem dos jogos, imagem ao vivo, imagem dos resultados, reel dos jogos, reel com ao vivo, e o texto para copiar.
+- `31-day-share.js` / `56-day-reel.js` passam a usar `DAY_SHARE_DATE_` (`dayShareISO_`, `dayShareEvents_`, `dayShareWord_/De_`); títulos e textos dizem «de hoje/de amanhã/de ontem/do dia». Cache `dia22-cache-v314`.

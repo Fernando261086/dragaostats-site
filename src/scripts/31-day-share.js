@@ -7,8 +7,19 @@
 
 // Jogos de hoje ainda sem resultado — é o que faz sentido promover antes de
 // começarem (mesmo critério "por vir" do week-share).
+// v237: o painel «📣 Partilhar» (60-share-hub.js) escolhe o dia (ontem/hoje/amanhã/data); vazio = hoje.
+let DAY_SHARE_DATE_ = "";
+function dayShareISO_(){ return DAY_SHARE_DATE_ || todayISO_(); }
+function dayShareEvents_(){
+  const d = dayShareISO_();
+  return EVENTS.filter(ev=>ev.day === d).sort((a, b)=>(a.t || "").localeCompare(b.t || ""));
+}
+function dayShareAddDays_(iso, n){ const [y, m, d] = iso.split("-").map(Number); const x = new Date(y, m - 1, d + n); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, "0")}-${String(x.getDate()).padStart(2, "0")}`; }
+// «hoje» / «amanhã» / «ontem» / «do dia»: palavras para os textos e títulos
+function dayShareWord_(){ const d = dayShareISO_(), t = todayISO_(); return d === t ? "hoje" : d === dayShareAddDays_(t, 1) ? "amanhã" : d === dayShareAddDays_(t, -1) ? "ontem" : ""; }
+function dayShareDe_(){ const w = dayShareWord_(); return w ? "de " + w : "do dia"; }
 function getDayShareGames_(){
-  return getTodaysGames_().filter(ev=>{
+  return dayShareEvents_().filter(ev=>{
     const st = getEv(ev.id);
     return !(st.resultado && String(st.resultado).trim());
   });
@@ -16,7 +27,7 @@ function getDayShareGames_(){
 
 // v156: jogos de hoje JÁ com resultado — para a imagem/texto "Resultados de hoje".
 function getDayResultGames_(){
-  return getTodaysGames_().filter(ev=>{
+  return dayShareEvents_().filter(ev=>{
     const st = getEv(ev.id);
     return !!(st.resultado && String(st.resultado).trim());
   }).sort((a, b)=>String(a.t || "").localeCompare(String(b.t || "")));
@@ -31,7 +42,7 @@ function dayResultTagText_(ev){
 }
 function buildDayResultsText_(games){
   if(!games.length) return "";
-  let text = `💙 Resultados de hoje (${dayShareDateLabel_()}):\n\n`;
+  let text = `💙 Resultados ${dayShareDe_()} (${dayShareDateLabel_()}):\n\n`;
   games.forEach(ev=>{
     const st = getEv(ev.id) || {};
     const t = postTeams_(ev);
@@ -45,14 +56,15 @@ function buildDayResultsText_(games){
 }
 
 function dayShareDateLabel_(){
-  const d = new Date();
+  const [yy, mm, dd] = dayShareISO_().split("-").map(Number);
+  const d = new Date(yy, mm - 1, dd);
   return `${WEEKDAY_NAMES[d.getDay()]}, ${d.getDate()} de ${MONTH_NAMES[d.getMonth()].toLowerCase()}`;
 }
 
 // Texto pronto a colar — mesmo tom/estilo do texto da semana, com link completo.
 function buildDayPostText_(games, live){
   if(!games.length) return "";
-  let text = `💙 Jogos de hoje (${dayShareDateLabel_()}):\n\n`;
+  let text = `💙 Jogos ${dayShareDe_()} (${dayShareDateLabel_()}):\n\n`;
   games.forEach(ev=>{
     const emoji = postSportEmoji_(ev.sport);
     const t = postTeams_(ev);
@@ -111,7 +123,7 @@ async function generateDayShareCard_(games, modo){
 
   ctx.font = "400 92px 'Bebas Neue', sans-serif";
   ctx.fillStyle = "#e3b23c";
-  const titulo = resultados ? "RESULTADOS DE HOJE" : "JOGOS DE HOJE";
+  const titulo = (resultados ? "RESULTADOS " : "JOGOS ") + dayShareDe_().toUpperCase();
   let tam = 92; while(tam > 40 && ctx.measureText(titulo).width > W - 140){ tam -= 4; ctx.font = `400 ${tam}px 'Bebas Neue', sans-serif`; }
   ctx.fillText(titulo, 70, 240);
   ctx.font = "600 24px 'Archivo Narrow', sans-serif";
@@ -217,7 +229,7 @@ function renderDayShareBox_(){
   const live = dayShareMode_ === "jogos-live";
   const games = resultados ? getDayResultGames_() : getDayShareGames_();
   if(!games.length){
-    box.innerHTML = `<div class="medal-empty" style="margin-top:10px;">${resultados ? "Ainda não há resultados de hoje para gerar a imagem." : "Não há jogos de hoje por realizar para gerar a imagem."}</div>`;
+    box.innerHTML = `<div class="medal-empty" style="margin-top:10px;">${resultados ? "Ainda não há resultados " + dayShareDe_() + " para gerar a imagem." : "Não há jogos " + dayShareDe_() + " por realizar para gerar a imagem."}</div>`;
     return;
   }
   const text = resultados ? buildDayResultsText_(games) : buildDayPostText_(games, live);
@@ -255,7 +267,7 @@ function renderDayShareBox_(){
     if(dlBtn){
       dlBtn.disabled = false;
       dlBtn.onclick = ()=>{
-        const fileName = `dragaostats-${resultados ? "resultados" : (live ? "hoje-aovivo" : "hoje")}-${todayISO_()}.png`;
+        const fileName = `dragaostats-${resultados ? "resultados" : (live ? "hoje-aovivo" : "hoje")}-${dayShareISO_()}.png`;
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = fileName;
@@ -276,6 +288,7 @@ function renderDayShareBox_(){
 function renderDayShareToggle_(){
   const el = document.getElementById("dayShareToggleRow");
   if(!el) return;
+  if(window.__shareHubOpen_) return; // v237: com o painel «Partilhar» aberto, as caixas estão lá dentro e não se mexe nelas
   const nJogos = (READONLY_MODE || currentCompMode() !== "matches") ? 0 : getDayShareGames_().length;
   const nLive = (READONLY_MODE || currentCompMode() !== "matches") ? 0 : getDayLiveGames_().length;
   const nRes = (READONLY_MODE || currentCompMode() !== "matches") ? 0 : getDayResultGames_().length;

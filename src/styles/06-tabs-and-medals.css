@@ -1068,3 +1068,23 @@ html.theme-light .cp-win{ color:#12803f; } html.theme-light .cp-loss{ color:#c62
 .gd-jg th{opacity:.7;font-weight:600;font-size:11px}
 .gd-jg tbody tr+tr td{border-top:1px solid rgba(128,128,128,.18)}
 .gd-jg td i{opacity:.55;font-style:normal;margin-right:2px}
+
+/* v237: painel «📣 Partilhar» (Gestão) */
+.share-hub-btn{margin-left:6px}
+.sh-overlay{position:fixed;inset:0;z-index:9500;background:rgba(3,8,20,.6);display:flex;align-items:flex-end;justify-content:center}
+.sh-sheet{width:min(640px,100vw);max-height:92vh;overflow-y:auto;background:var(--panel,#14284a);border:1px solid var(--line,#2a3a5c);border-radius:18px 18px 0 0;padding:14px 16px 28px;-webkit-overflow-scrolling:touch}
+.sh-top{display:flex;justify-content:space-between;align-items:center;font-size:16px;margin-bottom:10px}
+.sh-x{background:none;border:0;color:var(--text-dim,#9ab);font-size:18px;padding:4px 8px;cursor:pointer}
+.sh-days{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sh-chip{border:1px solid var(--line,#2a3a5c);background:transparent;color:var(--text,#eef);border-radius:999px;padding:8px 16px;font-size:14px;cursor:pointer;min-height:40px}
+.sh-chip.on{background:var(--gold,#e3b23c);color:#0a1020;border-color:var(--gold,#e3b23c);font-weight:700}
+.sh-in{background:rgba(255,255,255,.05);border:1px solid var(--line,#2a3a5c);color:var(--text,#eef);border-radius:10px;padding:8px 10px;font-size:14px;min-height:40px;max-width:100%}
+.sh-date{margin:10px 0 8px;font-size:13px;color:var(--text-dim,#9ab)}
+.sh-btns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.sh-b{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;border:1px solid var(--line,#2a3a5c);background:rgba(255,255,255,.04);color:var(--text,#eef);border-radius:12px;padding:10px 12px;font-size:14px;cursor:pointer;min-height:56px}
+.sh-b small{font-size:11px;color:var(--text-dim,#9ab)}
+.sh-b:disabled{opacity:.45;cursor:default}
+.sh-body{margin-top:6px}
+.sh-body img,.sh-body canvas,.sh-body video{max-width:100%}
+html.theme-light .sh-sheet{background:#fff}
+html.theme-light .sh-overlay{background:rgba(20,30,50,.35)}

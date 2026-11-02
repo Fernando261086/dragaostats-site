@@ -75,7 +75,7 @@ function renderGamePage_(){
     if(j.golosFcp !== undefined){
       const g = par(j.golosFcp || 0, j.golosAdv || 0);
       big = `<span class="gp-n">${esc(g[0])}</span><span class="gp-sep">–</span><span class="gp-n">${esc(g[1])}</span>`;
-      sub = [j.parte, j.tempo].filter(Boolean).join(" · ") || "A decorrer";
+      sub = ((typeof liveTempoHtml_ === "function") ? liveTempoHtml_(j, " · ") : [j.parte, j.tempo].filter(Boolean).join(" · ")) || "A decorrer";
     }else{
       const s = par(j.setsFcp || 0, j.setsAdv || 0);
       big = `<span class="gp-n">${esc(s[0])}</span><span class="gp-sep">–</span><span class="gp-n">${esc(s[1])}</span>`;

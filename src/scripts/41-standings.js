@@ -41,10 +41,18 @@ function standingsZonasMap_(s){
 }
 // v172: tabela a partir de um objeto de classificação (opts: title, advName → destaca o adversário)
 // v212: jogos do FC Porto nesta modalidade (mais recente primeiro), contra uma equipa ou todos
-function stGames_(sport, team){
+// v238: `tab` limita os jogos à competição da tabela onde se clicou: "liga" = só jogos de campeonato; "0", "1"… = a competição
+// (tabela de grupo europeia/taça) com esse número em compStandingsFor_(sport). Sem `tab` = todos (como antes).
+function stGames_(sport, team, tab){
   if(typeof EVENTS === "undefined" || !sport) return [];
   const w = e=>{ const d = new Date(e.day + "T" + (e.t || "00:00") + ":00"); return isNaN(d) ? 0 : d.getTime(); };
-  return EVENTS.filter(e=>e.sport === sport && (!team || (typeof pgSameTeam_ === "function" && pgSameTeam_(e.athlete, team)))).sort((a, b)=>w(b) - w(a));
+  let only = null;
+  if(tab === "liga") only = e=>(typeof isLeagueGame_ !== "function") || isLeagueGame_(e);
+  else if(tab !== undefined && tab !== null && tab !== ""){
+    const t = compStandingsFor_(sport)[Number(tab)];
+    only = e=>!!t && compStandingForGame_(e) === t;
+  }
+  return EVENTS.filter(e=>e.sport === sport && (!only || only(e)) && (!team || (typeof pgSameTeam_ === "function" && pgSameTeam_(e.athlete, team)))).sort((a, b)=>w(b) - w(a));
 }
 function stDone_(e){ const st = (typeof getEv === "function" && getEv(e.id)) || {}; return (st.resultado && String(st.resultado).trim()) ? st : null; }
 function stTag_(st){ return st.resultTag === "win" ? ["V", "win"] : st.resultTag === "loss" ? ["D", "loss"] : st.resultTag === "draw" ? ["E", "draw"] : null; }
@@ -83,8 +91,8 @@ function standingsObjHtml_(s, opts){
   const isAdv = r => !!(opts.advName && !r.me && typeof pgSameTeam_ === "function" && pgSameTeam_(r.t, opts.advName));
   const head = `<tr><th class="st-pos">#</th><th class="st-team">Equipa</th>${cols.map(c=>`<th class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc(c)}</th>`).join("")}</tr>`;
   const zmap = standingsZonasMap_(s);
-  const clickable = r => !!(opts.sport && !r.me && stGames_(opts.sport, r.t).length);
-  const body = s.rows.map((r, ri)=>`<tr class="${r.me ? "is-me" : ""}${isAdv(r) ? " is-adv" : ""}${zmap ? zmap.cls(r, s.rows[ri - 1]) : ""}${clickable(r) ? " st-click" : ""}"${clickable(r) ? ` data-stsport="${esc(opts.sport)}" data-stteam="${esc(r.t)}" tabindex="0"` : ""}><td class="st-pos">${esc(r.p)}</td><td class="st-team">${crestCell_(opts.sport, r)}${esc(r.t)}${r.me && opts.sport && !opts.noForm ? stFormHtml_(opts.sport) : ""}</td>${cols.map((c, i)=>`<td class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc((r.c || [])[i])}</td>`).join("")}</tr>`).join("");
+  const clickable = r => !!(opts.sport && !r.me && stGames_(opts.sport, r.t, opts.tab).length);
+  const body = s.rows.map((r, ri)=>`<tr class="${r.me ? "is-me" : ""}${isAdv(r) ? " is-adv" : ""}${zmap ? zmap.cls(r, s.rows[ri - 1]) : ""}${clickable(r) ? " st-click" : ""}"${clickable(r) ? ` data-stsport="${esc(opts.sport)}" data-stteam="${esc(r.t)}"${opts.tab !== undefined ? ` data-sttab="${esc(opts.tab)}"` : ""} tabindex="0"` : ""}><td class="st-pos">${esc(r.p)}</td><td class="st-team">${crestCell_(opts.sport, r)}${esc(r.t)}${r.me && opts.sport && !opts.noForm ? stFormHtml_(opts.sport) : ""}</td>${cols.map((c, i)=>`<td class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc((r.c || [])[i])}</td>`).join("")}</tr>`).join("");
   const sub = [s.comp, s.fase].filter(Boolean).join(" · ");
   const when = s.updated ? (s.manual ? "Atualizado à mão " + standingsAgo_(s.updated) : "Atualizado " + standingsAgo_(s.updated)) : "";
   return `<div class="hv-panel"><div class="hv-panel-head"><h3>${esc(opts.title || "Classificação")}</h3>${opts.editBtn || ""}</div>
@@ -107,13 +115,13 @@ function standingsPanelHtml_(sport){
   const s = (typeof STANDINGS === "object" && STANDINGS) ? STANDINGS[sport] : null;
   const canEdit = (typeof READONLY_MODE !== "undefined") && !READONLY_MODE;
   const editBtn = (canEdit && (!s || s.manual)) ? `<button type="button" class="st-edit" id="stEditBtn">✏️ ${s ? "Atualizar à mão" : "Preencher à mão"}</button>` : "";
-  const extra = compStandingsFor_(sport).map(t=>standingsObjHtml_(t, { title: t.comp || "Competição", hideSub: false, sport })).join("");
+  const extra = compStandingsFor_(sport).map((t, i)=>standingsObjHtml_(t, { title: t.comp || "Competição", hideSub: false, sport, tab: String(i) })).join("");
   if(!s || !Array.isArray(s.rows) || !s.rows.length){
     if(extra) return extra;
     if(typeof DATA_FRESH_ !== "undefined" && !DATA_FRESH_ && typeof skelHtml_ === "function") return skelHtml_(7);
     return `<div class="hv-panel"><div class="hv-panel-head"><h3>Classificação</h3>${editBtn}</div><div class="hv-empty">Classificação ainda não disponível para esta modalidade.</div></div>`;
   }
-  return standingsObjHtml_(s, { editBtn, sport }) + extra;
+  return standingsObjHtml_(s, { editBtn, sport, tab: "liga" }) + extra;
 }
 function wireStandingsPanel_(host, sport){
   const b = host.querySelector("#stEditBtn");
@@ -258,7 +266,7 @@ document.addEventListener("click", function(ev){
   if(open){ tr.nextElementSibling.remove(); tr.classList.remove("st-open"); return; }
   const sport = tr.getAttribute("data-stsport"), team = tr.getAttribute("data-stteam");
   const esc = standingsEsc_;
-  const lst = stGames_(sport, team);
+  const lst = stGames_(sport, team, tr.getAttribute("data-sttab") === null ? undefined : tr.getAttribute("data-sttab"));
   if(!lst.length) return;
   const rows = lst.map(e=>{
     const st = stDone_(e), t = st ? stTag_(st) : null;

@@ -55,7 +55,7 @@ function cevLiveText_(ev, j){
   const par = (a, b) => fora ? [b, a] : [a, b];
   const nomes = fora ? [adv, "FC Porto"] : ["FC Porto", adv];
   if(j.golosFcp !== undefined){ // jogos de golos/pontos (ex.: hóquei): "FC Porto 3-2 Adversário · 1.ª parte 12:30"
-    const t = [j.parte, j.tempo].filter(Boolean).join(" ");
+    const t = liveTempoHtml_(j);
     const g = par(j.golosFcp||0, j.golosAdv||0);
     return nomes[0] + " " + g[0] + "-" + g[1] + " " + nomes[1] + (t ? " · " + t : "");
   }
@@ -74,6 +74,39 @@ function cevLiveText_(ev, j){
 function liveEsc_(s){
   return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 }
+// v238: relógio ao segundo. O Apps Script (v154) manda `rel` = {b: segundos jogados em ts, ts: ms, cap: máx. segundos a avançar (0 = sem limite), l: minutos
+// regulamentares}. O texto inicial é o minuto de sempre (estável, para não mexer nas assinaturas de re-desenho); um cronómetro de 1 s
+// atualiza todos os `.lclk` visíveis. Sem `rel` (hóquei, basquetebol…) fica só o texto da fonte.
+function liveTempoHtml_(j, sep){
+  if(!j) return "";
+  const p = j.parte ? liveEsc_(j.parte) : "";
+  let t = j.tempo ? liveEsc_(j.tempo) : "";
+  const r = j.rel;
+  if(t && r && typeof r === "object" && isFinite(r.b) && isFinite(r.ts)){
+    t = `<span class="lclk" data-lc="${Math.round(Number(r.b))},${Math.round(Number(r.ts))},${Math.round(Number(r.cap) || 0)},${Math.round(Number(r.l) || 0)}">${t}</span>`;
+  }
+  return [p, t].filter(Boolean).join(sep || " ");
+}
+function liveClockText_(spec, now){
+  const b = spec[0], ts = spec[1], cap = spec[2], l = spec[3];
+  let e = (now - ts) / 1000;
+  if(!(e > 0)) e = 0;
+  e = Math.min(e, cap || 150); // dados parados há mais de 2,5 min: o relógio pára em vez de inventar
+  const s = Math.floor(b + e), m = Math.floor(s / 60);
+  if(l && m >= l) return l + "+" + (m - l + 1) + "'";
+  return m + ":" + String(s % 60).padStart(2, "0");
+}
+function liveClockTick_(){
+  if(document.hidden) return;
+  const now = Date.now();
+  document.querySelectorAll(".lclk").forEach(el => {
+    const spec = (el.getAttribute("data-lc") || "").split(",").map(Number);
+    if(spec.length < 4 || spec.some(x => !isFinite(x))) return;
+    const txt = liveClockText_(spec, now);
+    if(el.textContent !== txt) el.textContent = txt;
+  });
+}
+setInterval(liveClockTick_, 1000);
 function renderLiveNowBanner_(){
   const host = document.getElementById("liveNowBanner");
   if(!host) return;
@@ -109,8 +142,8 @@ function renderLiveNowBanner_(){
     if(porGolos && acabou){
       setsHtml = "<b>Resultado final</b>";
     } else if(porGolos){
-      const t = [j.parte, j.tempo].filter(Boolean).join(" ");
-      setsHtml = t ? "<b>" + liveEsc_(t) + "</b>" : "A decorrer";
+      const t = liveTempoHtml_(j);
+      setsHtml = t ? "<b>" + t + "</b>" : "A decorrer";
     } else if(sets.length && acabou){
       setsHtml = "<b>Resultado final</b> · " + liveEsc_(sets.map((x, i) => { const q = par(x[0], x[1]); return (i + 1) + ".º " + q[0] + "-" + q[1]; }).join(" · "));
     } else if(sets.length){

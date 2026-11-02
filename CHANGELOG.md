@@ -1,3 +1,6 @@
+## v239
+- A forma V/E/D por baixo do FC Porto em cada tabela de classificação passa a ser só da competição dessa tabela: campeonato na tabela do campeonato, Champions/Taça na do grupo (`stFormHtml_(sport, tab)`, `standingsObjHtml_` deduz a competição quando a tabela de grupo é aberta na página do jogo). O bloco «Forma recente» do «Antes do jogo» não mudou. Cache `dia22-cache-v316`.
+
 ## v238 / Apps Script v154 (`apps-script/apps-script-v154.gs`)
 - **«🔵 Já começou!»** para TODOS quando o jogo passa a AO VIVO no site (`avisosAutoProcessar_`, `est.i`; hóquei só com `aoVivoReal`; não avisa se passaram >25 min da hora). Só o Futsal (sem ao vivo) usa a hora (`checkUpcomingGamesForPush_`). Substitui o «Falta pouco»; o do Lembrar-me deixa de se repetir (`JA_COMECOU_JA_PARA_TODOS_`).
 - **Golos:** continuam Equipa A/B e Futebol Feminino. Hóquei só avisa o início (muitos golos cansam); futsal sem aviso de golos; andebol e basquetebol também não.

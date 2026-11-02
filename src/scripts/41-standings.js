@@ -57,8 +57,8 @@ function stGames_(sport, team, tab){
 function stDone_(e){ const st = (typeof getEv === "function" && getEv(e.id)) || {}; return (st.resultado && String(st.resultado).trim()) ? st : null; }
 function stTag_(st){ return st.resultTag === "win" ? ["V", "win"] : st.resultTag === "loss" ? ["D", "loss"] : st.resultTag === "draw" ? ["E", "draw"] : null; }
 // forma do FC Porto (últimos 5 jogos com resultado), do mais antigo para o mais recente
-function stFormHtml_(sport){
-  const f = stGames_(sport).filter(e=>{ const d = stDone_(e); return d && stTag_(d); }).slice(0, 5).reverse();
+function stFormHtml_(sport, tab){ // v239: `tab` = só os jogos da competição desta tabela (ver stGames_)
+  const f = stGames_(sport, null, tab).filter(e=>{ const d = stDone_(e); return d && stTag_(d); }).slice(0, 5).reverse();
   if(f.length < 2) return "";
   return `<span class="st-form">${f.map(e=>{ const t = stTag_(stDone_(e)); return `<span class="hv-tag hv-tag-${t[1]}">${t[0]}</span>`; }).join("")}</span>`;
 }
@@ -87,12 +87,13 @@ function stSummaryHtml_(s, zmap, esc){
 function standingsObjHtml_(s, opts){
   const esc = standingsEsc_;
   opts = opts || {};
+  if(opts.tab === undefined && opts.sport){ const ci = compStandingsFor_(opts.sport).indexOf(s); if(ci >= 0) opts.tab = String(ci); } // v239: tabela de grupo aberta fora da lista (página do jogo) também filtra pela sua competição
   const cols = s.cols || [];
   const isAdv = r => !!(opts.advName && !r.me && typeof pgSameTeam_ === "function" && pgSameTeam_(r.t, opts.advName));
   const head = `<tr><th class="st-pos">#</th><th class="st-team">Equipa</th>${cols.map(c=>`<th class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc(c)}</th>`).join("")}</tr>`;
   const zmap = standingsZonasMap_(s);
   const clickable = r => !!(opts.sport && !r.me && stGames_(opts.sport, r.t, opts.tab).length);
-  const body = s.rows.map((r, ri)=>`<tr class="${r.me ? "is-me" : ""}${isAdv(r) ? " is-adv" : ""}${zmap ? zmap.cls(r, s.rows[ri - 1]) : ""}${clickable(r) ? " st-click" : ""}"${clickable(r) ? ` data-stsport="${esc(opts.sport)}" data-stteam="${esc(r.t)}"${opts.tab !== undefined ? ` data-sttab="${esc(opts.tab)}"` : ""} tabindex="0"` : ""}><td class="st-pos">${esc(r.p)}</td><td class="st-team">${crestCell_(opts.sport, r)}${esc(r.t)}${r.me && opts.sport && !opts.noForm ? stFormHtml_(opts.sport) : ""}</td>${cols.map((c, i)=>`<td class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc((r.c || [])[i])}</td>`).join("")}</tr>`).join("");
+  const body = s.rows.map((r, ri)=>`<tr class="${r.me ? "is-me" : ""}${isAdv(r) ? " is-adv" : ""}${zmap ? zmap.cls(r, s.rows[ri - 1]) : ""}${clickable(r) ? " st-click" : ""}"${clickable(r) ? ` data-stsport="${esc(opts.sport)}" data-stteam="${esc(r.t)}"${opts.tab !== undefined ? ` data-sttab="${esc(opts.tab)}"` : ""} tabindex="0"` : ""}><td class="st-pos">${esc(r.p)}</td><td class="st-team">${crestCell_(opts.sport, r)}${esc(r.t)}${r.me && opts.sport && !opts.noForm ? stFormHtml_(opts.sport, opts.tab) : ""}</td>${cols.map((c, i)=>`<td class="${STANDINGS_OPT_COLS_[c] ? "st-opt " : ""}${c === "Pts" ? "st-pts" : ""}">${esc((r.c || [])[i])}</td>`).join("")}</tr>`).join("");
   const sub = [s.comp, s.fase].filter(Boolean).join(" · ");
   const when = s.updated ? (s.manual ? "Atualizado à mão " + standingsAgo_(s.updated) : "Atualizado " + standingsAgo_(s.updated)) : "";
   return `<div class="hv-panel"><div class="hv-panel-head"><h3>${esc(opts.title || "Classificação")}</h3>${opts.editBtn || ""}</div>

@@ -426,6 +426,7 @@ async function fetchAll(){
       FORMAS = (raw.formas && typeof raw.formas === "object") ? raw.formas : {};
       NOTICIAS = (raw.noticias && typeof raw.noticias === "object") ? raw.noticias : {};
       DETALHES = (raw.detalhes && typeof raw.detalhes === "object") ? raw.detalhes : {};
+      ONZE = (raw.onze && typeof raw.onze === "object") ? raw.onze : {};
       ESCUDOS = (raw.escudos && typeof raw.escudos === "object") ? raw.escudos : {};
       try{ DATA_FRESH_ = true; extrasSave_(); }catch(e){} // v179: dados do servidor chegaram; guarda uma cópia para a próxima visita abrir já preenchida
       if(typeof renderLiveNowBanner_ === "function") renderLiveNowBanner_();

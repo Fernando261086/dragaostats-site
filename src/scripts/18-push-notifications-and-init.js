@@ -209,7 +209,28 @@ function showStaleDataBanner_(at){
   else if(!linkedSport && typeof openHomeByDefault_ === "function") openHomeByDefault_();
   // atualiza periodicamente para ver provas, marcações e competições feitas por outra pessoa,
   // sem nunca apagar uma marcação local mais recente
+  // v243: no link «só ver», longe de qualquer jogo (e sem nada ao vivo) basta ir buscar os dados de ~25 em 25 s em vez de 6 em 6;
+  // perto de um jogo (de 45 min antes a 4 h depois) ou com algo ao vivo mantém-se o ritmo normal. Em edição nunca abranda.
+  let lastPollAt_ = 0;
+  function pollQuiet_(){
+    try{
+      if(typeof READONLY_MODE === "undefined" || !READONLY_MODE) return false;
+      if(typeof CEV_LIVE === "object" && CEV_LIVE && CEV_LIVE.jogos && Object.keys(CEV_LIVE.jogos).length) return false;
+      const now = Date.now();
+      return !(ALL && ALL.data && Object.keys(ALL.data).some(id=>{
+        const c = (ALL.competitions || []).find(x=>x.id === id);
+        if(c && (c.archived || c.mode !== "matches")) return false;
+        return ((ALL.data[id] || {}).events || []).some(ev=>{
+          if(!ev || !ev.day || !ev.t) return false;
+          const t = new Date(ev.day + "T" + ev.t + ":00").getTime();
+          return !isNaN(t) && now >= t - 45*60000 && now <= t + 4*3600000;
+        });
+      }));
+    }catch(e){ return false; }
+  }
   async function syncPoll_(){
+    if(pollQuiet_() && Date.now() - lastPollAt_ < 24000) return;
+    lastPollAt_ = Date.now();
     const typing = document.activeElement && (
       document.activeElement.classList.contains('result-input') ||
       document.activeElement.classList.contains('gate-input') ||

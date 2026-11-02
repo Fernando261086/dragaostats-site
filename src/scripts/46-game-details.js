@@ -2,6 +2,7 @@
 // Vêm do Apps Script v112 (campo "detalhes" do doGet, lido do Sofascore): golos, cartões, substituições e estatísticas.
 // É só informação para ver — nunca altera o resultado nem os marcadores oficiais, que continuam a ser escritos à mão.
 let DETALHES = {};
+let ONZE = {}; // v243: onze inicial por jogo (Apps Script v155): { evId: { c: 1 = confirmado, f: [formação FC Porto, formação adversário], j: [[nome, camisola, lado, posição G|D|M|F]] } }
 const GD_OPEN_ = {}; // v207: jogos com o "Lance a lance" aberto por inteiro
 // v205: tradução para português do que o Sofascore envia em inglês (estatísticas e tipos de lance). O que não estiver aqui fica como veio.
 const GD_STAT_PT_ = {
@@ -93,6 +94,23 @@ function gameDetailsHtml_(ev){
     html += `<div class="gp-card"><h3>Jogadores</h3>${tab(0, "FC Porto")}${tab(1, ev.athlete || t.away || "Adversário")}</div>`;
   }
   return html + `<div class="gd-src">Cronologia e estatísticas: ${hoq ? "hoqueipatins.pt" : "Sofascore"}, podem ter atraso. O resultado oficial é o do site.</div>`;
+}
+
+// v243: onze inicial (Equipa A, Feminino, Equipa B). Aparece assim que o Sofascore tem o onze (provável ou confirmado) e fica no jogo depois.
+function onzeHtml_(ev){
+  const o = (ONZE && typeof ONZE === "object") ? ONZE[ev.id] : null;
+  if(!o || !Array.isArray(o.j) || o.j.length < 10) return "";
+  const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
+  const linhas = [["G", "GR"], ["D", "Defesas"], ["M", "Médios"], ["F", "Avançados"]];
+  const lado = (n, nome)=>{
+    const js = o.j.filter(x=>(x[2] === 1 ? 1 : 0) === n);
+    if(!js.length) return "";
+    const form = o.f && o.f[n] ? ` <i>${esc(o.f[n])}</i>` : "";
+    const por = {}; js.forEach(x=>{ const k = linhas.some(l=>l[0] === x[3]) ? x[3] : "F"; (por[k] = por[k] || []).push(x); });
+    return `<div class="gd-onze-t"><div class="gd-onze-n">${esc(nome)}${form}</div>${linhas.filter(l=>por[l[0]]).map(l=>`<div class="gd-onze-l"><span class="gd-onze-pos">${l[1]}</span><span class="gd-onze-ps">${por[l[0]].map(x=>`<span class="gd-onze-p">${x[1] ? `<i>${esc(x[1])}</i>` : ""}${esc(x[0])}</span>`).join("")}</span></div>`).join("")}</div>`;
+  };
+  const adv = (typeof homeOpp_ === "function") ? homeOpp_(ev) : (ev.athlete || "Adversário");
+  return `<div class="hv-panel gd-onze"><div class="hv-panel-head"><h3>Onze inicial</h3><span class="gd-onze-tag ${o.c ? "ok" : ""}">${o.c ? "Confirmado" : "Provável"}</span></div><div class="gd-onze-g">${lado(0, "FC Porto")}${lado(1, adv)}</div></div>`;
 }
 
 // v177: últimos acontecimentos no cartão "ao vivo" do Início (3 mais recentes da cronologia, se houver)

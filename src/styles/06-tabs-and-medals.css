@@ -1088,3 +1088,15 @@ html.theme-light .cp-win{ color:#12803f; } html.theme-light .cp-loss{ color:#c62
 .sh-body img,.sh-body canvas,.sh-body video{max-width:100%}
 html.theme-light .sh-sheet{background:#fff}
 html.theme-light .sh-overlay{background:rgba(20,30,50,.35)}
+
+/* v243: onze inicial */
+.gd-onze-tag{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid rgba(128,128,128,.4);opacity:.85}
+.gd-onze-tag.ok{border-color:#3fb950;color:#3fb950;opacity:1}
+.gd-onze-g{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@media(min-width:700px){.gd-onze-g{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.gd-onze-n{font-weight:700;margin-bottom:6px}
+.gd-onze-n i{font-style:normal;font-weight:600;opacity:.6;margin-left:4px;font-size:13px}
+.gd-onze-l{display:grid;grid-template-columns:70px minmax(0,1fr);gap:8px;align-items:start;padding:5px 0;border-top:1px solid rgba(128,128,128,.18)}
+.gd-onze-pos{font-size:11px;font-weight:700;opacity:.6;text-transform:uppercase;padding-top:4px}
+.gd-onze-ps{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:14px}
+.gd-onze-p i{font-style:normal;opacity:.55;margin-right:4px;font-variant-numeric:tabular-nums}

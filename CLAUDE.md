@@ -378,3 +378,5 @@ parada, é quase sempre o endereço da fonte):
 **v240:** `clsSports_` (`54-standings-view.js`) esconde «Futebol» quando há «Equipa A». Cache atual `dia22-cache-v317`.
 
 **v241:** `watchLabel_`: `ev.watchName` → deduzido do endereço (as «Observações» já não servem de canal; substitui a nota da v226). Cache atual `dia22-cache-v318`.
+
+**v242:** `homeHeroHtml_` (36) mostra o canal (`watchLabel_`) por baixo do local, com `HERO_ICON_TV_`. Cache atual `dia22-cache-v319`.

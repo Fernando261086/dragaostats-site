@@ -1,3 +1,6 @@
+## v242
+- Cartão em destaque do próximo jogo (Início e página de modalidade): por baixo do local aparece o canal que transmite («Onde ver» ou deduzido do endereço), com ícone de TV (`HERO_ICON_TV_`, `36-home-view.js`). Cache `dia22-cache-v319`.
+
 ## v241
 - `watchLabel_` (`42-game-page.js`): o canal vem só de «Onde ver» ou do endereço; «Observações» deixa de ser usado como canal (revoga a regra da v226). Cache `dia22-cache-v318`.
 

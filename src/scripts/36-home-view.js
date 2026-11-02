@@ -28,6 +28,7 @@ function homeLiveScoreHtml_(ev, j){
   return `<div class="hv-hero-score"><span class="hs-n">${esc(String(a))}</span><span class="hs-sep">–</span><span class="hs-n">${esc(String(b))}</span>${info ? `<span class="hs-t">${infoHtml || esc(info)}</span>` : ""}</div>`;
 }
 
+const HERO_ICON_TV_ = (typeof HERO_SVG_ === "function") ? HERO_SVG_('<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M8 21h8M12 18v3"/>') : ""; // v242: canal que transmite, por baixo do local
 // Cartão azul de destaque (usado no Início e no topo de cada página de modalidade)
 function homeHeroHtml_(item, label){
   const esc = homeEsc_;
@@ -52,6 +53,7 @@ function homeHeroHtml_(item, label){
     <div class="hv-hero-meta">
       <span>${ico(typeof HERO_ICON_CAL_ !== "undefined" ? HERO_ICON_CAL_ : "")}${esc(homeLongDate_(d))}${ev.t ? " · " + esc(ev.t) : ""}</span>
       <span>${ico(typeof HERO_ICON_PIN_ !== "undefined" ? HERO_ICON_PIN_ : "")}${esc(place)}</span>
+      ${((ev.watchName || ev.watchUrl) && typeof watchLabel_ === "function") ? `<span>${ico(typeof HERO_ICON_TV_ !== "undefined" ? HERO_ICON_TV_ : "")}${esc(watchLabel_(ev))}</span>` : ""}
     </div>
     <div class="hv-hero-actions">
       ${live ? `<button type="button" class="hv-btn hv-btn-main" data-go="${esc(ev.id)}">${liveData ? "Ver jogo completo" : "Ver jogo"}</button>`
@@ -79,7 +81,7 @@ function renderHomeView_(force){
   const sportsAll = Array.from(new Set(withD.map(x=>x.ev.sport))).sort((a, b)=>a.localeCompare(b, "pt"));
   if(homeSport_ !== "Todas" && !sportsAll.includes(homeSport_)) homeSport_ = "Todas";
 
-  const sig = JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, liveOf(x.ev), (typeof cevLiveText_ === "function" && liveOf(x.ev)) ? cevLiveText_(x.ev, cevLiveFor_(x.ev)).replace(/ data-lc="[^"]*"/g, "") : ""]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_, (typeof newsSig_ === "function" ? newsSig_() : ""), (typeof ESCUDOS === "object" && ESCUDOS ? Object.keys(ESCUDOS).length : 0), (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), Object.keys(STANDINGS || {}).map(k=>[k, ((STANDINGS[k] || {}).updated || 0)])]);
+  const sig = JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, x.ev.watchName, liveOf(x.ev), (typeof cevLiveText_ === "function" && liveOf(x.ev)) ? cevLiveText_(x.ev, cevLiveFor_(x.ev)).replace(/ data-lc="[^"]*"/g, "") : ""]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_, (typeof newsSig_ === "function" ? newsSig_() : ""), (typeof ESCUDOS === "object" && ESCUDOS ? Object.keys(ESCUDOS).length : 0), (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), Object.keys(STANDINGS || {}).map(k=>[k, ((STANDINGS[k] || {}).updated || 0)])]);
   if(!force && sig === homeSig_) return;
   homeSig_ = sig;
   if(typeof favApplyOnce_ === "function") favApplyOnce_(sportsAll);

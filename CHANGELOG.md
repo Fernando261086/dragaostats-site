@@ -1,6 +1,6 @@
 ## v238 / Apps Script v154 (`apps-script/apps-script-v154.gs`)
-- **«🔴 Já começou!»** para TODOS (em vez do «Falta pouco» 15 min antes), até 12 min depois da hora marcada e só se ainda não houver resultado; abre o cartão do jogo (`checkUpcomingGamesForPush_`). O «Já começou» por pessoa do Lembrar-me deixa de se repetir (`JA_COMECOU_JA_PARA_TODOS_`).
-- **Golos** avisados também no **Futsal** e no **Hóquei Patins** (🏒), de FC Porto e adversário. Andebol e basquetebol não têm aviso por golo/cesto (demasiados).
+- **«🔴 Já começou!»** para TODOS quando o jogo passa a AO VIVO no site (`avisosAutoProcessar_`, `est.i`; hóquei só com `aoVivoReal`; não avisa se passaram >25 min da hora). Só o Futsal (sem ao vivo) usa a hora (`checkUpcomingGamesForPush_`). Substitui o «Falta pouco»; o do Lembrar-me deixa de se repetir (`JA_COMECOU_JA_PARA_TODOS_`).
+- **Golos:** continuam Equipa A/B e Futebol Feminino. Hóquei só avisa o início (muitos golos cansam); futsal sem aviso de golos; andebol e basquetebol também não.
 - **Ao vivo mais rápido:** enquanto há jogo, o gatilho de 1 min repete a leitura do Sofascore e do hóquei a cada ~15 s (`aoVivoRepetirSeDevido_`), com orçamento diário (`AOVIVO_REP_MIN`, 45 min por defeito); esgotado, volta a 1 min e manda email. Bloqueio de utilizador para execuções não se sobreporem.
 - **Relógio ao segundo:** `rel` {b,ts,cap,l} no resumo do Sofascore (futebol e andebol/futsal); site `liveTempoHtml_`/`liveClockTick_` (`05-…`), usado no cartão ao vivo, herói do Início, página do jogo e lista.
 - **Classificações:** as linhas clicáveis só mostram os jogos da competição da tabela (`stGames_(sport, team, tab)`, `data-sttab`).

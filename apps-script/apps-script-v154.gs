@@ -1423,12 +1423,12 @@ function checkUpcomingGamesForPush_() {
       const evDate = new Date(ev.day + "T" + ev.t + ":00");
       if (isNaN(evDate)) return;
       const diffMin = (evDate - now) / 60000;
-      // v154: em vez de "Falta pouco" (15 min antes), avisa TODOS de que o jogo já começou e leva ao cartão do jogo (ao vivo).
+      // v154: «Já começou!» pela hora só no futsal; nas outras modalidades dispara quando o jogo passa a AO VIVO (avisosAutoProcessar_).
       // Janela: de 0 a 12 min depois da hora marcada (o gatilho corre de 5 em 5 min); nunca avisa se o resultado já foi escrito.
       const jaTemResultado = !!(((((compData.status || {})[ev.id] || {}).resultado) || "").toString().trim());
-      if (diffMin <= 0 && diffMin >= -JA_COMECOU_JANELA_MIN_ && !jaTemResultado) {
+      if (ev.sport === "Futsal" && diffMin <= 0 && diffMin >= -JA_COMECOU_JANELA_MIN_ && !jaTemResultado) { // v154: só o futsal (sem ao vivo) usa a hora; as outras avisam quando passam a AO VIVO
         try {
-          const temDiretoJ = ev.sport !== "Futsal";
+          const temDiretoJ = false;
           sendPushToAll_("🔴 Já começou!", ev.sport + ": FC Porto vs " + ev.athlete + (ev.detail ? " · " + ev.detail : "") + (temDiretoJ ? " — acompanha ao vivo no Dragão Stats" : " — resultado no Dragão Stats"), buildEventPushLink_(ev.id, c.id));
         } catch (pushErr) {
           Logger.log("Erro a enviar aviso de jogo a começar: " + pushErr.message);
@@ -3204,7 +3204,8 @@ function atualizarAoVivoHoqueiCore_(forcar) {
       golosAdv: iFcp === 1 ? sc[0] : sc[1],
       tempo: tempo,
       parte: parte,
-      evento: g.id, adv: it.adv, sport: it.sport
+      evento: g.id, adv: it.adv, sport: it.sport,
+      aoVivoReal: g.status === true && !terminou // v154: a fonte diz que começou (o «vivo» do site começa 5 min antes)
     };
   });
   props.setProperty(HOQUEI_LIVE_PROP_, JSON.stringify({ updated: agora, jogos: out }));
@@ -4306,7 +4307,7 @@ function escudosPesquisar_() {
 // Destinatários: propriedade do script AVISOS_AUTO_MODO = "teste" (por defeito: só quem tem o nome em AVISOS_AUTO_NOMES, ex.: "Fernando,Bruno")
 // ou "todos". Em modo teste o título leva "[TESTE]".
 const AVISOS_AUTO_PROP_ = "avisosAuto";
-const AVISOS_AUTO_GOLOS_ = ["Equipa B", "Futebol Feminino", "Equipa A", "Futsal", "Hóquei Patins"]; // v154: + futsal e hóquei. Andebol (50-60 golos) e basquetebol (cestos) ficam de fora de propósito.
+const AVISOS_AUTO_GOLOS_ = ["Equipa B", "Futebol Feminino", "Equipa A"]; // v154: hóquei só avisa o início (muitos golos cansam); futsal não tem ao vivo; andebol e basquetebol têm demasiados golos/cestos.
 function avisosAutoIcone_(sport) { return sport === "Hóquei Patins" ? "🏒" : "⚽"; }
 const AVISOS_AUTO_SETS_ = ["Voleibol"];
 
@@ -4322,6 +4323,7 @@ function avisosAutoDestinatarios_(sheet, modo) {
 }
 
 function avisosAutoEnviar_(a) {
+  if (a.paraTodos && !a.forcarTeste) { sendPushToAll_(a.titulo, a.corpo, buildEventPushLink_(a.evId, a.compId)); return; } // v154: «Já começou!» vai sempre para toda a gente (não depende do modo de teste)
   const sheet = getSheet_();
   const modo = a.forcarTeste ? "teste" : avisosAutoModo_(); // v125: a simulação nunca vai para toda a gente
   const dest = avisosAutoDestinatarios_(sheet, modo);
@@ -4347,9 +4349,17 @@ function avisosAutoPlacar_(it, f, a) { return it.local === "fora" ? it.adv + " "
 function avisosAutoProcessar_(it, res, estados, pend, agora) {
   if (it.noAuto || res.estado !== "vivo") return;
   const golos = AVISOS_AUTO_GOLOS_.indexOf(it.sport) >= 0, sets = AVISOS_AUTO_SETS_.indexOf(it.sport) >= 0;
-  if (!golos && !sets) return;
   const est = estados[it.id] || (estados[it.id] = {});
   est.t = agora;
+  // v154: «Já começou!» quando o jogo passa a AO VIVO no site (para TODOS, abre o cartão do jogo). Uma vez por jogo; grava antes de enviar.
+  // Hóquei: o site dá «vivo» 5 min antes da hora, por isso só conta quando a fonte diz mesmo que começou (aoVivoReal). Não avisa se já passaram >25 min da hora marcada.
+  if (!est.i && res.aoVivoReal !== false) {
+    est.i = 1;
+    let tarde = false;
+    try { tarde = agora - Utilities.parseDate(Utilities.formatDate(new Date(agora), "Europe/Lisbon", "yyyy-MM-dd") + " " + it.t, "Europe/Lisbon", "yyyy-MM-dd HH:mm").getTime() > 25 * 60000; } catch (e) {}
+    if (!tarde) pend.push({ evId: it.id, compId: it.compId, paraTodos: true, titulo: "🔴 Já começou!", corpo: it.sport + ": FC Porto vs " + it.adv + " — acompanha ao vivo no Dragão Stats" });
+  }
+  if (!golos && !sets) return;
   if (golos && res.golosFcp !== undefined) {
     const a = Number(res.golosFcp) || 0, b = Number(res.golosAdv) || 0;
     if (!est.g) est.g = [a, b]; // 1.ª leitura: só serve de referência

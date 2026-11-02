@@ -1429,7 +1429,7 @@ function checkUpcomingGamesForPush_() {
       if (ev.sport === "Futsal" && diffMin <= 0 && diffMin >= -JA_COMECOU_JANELA_MIN_ && !jaTemResultado) { // v154: só o futsal (sem ao vivo) usa a hora; as outras avisam quando passam a AO VIVO
         try {
           const temDiretoJ = false;
-          sendPushToAll_("🔴 Já começou!", ev.sport + ": FC Porto vs " + ev.athlete + (ev.detail ? " · " + ev.detail : "") + (temDiretoJ ? " — acompanha ao vivo no Dragão Stats" : " — resultado no Dragão Stats"), buildEventPushLink_(ev.id, c.id));
+          sendPushToAll_("🔵 Já começou!", ev.sport + ": FC Porto vs " + ev.athlete + (ev.detail ? " · " + ev.detail : "") + (temDiretoJ ? " — acompanha ao vivo no Dragão Stats" : " — resultado no Dragão Stats"), buildEventPushLink_(ev.id, c.id));
         } catch (pushErr) {
           Logger.log("Erro a enviar aviso de jogo a começar: " + pushErr.message);
         }
@@ -1555,7 +1555,7 @@ function checkGameRemindersForPush_() {
       const toksS = (data.reminders[evId] || []).map(function(t) { return { token: t, name: "(jogo começou)" }; });
       const temDireto = k.ev.sport !== "Futsal";
       try {
-        sendPushToTokenList_(toksS, "🔴 Já começou!", k.ev.sport + ": FC Porto vs " + k.ev.athlete + (temDireto ? " — acompanha em direto no Dragão Stats" : " — resultado no Dragão Stats"), buildEventPushLink_(evId, k.compId));
+        sendPushToTokenList_(toksS, "🔵 Já começou!", k.ev.sport + ": FC Porto vs " + k.ev.athlete + (temDireto ? " — acompanha em direto no Dragão Stats" : " — resultado no Dragão Stats"), buildEventPushLink_(evId, k.compId));
       } catch (errS) { Logger.log("Erro a enviar aviso de início: " + errS.message); }
     }
     if (data.sent[evId]) return;
@@ -4357,7 +4357,7 @@ function avisosAutoProcessar_(it, res, estados, pend, agora) {
     est.i = 1;
     let tarde = false;
     try { tarde = agora - Utilities.parseDate(Utilities.formatDate(new Date(agora), "Europe/Lisbon", "yyyy-MM-dd") + " " + it.t, "Europe/Lisbon", "yyyy-MM-dd HH:mm").getTime() > 25 * 60000; } catch (e) {}
-    if (!tarde) pend.push({ evId: it.id, compId: it.compId, paraTodos: true, titulo: "🔴 Já começou!", corpo: it.sport + ": FC Porto vs " + it.adv + " — acompanha ao vivo no Dragão Stats" });
+    if (!tarde) pend.push({ evId: it.id, compId: it.compId, paraTodos: true, titulo: "🔵 Já começou!", corpo: it.sport + ": FC Porto vs " + it.adv + " — acompanha ao vivo no Dragão Stats" });
   }
   if (!golos && !sets) return;
   if (golos && res.golosFcp !== undefined) {

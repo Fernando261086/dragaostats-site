@@ -376,3 +376,5 @@ parada, é quase sempre o endereço da fonte):
 **v239:** `stFormHtml_(sport, tab)` (`41-standings.js`): a forma V/E/D na linha do FC Porto de cada tabela só conta os jogos da competição da tabela (`tab`: "liga" ou o índice em `compStandingsFor_`); `standingsObjHtml_` calcula `tab` sozinho para tabelas de grupo. Cache atual `dia22-cache-v316`.
 
 **v240:** `clsSports_` (`54-standings-view.js`) esconde «Futebol» quando há «Equipa A». Cache atual `dia22-cache-v317`.
+
+**v241:** `watchLabel_`: `ev.watchName` → deduzido do endereço (as «Observações» já não servem de canal; substitui a nota da v226). Cache atual `dia22-cache-v318`.

@@ -1,3 +1,6 @@
+## v241
+- `watchLabel_` (`42-game-page.js`): o canal vem só de «Onde ver» ou do endereço; «Observações» deixa de ser usado como canal (revoga a regra da v226). Cache `dia22-cache-v318`.
+
 ## v240
 - Ecrã «Tabelas»: a pílula «Futebol» (nome antigo da Equipa A, mesma tabela) deixa de aparecer quando existe «Equipa A» (`clsSports_`, `54-standings-view.js`). Cache `dia22-cache-v317`.
 

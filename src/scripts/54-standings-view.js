@@ -6,6 +6,7 @@ function clsSports_(){
   const set = new Set();
   try{ (EVENTS || []).forEach(ev=>{ if(ev.sport) set.add(ev.sport); }); }catch(e){}
   try{ Object.keys(STANDINGS || {}).forEach(k=>set.add(k)); }catch(e){}
+  if(set.has("Equipa A")) set.delete("Futebol"); // v240: «Futebol» é o nome antigo da Equipa A (a mesma tabela); só fica a Equipa A
   return Array.from(set).sort((a, b)=>a.localeCompare(b, "pt"));
 }
 function renderClsView_(){

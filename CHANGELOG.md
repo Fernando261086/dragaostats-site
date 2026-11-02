@@ -1,3 +1,6 @@
+## v240
+- Ecrã «Tabelas»: a pílula «Futebol» (nome antigo da Equipa A, mesma tabela) deixa de aparecer quando existe «Equipa A» (`clsSports_`, `54-standings-view.js`). Cache `dia22-cache-v317`.
+
 ## v239
 - A forma V/E/D por baixo do FC Porto em cada tabela de classificação passa a ser só da competição dessa tabela: campeonato na tabela do campeonato, Champions/Taça na do grupo (`stFormHtml_(sport, tab)`, `standingsObjHtml_` deduz a competição quando a tabela de grupo é aberta na página do jogo). O bloco «Forma recente» do «Antes do jogo» não mudou. Cache `dia22-cache-v316`.
 

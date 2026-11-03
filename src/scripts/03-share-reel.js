@@ -389,6 +389,7 @@ async function fetchAll(){
     }
     if(!r.ok) return { ok:false, all:null };
     const raw = await r.json();
+    if(typeof demoLiveRaw_ === "function") demoLiveRaw_(raw); // v247: ?demo=live
     if(raw && Array.isArray(raw.competitions)){
       // atualiza os links de classificação com o que o servidor tem — mas nunca
       // enquanto o painel de edição estiver aberto, para não apagar algo que a
@@ -441,7 +442,7 @@ async function fetchAll(){
       if(raw.announcement !== undefined){ ANNOUNCEMENT = raw.announcement; renderAnnouncementBanner(); }
       if(raw.poll !== undefined){ POLL = raw.poll; renderPollWidget(); }
       const goodAll = { competitions: raw.competitions, data: raw.data || {} };
-      try{ localStorage.setItem("dia22-last-good-data", JSON.stringify({ at: Date.now(), all: goodAll })); }catch(e){}
+      try{ if(!window.__demoLive_) localStorage.setItem("dia22-last-good-data", JSON.stringify({ at: Date.now(), all: goodAll })); }catch(e){}
       return { ok:true, all: goodAll, migrated:false };
     }
     if(raw && raw.legacy){

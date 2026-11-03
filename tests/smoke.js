@@ -50,6 +50,24 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
       await page.close();
     }
   }
+  { // v247: modo demonstração ?demo=live (só público): jogo ao vivo com onze, lance a lance e estatísticas
+    const page = await browser.newPage({ viewport: { width: 390, height: 800 } });
+    const errs = []; page.on('pageerror', e => errs.push(e.message));
+    await page.addInitScript(d => {
+      try { localStorage.setItem('dia22-viewer-name', 'Teste'); } catch (e) {}
+      const f = window.fetch; window.fetch = (...a) => String(a[0]).includes('script.google.com')
+        ? Promise.resolve(new Response(JSON.stringify(d), {status:200, headers:{'content-type':'application/json'}})) : f.apply(window, a);
+    }, mock);
+    await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+    await page.goto(`http://localhost:${port}/index.html?view=readonly&demo=live`, { waitUntil: 'load' });
+    await page.waitForTimeout(1500);
+    await page.evaluate(() => { try { openGamePage_('demo-live'); } catch (e) {} });
+    await page.waitForTimeout(400);
+    const txt = await page.evaluate(() => document.body.innerText);
+    ['AO VIVO', 'Onze inicial', 'Lance a lance', 'Estatísticas'].forEach(t => txt.includes(t) ? ok(`demo ao vivo: mostra «${t}»`) : bad(`demo ao vivo: falta «${t}»`));
+    errs.length ? bad(`demo ao vivo: erros JS → ${errs.join(' | ')}`) : ok('demo ao vivo: sem erros JS');
+    await page.close();
+  }
   await browser.close(); srv.close();
   console.log(fails ? `\n${fails} problema(s) — NÃO publicar.` : '\nTudo ok.'); process.exit(fails ? 1 : 0);
 })();

@@ -5,6 +5,7 @@
 let DATA_FRESH_ = false;
 const EXTRAS_KEY_ = "dia22-extras-v1";
 function extrasSave_(){
+  if(window.__demoLive_) return; // v247: nada do modo demonstração fica guardado
   try{
     const o = { at: Date.now(), standings: STANDINGS, comp: COMP_STANDINGS, plantel: PLANTEL, formas: FORMAS, detalhes: DETALHES, onze: ONZE, assist: ASSIST, escudos: ESCUDOS };
     const txt = JSON.stringify(o);

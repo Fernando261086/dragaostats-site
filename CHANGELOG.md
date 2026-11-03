@@ -387,3 +387,6 @@ código para facilitar trabalhar nele.
 
 ## v246
 - Redesenho do Início (layout, Hoje joga, banner ao vivo compacto, ícones nos separadores, pílula de contagem, resultados, rodapé). Sem Apps Script novo (v156). Cache v323.
+
+## v247
+- Painel «Saúde» (edição) + Apps Script v157 (relatório, erros recentes); modo demonstração ?demo=live; teste automático da demo. Cache v324.

@@ -1167,3 +1167,7 @@ html.theme-light .hv-tday .td-t{ color:#0f1b33; }
 .foot-links{ display:grid; grid-template-columns:repeat(2,minmax(0,auto)); justify-content:center; gap:0 18px; }
 @media (min-width:700px){ .foot-links{ display:flex; } }
 .foot-links .feedback-btn{ justify-content:center; text-align:center; text-decoration:none !important; }
+
+/* v247: painel Saúde */
+.hp-pre{white-space:pre-wrap;word-break:break-word;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;background:rgba(0,0,0,.18);border:1px solid var(--line,#2a3a5c);border-radius:10px;padding:12px;margin:0 0 12px;max-height:55vh;overflow:auto}
+html.theme-light .hp-pre{background:#f3f5f9}

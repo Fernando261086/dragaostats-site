@@ -390,3 +390,6 @@ código para facilitar trabalhar nele.
 
 ## v247
 - Painel «Saúde» (edição) + Apps Script v157 (relatório, erros recentes); modo demonstração ?demo=live; teste automático da demo. Cache v324.
+
+## Apps Script v158
+- Relatório Saúde com notícias por modalidade e avisos. Site inalterado.

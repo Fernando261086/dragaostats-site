@@ -1004,7 +1004,7 @@ function updateModeVisibleTabs(){
   document.querySelectorAll('[data-matches-filter]').forEach(b=>{
     b.classList.toggle('active', b.getAttribute('data-matches-filter') === matchesViewFilter);
   });
-  document.getElementById("viewTodayAllBtn").textContent = matches ? "🌍 Esta semana" : "🌍 Hoje";
+  document.getElementById("viewTodayAllBtn").textContent = matches ? "Esta semana" : "Hoje";
   const medalsVisible = document.getElementById("medalsView").style.display !== "none";
   const statsVisible = document.getElementById("statsView").style.display !== "none";
   const historyVisible = document.getElementById("historyView").style.display !== "none";

@@ -384,3 +384,6 @@ código para facilitar trabalhar nele.
 
 ## v245
 - Resumo escrito automaticamente na página dos jogos terminados.
+
+## v246
+- Redesenho do Início (layout, Hoje joga, banner ao vivo compacto, ícones nos separadores, pílula de contagem, resultados, rodapé). Sem Apps Script novo (v156). Cache v323.

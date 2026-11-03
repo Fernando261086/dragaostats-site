@@ -29,6 +29,17 @@ function homeLiveScoreHtml_(ev, j){
 }
 
 const HERO_ICON_TV_ = (typeof HERO_SVG_ === "function") ? HERO_SVG_('<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M8 21h8M12 18v3"/>') : ""; // v242: canal que transmite, por baixo do local
+// v246: no próprio dia, o cartão diz quanto falta ("Começa em 2 h 15 min"); nos outros dias, "Amanhã" / "Daqui a N dias"
+function heroPill_(d, now){
+  const dd = homeDayDiff_(d);
+  if(dd === 0){
+    const m = Math.floor((d - now) / 60000);
+    if(m <= 0) return "A começar";
+    if(m < 60) return "Começa em " + m + " min";
+    if(m < 720) return "Começa em " + Math.floor(m / 60) + " h" + (m % 60 ? " " + String(m % 60).padStart(2, "0") + " min" : "");
+  }
+  return (typeof formatCountdownMain === "function") ? formatCountdownMain(dd) : "";
+}
 // Cartão azul de destaque (usado no Início e no topo de cada página de modalidade)
 function homeHeroHtml_(item, label){
   const esc = homeEsc_;
@@ -39,7 +50,7 @@ function homeHeroHtml_(item, label){
   const lj = (typeof cevLiveFor_ === "function") ? cevLiveFor_(ev) : null;
   const liveData = !!(lj && lj.estado === "vivo");        // há dados ao vivo da fonte (resultado e tempo)
   const live = liveData || d < now;                          // sem dados, a hora já passou: "a decorrer"
-  const pill = liveData ? "AO VIVO" : (live ? "A decorrer" : (typeof formatCountdownMain === "function" ? formatCountdownMain(homeDayDiff_(d)) : ""));
+  const pill = liveData ? "AO VIVO" : (live ? "A decorrer" : heroPill_(d, now));
   const scoreHtml = liveData ? homeLiveScoreHtml_(ev, lj) : "";
   const detail = [ev.detail, ev.phase].filter(Boolean).join(" · ");
   const place = [ev.venue, localLabel(ev.local)].filter(Boolean).join(" · ");
@@ -81,7 +92,8 @@ function renderHomeView_(force){
   const sportsAll = Array.from(new Set(withD.map(x=>x.ev.sport))).sort((a, b)=>a.localeCompare(b, "pt"));
   if(homeSport_ !== "Todas" && !sportsAll.includes(homeSport_)) homeSport_ = "Todas";
 
-  const sig = JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, x.ev.watchName, liveOf(x.ev), (typeof cevLiveText_ === "function" && liveOf(x.ev)) ? cevLiveText_(x.ev, cevLiveFor_(x.ev)).replace(/ data-lc="[^"]*"/g, "") : ""]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_, (typeof newsSig_ === "function" ? newsSig_() : ""), (typeof ESCUDOS === "object" && ESCUDOS ? Object.keys(ESCUDOS).length : 0), (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), Object.keys(STANDINGS || {}).map(k=>[k, ((STANDINGS[k] || {}).updated || 0)])]);
+  const cdKey_ = (upcoming[0] && homeDayDiff_(upcoming[0].d) === 0 && upcoming[0].d > now) ? Math.floor((upcoming[0].d - now) / 60000) + "|" : ""; // o cartão muda de minuto a minuto no próprio dia
+  const sig = cdKey_ + JSON.stringify([upcoming.slice(0, 10).map(x=>[x.ev.id, x.ev.t, x.ev.watchUrl, x.ev.watchName, liveOf(x.ev), (typeof cevLiveText_ === "function" && liveOf(x.ev)) ? cevLiveText_(x.ev, cevLiveFor_(x.ev)).replace(/ data-lc="[^"]*"/g, "") : ""]), done.slice(0, 3).map(x=>[x.ev.id, (getEv(x.ev.id) || {}).resultado]), new Date().getHours(), new Date().getMinutes() - (new Date().getMinutes() % 5), homeSport_, (typeof newsSig_ === "function" ? newsSig_() : ""), (typeof ESCUDOS === "object" && ESCUDOS ? Object.keys(ESCUDOS).length : 0), (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), Object.keys(STANDINGS || {}).map(k=>[k, ((STANDINGS[k] || {}).updated || 0)])]);
   if(!force && sig === homeSig_) return;
   homeSig_ = sig;
   if(typeof favApplyOnce_ === "function") favApplyOnce_(sportsAll);
@@ -112,8 +124,8 @@ function renderHomeView_(force){
     ? `<button type="button" class="hv-link" data-cal="1">Ver calendário</button>`
     : `<button type="button" class="hv-link" data-sportpage="${esc(homeSport_)}">Página de ${esc(homeSport_)} ›</button>`;
   const week = `<div class="hv-panel hv-week">
-    <div class="hv-pills">${pills}</div>${favBtn}
     <div class="hv-panel-head"><h3>${weekTitle}</h3>${link}</div>
+    <div class="hv-pills" aria-label="Filtrar a lista por modalidade">${pills}</div>${favBtn}
     ${rows || '<div class="hv-empty">Sem mais jogos marcados.</div>'}
   </div>`;
 
@@ -127,7 +139,8 @@ function renderHomeView_(force){
       const tag = st.resultTag === "win" ? ["V", "win"] : st.resultTag === "loss" ? ["D", "loss"] : st.resultTag === "draw" ? ["E", "draw"] : null;
       return `<button type="button" class="hv-row hv-res" data-go="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};">
         ${tag ? `<span class="hv-tag hv-tag-${tag[1]}">${tag[0]}</span>` : '<span class="hv-tag"></span>'}
-        <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)} · ${esc(formatShortDate(ev.day))}</span><span class="hv-row-match">${crestOnly_(ev, t.home)}${esc(t.home)} <b>${esc(String(st.resultado).trim())}</b> ${crestNameEnd_(ev, t.away)}</span></span>
+        <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)} · ${esc(formatShortDate(ev.day))}</span><span class="hv-row-match">${crestOnly_(ev, t.home)}${esc(t.home)} <span class="hv-vs">vs</span> ${crestNameEnd_(ev, t.away)}</span></span>
+        <span class="hv-row-time hv-res-score">${esc(String(st.resultado).trim())}</span>
       </button>`;
     }).join("");
     resultsHtml = `<div class="hv-panel hv-results"><div class="hv-panel-head"><h3>Últimos resultados</h3><button type="button" class="hv-link" data-hist="1">Ver histórico</button></div>${res}</div>`;
@@ -151,7 +164,13 @@ function renderHomeView_(force){
   }).join("");
   if(clsCards) clsHtml = `<div class="hv-panel hv-cls-panel"><div class="hv-panel-head"><h3>🏆 Classificações</h3><span class="hv-cls-hint">Toca para ver a tabela</span></div><div class="hv-cls-grid">${clsCards}</div></div>`;
 
-  const html = `<div class="hv-top"><button type="button" class="hv-search" data-search="1"><span aria-hidden="true">🔎</span> Procurar jogo, adversário, mês…</button>${(typeof liveIntroHtml_ === "function") ? liveIntroHtml_() : ""}${(typeof todayStripHtml_ === "function") ? todayStripHtml_(withD) : ""}${homeHeroHtml_(hero)}${(typeof winInviteHtml_ === "function") ? winInviteHtml_(done) : ""}${(typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("inicio") : ""}${week}${(typeof sportsGridHtml_ === "function") ? sportsGridHtml_(sportsAll, upcoming) : ""}${(typeof newsHomeHtml_ === "function") ? newsHomeHtml_() : ""}${resultsHtml}${clsHtml}</div>`;
+  // v246: estrutura em duas colunas independentes no computador (sem buracos) e, no telemóvel, a mesma ordem de sempre (via `order`)
+  const o = (cls, h)=>h ? `<div class="hv-o ${cls}">${h}</div>` : "";
+  const searchSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>';
+  const head = `<div class="hv-head"><button type="button" class="hv-search" data-search="1" aria-label="Procurar jogo, adversário ou mês">${searchSvg}<span>Pesquisar</span></button>${(typeof liveIntroHtml_ === "function") ? liveIntroHtml_() : ""}${(typeof todayStripHtml_ === "function") ? todayStripHtml_(withD) : ""}</div>`;
+  const colA = o("o-hero", homeHeroHtml_(hero)) + o("o-win", (typeof winInviteHtml_ === "function") ? winInviteHtml_(done) : "") + o("o-cta", (typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("inicio") : "") + o("o-res", resultsHtml) + o("o-news", (typeof newsHomeHtml_ === "function") ? newsHomeHtml_() : "");
+  const colB = o("o-week", week) + o("o-mod", (typeof sportsGridHtml_ === "function") ? sportsGridHtml_(sportsAll, upcoming) : "");
+  const html = `<div class="hv-top">${head}<div class="hv-cols"><div class="hv-colA">${colA}</div><div class="hv-colB">${colB}</div></div>${o("o-cls", clsHtml)}</div>`;
   host.innerHTML = html;
   if(typeof bindNotifyCta_ === "function") bindNotifyCta_(host, ()=>renderHomeView_(true));
   if(typeof bindLiveIntro_ === "function") bindLiveIntro_(host, ()=>renderHomeView_(true));

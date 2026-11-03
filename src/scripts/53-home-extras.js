@@ -30,7 +30,7 @@ function todayStripHtml_(withD){
       const right = res ? esc(res) : (live ? '<i class="hv-dot"></i>AO VIVO' : esc(ev.t || ""));
       return `<button type="button" class="hv-tday${live ? " is-live" : ""}" data-tday="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};"><span class="td-sp">${esc(ev.sport)}</span><span class="td-t">${right}</span></button>`;
     }).join("");
-    return `<div class="hv-today"><span class="hv-today-h">Hoje joga</span><div class="hv-today-row">${chips}</div></div>`;
+    return `<div class="hv-today"><span class="hv-today-h"><i class="hv-today-dot"></i>Hoje joga<em>${items.length} ${items.length === 1 ? "jogo" : "jogos"}</em></span><div class="hv-today-row">${chips}</div></div>`;
   }catch(e){ return ""; }
 }
 
@@ -164,7 +164,7 @@ function sportsGridHtml_(sportsAll, upcoming){
       const pos = me ? `<i class="sg-pos">${esc(me.p)}.º</i>` : "";
       return `<button type="button" class="hv-sg" data-sportpage="${esc(sp)}" style="--sc:${homeColor_(sp)};"><span class="sg-n">${esc(sp)}${pos}</span><span class="sg-s">${esc(when)}</span></button>`;
     }).join("");
-    return `<div class="hv-panel hv-modgrid"><div class="hv-panel-head"><h3>Modalidades</h3><span class="hv-cls-hint">Toca para ver a página</span></div><div class="sg-grid">${tiles}</div></div>`;
+    return `<div class="hv-panel hv-modgrid"><div class="hv-panel-head"><h3>Modalidades</h3><span class="hv-cls-hint">Abrir a página</span></div><div class="sg-grid">${tiles}</div></div>`;
   }catch(e){ return ""; }
 }
 
@@ -191,7 +191,7 @@ function liveIntroHtml_(){
     if(!LIVE_INTRO_ON_ || !READONLY_MODE) return "";
     if(localStorage.getItem(LIVE_INTRO_KEY_)) return "";
     const canNotify = typeof notifyCtaVariant_ === "function" && notifyCtaVariant_() === "enable";
-    return `<div class="nc-card li-card"><span class="nc-ico">🔴</span><div class="nc-body"><b class="nc-t">Novo: jogos ao vivo!</b><span class="nc-s">Acompanha o resultado e o minuto dos jogos do FC Porto em direto, aqui no Dragão Stats.</span></div>
+    return `<div class="nc-card li-card"><span class="nc-ico">🔵</span><div class="nc-body"><b class="nc-t">Novo: jogos ao vivo!</b><span class="nc-s">Acompanha o resultado e o minuto dos jogos do FC Porto em direto, aqui no Dragão Stats.</span></div>
       <div class="nc-btns">${canNotify ? `<button type="button" class="hv-btn hv-btn-main nc-yes" data-liyes="1">Ativar avisos</button>` : ""}<button type="button" class="nc-no" data-lino="1">${canNotify ? "Agora não" : "Percebi"}</button></div></div>`;
   }catch(e){ return ""; }
 }

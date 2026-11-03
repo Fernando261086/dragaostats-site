@@ -145,7 +145,7 @@ function renderGamePage_(){
     }catch(e){}
     linhas += (typeof miniStandingHtml_ === "function") ? miniStandingHtml_(ev) : "";
     if(typeof renderReactionBar === "function") linhas += `<div class="gp-card gp-react"><h3>O que achaste do jogo?</h3>${renderReactionBar(ev.id)}</div>`;
-    extraBlock = linhas;
+    extraBlock = ((typeof gameSummaryHtml_ === "function") ? gameSummaryHtml_(ev) : "") + linhas; // v245: resumo escrito
   }else if((liveData || aDecorrer) && typeof renderReactionBar === "function" && typeof REACTION_LIVE_ !== "undefined"){
     // v195: botões rápidos durante o jogo
     extraBlock = `<div class="gp-card gp-react gp-react-live"><h3>Como está a ser o jogo?</h3>${renderReactionBar(ev.id, REACTION_LIVE_)}</div>`;

@@ -381,3 +381,6 @@ código para facilitar trabalhar nele.
 ## v244 (Apps Script v156)
 - Ficha do jogador: assistências da época e jogos clicáveis.
 - Backend: deixa de enviar a classificação do «Futebol» antigo.
+
+## v245
+- Resumo escrito automaticamente na página dos jogos terminados.

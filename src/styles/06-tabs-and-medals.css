@@ -1104,3 +1104,6 @@ html.theme-light .sh-overlay{background:rgba(20,30,50,.35)}
 /* v244: jogos da ficha do jogador clicáveis */
 .ps-game[data-psjogo]{cursor:pointer;min-height:44px}
 .ps-game[data-psjogo]:hover,.ps-game[data-psjogo]:focus-visible{background:rgba(128,128,128,.12);outline:none}
+
+/* v245: resumo do jogo */
+.gp-resumo p{margin:0;line-height:1.55;font-size:15px}

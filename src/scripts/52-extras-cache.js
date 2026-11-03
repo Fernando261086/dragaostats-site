@@ -6,7 +6,7 @@ let DATA_FRESH_ = false;
 const EXTRAS_KEY_ = "dia22-extras-v1";
 function extrasSave_(){
   try{
-    const o = { at: Date.now(), standings: STANDINGS, comp: COMP_STANDINGS, plantel: PLANTEL, formas: FORMAS, detalhes: DETALHES, onze: ONZE, escudos: ESCUDOS };
+    const o = { at: Date.now(), standings: STANDINGS, comp: COMP_STANDINGS, plantel: PLANTEL, formas: FORMAS, detalhes: DETALHES, onze: ONZE, assist: ASSIST, escudos: ESCUDOS };
     const txt = JSON.stringify(o);
     if(txt.length < 900000) localStorage.setItem(EXTRAS_KEY_, txt); else localStorage.removeItem(EXTRAS_KEY_);
   }catch(e){}
@@ -22,6 +22,7 @@ function extrasSave_(){
     if(ok(o.formas)) FORMAS = o.formas;
     if(ok(o.detalhes)) DETALHES = o.detalhes;
     if(ok(o.onze)) ONZE = o.onze;
+    if(ok(o.assist)) ASSIST = o.assist;
     if(ok(o.escudos)) ESCUDOS = o.escudos;
   }catch(e){}
 })();

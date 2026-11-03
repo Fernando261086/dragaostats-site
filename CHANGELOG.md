@@ -377,3 +377,7 @@ código para facilitar trabalhar nele.
 - Cache de 5 s no `doGet` e menos pedidos no link «só ver» quando não há jogos por perto.
 - «Antes do jogo»: forma recente só da competição do jogo (FC Porto e adversário).
 - Onze inicial (provável/confirmado) na página do jogo de Equipa A, Futebol Feminino e Equipa B.
+
+## v244 (Apps Script v156)
+- Ficha do jogador: assistências da época e jogos clicáveis.
+- Backend: deixa de enviar a classificação do «Futebol» antigo.

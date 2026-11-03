@@ -2,6 +2,7 @@
 // Vêm do Apps Script v112 (campo "detalhes" do doGet, lido do Sofascore): golos, cartões, substituições e estatísticas.
 // É só informação para ver — nunca altera o resultado nem os marcadores oficiais, que continuam a ser escritos à mão.
 let DETALHES = {};
+let ASSIST = {}; // v244: assistências por jogo (Apps Script v156): { evId: [nome do assistente, …] } — só jogos acompanhados automaticamente
 let ONZE = {}; // v243: onze inicial por jogo (Apps Script v155): { evId: { c: 1 = confirmado, f: [formação FC Porto, formação adversário], j: [[nome, camisola, lado, posição G|D|M|F]] } }
 const GD_OPEN_ = {}; // v207: jogos com o "Lance a lance" aberto por inteiro
 // v205: tradução para português do que o Sofascore envia em inglês (estatísticas e tipos de lance). O que não estiver aqui fica como veio.

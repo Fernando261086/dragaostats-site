@@ -60,17 +60,20 @@ function playerSeasonStats_(sport, nome){
   const todos = (PLANTEL[sport] && PLANTEL[sport].j || []).map(r=>r[1]);
   const igual = n=>sqNameMatch_(nome, n, todos);
   const goalsMode = (typeof MARCADORES_LABEL_SPORTS !== "undefined" && MARCADORES_LABEL_SPORTS.has(sport));
-  const tipos = goalsMode ? ["Golos"] : getStatTypesFor(sport);
+  const comAssist = goalsMode && (typeof ASSIST === "object") && ASSIST && ["Equipa A", "Futebol Feminino", "Equipa B"].indexOf(sport) >= 0 && Object.keys(ASSIST).length > 0; // v244
+  const tipos = goalsMode ? (comAssist ? ["Golos", "Assistências"] : ["Golos"]) : getStatTypesFor(sport);
   const totais = {}; tipos.forEach(t=>{ totais[t] = 0; });
   const jogos = [];
   (typeof EVENTS !== "undefined" ? EVENTS : []).filter(ev=>ev.sport === sport && ev.day).forEach(ev=>{
     const rows = (ev.playerStats || []).filter(p=>p.team !== "adv" && p.name && igual(p.name));
     const presente = (Array.isArray(ev.presentes) ? ev.presentes : []).some(igual);
-    if(!rows.length && !presente) return;
+    const nAss = comAssist && Array.isArray(ASSIST[ev.id]) ? ASSIST[ev.id].filter(n=>igual(n)).length : 0;
+    if(!rows.length && !presente && !nAss) return;
     const g = { ev, vals: {}, minutos: [] };
     if(goalsMode){
       rows.forEach(r=>{ g.vals.Golos = (g.vals.Golos || 0) + 1; if(r.minute != null) g.minutos.push(r.minute); });
       if(g.vals.Golos) totais.Golos += g.vals.Golos;
+      if(nAss){ g.vals["Assistências"] = nAss; totais["Assistências"] += nAss; }
     }else{
       rows.forEach(r=>{ tipos.forEach(t=>{ const v = r.stats && r.stats[t]; if(v != null && !isNaN(v)){ g.vals[t] = (g.vals[t] || 0) + Number(v); totais[t] += Number(v); } }); });
     }
@@ -105,13 +108,15 @@ function playerSheetHtml_(sport, r){
   }).join("")}</div>` : "";
   const lista = s.jogos.map(g=>{
     const st = (typeof getEv === "function" && getEv(g.ev.id)) || {};
-    const vals = s.tipos.filter(t=>g.vals[t]).map(t=>`${g.vals[t]} ${esc(t.toLowerCase())}`).join(" · ");
+    const sing = { "golos": "golo", "assistências": "assistência", "pontos": "ponto", "ressaltos": "ressalto", "desarmes": "desarme" };
+    const vals = s.tipos.filter(t=>g.vals[t]).map(t=>{ const n = t.toLowerCase(); return `${g.vals[t]} ${esc(g.vals[t] === 1 && sing[n] ? sing[n] : n)}`; }).join(" · ");
     const min = g.minutos.length ? ` (${g.minutos.map(m=>esc(m) + "'").join(", ")})` : "";
     const res = st.resultado && String(st.resultado).trim();
-    return `<div class="ps-game"><span class="ps-d">${esc(typeof formatShortDate === "function" ? formatShortDate(g.ev.day) : g.ev.day)}</span><span class="ps-a">${esc(g.ev.athlete || "")}${res ? ` <i>${esc(res)}</i>` : ""}</span><span class="ps-v">${vals ? vals + min : "—"}</span></div>`;
+    return `<div class="ps-game" data-psjogo="${esc(g.ev.id)}" role="link" tabindex="0"><span class="ps-d">${esc(typeof formatShortDate === "function" ? formatShortDate(g.ev.day) : g.ev.day)}</span><span class="ps-a">${esc(g.ev.athlete || "")}${res ? ` <i>${esc(res)}</i>` : ""}</span><span class="ps-v">${vals ? vals + min : "—"}</span></div>`;
   }).join("");
   const vazio = !s.jogos.length ? '<div class="hv-empty">Ainda sem estatísticas registadas para este jogador.</div>' : "";
-  const nota = (sport === "Voleibol") ? '<div class="hv-empty">No Voleibol só se registam os pontos de cada set, não os de cada jogadora.</div>' : "";
+  const notaAss = (s.tipos.indexOf("Assistências") >= 0) ? '<div class="hv-empty">As assistências contam só dos jogos que o site acompanhou em direto.</div>' : "";
+  const nota = notaAss + ((sport === "Voleibol") ? '<div class="hv-empty">No Voleibol só se registam os pontos de cada set, não os de cada jogadora.</div>' : "");
   return `<div class="ps-head">${squadAvatar_(r[3], r[0] || "–", esc, false)}<div><h2>${esc(r[1])}</h2><span>${esc(r[2] || "")}${r[0] ? " · Nº " + esc(r[0]) : ""}</span></div></div>
     <div class="ps-tiles">${tiles}</div>${nota}${vazio}${porComp}${lista ? `<div class="hv-panel"><div class="hv-panel-head"><h3>Jogo a jogo</h3></div>${lista}</div>` : ""}`;
 }
@@ -128,6 +133,10 @@ function playerSheetHtml_(sport, r){
     box.style.display = "block"; document.body.classList.add("search-open"); box.scrollTop = 0;
   };
   box.querySelector("#psClose").onclick = close_;
+  // v244: tocar num jogo da lista abre a página desse jogo
+  const abrirJogo_ = el=>{ const row = el.closest && el.closest("[data-psjogo]"); if(!row) return; const id = row.getAttribute("data-psjogo"); close_(); if(typeof openGamePage_ === "function") openGamePage_(id); };
+  box.querySelector("#psBody").addEventListener("click", e=>abrirJogo_(e.target));
+  box.querySelector("#psBody").addEventListener("keydown", e=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); abrirJogo_(e.target); } });
   document.addEventListener("keydown", e=>{ if(e.key === "Escape" && box.style.display !== "none") close_(); });
 })();
 

@@ -1100,3 +1100,7 @@ html.theme-light .sh-overlay{background:rgba(20,30,50,.35)}
 .gd-onze-pos{font-size:11px;font-weight:700;opacity:.6;text-transform:uppercase;padding-top:4px}
 .gd-onze-ps{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:14px}
 .gd-onze-p i{font-style:normal;opacity:.55;margin-right:4px;font-variant-numeric:tabular-nums}
+
+/* v244: jogos da ficha do jogador clicáveis */
+.ps-game[data-psjogo]{cursor:pointer;min-height:44px}
+.ps-game[data-psjogo]:hover,.ps-game[data-psjogo]:focus-visible{background:rgba(128,128,128,.12);outline:none}

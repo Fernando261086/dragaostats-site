@@ -43,15 +43,18 @@ async function registerForPushNotifications(){
 
 async function enableNotifications(){
   if(!("Notification" in window)){
+    try{ if(typeof track_ === "function") track_("avisos_sem_suporte"); }catch(e){}
     alert("Este browser não suporta notificações.");
     return false;
   }
   const perm = await Notification.requestPermission();
   if(perm !== "granted"){
+    try{ if(typeof track_ === "function") track_("avisos_recusados"); }catch(e){}
     alert("Sem permissão para mostrar notificações — não é possível ativar os avisos.");
     return false;
   }
   notificationsEnabled = true;
+  try{ if(typeof track_ === "function") track_("avisos_aceites"); }catch(e){}
   const nudge = document.getElementById("notifyNudge");
   if(nudge) nudge.style.display = "none";
   checkUpcomingForNotifications();

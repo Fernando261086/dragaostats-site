@@ -393,3 +393,6 @@ código para facilitar trabalhar nele.
 
 ## Apps Script v158
 - Relatório Saúde com notícias por modalidade e avisos. Site inalterado.
+
+## v248 / Apps Script v159
+- Convite de avisos por momento, painel iPhone, botão no cartão ao vivo; contagem de aparelhos e funil de avisos no relatório Saúde. Cache v325.

@@ -201,7 +201,7 @@ function renderGamePage_(){
       </div>
       ${sub ? `<div class="gp-sub">${sub}</div>` : ""}
     </div>
-    ${partilhaCard}${setsBlock}${extraBlock}${(!fim && !liveData && !aDecorrer && typeof pregameHtml_ === "function") ? pregameHtml_(ev) : ""}${(!fim && typeof compPathHtml_ === "function") ? compPathHtml_(ev) : ""}${(typeof onzeHtml_ === "function") ? onzeHtml_(ev) : ""}${(typeof gameDetailsHtml_ === "function") ? gameDetailsHtml_(ev) : ""}${(typeof gameNewsHtml_ === "function") ? gameNewsHtml_(ev) : ""}${(typeof compStandingForGame_ === "function" && compStandingForGame_(ev)) ? standingsObjHtml_(compStandingForGame_(ev), { title: "Classificação do grupo", advName: ev.athlete, sport: ev.sport }) : ""}${(!fim && typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo") : ""}${info}${acoes}
+    ${partilhaCard}${setsBlock}${extraBlock}${(!fim && !liveData && !aDecorrer && typeof pregameHtml_ === "function") ? pregameHtml_(ev) : ""}${(!fim && typeof compPathHtml_ === "function") ? compPathHtml_(ev) : ""}${(typeof onzeHtml_ === "function") ? onzeHtml_(ev) : ""}${(typeof gameDetailsHtml_ === "function") ? gameDetailsHtml_(ev) : ""}${(typeof gameNewsHtml_ === "function") ? gameNewsHtml_(ev) : ""}${(typeof compStandingForGame_ === "function" && compStandingForGame_(ev)) ? standingsObjHtml_(compStandingForGame_(ev), { title: "Classificação do grupo", advName: ev.athlete, sport: ev.sport }) : ""}${(typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("jogo", (liveData || aDecorrer) ? "vivo" : (fim ? "fim" : "antes")) : ""}${info}${acoes}
   </div>`;
 
   host.querySelector("#gpBack").onclick = ()=>navUiBack_();

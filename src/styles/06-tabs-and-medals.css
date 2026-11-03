@@ -1171,3 +1171,9 @@ html.theme-light .hv-tday .td-t{ color:#0f1b33; }
 /* v247: painel Saúde */
 .hp-pre{white-space:pre-wrap;word-break:break-word;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;background:rgba(0,0,0,.18);border:1px solid var(--line,#2a3a5c);border-radius:10px;padding:12px;margin:0 0 12px;max-height:55vh;overflow:auto}
 html.theme-light .hp-pre{background:#f3f5f9}
+
+/* v248: avisos — botão no cartão ao vivo e painel iPhone */
+.live-now-bell{display:block;margin:10px auto 0;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:inherit;font:600 12px/1 inherit;cursor:pointer}
+.ios-p{margin:0 0 10px;font-size:14px;line-height:1.5}
+.ios-ol{margin:0;padding-left:20px;font-size:14px;line-height:1.6}
+.ios-ol li{margin-bottom:6px}

@@ -159,6 +159,7 @@ function renderLiveNowBanner_(){
         <span class="live-now-team away">${fora ? "FC Porto" : liveEsc_(j.adv || "Adversário")}</span>
       </div>
       <div class="live-now-sets">${setsHtml}</div>
+      ${(!acabou && typeof notifyCtaShow_ === "function" && notifyCtaShow_()) ? `<button type="button" class="live-now-bell" data-ncquick="1">🔔 Receber avisos dos jogos</button>` : ""}
     </div>`;
   }).join("");
   host.style.display = "block";

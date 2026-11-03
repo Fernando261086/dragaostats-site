@@ -205,7 +205,7 @@ function showStaleDataBanner_(at){
   // sabem exatamente de que jogo se trata; salta logo para o cartão certo,
   // com o mesmo destaque a piscar que o banner do "Próximo jogo" usa
   const linkedEvId = params.get("jogo");
-  if(linkedEvId) goToEventCard(linkedEvId);
+  if(linkedEvId){ window.__linkedGame_ = true; goToEventCard(linkedEvId); }
   else if(!linkedSport && typeof openHomeByDefault_ === "function") openHomeByDefault_();
   // atualiza periodicamente para ver provas, marcações e competições feitas por outra pessoa,
   // sem nunca apagar uma marcação local mais recente

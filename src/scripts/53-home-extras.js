@@ -82,6 +82,18 @@ document.addEventListener("click", e=>{
   else if(k === "marcadores") track_("marcadores_aberto");
 }, true);
 setTimeout(()=>track_("sessao"), 2000);
+// v248: que aparelhos usam o site e quantos já têm os avisos (uma vez por abertura; só contagens, nada de identificação)
+setTimeout(()=>{
+  try{
+    const ios = typeof isIOSDevice === "function" && isIOSDevice();
+    const app = typeof isStandaloneMode === "function" && isStandaloneMode();
+    const ua = navigator.userAgent || "";
+    track_(ios ? (app ? "plat_ios_app" : "plat_ios_web") : /android/i.test(ua) ? "plat_android" : /mobi/i.test(ua) ? "plat_outro_tlm" : "plat_computador");
+    if(app) track_("app_instalada");
+    const perm = ("Notification" in window) ? Notification.permission : "n/a";
+    track_(perm === "granted" ? "avisos_ligados" : perm === "denied" ? "avisos_bloqueados" : perm === "default" ? "avisos_pendentes" : (ios ? "avisos_ios_sem_app" : "avisos_sem_suporte_s"));
+  }catch(e){}
+}, 2600);
 
 // ---- v181: partilha com o resultado no texto + convite depois de uma vitória
 function resultWin_(ev, st){
@@ -198,7 +210,7 @@ function liveIntroHtml_(){
 function bindLiveIntro_(host, rerender){
   const done = ()=>{ try{ localStorage.setItem(LIVE_INTRO_KEY_, String(Date.now())); }catch(e){} try{ rerender(); }catch(e){} };
   host.querySelectorAll("[data-lino]").forEach(b=>{ b.onclick = done; });
-  host.querySelectorAll("[data-liyes]").forEach(b=>{ b.onclick = async ()=>{ try{ await enableNotifications(); }catch(e){} done(); }; });
+  host.querySelectorAll("[data-liyes]").forEach(b=>{ b.onclick = async ()=>{ try{ track_("li_ativar"); }catch(e){} try{ await enableNotifications(); }catch(e){} done(); }; });
 }
 
 

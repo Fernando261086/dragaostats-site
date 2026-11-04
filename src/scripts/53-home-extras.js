@@ -30,7 +30,7 @@ function todayStripHtml_(withD){
       const right = res ? esc(res) : (live ? '<i class="hv-dot"></i>AO VIVO' : esc(ev.t || ""));
       return `<button type="button" class="hv-tday${live ? " is-live" : ""}" data-tday="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};"><span class="td-sp">${esc(ev.sport)}</span><span class="td-t">${right}</span></button>`;
     }).join("");
-    return `<div class="hv-today"><span class="hv-today-h"><i class="hv-today-dot"></i>Hoje joga<em>${items.length} ${items.length === 1 ? "jogo" : "jogos"}</em></span><div class="hv-today-row">${chips}</div></div>`;
+    return `<div class="hv-today"><span class="hv-today-h"><i class="hv-today-dot"></i>Jogos de hoje<em>${items.length} ${items.length === 1 ? "jogo" : "jogos"}</em></span><div class="hv-today-row">${chips}</div></div>`;
   }catch(e){ return ""; }
 }
 

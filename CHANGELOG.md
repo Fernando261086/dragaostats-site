@@ -405,3 +405,6 @@ código para facilitar trabalhar nele.
 
 ## v250 (Apps Script v163)
 Basquetebol: ecrã do jogo completo pelo Sofascore (relógio, quartos, gráfico, cestos, jogadores, estatísticas). FIBA desligado.
+
+## v251
+Reel do jogo renovado (escudos, vitória em destaque, marcadores, convite aos avisos); legendas do basquetebol com os melhores pontuadores.

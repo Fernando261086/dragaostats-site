@@ -21,6 +21,12 @@ async function generateShareReel(ev, st, sportColor){
     });
   }catch(e){ /* sem logo, segue sem ela */ }
 
+  // v251: escudo grande do adversário (se o Sofascore o conhecer), tipo de resultado e marcadores
+  let advCrest = null;
+  try{ advCrest = await Promise.race([crestImage_(ev.sport, ev.athlete || ""), new Promise(r=>setTimeout(()=>r(null), 3000))]); }catch(e){ advCrest = null; }
+  const kind = hasResult && typeof resultKind_ === "function" ? resultKind_(ev, st) : "";
+  const scorers = hasResult && typeof shareScorers_ === "function" ? shareScorers_(ev) : null;
+
   let qrModules = null, qrCount = 0;
   try{
     const qr = qrcode(0, "M");
@@ -99,53 +105,99 @@ async function generateShareReel(ev, st, sportColor){
       ctx.restore();
     }
 
-    // nomes das equipas — entram de lados opostos
-    const aTop = phase(elapsed, 1.0, 1.8);
-    if(aTop > 0){
-      ctx.save();
-      ctx.globalAlpha = aTop;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "alphabetic";
-      ctx.fillStyle = "#eef2f8";
-      ctx.font = "700 52px 'Archivo Narrow', sans-serif";
-      wrapCenteredText(ctx, topName, W/2 + (1-aTop)*(-140), 650, W-160);
-      ctx.restore();
+    // v251: brilho de vitória por trás do resultado (derrota/empate ficam sóbrios, sem brilho)
+    if(hasResult && kind === "win"){
+      const aG = phase(elapsed, 3.1, 4.4);
+      if(aG > 0){
+        ctx.save();
+        const gr = ctx.createRadialGradient(W/2, 1050, 40, W/2, 1050, 600);
+        gr.addColorStop(0, "rgba(227,178,60," + (0.30 * aG) + ")");
+        gr.addColorStop(1, "rgba(227,178,60,0)");
+        ctx.fillStyle = gr;
+        ctx.fillRect(0, 440, W, 1240);
+        ctx.restore();
+      }
     }
-    const aVs = phase(elapsed, 1.3, 1.8);
+
+    // escudos grandes — entram de lados opostos; o FC Porto (emblema) e o adversário (escudo ou inicial)
+    const CR = 105, CY = 705;
+    const drawCrest = (side, a)=>{
+      if(a <= 0) return;
+      const cx = (side === 0 ? W/2 - 270 : W/2 + 270) + (1 - a) * (side === 0 ? -140 : 140);
+      const fcpSide = (side === 0) !== isAway; // lado esquerdo = casa
+      ctx.save();
+      ctx.globalAlpha = a;
+      if(fcpSide){
+        if(logo){
+          ctx.save(); ctx.beginPath(); ctx.arc(cx, CY, CR, 0, Math.PI*2); ctx.closePath(); ctx.clip();
+          ctx.drawImage(logo, cx - CR, CY - CR, CR*2, CR*2); ctx.restore();
+        }
+      }else if(advCrest){
+        const k = Math.min((CR*2) / advCrest.width, (CR*2) / advCrest.height);
+        const w = advCrest.width * k, h = advCrest.height * k;
+        ctx.drawImage(advCrest, cx - w/2, CY - h/2, w, h);
+      }else{
+        ctx.fillStyle = "rgba(255,255,255,.08)"; ctx.beginPath(); ctx.arc(cx, CY, CR, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = "#c7d2e6"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.font = "800 84px 'Archivo Narrow', sans-serif";
+        ctx.fillText(String(ev.athlete || "?").trim().slice(0, 2).toUpperCase(), cx, CY + 4);
+      }
+      ctx.restore();
+    };
+    drawCrest(0, phase(elapsed, 1.0, 1.8));
+    drawCrest(1, phase(elapsed, 1.2, 2.0));
+    const aVs = phase(elapsed, 1.5, 2.0);
     if(aVs > 0){
       ctx.save();
       ctx.globalAlpha = aVs;
-      ctx.textAlign = "center";
-      ctx.font = "600 32px 'Archivo Narrow', sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.font = "600 38px 'Archivo Narrow', sans-serif";
       ctx.fillStyle = "#93a2bd";
-      ctx.fillText("vs", W/2, 720);
+      ctx.fillText("vs", W/2, CY);
       ctx.restore();
     }
-    const aBottom = phase(elapsed, 1.4, 2.2);
-    if(aBottom > 0){
+    // nomes por baixo de cada escudo
+    const nameAt = (txt, side, a)=>{
+      if(a <= 0) return;
       ctx.save();
-      ctx.globalAlpha = aBottom;
-      ctx.textAlign = "center";
+      ctx.globalAlpha = a;
+      ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
       ctx.fillStyle = "#eef2f8";
-      ctx.font = "700 52px 'Archivo Narrow', sans-serif";
-      wrapCenteredText(ctx, bottomName, W/2 + (1-aBottom)*(140), 790, W-160);
+      ctx.font = "700 44px 'Archivo Narrow', sans-serif";
+      wrapCenteredText(ctx, txt, side === 0 ? W/2 - 270 : W/2 + 270, 880, 470);
       ctx.restore();
-    }
+    };
+    nameAt(topName, 0, phase(elapsed, 1.5, 2.2));
+    nameAt(bottomName, 1, phase(elapsed, 1.7, 2.4));
 
     if(hasResult){
-      // placar — entra com um pequeno "pop" (escala a passar de 1.0)
+      // placar — entra com um pequeno "pop"; vitória a dourado, derrota/empate sóbrios
+      const corRes = kind === "win" ? (sportColor || "#e3b23c") : "#c7d2e6";
       const aScore = phase(elapsed, 3.1, 4.1);
       if(aScore > 0){
         ctx.save();
-        const overshoot = 1 + Math.sin(aScore*Math.PI) * 0.12 * (1-aScore);
+        const overshoot = 1 + Math.sin(aScore*Math.PI) * (kind === "win" ? 0.16 : 0.06) * (1-aScore);
         ctx.globalAlpha = Math.min(1, aScore*1.4);
-        ctx.translate(W/2, 980);
+        ctx.translate(W/2, 1070);
         ctx.scale(overshoot, overshoot);
-        ctx.translate(-W/2, -980);
+        ctx.translate(-W/2, -1070);
         ctx.textAlign = "center";
-        ctx.font = "800 150px 'Archivo Narrow', sans-serif";
-        ctx.fillStyle = sportColor || "#e3b23c";
-        ctx.fillText(st.resultado.trim(), W/2, 1010);
+        ctx.font = "800 170px 'Archivo Narrow', sans-serif";
+        ctx.fillStyle = corRes;
+        ctx.fillText(st.resultado.trim(), W/2, 1100);
+        ctx.restore();
+      }
+      const aPill = phase(elapsed, 3.9, 4.5);
+      const pillTxt = kind === "win" ? "VITÓRIA" : kind === "draw" ? "EMPATE" : "";
+      if(aPill > 0 && pillTxt){
+        ctx.save();
+        ctx.globalAlpha = aPill;
+        ctx.font = "800 30px 'Archivo Narrow', sans-serif";
+        const pw = ctx.measureText(pillTxt).width + 56, px = W/2 - pw/2, py = 1135, ph = 52;
+        ctx.fillStyle = kind === "win" ? (sportColor || "#e3b23c") : "rgba(255,255,255,.14)";
+        if(ctx.roundRect){ ctx.beginPath(); ctx.roundRect(px, py, pw, ph, 26); ctx.fill(); } else ctx.fillRect(px, py, pw, ph);
+        ctx.fillStyle = kind === "win" ? "#0a1626" : "#eef2f8";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(pillTxt, W/2, py + ph/2 + 2);
         ctx.restore();
       }
       const aMeta = phase(elapsed, 4.1, 4.6);
@@ -153,11 +205,23 @@ async function generateShareReel(ev, st, sportColor){
         ctx.save();
         ctx.globalAlpha = aMeta;
         ctx.textAlign = "center";
+        ctx.textBaseline = "alphabetic";
         ctx.font = "500 28px 'Archivo Narrow', sans-serif";
         ctx.fillStyle = "#93a2bd";
-        wrapCenteredText(ctx, metaLine, W/2, 1130, W-180);
+        wrapCenteredText(ctx, metaLine, W/2, 1255, W-180);
         ctx.font = "500 24px 'Archivo Narrow', sans-serif";
-        ctx.fillText(formatFullDate(ev.day), W/2, 1180);
+        ctx.fillText(formatFullDate(ev.day), W/2, 1303);
+        ctx.restore();
+      }
+      // marcadores (só os do FC Porto, escritos à mão ou, no basquetebol, vindos do Sofascore)
+      const aSc = phase(elapsed, 4.7, 5.5);
+      if(aSc > 0 && scorers && scorers.items.length){
+        ctx.save();
+        ctx.globalAlpha = aSc;
+        ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+        ctx.font = "700 32px 'Archivo Narrow', sans-serif";
+        ctx.fillStyle = "#eef2f8";
+        wrapCenteredText(ctx, scorers.label + ": " + scorers.items.join(", "), W/2, 1372, W-200);
         ctx.restore();
       }
     }else{
@@ -167,9 +231,10 @@ async function generateShareReel(ev, st, sportColor){
         ctx.save();
         ctx.globalAlpha = aDate;
         ctx.textAlign = "center";
+        ctx.textBaseline = "alphabetic";
         ctx.font = "600 38px 'Archivo Narrow', sans-serif";
         ctx.fillStyle = "#eef2f8";
-        ctx.fillText(formatFullDate(ev.day), W/2, 920);
+        ctx.fillText(formatFullDate(ev.day), W/2, 1020);
         ctx.restore();
       }
       const aTime = phase(elapsed, 3.5, 4.3);
@@ -177,9 +242,9 @@ async function generateShareReel(ev, st, sportColor){
         ctx.save();
         ctx.globalAlpha = Math.min(1, aTime*1.4);
         ctx.textAlign = "center";
-        ctx.font = "800 150px 'Archivo Narrow', sans-serif";
+        ctx.font = "800 170px 'Archivo Narrow', sans-serif";
         ctx.fillStyle = BLUE;
-        ctx.fillText(ev.t || "", W/2, 1050);
+        ctx.fillText(ev.t || "", W/2, 1190);
         ctx.restore();
       }
       const aMeta = phase(elapsed, 4.3, 4.9);
@@ -189,24 +254,27 @@ async function generateShareReel(ev, st, sportColor){
         ctx.textAlign = "center";
         ctx.font = "500 26px 'Archivo Narrow', sans-serif";
         ctx.fillStyle = "#93a2bd";
-        wrapCenteredText(ctx, metaLine, W/2, 1130, W-180);
+        wrapCenteredText(ctx, metaLine, W/2, 1270, W-180);
         ctx.restore();
       }
     }
 
     // frase + QR — entram juntos, perto do fim
-    const aFooter = phase(elapsed, 5.3, 6.0);
+    const aFooter = phase(elapsed, 5.8, 6.5);
     if(aFooter > 0){
       ctx.save();
       ctx.globalAlpha = aFooter;
       ctx.textAlign = "center";
-      ctx.font = "600 26px 'Archivo Narrow', sans-serif";
+      ctx.font = "800 40px 'Archivo Narrow', sans-serif";
+      ctx.fillStyle = sportColor || "#e3b23c";
+      ctx.fillText("🔔 Liga os avisos e não percas nenhum jogo", W/2, 1450);
+      ctx.font = "500 26px 'Archivo Narrow', sans-serif";
       ctx.fillStyle = "#c7d2e6";
-      wrapCenteredText(ctx, "📲 Acompanha os calendários, resultados e classificações na hora", W/2, 1360, W-170);
+      ctx.fillText("Resultados, classificações e ao vivo", W/2, 1494);
 
       if(qrModules){
         const qrSize = 200, qrPad = 14;
-        const qrX = W/2 - qrSize/2, qrY = 1410;
+        const qrX = W/2 - qrSize/2, qrY = 1545;
         ctx.fillStyle = "#ffffff";
         if(ctx.roundRect){
           ctx.beginPath();
@@ -226,7 +294,7 @@ async function generateShareReel(ev, st, sportColor){
 
       ctx.font = "500 24px 'Archivo Narrow', sans-serif";
       ctx.fillStyle = "#5a6a88";
-      ctx.fillText("dragaostats.pt", W/2, 1680);
+      ctx.fillText("dragaostats.pt", W/2, 1810);
       ctx.restore();
     }
   }
@@ -235,7 +303,7 @@ async function generateShareReel(ev, st, sportColor){
   // vir o reel ter tempo de ler toda a informação antes de o vídeo acabar (e
   // nas redes sociais, voltar a reiniciar sozinho) — pedido do Fernando, que
   // achava a pausa antiga (0.7s) curta demais e a entrada dos elementos rápida
-  const ANIM_END = 6.0, HOLD = 4.0, TOTAL = ANIM_END + HOLD;
+  const ANIM_END = 6.6, HOLD = 4.0, TOTAL = ANIM_END + HOLD;
 
   const stream = canvas.captureStream(30);
   const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")

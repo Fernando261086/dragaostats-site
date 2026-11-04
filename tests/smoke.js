@@ -122,6 +122,8 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     r.q && r.g && r.jg === 2 && r.st && r.rows === 20 && r.hidden === 8 && r.tot === '76' ? ok('basquetebol: parciais, gráfico, 20 cestos (8 escondidos), 2 tabelas, estatísticas') : bad('basquetebol: bloco → ' + JSON.stringify(r));
     /B\. Costa/.test(r.first) ? ok('basquetebol: tabela ordena por pontos') : bad('basquetebol: ordenação → ' + r.first);
     r.run === '9:40' && r.stop === '7:05' ? ok('basquetebol: relógio decrescente (a correr / parado)') : bad('basquetebol: relógio → ' + r.run + ' / ' + r.stop);
+    const sc = await page.evaluate(() => { const ev = { id: 'bk1', sport: 'Basquetebol', athlete: 'Ovarense', local: 'fora' }; BASKET = { bk1: { jg: [['A', '1', 0, 20, 18], ['B', '2', 0, 20, 12], ['C', '3', 1, 20, 30]] } }; return { s: shareScorers_(ev), k: [resultKind_(ev, { resultado: '78-76' }), resultKind_({ local: 'casa' }, { resultado: '1-1' }), resultKind_({ local: 'casa' }, { resultado: '0-2' })] }; });
+    sc.s && sc.s.label === 'Pontos' && sc.s.items.join() === 'A 18,B 12' && sc.k.join() === 'loss,draw,loss' ? ok('reel/legenda: marcadores do basquetebol e tipo de resultado') : bad('reel/legenda: ' + JSON.stringify(sc));
     errs.length ? bad('basquetebol: erros JS → ' + errs.join(' | ')) : ok('basquetebol: sem erros JS');
     await page.close();
   }

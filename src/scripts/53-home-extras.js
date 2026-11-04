@@ -107,6 +107,42 @@ function resultWin_(ev, st){
     return (ev.local === "fora" ? b : a) > (ev.local === "fora" ? a : b);
   }catch(e){ return false; }
 }
+// v251: "win" | "loss" | "draw" | "" para o jogo do FC Porto (usa a etiqueta escrita à mão; senão o resultado)
+function resultKind_(ev, st){
+  try{
+    st = st || {};
+    if(st.resultTag === "win" || st.resultTag === "loss" || st.resultTag === "draw") return st.resultTag;
+    const m = String(st.resultado || "").match(/(\d+)\s*[-–:]\s*(\d+)/);
+    if(!m) return "";
+    const a = Number(m[1]), b = Number(m[2]), fcp = ev.local === "fora" ? b : a, adv = ev.local === "fora" ? a : b;
+    return fcp > adv ? "win" : fcp < adv ? "loss" : "draw";
+  }catch(e){ return ""; }
+}
+// v251: melhores marcadores do FC Porto de um jogo terminado → {label, items:["Nome (2)", …]} ou null.
+// Basquetebol: pontos da ficha do Sofascore (BASKET) ou, sem ela, os escritos à mão; restantes: golos escritos à mão.
+function shareScorers_(ev){
+  try{
+    if(ev.sport === "Basquetebol" && typeof BASKET !== "undefined" && BASKET && BASKET[ev.id] && Array.isArray(BASKET[ev.id].jg)){
+      const l = BASKET[ev.id].jg.filter(x=>x[2] !== 1 && Number(x[4]) > 0).sort((a, b)=>(b[4] - a[4]) || (b[3] - a[3])).slice(0, 3);
+      if(l.length) return { label: "Pontos", items: l.map(x=>x[0] + " " + x[4]) };
+    }
+    const st = (typeof getEv === "function" && getEv(ev.id)) || {};
+    if(!String(st.resultado || "").trim()) return null;
+    const main = (typeof getStatTypesFor === "function" ? getStatTypesFor(ev.sport) : ["Golos"])[0] || "Golos";
+    const soGolos = (typeof MARCADORES_LABEL_SPORTS !== "undefined" && MARCADORES_LABEL_SPORTS.has(ev.sport));
+    const tot = {};
+    (Array.isArray(ev.playerStats) ? ev.playerStats : []).forEach(p=>{
+      if(!p || p.team === "adv" || !p.name || !String(p.name).trim()) return;
+      const n = soGolos ? (Number(p.stats && p.stats.Golos) || 1) : (Number(p.stats && p.stats[main]) || 0);
+      if(n > 0) tot[String(p.name).trim()] = (tot[String(p.name).trim()] || 0) + n;
+    });
+    const lista = Object.keys(tot).sort((a, b)=>tot[b] - tot[a]).slice(0, ev.sport === "Basquetebol" ? 3 : 6);
+    if(!lista.length) return null;
+    if(main === "Golos") return { label: "Marcadores", items: lista.map(n=>n + (tot[n] > 1 ? " (" + tot[n] + ")" : "")) };
+    if(ev.sport === "Basquetebol" || /pontos/i.test(main)) return { label: "Pontos", items: lista.map(n=>n + " " + tot[n]) };
+    return null;
+  }catch(e){ return null; }
+}
 function shareTextFan_(ev){
   const t = postTeams_(ev), st = (typeof getEv === "function" && getEv(ev.id)) || {};
   const score = String(st.resultado || "").trim();
@@ -114,22 +150,9 @@ function shareTextFan_(ev){
   const tag = st.resultTag === "win" ? " (Vitória)" : st.resultTag === "loss" ? " (Derrota)" : st.resultTag === "draw" ? " (Empate)" : (resultWin_(ev, st) ? " (Vitória)" : "");
   const emoji = (typeof postSportEmoji_ === "function") ? postSportEmoji_(ev.sport) : "💙";
   const titulo = score ? `${emoji} ${ev.sport} — ${t.home} ${score} ${t.away}${tag}` : `${emoji} ${ev.sport} — ${t.home} vs ${t.away}${ev.t ? " (" + ev.t + ")" : ""}`;
-  // v195: marcadores no texto de partilha (só jogo terminado e com marcadores escritos)
+  // v195/v251: marcadores no texto de partilha (só jogo terminado; basquetebol com os pontos do Sofascore)
   let marc = "";
-  try{
-    if(score){
-      const main = (typeof getStatTypesFor === "function" ? getStatTypesFor(ev.sport) : ["Golos"])[0] || "Golos";
-      const soGolos = (typeof MARCADORES_LABEL_SPORTS !== "undefined" && MARCADORES_LABEL_SPORTS.has(ev.sport));
-      const tot = {};
-      (Array.isArray(ev.playerStats) ? ev.playerStats : []).forEach(p=>{
-        if(!p || p.team === "adv" || !p.name || !String(p.name).trim()) return;
-        const n = soGolos ? (Number(p.stats && p.stats.Golos) || 1) : (Number(p.stats && p.stats[main]) || 0);
-        if(n > 0) tot[String(p.name).trim()] = (tot[String(p.name).trim()] || 0) + n;
-      });
-      const lista = Object.keys(tot).sort((a, b)=>tot[b] - tot[a]).slice(0, 6);
-      if(lista.length && main === "Golos") marc = "\nMarcadores: " + lista.map(n=>n + (tot[n] > 1 ? " (" + tot[n] + ")" : "")).join(", ");
-    }
-  }catch(e){}
+  try{ const sc = score ? shareScorers_(ev) : null; if(sc && sc.items.length) marc = "\n" + sc.label + ": " + sc.items.join(", "); }catch(e){}
   return { titulo, texto: titulo + marc + "\nVê o jogo completo:", link };
 }
 async function shareGameFan_(ev){

@@ -1204,3 +1204,17 @@ html.theme-light .hp-pre{background:#f3f5f9}
 @media(max-width:420px){.sh-sizes{grid-template-columns:minmax(0,1fr)}.sh-size{flex-direction:row;align-items:center;gap:10px}}
 html.theme-light .sh-game,html.theme-light .sh-size{background:#f3f6fb;color:#12213d}
 html.theme-light .sh-cap{background:#f3f6fb;color:#12213d}
+
+/* v250: Basquetebol (Sofascore) */
+.bk-q td:not(:first-child),.bk-q th:not(:first-child){text-align:center}
+.bk-q td:first-child{font-weight:700}
+.bk-graph{width:100%;height:110px;display:block}
+.bk-up{fill:rgba(91,180,240,.45)} .bk-dn{fill:rgba(240,120,91,.4)}
+.bk-zero{stroke:rgba(128,128,128,.5);stroke-width:.6;vector-effect:non-scaling-stroke}
+.bk-line{fill:none;stroke:var(--sc,#5BB4F0);stroke-width:1.6;vector-effect:non-scaling-stroke}
+.bk-leg{display:flex;justify-content:space-between;gap:8px;font-size:11px;opacity:.75;margin-top:4px}
+.bk-tri .gd-tx i{color:var(--sc,#5BB4F0);font-weight:700}
+.bk-row .gd-tx i{font-style:normal;font-size:12px}
+.bk-hint{font-size:11px;opacity:.6;margin:-4px 0 4px}
+.bk-th{cursor:pointer;user-select:none}
+.bk-th.bk-desc::after{content:" ▾"} .bk-th.bk-asc::after{content:" ▴"}

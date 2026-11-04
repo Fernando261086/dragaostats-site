@@ -83,12 +83,19 @@ function liveTempoHtml_(j, sep){
   let t = j.tempo ? liveEsc_(j.tempo) : "";
   const r = j.rel;
   if(t && r && typeof r === "object" && isFinite(r.b) && isFinite(r.ts)){
-    t = `<span class="lclk" data-lc="${Math.round(Number(r.b))},${Math.round(Number(r.ts))},${Math.round(Number(r.cap) || 0)},${Math.round(Number(r.l) || 0)}">${t}</span>`;
+    t = `<span class="lclk" data-lc="${Math.round(Number(r.b))},${Math.round(Number(r.ts))},${Math.round(Number(r.cap) || 0)},${Math.round(Number(r.l) || 0)},${Math.round(Number(r.d) || 0)},${r.r ? 1 : 0}">${t}</span>`;
   }
   return [p, t].filter(Boolean).join(sep || " ");
 }
 function liveClockText_(spec, now){
   const b = spec[0], ts = spec[1], cap = spec[2], l = spec[3];
+  if(spec[4] === -1){ // v250: contagem decrescente (basquetebol): b = segundos que faltam em ts; spec[5] = 1 se o relógio está a correr
+    let e0 = spec[5] ? (now - ts) / 1000 : 0;
+    if(!(e0 > 0)) e0 = 0;
+    e0 = Math.min(e0, cap || 120);
+    const f = Math.max(0, Math.floor(b - e0));
+    return Math.floor(f / 60) + ":" + String(f % 60).padStart(2, "0");
+  }
   let e = (now - ts) / 1000;
   if(!(e > 0)) e = 0;
   e = Math.min(e, cap || 150); // dados parados há mais de 2,5 min: o relógio pára em vez de inventar

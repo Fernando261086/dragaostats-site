@@ -100,6 +100,31 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     errs.length ? bad(`partilhar: erros JS → ${errs.join(' | ')}`) : ok('partilhar: sem erros JS');
     await page.close();
   }
+  { // v250: ecrã do basquetebol (Sofascore): parciais, gráfico, lance a lance, jogadores ordenáveis, estatísticas, relógio decrescente
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    const errs = []; page.on('pageerror', e => errs.push(e.message));
+    await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+    await page.goto(`http://localhost:${port}/index.html?view=readonly`, { waitUntil: 'load' });
+    await page.waitForTimeout(1200);
+    const r = await page.evaluate(() => {
+      const ev = { id: 'bk1', sport: 'Basquetebol', athlete: 'Ovarense', local: 'fora' };
+      const pl = []; for (let i = 1; i <= 20; i++) pl.push([i * 100, i % 2, (i % 3) + 1, 'Jog ' + i, i * 2, i * 2 - 1]);
+      BASKET = { bk1: { t: 1, f: 1, c: 0, q: [[12, 23], [25, 15], [19, 17], [20, 23]], g: [-5, -3, 2, 4, -1, -6, 3, 8, 5, -2], st: [['Free throws', '17/22 (77%)', '13/16 (81%)'], ['Biggest lead', '9', '4']],
+        jg: [['A. Silva', '7', 0, 20, 12, 5, 2, 1, 4, 7.1, '4/9', '1/3', '3/4', 2, 0, 3, 1, 1], ['B. Costa', '9', 0, 25, 18, 2, 1, 0, -3, 8.0, '6/10', '2/4', '4/4', 1, 1, 2, 0, 1], ['C. Adv', '5', 1, 30, 9, 3, 3, 1, 2, 6.5, '3/8', '1/2', '2/2', 3, 0, 4, 0, 1]], pl } };
+      const h = basketHtml_(ev);
+      const host = document.createElement('div'); host.innerHTML = h; document.body.appendChild(host);
+      const out = { q: !!host.querySelector('.bk-q'), g: !!host.querySelector('.bk-graph'), rows: host.querySelectorAll('.bk-row').length, hidden: host.querySelectorAll('.bk-row.gd-hide').length, jg: host.querySelectorAll('.bk-jg').length, st: !!host.querySelector('.gd-st'), tot: host.querySelector('.bk-q tbody tr td:last-child').textContent };
+      host.querySelectorAll('.bk-jg')[0].querySelector('.bk-th[data-bkc="4"]').click();
+      out.first = host.querySelector('.bk-jg tbody tr td').textContent;
+      out.run = liveClockText_([600, Date.now() - 20000, 120, 0, -1, 1], Date.now()); out.stop = liveClockText_([425, Date.now() - 20000, 120, 0, -1, 0], Date.now());
+      host.remove(); return out;
+    });
+    r.q && r.g && r.jg === 2 && r.st && r.rows === 20 && r.hidden === 8 && r.tot === '76' ? ok('basquetebol: parciais, gráfico, 20 cestos (8 escondidos), 2 tabelas, estatísticas') : bad('basquetebol: bloco → ' + JSON.stringify(r));
+    /B\. Costa/.test(r.first) ? ok('basquetebol: tabela ordena por pontos') : bad('basquetebol: ordenação → ' + r.first);
+    r.run === '9:40' && r.stop === '7:05' ? ok('basquetebol: relógio decrescente (a correr / parado)') : bad('basquetebol: relógio → ' + r.run + ' / ' + r.stop);
+    errs.length ? bad('basquetebol: erros JS → ' + errs.join(' | ')) : ok('basquetebol: sem erros JS');
+    await page.close();
+  }
   await browser.close(); srv.close();
   console.log(fails ? `\n${fails} problema(s) — NÃO publicar.` : '\nTudo ok.'); process.exit(fails ? 1 : 0);
 })();

@@ -2,6 +2,8 @@
 // Vêm do Apps Script v112 (campo "detalhes" do doGet, lido do Sofascore): golos, cartões, substituições e estatísticas.
 // É só informação para ver — nunca altera o resultado nem os marcadores oficiais, que continuam a ser escritos à mão.
 let DETALHES = {};
+let BASKET = {}; // v250: Basquetebol só pelo Sofascore (Apps Script v163, campo "basket" do doGet): { evId: {t, f: 1 = terminado, c: 1 = FC Porto em casa, q: [[fcp,adv] por quarto], g: vantagem do FC Porto minuto a minuto, st: [[nome,fcp,adv]], jg: [[nome,camisola,lado,min,pts,res,ass,rou,+/-,nota,lanç,3p,ll,perdas,bloq,faltas,res.ataque,titular]], pl: [[segundo,lado,pts,nome,fcp,adv]] } }
+const BK_OPEN_ = {}, BK_SORT_ = {};
 let ASSIST = {}; // v244: assistências por jogo (Apps Script v156): { evId: [nome do assistente, …] } — só jogos acompanhados automaticamente
 let ONZE = {}; // v243: onze inicial por jogo (Apps Script v155): { evId: { c: 1 = confirmado, f: [formação FC Porto, formação adversário], j: [[nome, camisola, lado, posição G|D|M|F]] } }
 const GD_OPEN_ = {}; // v207: jogos com o "Lance a lance" aberto por inteiro
@@ -13,7 +15,7 @@ const GD_STAT_PT_ = {
   "ball possession":"Posse de bola","possession":"Posse de bola","big chances":"Grandes oportunidades","total shots ":"Remates","shots off target":"Remates ao lado","blocked shots":"Remates bloqueados","shots inside box":"Remates dentro da área","shots outside box":"Remates fora da área","corner kicks":"Cantos","corners":"Cantos","offsides":"Foras de jogo","free kicks":"Livres","throw-ins":"Lançamentos de linha lateral","goalkeeper saves":"Defesas do guarda-redes","goal kicks":"Pontapés de baliza","passes":"Passes","accurate passes":"Passes certos","tackles":"Desarmes","interceptions":"Intercepções","clearances":"Cortes","duels":"Duelos","ground duels":"Duelos no chão","aerial duels":"Duelos aéreos","dribbles":"Dribles","crosses":"Cruzamentos","long balls":"Bolas longas","final third entries":"Entradas no último terço","touches in penalty area":"Toques na área","hit woodwork":"Bolas nos ferros","expected goals":"Golos esperados","big chances missed":"Grandes oportunidades falhadas","big chances scored":"Grandes oportunidades marcadas","penalties":"Penáltis","own goals":"Autogolos","substitutions":"Substituições",
   "aces":"Ases","service errors":"Erros de serviço","attack points":"Pontos de ataque","block points":"Pontos de bloco","points won":"Pontos ganhos","max points in a row":"Máx. de pontos seguidos",
   "total shots":"Remates","average rating":"Nota média","fouled in final third":"Faltas sofridas no terço final","final third phase":"Fase no terço final","dispossessed":"Bolas perdidas","tackles won":"Desarmes ganhos","total tackles":"Desarmes","recoveries":"Recuperações de bola","errors lead to a shot":"Erros que deram remate","errors lead to a goal":"Erros que deram golo","goals prevented":"Golos evitados","punches":"Socos","high claims":"Saídas a cruzamentos",
-  "free throws":"Lances livres","2 pointers":"2 pontos","3 pointers":"Triplos","field goals":"Lançamentos","rebounds":"Ressaltos","defensive rebounds":"Ressaltos defensivos","offensive rebounds":"Ressaltos ofensivos","time spent in lead":"Tempo na liderança","lead changes":"Mudanças na liderança","biggest lead":"Maior vantagem"
+  "free throws":"Lances livres","points in the paint":"Pontos na área","fast break points":"Pontos de contra-ataque","second chance points":"Pontos de segunda oportunidade","points off turnovers":"Pontos após perdas","bench points":"Pontos do banco","timeout":"Desconto de tempo","largest lead":"Maior vantagem","longest scoring run":"Maior sequência de pontos","scoring run":"Sequência de pontos","lead changes":"Mudanças na liderança","times tied":"Empates","fouls":"Faltas","team rebounds":"Ressaltos de equipa","points":"Pontos","free throws made":"Lances livres marcados","2 pointers":"2 pontos","3 pointers":"Triplos","field goals":"Lançamentos","rebounds":"Ressaltos","defensive rebounds":"Ressaltos defensivos","offensive rebounds":"Ressaltos ofensivos","time spent in lead":"Tempo na liderança","lead changes":"Mudanças na liderança","biggest lead":"Maior vantagem"
 };
 const GD_INC_PT_ = {
   "suspension":"Exclusão","suspension twominutes":"Exclusão de 2 minutos","twominutes":"2 minutos","two minutes":"2 minutos","suspension 2 minutes":"Exclusão de 2 minutos","disqualification":"Desqualificação","red card":"Cartão vermelho","yellow card":"Cartão amarelo","blue card":"Cartão azul","timeout":"Desconto de tempo","time-out":"Desconto de tempo","penalty":"Penálti","penalty missed":"Penálti falhado","missed penalty":"Penálti falhado","seven meter":"Livre de 7 m","seven meter missed":"Livre de 7 m falhado","goal":"Golo","own goal":"Autogolo","substitution":"Substituição","injury":"Lesão","var":"VAR"
@@ -31,6 +33,7 @@ function gdTr_(txt, map){
 }
 
 function gameDetailsHtml_(ev){
+  if(ev.sport === "Basquetebol" && BASKET && BASKET[ev.id] && typeof basketHtml_ === "function"){ const b = basketHtml_(ev); if(b) return b; }
   const d = (DETALHES && typeof DETALHES === "object") ? DETALHES[ev.id] : null;
   if(!d) return "";
   const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
@@ -137,4 +140,98 @@ document.addEventListener("click", e=>{
   const card = b.closest(".gp-card");
   if(card) card.classList.toggle("gd-open", !!GD_OPEN_[id]);
   b.textContent = GD_OPEN_[id] ? "Ver menos" : "Ver todos (" + b.getAttribute("data-n") + ")";
+});
+
+
+// ===================== BASQUETEBOL (v250) =====================
+// Ecrã de jogo ao estilo Sofascore, com os dados do Apps Script v163: parciais por quarto, gráfico da vantagem, lance a lance, jogadores (ordenáveis) e estatísticas.
+// Cada bloco só aparece se houver dados. Lado 0 = FC Porto, 1 = adversário.
+function basketHtml_(ev){
+  const d = BASKET && BASKET[ev.id]; if(!d || typeof d !== "object") return "";
+  const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
+  const adv = ev.athlete || "Adversário";
+  const q = Array.isArray(d.q) ? d.q : [], g = Array.isArray(d.g) ? d.g : [], st = Array.isArray(d.st) ? d.st : [], jg = Array.isArray(d.jg) ? d.jg : [], pl = Array.isArray(d.pl) ? d.pl : [];
+  let html = "";
+  // parciais
+  if(q.length){
+    const nomeQ = i=>(i < 4 ? (i + 1) + "º" : (q.length - 4 > 1 ? "Pr." + (i - 3) : "Pr."));
+    const tot = [0, 0]; q.forEach(x=>{ tot[0] += Number(x[0]) || 0; tot[1] += Number(x[1]) || 0; });
+    const cab = q.map((x, i)=>`<th>${nomeQ(i)}</th>`).join("");
+    const lin = (nome, k)=>`<tr><td>${esc(nome)}</td>${q.map(x=>`<td>${esc(x[k])}</td>`).join("")}<td><b>${tot[k]}</b></td></tr>`;
+    html += `<div class="gp-card"><h3>Por quartos</h3><div class="gd-jg-w"><table class="gd-jg bk-q"><thead><tr><th></th>${cab}<th>Total</th></tr></thead><tbody>${lin("FC Porto", 0)}${lin(adv, 1)}</tbody></table></div></div>`;
+  }
+  // gráfico da vantagem
+  if(g.length >= 3){
+    const W = 300, H = 90, mid = H / 2, mx = Math.max(6, ...g.map(v=>Math.abs(v)));
+    const pts = g.map((v, i)=>[(i / (g.length - 1) * W).toFixed(1), (mid - v / mx * (mid - 6)).toFixed(1)]);
+    const linha = pts.map(p=>p.join(",")).join(" ");
+    const area = `0,${mid} ${linha} ${W},${mid}`;
+    const ult = g[g.length - 1];
+    html += `<div class="gp-card"><h3>Vantagem ao longo do jogo</h3><svg class="bk-graph" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Gráfico da vantagem"><defs><clipPath id="bkUp${esc(ev.id)}"><rect x="0" y="0" width="${W}" height="${mid}"/></clipPath><clipPath id="bkDn${esc(ev.id)}"><rect x="0" y="${mid}" width="${W}" height="${mid}"/></clipPath></defs><polygon points="${area}" class="bk-up" clip-path="url(#bkUp${esc(ev.id)})"/><polygon points="${area}" class="bk-dn" clip-path="url(#bkDn${esc(ev.id)})"/><line x1="0" y1="${mid}" x2="${W}" y2="${mid}" class="bk-zero"/><polyline points="${linha}" class="bk-line"/></svg><div class="bk-leg"><span class="bk-l-up">▲ FC Porto à frente</span><span class="bk-l-dn">▼ ${esc(adv)} à frente</span></div></div>`;
+  }
+  // lance a lance
+  if(pl.length){
+    const LIM = 12, aberto = !!BK_OPEN_[ev.id], fcpEsq = ev.local !== "fora";
+    const t = (typeof postTeams_ === "function") ? postTeams_(ev) : { home: "FC Porto", away: adv };
+    const Q = 600, OT = 300;
+    const rel = sec=>{ // segundos do jogo → "1º 4:32" (tempo que falta no quarto)
+      let n, ini, dur;
+      if(sec <= 4 * Q){ n = Math.max(1, Math.ceil(sec / Q)); ini = (n - 1) * Q; dur = Q; }
+      else { const k = Math.max(1, Math.ceil((sec - 4 * Q) / OT)); n = 4 + k; ini = 4 * Q + (k - 1) * OT; dur = OT; }
+      const falta = Math.max(0, Math.round(dur - (sec - ini)));
+      return (n <= 4 ? n + "º" : "Pr." + (n - 4)) + " " + Math.floor(falta / 60) + ":" + String(falta % 60).padStart(2, "0");
+    };
+    const rows = pl.slice().reverse();
+    const linhas = rows.map((x, k)=>{
+      const ehFcp = x[1] === 0, esq = (ehFcp === fcpEsq);
+      const placar = fcpEsq ? x[4] + "–" + x[5] : x[5] + "–" + x[4];
+      const txt = `<b>${esc(x[3])}</b> <i>+${x[2]}</i>`;
+      const mid = `<span class="gd-mid"><b class="gd-min">${esc(rel(x[0]))}</b><em class="gd-sc">${esc(placar)}</em></span>`;
+      const cel = esq ? `<span class="gd-c gd-l"><span class="gd-tx">${txt}</span></span>${mid}<span class="gd-c"></span>` : `<span class="gd-c"></span>${mid}<span class="gd-c gd-r"><span class="gd-tx">${txt}</span></span>`;
+      return `<div class="gd-row3 bk-row${x[2] === 3 ? " bk-tri" : ""}${k >= LIM ? " gd-hide" : ""}">${cel}</div>`;
+    }).join("");
+    const cab = `<div class="gd-head"><span class="gd-hl">${typeof crestName_ === "function" ? crestName_(ev, t.home) : esc(t.home)}</span><span></span><span class="gd-hr">${typeof crestNameEnd_ === "function" ? crestNameEnd_(ev, t.away) : esc(t.away)}</span></div>`;
+    const btn = rows.length > LIM ? `<button type="button" class="gd-toggle bk-toggle" data-bkev="${esc(ev.id)}" data-n="${rows.length}">${aberto ? "Ver menos" : `Ver todos (${rows.length})`}</button>` : "";
+    html += `<div class="gp-card${aberto ? " gd-open" : ""}"><h3>Cestos, lance a lance</h3>${cab}<div class="gd-list">${linhas}</div>${btn}</div>`;
+  }
+  // jogadores
+  if(jg.length){
+    const COLS = [["Min",3],["Pts",4],["Res",5],["Ass",6],["Rou",7],["Lanç.",10],["3P",11],["LL",12],["Per",13],["Blq",14],["Fal",15],["+/−",8]];
+    const pm = v=>(v === "" || v == null) ? "" : (v > 0 ? "+" + v : String(v));
+    const tab = (lado, nome)=>{
+      const rows = jg.filter(x=>(x[2] === 1 ? 1 : 0) === lado);
+      if(!rows.length) return "";
+      const th = COLS.map(c=>`<th class="bk-th" data-bkc="${c[1]}" data-bkl="${lado}">${c[0]}</th>`).join("");
+      const body = rows.map(x=>`<tr>${[`<td>${x[1] ? `<i>${esc(x[1])}</i> ` : ""}${esc(x[0])}${x[17] ? "" : ""}</td>`].concat(COLS.map(c=>{ const v = x[c[1]]; return c[1] === 8 ? `<td>${esc(pm(v))}</td>` : (c[1] === 4 ? `<td><b>${esc(v)}</b></td>` : `<td>${esc(v == null ? "" : v)}</td>`); })).join("")}</tr>`).join("");
+      return `<div class="gd-jg-t">${esc(nome)}</div><div class="gd-jg-w"><table class="gd-jg bk-jg" data-bkev="${esc(ev.id)}" data-bkl="${lado}"><thead><tr><th>Jogador</th>${th}</tr></thead><tbody>${body}</tbody></table></div>`;
+    };
+    html += `<div class="gp-card"><h3>Jogadores</h3><div class="bk-hint">Toca num título para ordenar.</div>${tab(0, "FC Porto")}${tab(1, adv)}</div>`;
+  }
+  // estatísticas
+  if(st.length){
+    const num = v=>{ v = String(v == null ? "" : v); const pc = v.match(/\((\d+)%\)/); if(pc) return parseFloat(pc[1]); const mm = v.match(/^(\d+):(\d\d)$/); if(mm) return (+mm[1]) * 60 + (+mm[2]); return parseFloat(v.replace(",", ".")) || 0; };
+    const linhas = st.map(x=>{ const a = num(x[1]), b = num(x[2]), tot = Math.abs(a) + Math.abs(b), pa = tot > 0 ? Math.round(Math.abs(a) / tot * 100) : 50; return `<div class="gd-st"><div class="gd-st-t"><b>${esc(x[1])}</b><span>${esc(gdTr_(x[0], GD_STAT_PT_))}</span><b>${esc(x[2])}</b></div><div class="gd-bar"><i style="width:${pa}%"></i></div></div>`; }).join("");
+    html += `<div class="gp-card"><h3>Estatísticas</h3>${linhas}</div>`;
+  }
+  if(!html) return "";
+  return html + `<div class="gd-src">Dados do jogo: Sofascore, podem ter atraso. O resultado oficial é o do site.</div>`;
+}
+document.addEventListener("click", function(e){
+  const b = e.target && e.target.closest ? e.target.closest(".bk-toggle") : null;
+  if(b){
+    const id = b.getAttribute("data-bkev"); BK_OPEN_[id] = !BK_OPEN_[id];
+    const card = b.closest(".gp-card"); if(card) card.classList.toggle("gd-open", !!BK_OPEN_[id]);
+    b.textContent = BK_OPEN_[id] ? "Ver menos" : "Ver todos (" + b.getAttribute("data-n") + ")";
+    return;
+  }
+  const th = e.target && e.target.closest ? e.target.closest(".bk-th") : null;
+  if(!th) return;
+  const table = th.closest("table"), idx = th.cellIndex, k = (table.getAttribute("data-bkev") || "") + "|" + (table.getAttribute("data-bkl") || "");
+  const cur = BK_SORT_[k], dir = (cur && cur.c === idx && cur.d === 1) ? -1 : 1;
+  BK_SORT_[k] = { c: idx, d: dir };
+  const tb = table.tBodies[0], rows = Array.from(tb.rows);
+  const val = r=>{ const v = parseFloat(String((r.cells[idx] || {}).textContent || "").replace("−", "-").replace("+", "")); return isFinite(v) ? v : -999; };
+  rows.sort((a, b)=>(val(b) - val(a)) * dir).forEach(r=>tb.appendChild(r));
+  table.querySelectorAll(".bk-th").forEach(h=>h.classList.remove("bk-asc", "bk-desc"));
+  th.classList.add(dir === 1 ? "bk-desc" : "bk-asc");
 });

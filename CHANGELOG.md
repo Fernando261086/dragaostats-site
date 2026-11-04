@@ -402,3 +402,6 @@ código para facilitar trabalhar nele.
 
 ## Apps Script v162
 - Só diagnóstico: `testarSofaBasqueAgora` (jogo de exemplo) e `testarSofaBasqueFcpAgora` (jogo do FC Porto) listam no Registo tudo o que o Sofascore dá de um jogo de basquetebol. Site inalterado (cache v326).
+
+## v250 (Apps Script v163)
+Basquetebol: ecrã do jogo completo pelo Sofascore (relógio, quartos, gráfico, cestos, jogadores, estatísticas). FIBA desligado.

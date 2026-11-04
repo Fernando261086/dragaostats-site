@@ -24,6 +24,9 @@ async function generateShareReel(ev, st, sportColor){
   // v251: escudo grande do adversário (se o Sofascore o conhecer), tipo de resultado e marcadores
   let advCrest = null;
   try{ advCrest = await Promise.race([crestImage_(ev.sport, ev.athlete || ""), new Promise(r=>setTimeout(()=>r(null), 3000))]); }catch(e){ advCrest = null; }
+  // v256: escudo do FC Porto (não o logótipo do Dragão Stats)
+  let fcpCrest = null;
+  try{ fcpCrest = await Promise.race([crestImage_(ev.sport, "FC Porto"), new Promise(r=>setTimeout(()=>r(null), 3000))]); }catch(e){ fcpCrest = null; }
   const kind = hasResult && typeof resultKind_ === "function" ? resultKind_(ev, st) : "";
   const scorers = hasResult && typeof shareScorers_ === "function" ? shareScorers_(ev) : null;
 
@@ -128,9 +131,14 @@ async function generateShareReel(ev, st, sportColor){
       ctx.save();
       ctx.globalAlpha = a;
       if(fcpSide){
-        if(logo){
-          ctx.save(); ctx.beginPath(); ctx.arc(cx, CY, CR, 0, Math.PI*2); ctx.closePath(); ctx.clip();
-          ctx.drawImage(logo, cx - CR, CY - CR, CR*2, CR*2); ctx.restore();
+        if(fcpCrest){
+          const k = Math.min((CR*2) / fcpCrest.width, (CR*2) / fcpCrest.height);
+          const w = fcpCrest.width * k, h = fcpCrest.height * k;
+          ctx.drawImage(fcpCrest, cx - w/2, CY - h/2, w, h);
+        }else{
+          ctx.fillStyle = "#0b2a6b"; ctx.beginPath(); ctx.arc(cx, CY, CR, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = "#eef2f8"; ctx.font = "700 90px 'Bebas Neue', sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText("FCP", cx, CY + 4);
         }
       }else if(advCrest){
         const k = Math.min((CR*2) / advCrest.width, (CR*2) / advCrest.height);
@@ -303,34 +311,32 @@ async function generateShareReel(ev, st, sportColor){
   // vir o reel ter tempo de ler toda a informação antes de o vídeo acabar (e
   // nas redes sociais, voltar a reiniciar sozinho) — pedido do Fernando, que
   // achava a pausa antiga (0.7s) curta demais e a entrada dos elementos rápida
-  const ANIM_END = 6.6, HOLD = 4.0, TOTAL = ANIM_END + HOLD;
+  const ANIM_END = 6.6, HOLD = 6.5, TOTAL = ANIM_END + HOLD; // v256: pausa final maior (o último elemento chega aos 6,5 s)
 
-  const stream = canvas.captureStream(30);
-  const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
-    ? "video/webm;codecs=vp9"
-    : (MediaRecorder.isTypeSupported("video/webm;codecs=vp8") ? "video/webm;codecs=vp8" : "video/webm");
-  const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 6_000_000 });
-  const chunks = [];
-  recorder.ondataavailable = (e)=>{ if(e.data && e.data.size > 0) chunks.push(e.data); };
-
-  const finished = new Promise((resolve)=>{ recorder.onstop = resolve; });
-
-  const startTime = performance.now();
-  recorder.start();
-  function frameLoop(now){
-    const elapsed = (now - startTime) / 1000;
-    draw(Math.min(elapsed, ANIM_END));
-    if(elapsed < TOTAL){
-      requestAnimationFrame(frameLoop);
-    }else{
-      recorder.stop();
+  // 1.º: vídeo fotograma a fotograma (tempos exatos); 2.º (browsers antigos): gravação em tempo real
+  let blob = null;
+  try{ blob = await webmEncodeFrames_(canvas, t=>draw(Math.min(t, ANIM_END)), TOTAL, 30, null); }catch(e){ blob = null; }
+  if(!blob){
+    const stream = canvas.captureStream(30);
+    const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
+      ? "video/webm;codecs=vp9"
+      : (MediaRecorder.isTypeSupported("video/webm;codecs=vp8") ? "video/webm;codecs=vp8" : "video/webm");
+    const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 6_000_000 });
+    const chunks = [];
+    recorder.ondataavailable = (e)=>{ if(e.data && e.data.size > 0) chunks.push(e.data); };
+    const finished = new Promise((resolve)=>{ recorder.onstop = resolve; });
+    const startTime = performance.now();
+    recorder.start();
+    function frameLoop(now){
+      const elapsed = (now - startTime) / 1000;
+      draw(Math.min(elapsed, ANIM_END));
+      if(elapsed < TOTAL) requestAnimationFrame(frameLoop); else recorder.stop();
     }
+    requestAnimationFrame(frameLoop);
+    await finished;
+    blob = new Blob(chunks, { type: "video/webm" });
   }
-  requestAnimationFrame(frameLoop);
 
-  await finished;
-
-  const blob = new Blob(chunks, { type: "video/webm" });
   const fileName = `dragaostats-${(ev.sport||'jogo').toLowerCase().replace(/\s+/g,'-')}-${ev.day||''}.webm`;
   await shareDeliver_(blob, fileName, "video/webm"); // v249: entrega central
 }

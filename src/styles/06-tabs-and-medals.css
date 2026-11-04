@@ -1224,3 +1224,6 @@ html.theme-light .sh-cap{background:#f3f6fb;color:#12213d}
 .fk-set-t{display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px}
 .fk-set-t span{font-variant-numeric:tabular-nums;font-weight:700}
 .fk-set .bk-graph{height:60px}
+
+/* v254: destaque do email semanal */
+.gp-actions .hv-btn-ghost.is-on{ border-color:#e3b23c; color:#e3b23c; }

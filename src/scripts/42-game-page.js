@@ -219,11 +219,17 @@ function renderGamePage_(){
   if(bSt) bSt.onclick = ()=>{ try{ statsOpenedFromWeekView = false; }catch(e){} openPlayerStatsPanel(ev); };
   const bDest = host.querySelector("#gpDestaque");
   if(bDest) bDest.onclick = async ()=>{
-    const on = !ev.destaque;
-    EVENTS.forEach(e=>{ if(e.destaque) delete e.destaque; });
-    if(on) ev.destaque = true;
+    // v255: mostra logo («★») e só depois grava; a leitura automática pode trazer cópias antigas dos jogos, por isso volta a aplicar no fim
+    const cur0 = EVENTS.find(e=>e.id === ev.id) || ev;
+    const on = !cur0.destaque;
+    const apply = ()=>{
+      EVENTS.forEach(e=>{ if(e.id !== ev.id && e.destaque) delete e.destaque; });
+      const cur = EVENTS.find(e=>e.id === ev.id);
+      if(cur){ if(on) cur.destaque = true; else delete cur.destaque; }
+    };
+    apply(); gameSig_ = ""; renderGamePage_();
     try{ await saveEvents(); }catch(e){}
-    gameSig_ = ""; renderGamePage_();
+    apply(); gameSig_ = ""; renderGamePage_();
   };
   const bAdd = host.querySelector("#gpAddStats");
   if(bAdd) bAdd.onclick = ()=>{ try{ statsOpenedFromWeekView = false; }catch(e){} openPlayerStatsPanel(ev); };

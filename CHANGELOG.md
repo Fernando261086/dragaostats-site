@@ -399,3 +399,6 @@ código para facilitar trabalhar nele.
 
 ## v249
 - Painel «📣 Partilhar» único (`60-share-hub.js`): Um jogo / Um dia / A semana → Imagem ou Reel → tamanho por rede (4:5 feed Instagram/Facebook, 1:1 quadrado, 9:16 Stories; reels sempre 9:16) → pré-visualização + legenda automática (Instagram/Facebook com #, Reddit sem #) + Copiar/Partilhar/Descarregar. Cache v326.
+
+## Apps Script v162
+- Só diagnóstico: `testarSofaBasqueAgora` (jogo de exemplo) e `testarSofaBasqueFcpAgora` (jogo do FC Porto) listam no Registo tudo o que o Sofascore dá de um jogo de basquetebol. Site inalterado (cache v326).

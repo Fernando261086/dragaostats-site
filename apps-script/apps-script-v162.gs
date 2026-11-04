@@ -6688,3 +6688,6 @@ function sofaBasqueDump_(id) {
   });
   Logger.log("===== FIM — copia tudo o que está acima para a conversa =====");
 }
+
+// Ovarense – Porto (Liga Betclic, terminado): para ver o que o Sofascore dá na Liga portuguesa
+function testarSofaBasqueLigaAgora() { sofaBasqueDump_("16577097"); }

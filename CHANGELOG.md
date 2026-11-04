@@ -396,3 +396,6 @@ código para facilitar trabalhar nele.
 
 ## v248 / Apps Script v159
 - Convite de avisos por momento, painel iPhone, botão no cartão ao vivo; contagem de aparelhos e funil de avisos no relatório Saúde. Cache v325.
+
+## v249
+- Painel «📣 Partilhar» único (`60-share-hub.js`): Um jogo / Um dia / A semana → Imagem ou Reel → tamanho por rede (4:5 feed Instagram/Facebook, 1:1 quadrado, 9:16 Stories; reels sempre 9:16) → pré-visualização + legenda automática (Instagram/Facebook com #, Reddit sem #) + Copiar/Partilhar/Descarregar. Cache v326.

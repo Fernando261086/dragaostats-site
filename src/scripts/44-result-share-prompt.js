@@ -36,11 +36,11 @@ function showResultSharePrompt_(evId){
       <div class="rsp-btns"><button type="button" data-rsp="img">🖼️ Imagem</button><button type="button" data-rsp="reel">🎬 Reel</button><button type="button" data-rsp="txt">📋 Copiar texto</button></div>`;
     document.body.appendChild(el);
     el.querySelector(".rsp-x").onclick = closeResultPrompt_;
-    el.querySelector('[data-rsp="img"]').onclick = ()=>generateShareCard(ev, getEv(evId) || {}, cor);
-    el.querySelector('[data-rsp="reel"]').onclick = ()=>generateShareReel(ev, getEv(evId) || {}, cor);
+    el.querySelector('[data-rsp="img"]').onclick = ()=>{ closeResultPrompt_(); openShareHub_({ scope: "jogo", evId, fmt: "img" }); };
+    el.querySelector('[data-rsp="reel"]').onclick = ()=>{ closeResultPrompt_(); openShareHub_({ scope: "jogo", evId, fmt: "reel" }); };
     const bt = el.querySelector('[data-rsp="txt"]');
     bt.onclick = async ()=>{
-      const txt = resultShareText_(ev, getEv(evId) || {});
+      const txt = (typeof gameCaption_ === "function") ? gameCaption_(ev) : resultShareText_(ev, getEv(evId) || {});
       try{ await navigator.clipboard.writeText(txt); }catch(e){ prompt("Copia o texto:", txt); }
       bt.textContent = "Copiado ✓"; setTimeout(()=>{ bt.textContent = "📋 Copiar texto"; }, 1500);
     };

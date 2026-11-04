@@ -160,16 +160,7 @@ async function generateShareCard(ev, st, sportColor){
   canvas.toBlob(async (blob)=>{
     if(!blob){ alert("⚠️ Não foi possível gerar a imagem."); return; }
     const fileName = `dragaostats-${(ev.sport||'jogo').toLowerCase().replace(/\s+/g,'-')}-${ev.day||''}.png`;
-    const file = new File([blob], fileName, { type: "image/png" });
-    if(navigator.canShare && navigator.canShare({ files: [file] })){
-      try{ await navigator.share({ files: [file], title: "Dragão Stats" }); return; }
-      catch(e){ /* pessoa cancelou a partilha ou o telemóvel recusou — cai para descarregar */ }
-    }
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = fileName;
-    link.click();
-    setTimeout(()=>URL.revokeObjectURL(link.href), 5000);
+    shareDeliver_(blob, fileName, "image/png"); // v249: entrega central (painel «Partilhar» ou partilhar/descarregar)
   }, "image/png");
 }
 

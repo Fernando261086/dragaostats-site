@@ -195,13 +195,7 @@ async function generateWeekReel_(games, weekStart, weekEndDisplay){
     blob = new Blob(chunks, { type: "video/webm" });
   }
   const fileName = `dragaostats-semana-${(weekStart.getFullYear())}-${String(weekStart.getMonth() + 1).padStart(2, "0")}-${String(weekStart.getDate()).padStart(2, "0")}.webm`;
-  const file = new File([blob], fileName, { type: "video/webm" });
-  if(navigator.canShare && navigator.canShare({ files: [file] })){
-    try{ await navigator.share({ files: [file], title: "Dragão Stats" }); return; }catch(e){ /* cancelou: cai para descarregar */ }
-  }
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob); link.download = fileName; link.click();
-  setTimeout(()=>URL.revokeObjectURL(link.href), 5000);
+  await shareDeliver_(blob, fileName, "video/webm"); // v249: entrega central
 }
 
 // botão em "Esta semana" (modo edição): mostra a legenda curta e grava o vídeo

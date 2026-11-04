@@ -299,33 +299,13 @@ function renderDayShareToggle_(){
     return;
   }
   el.style.display = "flex";
-  const wire = (id, modo, n)=>{
-    const btn = document.getElementById(id);
-    if(!btn) return;
-    btn.style.display = n ? "" : "none";
-    if(btn.dataset.wired) return;
+  // v249: um só botão, que abre o painel «Partilhar» já no dia de hoje
+  ["dayShareLiveBtn", "dayReelBtn", "dayReelLiveBtn", "dayShareResBtn"].forEach(id=>{ const b = document.getElementById(id); if(b) b.style.display = "none"; });
+  const btn = document.getElementById("dayShareBtn");
+  if(!btn) return;
+  btn.style.display = ""; btn.textContent = "📣 Partilhar os jogos de hoje";
+  if(!btn.dataset.wired){
     btn.dataset.wired = "1";
-    btn.onclick = ()=>{
-      const box = document.getElementById("dayShareBox");
-      const rbox = document.getElementById("dayReelBox");
-      if(rbox) rbox.style.display = "none";
-      const opening = box.style.display === "none" || dayShareMode_ !== modo;
-      dayShareMode_ = modo;
-      box.style.display = opening ? "block" : "none";
-      if(opening) renderDayShareBox_();
-    };
-  };
-  wire("dayShareBtn", "jogos", nJogos);
-  wire("dayShareLiveBtn", "jogos-live", nLive);
-  const wireReel = (id, live, n)=>{
-    const btn = document.getElementById(id);
-    if(!btn) return;
-    btn.style.display = n ? "" : "none";
-    if(btn.dataset.wired) return;
-    btn.dataset.wired = "1";
-    btn.onclick = ()=>{ if(typeof startDayReel_ === "function") startDayReel_(live); };
-  };
-  wireReel("dayReelBtn", false, nJogos);
-  wireReel("dayReelLiveBtn", true, nLive);
-  wire("dayShareResBtn", "resultados", nRes);
+    btn.onclick = ()=>openShareHub_({ scope: "dia", dayKind: getDayShareGames_().length ? "jogos" : "res", fmt: "img" });
+  }
 }

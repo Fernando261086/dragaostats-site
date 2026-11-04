@@ -159,7 +159,7 @@ function renderTodayAllView(){
       <div id="weekListContainer"></div>
       ${!READONLY_MODE ? `
         <div class="add-btn-row" style="margin-top:14px;">
-          <button class="chip" id="weekShareBtn">🖼️ Imagem + texto para publicar</button>
+          <button class="chip" id="weekShareBtn">🖼️ Imagem + texto da semana</button>
           <button class="chip" id="weekReelBtn">🎬 Reel da semana</button>
         </div>
         <div id="weekShareBox" style="display:none;"></div>
@@ -185,16 +185,10 @@ function renderTodayAllView(){
     document.getElementById("weekNextBtn").onclick = ()=>{ weekOffset++; weekDay_ = null; renderTodayAllView(); };
     container.querySelectorAll("[data-wday]").forEach(b=>{ b.onclick = ()=>{ const v = b.getAttribute("data-wday"); weekDay_ = v === "" ? null : Number(v); renderTodayAllView(); }; });
     const reelBtn = document.getElementById("weekReelBtn");
-    if(reelBtn) reelBtn.onclick = ()=>{ if(typeof startWeekReel_ === "function") startWeekReel_(weekStart, weekEnd, weekEndDisplay); };
+    if(reelBtn) reelBtn.onclick = ()=>openShareHub_({ scope: "semana", weekOffset, fmt: "reel" });
     const shareBtn = document.getElementById("weekShareBtn");
     if(shareBtn){
-      shareBtn.onclick = ()=>{
-        const box = document.getElementById("weekShareBox");
-        box.dataset.week = String(weekOffset);
-        const opening = box.style.display === "none";
-        box.style.display = opening ? "block" : "none";
-        if(opening) renderWeekShareBox_(weekStart, weekEnd, weekEndDisplay);
-      };
+      shareBtn.onclick = ()=>openShareHub_({ scope: "semana", weekOffset, fmt: "img" });
     }
   }else{
     // dentro de uma competição normal (Medalhas): comportamento de sempre,

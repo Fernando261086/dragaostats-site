@@ -264,16 +264,7 @@ async function generateShareReel(ev, st, sportColor){
 
   const blob = new Blob(chunks, { type: "video/webm" });
   const fileName = `dragaostats-${(ev.sport||'jogo').toLowerCase().replace(/\s+/g,'-')}-${ev.day||''}.webm`;
-  const file = new File([blob], fileName, { type: "video/webm" });
-  if(navigator.canShare && navigator.canShare({ files: [file] })){
-    try{ await navigator.share({ files: [file], title: "Dragão Stats" }); return; }
-    catch(e){ /* pessoa cancelou a partilha ou o telemóvel recusou — cai para descarregar */ }
-  }
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = fileName;
-  link.click();
-  setTimeout(()=>URL.revokeObjectURL(link.href), 5000);
+  await shareDeliver_(blob, fileName, "video/webm"); // v249: entrega central
 }
 
 // Escreve texto centrado, quebrando para uma segunda linha se não couber na

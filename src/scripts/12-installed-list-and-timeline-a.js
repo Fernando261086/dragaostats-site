@@ -523,9 +523,9 @@ function renderTimeline(){
         openPlayerStatsPanel(ev);
       };
       const shareCardBtn = row.querySelector('[data-sharecard="1"]');
-      if(shareCardBtn) shareCardBtn.onclick = ()=>{ closeCardShareMenu(); generateShareCard(ev, st, color); };
+      if(shareCardBtn) shareCardBtn.onclick = ()=>{ closeCardShareMenu(); if(!READONLY_MODE && typeof openShareHub_ === "function") openShareHub_({ scope: "jogo", evId: ev.id, fmt: "img" }); else generateShareCard(ev, st, color); };
       const shareReelBtn = row.querySelector('[data-sharereel="1"]');
-      if(shareReelBtn) shareReelBtn.onclick = ()=>{ closeCardShareMenu(); generateShareReel(ev, st, color); };
+      if(shareReelBtn) shareReelBtn.onclick = ()=>{ closeCardShareMenu(); if(!READONLY_MODE && typeof openShareHub_ === "function") openShareHub_({ scope: "jogo", evId: ev.id, fmt: "reel" }); else generateShareReel(ev, st, color); };
     }
 
     row.querySelector('[data-athlete-link="1"]').onclick = ()=>{

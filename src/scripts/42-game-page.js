@@ -213,8 +213,8 @@ function renderGamePage_(){
   if(sh) sh.onclick = ()=>{ if(typeof track_ === "function") track_("partilhar_clique"); shareGameFan_(ev); };
   const cor = (typeof SPORT_COLORS !== "undefined" && SPORT_COLORS[ev.sport]) || "#e3b23c";
   const bImg = host.querySelector("#gpImg"), bReel = host.querySelector("#gpReel"), bSt = host.querySelector("#gpStats");
-  if(bImg) bImg.onclick = ()=>generateShareCard(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor);
-  if(bReel) bReel.onclick = ()=>generateShareReel(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor);
+  if(bImg) bImg.onclick = ()=>{ if(!READONLY_MODE && typeof openShareHub_ === "function") openShareHub_({ scope: "jogo", evId: ev.id, fmt: "img" }); else generateShareCard(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor); };
+  if(bReel) bReel.onclick = ()=>{ if(!READONLY_MODE && typeof openShareHub_ === "function") openShareHub_({ scope: "jogo", evId: ev.id, fmt: "reel" }); else generateShareReel(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor); };
   if(bSt) bSt.onclick = ()=>{ try{ statsOpenedFromWeekView = false; }catch(e){} openPlayerStatsPanel(ev); };
   const bAdd = host.querySelector("#gpAddStats");
   if(bAdd) bAdd.onclick = ()=>{ try{ statsOpenedFromWeekView = false; }catch(e){} openPlayerStatsPanel(ev); };

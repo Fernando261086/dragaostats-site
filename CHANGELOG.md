@@ -408,3 +408,6 @@ Basquetebol: ecrã do jogo completo pelo Sofascore (relógio, quartos, gráfico,
 
 ## v251
 Reel do jogo renovado (escudos, vitória em destaque, marcadores, convite aos avisos); legendas do basquetebol com os melhores pontuadores.
+
+## v252 (Apps Script v165)
+Fichas de jogadores e gráficos: Andebol (Champions), Futebol Feminino/Equipa A/Equipa B, ponto a ponto no Voleibol.

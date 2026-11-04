@@ -485,6 +485,7 @@ async function fetchAll(){
       PLANTEL = (raw.plantel && typeof raw.plantel === "object") ? raw.plantel : {};
       FORMAS = (raw.formas && typeof raw.formas === "object") ? raw.formas : {};
       NOTICIAS = (raw.noticias && typeof raw.noticias === "object") ? raw.noticias : {};
+      FICHA = (raw.ficha && typeof raw.ficha === "object") ? raw.ficha : {};
       BASKET = (raw.basket && typeof raw.basket === "object") ? raw.basket : {};
       DETALHES = (raw.detalhes && typeof raw.detalhes === "object") ? raw.detalhes : {};
       ONZE = (raw.onze && typeof raw.onze === "object") ? raw.onze : {};

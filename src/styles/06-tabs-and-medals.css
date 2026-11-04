@@ -1218,3 +1218,9 @@ html.theme-light .sh-cap{background:#f3f6fb;color:#12213d}
 .bk-hint{font-size:11px;opacity:.6;margin:-4px 0 4px}
 .bk-th{cursor:pointer;user-select:none}
 .bk-th.bk-desc::after{content:" ▾"} .bk-th.bk-asc::after{content:" ▴"}
+
+/* v252: fichas (andebol, futebol, voleibol) */
+.fk-set{margin:8px 0}
+.fk-set-t{display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px}
+.fk-set-t span{font-variant-numeric:tabular-nums;font-weight:700}
+.fk-set .bk-graph{height:60px}

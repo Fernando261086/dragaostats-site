@@ -127,6 +127,23 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     errs.length ? bad('basquetebol: erros JS → ' + errs.join(' | ')) : ok('basquetebol: sem erros JS');
     await page.close();
   }
+  { // v252: fichas (andebol, futebol, voleibol)
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    const errs = []; page.on('pageerror', e => errs.push(e.message));
+    await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+    await page.goto(`http://localhost:${port}/index.html?view=readonly`, { waitUntil: 'load' });
+    await page.waitForTimeout(1200);
+    const r = await page.evaluate(() => {
+      FICHA = { a1: { k: 'A', g: [1, 2, 3, 2, 4, 5, 3], jg: [['A', '7', 0, 0, 5, 8, 1, 2, 1, 0, 0, ''], ['G', '1', 0, 0, 0, 0, 0, 0, 0, 0, 0, '9/20'], ['X', '9', 1, 0, 3, 6, 0, 1, 0, 1, 1, '']] },
+        f1: { k: 'F', g: [3, -2, 5, 1, -4], jg: [['J', '10', 0, 90, 1, 1, 3, '30/40', 2, 5, 7.8], ['K', '4', 1, 70, 0, 0, 1, '20/30', 1, 3, 6.4]] },
+        v1: { k: 'V', vs: [[1, 2, 1, 3, 4], [-1, -2, 0, 1]], vp: [[25, 20], [21, 25]] } };
+      const h = ['A|a1|Andebol', 'F|f1|Equipa B', 'V|v1|Voleibol'].map(x => { const [k, id, sp] = x.split('|'); const d = document.createElement('div'); d.innerHTML = fichaHtml_({ id, sport: sp, athlete: 'Adv' }); return d; });
+      return { a: h[0].querySelectorAll('.bk-graph').length + '/' + h[0].querySelectorAll('tbody tr').length, f: h[1].querySelectorAll('.bk-graph').length + '/' + h[1].querySelectorAll('tbody tr').length, v: h[2].querySelectorAll('.fk-set').length + '/' + h[2].querySelectorAll('.bk-graph').length, vt: h[2].textContent.includes('25–20') };
+    });
+    r.a === '1/3' && r.f === '1/2' && r.v === '2/2' && r.vt ? ok('fichas: andebol, futebol e voleibol (gráficos, jogadores, sets)') : bad('fichas → ' + JSON.stringify(r));
+    errs.length ? bad('fichas: erros JS → ' + errs.join(' | ')) : ok('fichas: sem erros JS');
+    await page.close();
+  }
   await browser.close(); srv.close();
   console.log(fails ? `\n${fails} problema(s) — NÃO publicar.` : '\nTudo ok.'); process.exit(fails ? 1 : 0);
 })();

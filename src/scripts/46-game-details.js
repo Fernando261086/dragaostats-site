@@ -4,6 +4,7 @@
 let DETALHES = {};
 let BASKET = {}; // v250: Basquetebol só pelo Sofascore (Apps Script v163, campo "basket" do doGet): { evId: {t, f: 1 = terminado, c: 1 = FC Porto em casa, q: [[fcp,adv] por quarto], g: vantagem do FC Porto minuto a minuto, st: [[nome,fcp,adv]], jg: [[nome,camisola,lado,min,pts,res,ass,rou,+/-,nota,lanç,3p,ll,perdas,bloq,faltas,res.ataque,titular]], pl: [[segundo,lado,pts,nome,fcp,adv]] } }
 const BK_OPEN_ = {}, BK_SORT_ = {};
+let FICHA = {}; // v252: fichas de jogadores e gráficos (Apps Script v165, campo "ficha"): { evId: {t, f, k: "A"|"F"|"V", g: [gráfico], jg: [[nome,camisola,lado,min,…]], vs: [[vantagem ponto a ponto] por set], vp: [[pts FC Porto, pts adv] por set]} }
 let ASSIST = {}; // v244: assistências por jogo (Apps Script v156): { evId: [nome do assistente, …] } — só jogos acompanhados automaticamente
 let ONZE = {}; // v243: onze inicial por jogo (Apps Script v155): { evId: { c: 1 = confirmado, f: [formação FC Porto, formação adversário], j: [[nome, camisola, lado, posição G|D|M|F]] } }
 const GD_OPEN_ = {}; // v207: jogos com o "Lance a lance" aberto por inteiro
@@ -33,12 +34,13 @@ function gdTr_(txt, map){
 }
 
 function gameDetailsHtml_(ev){
+  const fk = (typeof fichaHtml_ === "function") ? fichaHtml_(ev) : ""; // v252: ficha de jogadores e gráficos (Andebol, Futebol, Voleibol)
   if(ev.sport === "Basquetebol" && BASKET && BASKET[ev.id] && typeof basketHtml_ === "function"){ const b = basketHtml_(ev); if(b) return b; }
   const d = (DETALHES && typeof DETALHES === "object") ? DETALHES[ev.id] : null;
-  if(!d) return "";
+  if(!d) return fk;
   const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
   const inc = Array.isArray(d.inc) ? d.inc : [], st = Array.isArray(d.st) ? d.st : [], jg = Array.isArray(d.jg) ? d.jg : [];
-  if(!inc.length && !st.length && !jg.length) return "";
+  if(!inc.length && !st.length && !jg.length) return fk;
   const hoq = ev.sport === "Hóquei Patins", golo = hoq ? "🏒" : "⚽"; // v230: hóquei (cronologia do hoqueipatins.pt)
   const mn = m=>(/\d$/.test(String(m)) ? esc(m) + "'" : esc(m)); // "Intervalo" não leva apóstrofo
   const icone = {G:golo, GP:golo, AG:golo, CA:"🟨", CV:"🟥", CA2:"🟥", S:"🔄", O:"•"};
@@ -97,7 +99,7 @@ function gameDetailsHtml_(ev){
     };
     html += `<div class="gp-card"><h3>Jogadores</h3>${tab(0, "FC Porto")}${tab(1, ev.athlete || t.away || "Adversário")}</div>`;
   }
-  return html + `<div class="gd-src">Cronologia e estatísticas: ${hoq ? "hoqueipatins.pt" : "Sofascore"}, podem ter atraso. O resultado oficial é o do site.</div>`;
+  return html + fk + `<div class="gd-src">Cronologia e estatísticas: ${hoq ? "hoqueipatins.pt" : "Sofascore"}, podem ter atraso. O resultado oficial é o do site.</div>`;
 }
 
 // v243: onze inicial (Equipa A, Feminino, Equipa B). Aparece assim que o Sofascore tem o onze (provável ou confirmado) e fica no jogo depois.
@@ -235,3 +237,52 @@ document.addEventListener("click", function(e){
   table.querySelectorAll(".bk-th").forEach(h=>h.classList.remove("bk-asc", "bk-desc"));
   th.classList.add(dir === 1 ? "bk-desc" : "bk-asc");
 });
+
+
+// ===================== FICHAS E GRÁFICOS (v252) =====================
+// Andebol (Champions): ficha dos jogadores + gráfico da vantagem; Futebol (Equipa A/B, Feminino): ficha com nota + pressão; Voleibol: ponto a ponto por set.
+const FK_COLS_ = {
+  A: [["Golos",4],["Rem",5],["7m",6],["Ass",7],["Rou",8],["Blq",9],["2'",10],["Def",11]],
+  F: [["Min",3],["G",4],["Ass",5],["Rem",6],["Pas",7],["Des",8],["Due",9],["Nota",10]]
+};
+function fkGraphSvg_(id, g, W, H){
+  const mid = H / 2, mx = Math.max(4, ...g.map(v=>Math.abs(v)));
+  const pts = g.map((v, i)=>[(i / Math.max(1, g.length - 1) * W).toFixed(1), (mid - v / mx * (mid - 4)).toFixed(1)]);
+  const linha = pts.map(p=>p.join(",")).join(" "), area = `0,${mid} ${linha} ${W},${mid}`;
+  return `<svg class="bk-graph" style="height:${H + 20}px" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img"><defs><clipPath id="fkU${id}"><rect x="0" y="0" width="${W}" height="${mid}"/></clipPath><clipPath id="fkD${id}"><rect x="0" y="${mid}" width="${W}" height="${mid}"/></clipPath></defs><polygon points="${area}" class="bk-up" clip-path="url(#fkU${id})"/><polygon points="${area}" class="bk-dn" clip-path="url(#fkD${id})"/><line x1="0" y1="${mid}" x2="${W}" y2="${mid}" class="bk-zero"/><polyline points="${linha}" class="bk-line"/></svg>`;
+}
+function fichaHtml_(ev){
+  const d = FICHA && FICHA[ev.id]; if(!d || typeof d !== "object") return "";
+  const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
+  const adv = ev.athlete || "Adversário", sid = String(ev.id).replace(/[^\w-]/g, "");
+  const g = Array.isArray(d.g) ? d.g : [], jg = Array.isArray(d.jg) ? d.jg : [], vs = Array.isArray(d.vs) ? d.vs : [], vp = Array.isArray(d.vp) ? d.vp : [];
+  let html = "";
+  // gráfico: andebol = vantagem; futebol = pressão do jogo (Sofascore)
+  if(g.length >= 3 && (d.k === "A" || d.k === "F")){
+    const titulo = d.k === "A" ? "Vantagem ao longo do jogo" : "Pressão ao longo do jogo";
+    html += `<div class="gp-card"><h3>${titulo}</h3>${fkGraphSvg_(sid, g, 300, 90)}<div class="bk-leg"><span class="bk-l-up">▲ FC Porto ${d.k === "A" ? "à frente" : "por cima"}</span><span class="bk-l-dn">▼ ${esc(adv)} ${d.k === "A" ? "à frente" : "por cima"}</span></div></div>`;
+  }
+  // voleibol: ponto a ponto, set a set
+  if(d.k === "V" && vs.length){
+    const linhas = vs.map((s, i)=>{
+      const f = vp[i] || [0, 0];
+      return `<div class="fk-set"><div class="fk-set-t"><b>Set ${i + 1}</b><span>${esc(f[0])}–${esc(f[1])}</span></div>${s.length >= 2 ? fkGraphSvg_(sid + "s" + i, [0].concat(s), 200, 50) : ""}</div>`;
+    }).join("");
+    html += `<div class="gp-card"><h3>Ponto a ponto</h3><div class="bk-hint">Vantagem do FC Porto durante cada set.</div>${linhas}<div class="bk-leg"><span class="bk-l-up">▲ FC Porto à frente</span><span class="bk-l-dn">▼ ${esc(adv)} à frente</span></div></div>`;
+  }
+  // ficha dos jogadores
+  const COLS = FK_COLS_[d.k];
+  if(COLS && jg.length){
+    const pj = typeof gJog_ === "function" ? gJog_(ev.sport, true, true) : "Jogadores";
+    const tab = (lado, nome)=>{
+      const rows = jg.filter(x=>(x[2] === 1 ? 1 : 0) === lado);
+      if(!rows.length) return "";
+      const th = COLS.map(c=>`<th class="bk-th" data-bkc="${COLS.indexOf(c) + 1}">${c[0]}</th>`).join("");
+      const body = rows.map(x=>`<tr><td>${x[1] ? `<i>${esc(x[1])}</i> ` : ""}${esc(x[0])}</td>${COLS.map(c=>{ const v = x[c[1]]; return `<td>${esc(v == null || v === 0 && c[0] === "Nota" ? "" : (v === 0 ? "–" : v))}</td>`; }).join("")}</tr>`).join("");
+      return `<div class="gd-jg-t">${esc(nome)}</div><div class="gd-jg-w"><table class="gd-jg bk-jg"><thead><tr><th>Jogador</th>${th}</tr></thead><tbody>${body}</tbody></table></div>`;
+    };
+    const a = tab(0, "FC Porto"), b = tab(1, adv);
+    if(a || b) html += `<div class="gp-card"><h3>${esc(pj)}</h3><div class="bk-hint">Toca num título para ordenar.</div>${a}${b}</div>`;
+  }
+  return html;
+}

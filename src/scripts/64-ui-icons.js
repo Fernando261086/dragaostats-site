@@ -43,14 +43,14 @@ document.addEventListener("click", e=>{
 // v260: na fila deslizante dos meses, o mês ativo fica sempre visível (sem mexer na página)
 (function(){
   const host = document.getElementById("dayTabs");
-  if(!host || typeof MutationObserver === "undefined") return;
+  if(!host) return;
+  function centrar_(){
+    const a = host.querySelector(".active");
+    if(a && host.scrollWidth > host.clientWidth) { const x = a.getBoundingClientRect().left - host.getBoundingClientRect().left + host.scrollLeft; host.scrollLeft = Math.max(0, x - (host.clientWidth - a.offsetWidth) / 2); }
+  }
   let busy = false;
-  new MutationObserver(()=>{
-    if(busy) return; busy = true;
-    requestAnimationFrame(()=>{
-      busy = false;
-      const a = host.querySelector(".active, [aria-selected='true'], .is-active");
-      if(a && host.scrollWidth > host.clientWidth) host.scrollLeft = Math.max(0, a.offsetLeft - (host.clientWidth - a.offsetWidth) / 2);
-    });
-  }).observe(host, { childList:true, subtree:true, attributes:true, attributeFilter:["class"] });
+  if(typeof MutationObserver !== "undefined") new MutationObserver(()=>{ if(busy) return; busy = true; requestAnimationFrame(()=>{ busy = false; centrar_(); }); }).observe(host, { childList:true, subtree:true, attributes:true, attributeFilter:["class"] });
+  if(typeof IntersectionObserver !== "undefined") new IntersectionObserver(es=>{ if(es.some(x=>x.isIntersecting)) setTimeout(centrar_, 30); }).observe(host);
+  setTimeout(centrar_, 400); setTimeout(centrar_, 1500);
+  document.addEventListener("click", e=>{ if(e.target.closest && e.target.closest("#viewCalendarBtn, .bn-item")) setTimeout(centrar_, 120); });
 })();

@@ -54,3 +54,25 @@ document.addEventListener("click", e=>{
   setTimeout(centrar_, 400); setTimeout(centrar_, 1500);
   document.addEventListener("click", e=>{ if(e.target.closest && e.target.closest("#viewCalendarBtn, .bn-item")) setTimeout(centrar_, 120); });
 })();
+
+// v261: acessibilidade — cartões clicáveis que não são botões passam a ser focáveis e abrem com Enter/Espaço
+(function(){
+  const SEL = ".match-row, .hv-hero[data-hero], .pg-click";
+  function marcar_(){
+    document.querySelectorAll(SEL).forEach(el=>{
+      if(el.dataset.a11y) return;
+      el.dataset.a11y = "1";
+      if(!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "0");
+      if(!el.hasAttribute("role")) el.setAttribute("role", "button");
+    });
+  }
+  let busy = false;
+  const agendar_ = ()=>{ if(busy) return; busy = true; setTimeout(()=>{ busy = false; marcar_(); }, 200); };
+  if(typeof MutationObserver !== "undefined") new MutationObserver(agendar_).observe(document.body, { childList:true, subtree:true });
+  marcar_();
+  document.addEventListener("keydown", e=>{
+    if(e.key !== "Enter" && e.key !== " ") return;
+    const el = e.target;
+    if(el && el.dataset && el.dataset.a11y === "1" && el.matches(SEL)){ e.preventDefault(); el.click(); }
+  });
+})();

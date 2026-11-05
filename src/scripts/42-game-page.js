@@ -186,6 +186,7 @@ function renderGamePage_(){
     ${((resultado && fim) || READONLY_MODE) ? "" : `<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ ${resultado ? "Imagem do resultado" : "Imagem para promover"}</button>
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 ${resultado ? "Reel do resultado" : "Reel para promover"}</button>`}
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpStats">${GP_ICO_.stats} Estatísticas</button>
+    ${(!READONLY_MODE && resultado) ? `<button type="button" class="hv-btn hv-btn-ghost gp-act${(ev.ogImg && ev.ogRes === String(resultado).trim()) ? " is-on" : ""}" id="gpOg" title="Imagem que aparece quando se partilha o link deste jogo (WhatsApp, Facebook)">${(ev.ogImg && ev.ogRes === String(resultado).trim()) ? "✓ Imagem do link pronta (refazer)" : "Criar imagem do link"}</button>` : ""}
     ${(!READONLY_MODE && resultado) ? `<button type="button" class="hv-btn hv-btn-ghost gp-act${ev.destaque ? " is-on" : ""}" id="gpDestaque">${ev.destaque ? "★ Destaque do email semanal" : "☆ Destaque do email semanal"}</button>` : ""}
     ${(futuro && typeof newsTicketForGame_ === "function" && newsTicketForGame_(ev)) ? `<a class="hv-btn hv-btn-ghost gp-act" href="${esc(newsTicketForGame_(ev).u)}" target="_blank" rel="noopener">${GP_ICO_.ticket} Bilhetes</a>` : ""}
     ${classif}
@@ -196,7 +197,7 @@ function renderGamePage_(){
     <button type="button" class="hv-btn hv-btn-main gp-act" id="gpShare">↗ Partilhar</button>
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">${GP_ICO_.img} Imagem</button>
     ${READONLY_MODE ? "" : '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 Reel do resultado</button>'}</div></div>` : "";
-  const sig = JSON.stringify([ev.id, !!ev.destaque, pill, sub, big, setsHtml, ev.watchUrl, ev.watchName, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof REACTIONS === "object" && REACTIONS && REACTIONS[activeCompId] && REACTIONS[activeCompId][ev.id]) || null), JSON.stringify((typeof DETALHES === "object" && DETALHES && DETALHES[ev.id]) || null), JSON.stringify((typeof ONZE === "object" && ONZE && ONZE[ev.id]) || null), (typeof crestId_ === "function" ? [crestId_(ev.sport, ev.athlete), crestId_(ev.sport, "FC Porto")].map(i=>i && crestCached_(i) ? 1 : 0).join("") : ""), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null), (typeof newsForGame_ === "function" ? newsForGame_(ev).map(n=>n.id).join(",") : ""), (typeof compPathHtml_ === "function" ? compPathHtml_(ev).length : 0)]);
+  const sig = JSON.stringify([ev.id, !!ev.destaque, ev.ogImg || "", ev.ogRes || "", pill, sub, big, setsHtml, ev.watchUrl, ev.watchName, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof REACTIONS === "object" && REACTIONS && REACTIONS[activeCompId] && REACTIONS[activeCompId][ev.id]) || null), JSON.stringify((typeof DETALHES === "object" && DETALHES && DETALHES[ev.id]) || null), JSON.stringify((typeof ONZE === "object" && ONZE && ONZE[ev.id]) || null), (typeof crestId_ === "function" ? [crestId_(ev.sport, ev.athlete), crestId_(ev.sport, "FC Porto")].map(i=>i && crestCached_(i) ? 1 : 0).join("") : ""), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null), (typeof newsForGame_ === "function" ? newsForGame_(ev).map(n=>n.id).join(",") : ""), (typeof compPathHtml_ === "function" ? compPathHtml_(ev).length : 0)]);
   if(sig === gameSig_) return;
   gameSig_ = sig;
 
@@ -227,6 +228,13 @@ function renderGamePage_(){
   if(bImg) bImg.onclick = ()=>{ if(!READONLY_MODE && typeof openShareHub_ === "function") openShareHub_({ scope: "jogo", evId: ev.id, fmt: "img" }); else generateShareCard(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor); };
   if(bReel) bReel.onclick = ()=>{ if(!READONLY_MODE && typeof openShareHub_ === "function") openShareHub_({ scope: "jogo", evId: ev.id, fmt: "reel" }); else generateShareReel(ev, (typeof getEv === "function" && getEv(ev.id)) || {}, cor); };
   if(bSt) bSt.onclick = ()=>{ try{ statsOpenedFromWeekView = false; }catch(e){} openPlayerStatsPanel(ev); };
+  const bOg = host.querySelector("#gpOg");
+  if(bOg) bOg.onclick = async ()=>{
+    bOg.disabled = true; bOg.textContent = "A criar…";
+    const ok = await ogCardPublish_(ev.id, true);
+    bOg.textContent = ok ? "✓ Imagem do link pronta" : "Não consegui (tenta outra vez)";
+    setTimeout(()=>{ gameSig_ = ""; renderGamePage_(); }, 1800);
+  };
   const bDest = host.querySelector("#gpDestaque");
   if(bDest) bDest.onclick = async ()=>{
     // v255: mostra logo («★») e só depois grava; a leitura automática pode trazer cópias antigas dos jogos, por isso volta a aplicar no fim
@@ -244,6 +252,12 @@ function renderGamePage_(){
   const bAdd = host.querySelector("#gpAddStats");
   if(bAdd) bAdd.onclick = ()=>{ try{ statsOpenedFromWeekView = false; }catch(e){} openPlayerStatsPanel(ev); };
   if(typeof bindNotifyCta_ === "function") bindNotifyCta_(host, ()=>{ gameSig_ = ""; renderGamePage_(); });
+  if(typeof notifyMoment_ === "function" && READONLY_MODE){
+    try{
+      if(liveData || aDecorrer) notifyMoment_("vivo");
+      else if(fim && typeof resultKind_ === "function" && resultKind_(ev, getEv(ev.id) || {}) === "win") notifyMoment_("vitoria");
+    }catch(e){}
+  }
   const rb = host.querySelector(".gp-react");
   if(rb && typeof wireReactionBar === "function"){ try{ wireReactionBar(rb, ev.id); }catch(e){} }
   const cal = host.querySelector("#gpCal");

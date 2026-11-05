@@ -31,20 +31,68 @@ function notifyCtaHtml_(ctx, state){
   return `<div class="nc-card"><span class="nc-ico">🔔</span><div class="nc-body"><b class="nc-t">${titulo}</b><span class="nc-s">${txt}</span></div>
     <div class="nc-btns"><button type="button" class="hv-btn hv-btn-main nc-yes" data-ncyes="1">${ios ? "Como instalar" : "Ativar avisos"}</button><button type="button" class="nc-no" data-ncno="1" aria-label="Agora não">Agora não</button></div></div>`;
 }
-// iPhone/iPad: os avisos só funcionam com o site instalado no ecrã principal; explica-o num painel curto em vez de um alert
+// iPhone/iPad: os avisos só funcionam com o site instalado no ecrã principal; explica-o num painel com 3 passos desenhados.
+// v261: se o site está aberto dentro do Instagram/Facebook (que não deixam instalar), avisa para abrir primeiro no Safari e dá «Copiar link».
+function iosEmApp_(){ try{ return /FBAN|FBAV|FB_IAB|Instagram|TikTok|Line\/|MicroMessenger|Snapchat/i.test(navigator.userAgent || ""); }catch(e){ return false; } }
 function iosInstallSheet_(){
   if(document.getElementById("iosSheet")) return;
+  const emApp = iosEmApp_();
+  if(emApp){ try{ if(typeof track_ === "function") track_("nc_ios_safari"); }catch(e){} }
+  const I = d => `<svg class="ios-ic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const passos = [
+    [I('<path d="M12 15V4M8 8l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-1"/>'), "Toca em <b>Partilhar</b>", "O quadrado com a seta para cima, na barra do Safari (em baixo, ou em cima no iPad)."],
+    [I('<rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="M12 8.5v7M8.5 12h7"/>'), "Escolhe <b>«Adicionar ao ecrã principal»</b>", "Desliza a lista para cima se não a vires. Toca em «Adicionar»."],
+    [I('<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>'), "Abre pelo <b>novo ícone</b> e toca em «Ativar avisos»", "Tem de ser a partir do ícone no ecrã, não pelo Safari."]
+  ];
   const el = document.createElement("div");
   el.id = "iosSheet"; el.className = "sh-overlay";
   el.innerHTML = `<div class="sh-sheet" role="dialog" aria-label="Instalar no iPhone">
-    <div class="sh-top"><b>🔔 Avisos no iPhone</b><button type="button" class="sh-x" aria-label="Fechar">✕</button></div>
-    <p class="ios-p">No iPhone os avisos só funcionam com o Dragão Stats instalado no ecrã principal. São 3 passos, demora meio minuto:</p>
-    <ol class="ios-ol"><li>Abre este site no <b>Safari</b> e toca em <b>Partilhar</b> (o quadrado com a seta para cima).</li><li>Escolhe <b>«Adicionar ao ecrã principal»</b>.</li><li>Abre o <b>Dragão Stats</b> a partir do novo ícone e toca em <b>«Ativar avisos»</b>.</li></ol>
+    <div class="sh-top"><b>Avisos no iPhone</b><button type="button" class="sh-x" aria-label="Fechar">✕</button></div>
+    ${emApp ? `<div class="ios-warn"><b>Primeiro, abre no Safari.</b> Estás a ver o site dentro de outra app (Instagram, Facebook…), e essas não deixam instalar. <button type="button" class="hv-btn hv-btn-main ios-copy">Copiar o link</button><span class="ios-copied" hidden>Link copiado — cola-o no Safari.</span></div>` : ""}
+    <p class="ios-p">No iPhone os avisos só funcionam com o Dragão Stats instalado no ecrã principal. São 3 passos e demora meio minuto:</p>
+    <div class="ios-steps">${passos.map((p, i)=>`<div class="ios-step"><span class="ios-n">${i + 1}</span>${p[0]}<div><b class="ios-t">${p[1]}</b><span class="ios-s">${p[2]}</span></div></div>`).join("")}</div>
   </div>`;
   document.body.appendChild(el);
   const close = ()=>el.remove();
   el.querySelector(".sh-x").onclick = close;
   el.addEventListener("click", e=>{ if(e.target === el) close(); });
+  const cp = el.querySelector(".ios-copy");
+  if(cp) cp.onclick = async ()=>{
+    const url = "https://dragaostats.pt";
+    try{ await navigator.clipboard.writeText(url); }catch(e){ try{ prompt("Copia o link e abre-o no Safari:", url); }catch(x){} }
+    const ok = el.querySelector(".ios-copied"); if(ok) ok.hidden = false;
+  };
+}
+// v261: convite no momento certo — um aviso curto em baixo, uma vez por sessão, quando o adepto abre um jogo que o FC Porto ganhou ou que está a decorrer.
+// Respeita o «Agora não» (5 dias) e só aparece a quem ainda pode ligar os avisos.
+function notifyMoment_(kind){
+  try{
+    if(!notifyCtaShow_() || document.getElementById("ncMoment")) return;
+    try{ if(sessionStorage.getItem("dia22-nm")) return; }catch(e){}
+    const ios = notifyCtaVariant_() === "ios";
+    const txt = kind === "vivo" ? "Segue este jogo no telemóvel, mesmo com o site fechado." : "Vitória do FC Porto! Queres que te avisemos do próximo jogo?";
+    setTimeout(()=>{
+      if(!notifyCtaShow_() || document.getElementById("ncMoment")) return;
+      // se o cartão de convite da própria página já está à vista, não repete o aviso
+      const cartao = document.querySelector("#gameView .nc-card");
+      if(cartao){ const r = cartao.getBoundingClientRect(); if(r.top < window.innerHeight - 90 && r.bottom > 0) return; }
+      try{ sessionStorage.setItem("dia22-nm", "1"); }catch(e){}
+      const el = document.createElement("div");
+      el.id = "ncMoment"; el.className = "nc-moment"; el.setAttribute("role", "status");
+      el.innerHTML = `<span class="nm-t">${txt}</span><button type="button" class="hv-btn hv-btn-main nm-yes">${ios ? "Como instalar" : "Ativar avisos"}</button><button type="button" class="nm-no" aria-label="Fechar">✕</button>`;
+      document.body.appendChild(el);
+      try{ if(typeof track_ === "function") track_("nc_momento"); }catch(e){}
+      el.querySelector(".nm-no").onclick = ()=>{ el.remove(); try{ localStorage.setItem("dia22-notify-cta-until", shiftISODay_(todayISO_(), 5)); }catch(e){} };
+      el.querySelector(".nm-yes").onclick = async ()=>{
+        el.remove();
+        if(ios){ try{ track_("nc_ios_ajuda"); }catch(e){} iosInstallSheet_(); return; }
+        try{ track_("nc_momento_sim"); }catch(e){}
+        try{ await enableNotifications(); }catch(e){}
+        try{ if(typeof renderGamePage_ === "function"){ gameSig_ = ""; renderGamePage_(); } }catch(e){}
+      };
+      setTimeout(()=>{ const x = document.getElementById("ncMoment"); if(x) x.remove(); }, 20000);
+    }, 1600);
+  }catch(e){}
 }
 function bindNotifyCta_(host, rerender){
   host.querySelectorAll("[data-ncyes]").forEach(b=>{ b.onclick = async ()=>{

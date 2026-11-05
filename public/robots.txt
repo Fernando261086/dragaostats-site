@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://dragaostats.pt/sitemap.xml
+Sitemap: https://dragaostats.pt/sitemap-jogos.xml

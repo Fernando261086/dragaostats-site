@@ -2,6 +2,8 @@
 // Faz QUATRO coisas e só isso (v195: + calendário subscrito .ics e imagem por modalidade na pré-visualização); tudo o resto passa direto para os ficheiros do site:
 //  1) Link de um jogo (/?comp=..&jogo=..): troca o título/descrição da pré-visualização (WhatsApp, Facebook, Google…)
 //     por "🤾 Andebol — FC Porto 31-28 Kiel" em vez do texto genérico do site.
+//  1b) (v196+) Esses links também levam canonical próprio, dados estruturados (SportsEvent) e, se o editor já criou a imagem do jogo
+//      (Apps Script v172, guardada no Drive), um og:image com o resultado. /sitemap-jogos.xml lista os jogos recentes para o Google.
 //  2) Páginas de modalidade (/andebol.html …): acrescenta no HTML (para o Google ler) os próximos jogos, a
 //     classificação e os dados estruturados (schema.org SportsEvent).
 // Se QUALQUER coisa falhar (dados lentos, erro, jogo não existe), devolve a página normal sem alterações.
@@ -29,6 +31,10 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     try {
+      if (request.method === "GET" && path === "/sitemap-jogos.xml") {
+        const r = await sitemapJogos_(env, ctx);
+        if (r) return r;
+      }
       if (request.method === "GET" && /^\/calendario\/[a-z-]+\.ics$/.test(path)) {
         const r = await calendarioIcs_(env, ctx, path);
         if (r) return r;
@@ -131,7 +137,7 @@ function compact_(d) {
       if (!ev || !ev.id || !ev.day || !ev.sport) return;
       const st = (dd.status || {})[ev.id] || {};
       events.push({
-        id: String(ev.id), sport: ev.sport, day: ev.day, t: ev.t || "", adv: ev.athlete || "", fora: ev.local === "fora",
+        id: String(ev.id), comp: String(c.id), og: ev.ogImg || "", ogres: ev.ogRes || "", sport: ev.sport, day: ev.day, t: ev.t || "", adv: ev.athlete || "", fora: ev.local === "fora",
         det: ev.detail || "", fase: ev.phase || "", venue: ev.venue || "",
         res: (st.resultado && String(st.resultado).trim()) || "", tag: st.resultTag || ""
       });
@@ -195,16 +201,31 @@ async function jogoPage_(request, env, ctx, url) {
     desc = dateLabel_(ev.day) + (ev.t ? " às " + ev.t : "") + (ev.det ? " · " + ev.det : "") + (ev.venue ? " · " + ev.venue : "") + ". Segue o jogo e o resultado no Dragão Stats.";
   }
   const res = await env.ASSETS.fetch(request);
+  const canon = SITE + "/?comp=" + encodeURIComponent(ev.comp || "") + "&jogo=" + encodeURIComponent(ev.id);
+  const imgCustom = (ev.res && ev.og && ev.ogres === ev.res && /^[A-Za-z0-9_-]{10,80}$/.test(ev.og)) ? "https://lh3.googleusercontent.com/d/" + ev.og + "=w1200" : "";
+  const imgFinal = imgCustom || (slugOf_(ev.sport) ? SITE + "/og/" + slugOf_(ev.sport) + ".png" : "");
+  const s0 = startInfo_(ev.day, ev.t);
+  const ld = {
+    "@context": "https://schema.org", "@type": "SportsEvent", name: t.home + " vs " + t.away, sport: ev.sport,
+    description: ev.res ? "Resultado final: " + t.home + " " + ev.res + " " + t.away + (ev.det ? " (" + ev.det + ")" : "") : desc,
+    eventStatus: ev.res ? "https://schema.org/EventCompleted" : "https://schema.org/EventScheduled", url: canon,
+    homeTeam: { "@type": "SportsTeam", name: t.home }, awayTeam: { "@type": "SportsTeam", name: t.away }
+  };
+  ld.startDate = s0 ? ev.day + "T" + String(ev.t).padStart(5, "0") + ":00" + s0.offset : ev.day;
+  if (ev.venue) ld.location = { "@type": "Place", name: ev.venue };
+  if (imgFinal) ld.image = imgFinal;
   const out = new HTMLRewriter()
+    .on('link[rel="canonical"]', { element(e) { e.setAttribute("href", canon); } })
+    .on("head", { element(e) { e.append('<script type="application/ld+json">' + JSON.stringify(ld).replace(/</g, "\\u003c") + "</script>" + (imgCustom ? '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">' : ""), { html: true }); } })
     .on("title", { element(e) { e.setInnerContent(title + " | Dragão Stats"); } })
     .on('meta[name="description"]', { element(e) { e.setAttribute("content", desc); } })
     .on('meta[property="og:title"]', { element(e) { e.setAttribute("content", title); } })
     .on('meta[property="og:description"]', { element(e) { e.setAttribute("content", desc); } })
-    .on('meta[property="og:url"]', { element(e) { e.setAttribute("content", url.toString()); } })
+    .on('meta[property="og:url"]', { element(e) { e.setAttribute("content", canon); } })
     .on('meta[name="twitter:title"]', { element(e) { e.setAttribute("content", title); } })
     .on('meta[name="twitter:description"]', { element(e) { e.setAttribute("content", desc); } })
-    .on('meta[property="og:image"]', { element(e) { if (slugOf_(ev.sport)) e.setAttribute("content", SITE + "/og/" + slugOf_(ev.sport) + ".png"); } })
-    .on('meta[name="twitter:image"]', { element(e) { if (slugOf_(ev.sport)) e.setAttribute("content", SITE + "/og/" + slugOf_(ev.sport) + ".png"); } })
+    .on('meta[property="og:image"]', { element(e) { if (imgFinal) e.setAttribute("content", imgFinal); } })
+    .on('meta[name="twitter:image"]', { element(e) { if (imgFinal) e.setAttribute("content", imgFinal); } })
     .transform(res);
   const r = new Response(out.body, out);
   r.headers.set("Cache-Control", "no-cache, must-revalidate");
@@ -262,4 +283,16 @@ async function sportPage_(request, env, ctx, info) {
   let rw = new HTMLRewriter().on("div.other", { element(e) { e.before(html, { html: true }); } });
   if (ld.length) rw = rw.on("head", { element(e) { e.append('<script type="application/ld+json">' + JSON.stringify(ld).replace(/</g, "\\u003c") + "</script>", { html: true }); } });
   return rw.transform(res);
+}
+
+// ---------- 1c) lista de jogos para o Google: /sitemap-jogos.xml (últimos 90 dias e próximas 3 semanas)
+async function sitemapJogos_(env, ctx) {
+  const data = await getData_(env, ctx);
+  if (!data) return null;
+  const hoje = Date.now(), de = hoje - 90 * 86400000, ate = hoje + 21 * 86400000;
+  const itens = data.events.filter(e => { const t = Date.parse(e.day + "T12:00:00Z"); return t >= de && t <= ate; })
+    .sort((a, b) => b.day.localeCompare(a.day)).slice(0, 1500)
+    .map(e => "<url><loc>" + ESC(SITE + "/?comp=" + encodeURIComponent(e.comp || "") + "&jogo=" + encodeURIComponent(e.id)) + "</loc><lastmod>" + ESC(e.day) + "</lastmod></url>");
+  const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + itens.join("\n") + "\n</urlset>\n";
+  return new Response(xml, { headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600" } });
 }

@@ -409,6 +409,9 @@ function renderTimeline(){
       ? [localLabel(ev.local,'short'), ev.venue, ev.detail, ev.phase].filter(Boolean).join(" · ")
       : [ev.detail, ev.phase].filter(Boolean).join(" · ");
     const notesLine = (matchesMode && ev.notes) ? `<div class="out-note" style="color:var(--text-dim);">${ev.notes}</div>` : '';
+    // v257: o canal ("Onde ver", ou deduzido do link) também aparece no cartão do calendário; as Observações ficam só para notas livres
+    const watchChan = (matchesMode && (ev.watchName || ev.watchUrl) && typeof watchLabel_ === "function")
+      ? `<div class="out-note watch-chan" style="color:var(--text-dim);">📺 ${String(watchLabel_(ev)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>` : '';
     const athleteLabel = matchesMode ? matchTitleText_(ev) : ev.athlete;
 
     row.innerHTML = `
@@ -455,6 +458,7 @@ function renderTimeline(){
           if(h2h.total === 0) return '';
           return `<div class="meta" style="margin-top:2px; opacity:0.85;">📊 Frente a frente: <b style="color:var(--green); font-weight:700;">${h2h.w}V</b> <b style="color:var(--text-dim); font-weight:700;">${h2h.d}E</b> <b style="color:var(--red); font-weight:700;">${h2h.l}D</b></div>`;
         })()}
+        ${watchChan}
         ${notesLine}
         ${ev.watchUrl ? `<a class="watch-link" href="${ev.watchUrl}" target="_blank" rel="noopener">📺 Ver transmissão</a>` : ''}
         ${(matchesMode && typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).length) ? `<div class="watch-link" data-standings-go="1" style="cursor:pointer;">🏆 Classificação</div>` : (ev.classLink ? `<a class="watch-link" href="${ev.classLink}" target="_blank" rel="noopener">🏆 Classificação geral</a>` : '')}

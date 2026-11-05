@@ -169,8 +169,9 @@ function winInviteHtml_(done){
     if(homeDayDiff_(x.d) < -2 || !resultWin_(ev, st)) return "";
     let dis = ""; try{ dis = localStorage.getItem("dia22-win-dismissed") || ""; }catch(e){}
     if(dis === ev.id) return "";
+    if(typeof liveIntroHtml_ === "function" && liveIntroHtml_()) return ""; // v259: um aviso de cada vez
     const esc = homeEsc_, t = postTeams_(ev);
-    return `<div class="nc-card hv-win"><span class="nc-ico">💙</span><div class="nc-body"><b class="nc-t">Vitória! ${esc(t.home)} ${esc(String(st.resultado).trim())} ${esc(t.away)}</b><span class="nc-s">Partilha com um amigo adepto.</span></div>
+    return `<div class="nc-card hv-win"><span class="nc-ico">💙</span><div class="nc-body"><b class="nc-t">Vitória! ${esc(t.home)} ${esc(String(st.resultado).trim())} ${esc(t.away)}</b></div>
       <div class="nc-btns"><button type="button" class="hv-btn hv-btn-main" data-winshare="${esc(ev.id)}">Partilhar</button><button type="button" class="nc-no" data-windis="${esc(ev.id)}" aria-label="Fechar">✕</button></div></div>`;
   }catch(e){ return ""; }
 }

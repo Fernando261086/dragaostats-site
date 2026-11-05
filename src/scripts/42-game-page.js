@@ -42,6 +42,16 @@ function gameCountdown_(d){
   return "Começa dentro de " + Math.max(1, min) + " min";
 }
 
+// v259: ícones de linha (em vez de emojis) nos botões
+const GP_SVG_ = d => `<svg class="btn-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const GP_ICO_ = {
+  share: GP_SVG_('<path d="M7 17 17 7M9 7h8v8"/>'),
+  img: GP_SVG_('<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/>'),
+  stats: GP_SVG_('<path d="M5 20V10M12 20V4M19 20v-7"/>'),
+  ticket: GP_SVG_('<path d="M3.5 8.5a2 2 0 0 0 0 7V18h17v-2.5a2 2 0 0 1 0-7V6h-17z"/><path d="M14 6v12" stroke-dasharray="2 2.5"/>'),
+  cal: GP_SVG_('<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/>')
+};
+function gpName_(name, esc_){ return name === "FC Porto" ? '<span class="fcp-full">FC Porto</span><span class="fcp-abbr">FCP</span>' : esc_; }
 function crestSide_(ev, nome){
   try{ return (typeof crestOnly_ === "function") ? crestOnly_(ev, nome) : ""; }catch(e){ return ""; }
 }
@@ -171,20 +181,20 @@ function renderGamePage_(){
   const acoes = `<div class="gp-actions">
     ${lembrete}
     ${ev.watchUrl ? `<a class="hv-btn hv-btn-main gp-act" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">📺 Ver transmissão</a>` : ""}
-    ${(resultado && fim) ? "" : '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpShare">↗ Partilhar</button>'}
+    ${(resultado && fim) ? "" : '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpShare">${GP_ICO_.share} Partilhar</button>'}
     ${(!resultado && !liveData) ? '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpIcs">📅 Adicionar ao calendário</button>' : ""}
     ${((resultado && fim) || READONLY_MODE) ? "" : `<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ ${resultado ? "Imagem do resultado" : "Imagem para promover"}</button>
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 ${resultado ? "Reel do resultado" : "Reel para promover"}</button>`}
-    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpStats">📊 Estatísticas</button>
+    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpStats">${GP_ICO_.stats} Estatísticas</button>
     ${(!READONLY_MODE && resultado) ? `<button type="button" class="hv-btn hv-btn-ghost gp-act${ev.destaque ? " is-on" : ""}" id="gpDestaque">${ev.destaque ? "★ Destaque do email semanal" : "☆ Destaque do email semanal"}</button>` : ""}
-    ${(futuro && typeof newsTicketForGame_ === "function" && newsTicketForGame_(ev)) ? `<a class="hv-btn hv-btn-ghost gp-act" href="${esc(newsTicketForGame_(ev).u)}" target="_blank" rel="noopener">🎟️ Bilhetes</a>` : ""}
+    ${(futuro && typeof newsTicketForGame_ === "function" && newsTicketForGame_(ev)) ? `<a class="hv-btn hv-btn-ghost gp-act" href="${esc(newsTicketForGame_(ev).u)}" target="_blank" rel="noopener">${GP_ICO_.ticket} Bilhetes</a>` : ""}
     ${classif}
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpCal">${READONLY_MODE ? "Ver no calendário" : "Editar no calendário"}</button>
   </div>`;
 
-  const partilhaCard = (resultado && fim) ? `<div class="gp-card gp-share"><h3>Partilha este resultado</h3><p class="gp-share-s">Mostra aos amigos adeptos como correu.</p><div class="gp-actions">
+  const partilhaCard = (resultado && fim) ? `<div class="gp-card gp-share"><div class="gp-actions">
     <button type="button" class="hv-btn hv-btn-main gp-act" id="gpShare">↗ Partilhar</button>
-    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ Imagem do resultado</button>
+    <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">${GP_ICO_.img} Imagem</button>
     ${READONLY_MODE ? "" : '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 Reel do resultado</button>'}</div></div>` : "";
   const sig = JSON.stringify([ev.id, !!ev.destaque, pill, sub, big, setsHtml, ev.watchUrl, ev.watchName, detail, place, (typeof hasGameReminder_ === "function") ? hasGameReminder_(ev.id) : 0, resultado, (typeof notifyCtaShow_ === "function" && notifyCtaShow_()), extraBlock.length, JSON.stringify((typeof REACTIONS === "object" && REACTIONS && REACTIONS[activeCompId] && REACTIONS[activeCompId][ev.id]) || null), JSON.stringify((typeof DETALHES === "object" && DETALHES && DETALHES[ev.id]) || null), JSON.stringify((typeof ONZE === "object" && ONZE && ONZE[ev.id]) || null), (typeof crestId_ === "function" ? [crestId_(ev.sport, ev.athlete), crestId_(ev.sport, "FC Porto")].map(i=>i && crestCached_(i) ? 1 : 0).join("") : ""), JSON.stringify((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).find(r=>r.me)) || null), (typeof newsForGame_ === "function" ? newsForGame_(ev).map(n=>n.id).join(",") : ""), (typeof compPathHtml_ === "function" ? compPathHtml_(ev).length : 0)]);
   if(sig === gameSig_) return;
@@ -196,9 +206,9 @@ function renderGamePage_(){
     <div class="gp-hero${pillCls}">
       <div class="gp-pill-row"><span class="gp-pill">${liveData ? '<i class="hv-dot"></i>' : ""}${esc(pill)}</span></div>
       <div class="gp-teams${[t.home, t.away].some(n=>String(n).split(/\s+/).some(w=>w.length > 6)) ? " gp-teams-long" : ""}">
-        <div class="gp-team">${crestSide_(ev, t.home)}${(typeof fcpNameHtml_ === "function") ? fcpNameHtml_(t.home) : nomeA}</div>
+        <div class="gp-team">${crestSide_(ev, t.home)}${gpName_(t.home, nomeA)}</div>
         <div class="gp-score">${big}</div>
-        <div class="gp-team">${crestSide_(ev, t.away)}${(typeof fcpNameHtml_ === "function") ? fcpNameHtml_(t.away) : nomeB}</div>
+        <div class="gp-team">${crestSide_(ev, t.away)}${gpName_(t.away, nomeB)}</div>
       </div>
       ${sub ? `<div class="gp-sub">${sub}</div>` : ""}
     </div>

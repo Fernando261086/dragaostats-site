@@ -261,7 +261,7 @@ function renderReactionBar(eventId, opts){
   const EMS = (opts && opts.emojis) || REACTION_EMOJIS, LBL = (opts && opts.labels) || {};
   if(READONLY_MODE){
     return `<div class="reaction-bar" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:5px; padding-left:2px;">
-      ${EMS.map(em=>`<button class="reaction-btn" data-emoji="${em}" style="background:rgba(255,255,255,0.05); border:1px solid var(--line); border-radius:12px; padding:2px 9px; font-size:12px; cursor:pointer; color:var(--text-dim);">${em} ${LBL[em] ? LBL[em] + " " : ""}<span class="reaction-count">${reactionCount(data[em])}</span></button>`).join("")}
+      ${EMS.map(em=>`<button class="reaction-btn" data-emoji="${em}" style="background:rgba(255,255,255,0.05); border:1px solid var(--line); border-radius:12px; padding:2px 9px; font-size:12px; cursor:pointer; color:var(--text-dim);">${em} ${LBL[em] ? LBL[em] + " " : ""}<span class="reaction-count">${reactionCount(data[em]) || ""}</span></button>`).join("")}
     </div>`;
   }
   // modo edição: toca num emoji para veres os nomes de quem reagiu com ele
@@ -269,7 +269,7 @@ function renderReactionBar(eventId, opts){
     <div style="display:flex; gap:6px; flex-wrap:wrap;">
       ${EMS.map(em=>{
         const count = reactionCount(data[em]);
-        return `<button class="reaction-names-btn" data-emoji="${em}" style="background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:12px; padding:2px 9px; font-size:12px; color:var(--text-dim); cursor:${count?'pointer':'default'};">${em} ${LBL[em] ? LBL[em] + " " : ""}${count}</button>`;
+        return `<button class="reaction-names-btn" data-emoji="${em}" style="background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:12px; padding:2px 9px; font-size:12px; color:var(--text-dim); cursor:${count?'pointer':'default'};">${em} ${LBL[em] ? LBL[em] + " " : ""}${count || ""}</button>`;
       }).join("")}
     </div>
     <div class="reaction-names-detail" style="font-size:11px; color:var(--text-dim); display:none;"></div>

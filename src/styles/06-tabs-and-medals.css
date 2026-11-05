@@ -1227,3 +1227,45 @@ html.theme-light .sh-cap{background:#f3f6fb;color:#12213d}
 
 /* v254: destaque do email semanal */
 .gp-actions .hv-btn-ghost.is-on{ border-color:#e3b23c; color:#e3b23c; }
+
+/* ===================== v259: afinações de design ===================== */
+/* 1. cabeçalho mais baixo no telemóvel (o aviso "sem ligação oficial" passa para o rodapé) */
+@media (max-width:739px){
+  html.mode-matches .brand-disclaimer{ display:none !important; }
+  html.mode-matches header .brand-row{ padding:8px 16px; }
+  html.mode-matches .emblem{ width:40px; height:40px; }
+  html.mode-matches .brand-title{ font-size:28px; }
+  html.mode-matches .header-bell{ width:40px; height:40px; }
+}
+.foot-disc{ margin:10px 0 0; text-align:center; font-size:12px; color:var(--text-dim); }
+/* 2. aviso de vitória em linha fina */
+.nc-card.hv-win{ grid-template-columns:minmax(0,1fr) auto; padding:8px 12px; gap:8px; margin:8px 0; background:rgba(60,160,110,.08); border-color:rgba(60,160,110,.4); }
+.hv-win .nc-ico{ display:none; }
+.hv-win .nc-t{ font-size:14px; }
+.hv-win .nc-btns{ grid-column:auto; flex-wrap:nowrap; align-items:center; gap:6px; }
+.hv-win .hv-btn-main{ padding:6px 12px; font-size:13px; min-height:0; }
+/* 3. cartão de partilha só com os botões */
+.gp-card.gp-share{ padding:10px 12px; }
+.gp-share .gp-actions{ margin:0; display:flex; gap:8px; flex-wrap:nowrap; }
+.gp-share .gp-actions .hv-btn{ flex:1 1 0; min-width:0; padding:10px 8px; white-space:nowrap; }
+.btn-ico{ vertical-align:-3px; margin-right:4px; flex:none; }
+/* 4. FCP quando o espaço é pouco */
+.fcp-abbr{ display:none; }
+@media (max-width:430px){ .gp-hero .fcp-full{ display:none; } .gp-hero .fcp-abbr{ display:inline; } }
+/* 5. barra inferior mais legível */
+@media (max-width:739px){
+  .bn-item{ font-size:11.5px; }
+  .bn-item svg{ box-sizing:content-box; padding:3px 14px; border-radius:14px; }
+  .bn-item.active svg{ background:color-mix(in srgb, var(--gold) 20%, transparent); }
+}
+@media (max-width:359px){ .bn-item{ font-size:10.5px; } .bn-item svg{ padding:3px 10px; } }
+/* 6. grelha de modalidades sem cartão sozinho */
+.sg-grid > .hv-sg:last-child:nth-child(odd){ grid-column:1 / -1; }
+/* 8. página de modalidade: cabeçalho e herói mais baixos */
+.sp-head h2{ font-size:30px; }
+.sp-hero .hv-hero{ padding:14px 16px 14px; }
+/* 10. reações sem zeros */
+.reaction-btn .reaction-count:empty, .reaction-names-btn:empty{ display:none; }
+/* 11. contraste das legendas pequenas */
+:root:not(.theme-light){ --muted:#a9b8d2; --text-dim:#a3b2cc; }
+.sp-sub p, .gp-share-s, .foot-links .feedback-btn{ color:var(--text-dim); }

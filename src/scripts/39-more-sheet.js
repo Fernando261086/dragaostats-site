@@ -24,23 +24,23 @@
 
   // ---- folha "Mais"
   const rows = [
-    ["🔔", "Notificações", "notifyToggleBtn"],
-    ["📲", "Instalar app", "installAppBtn"],
-    ["🌓", "Tema claro / escuro", "themeToggleBtn"],
-    ["📰", "Notícias", "viewNewsBtn"],
-    ["🌍", "Esta semana", "viewTodayAllBtn"],
-    ["🌐", "Pesquisar em tudo", "globalSearchBtn"],
-    ["🏆", "Marcadores", "viewLeaderboardBtn"],
-    ["🗓️", "Calendário em grelha", "gridToggleBtn"],
-    ["📖", "A tua época", "myYearBtn"],
-    ["🎯", "Ranking de palpites", "predictionRankingBtn"],
-    ["🧠", "Quiz do Dragão", "quizBtn"],
-    ["☕", "Apoiar o projeto", "supportBtn"],
-    ["📣", "Convida um amigo adepto", "inviteFriendBtn"],
-    ["🐛", "Reportar um bug ou sugestão", "feedbackBtn"],
-    ["ℹ️", "Sobre o Dragão Stats", "aboutBtn"],
-    ["🔒", "Política de Privacidade", "privacyBtn"],
-    ["📄", "Termos de Uso", "termsBtn"]
+    [uiIco_("bell", 20), "Notificações", "notifyToggleBtn"],
+    [uiIco_("install", 20), "Instalar app", "installAppBtn"],
+    [uiIco_("theme", 20), "Tema claro / escuro", "themeToggleBtn"],
+    [uiIco_("news", 20), "Notícias", "viewNewsBtn"],
+    [uiIco_("week", 20), "Esta semana", "viewTodayAllBtn"],
+    [uiIco_("search", 20), "Pesquisar em tudo", "globalSearchBtn"],
+    [uiIco_("trophy", 20), "Marcadores", "viewLeaderboardBtn"],
+    [uiIco_("grid", 20), "Calendário em grelha", "gridToggleBtn"],
+    [uiIco_("book", 20), "A tua época", "myYearBtn"],
+    [uiIco_("target", 20), "Ranking de palpites", "predictionRankingBtn"],
+    [uiIco_("brain", 20), "Quiz do Dragão", "quizBtn"],
+    [uiIco_("cup", 20), "Apoiar o projeto", "supportBtn"],
+    [uiIco_("megaphone", 20), "Convida um amigo adepto", "inviteFriendBtn"],
+    [uiIco_("bug", 20), "Reportar um bug ou sugestão", "feedbackBtn"],
+    [uiIco_("info", 20), "Sobre o Dragão Stats", "aboutBtn"],
+    [uiIco_("lock", 20), "Política de Privacidade", "privacyBtn"],
+    [uiIco_("doc", 20), "Termos de Uso", "termsBtn"]
   ];
   const sheet = document.createElement("div");
   sheet.id = "moreSheet"; sheet.className = "more-sheet"; sheet.style.display = "none";

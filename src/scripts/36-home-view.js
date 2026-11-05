@@ -126,7 +126,7 @@ function renderHomeView_(force){
   const week = `<div class="hv-panel hv-week">
     <div class="hv-panel-head"><h3>${weekTitle}</h3>${link}</div>
     <div class="hv-pills" aria-label="Filtrar a lista por modalidade">${pills}</div>${favBtn}
-    ${rows || '<div class="hv-empty">Sem mais jogos marcados.</div>'}
+    ${rows || '<div class="hv-empty">Sem mais jogos marcados.<button type="button" class="hv-btn hv-btn-ghost hv-empty-btn" data-goview="viewCalendarBtn">Ver o calendário</button></div>'}
   </div>`;
 
   let resultsHtml = "";
@@ -168,8 +168,8 @@ function renderHomeView_(force){
   const o = (cls, h)=>h ? `<div class="hv-o ${cls}">${h}</div>` : "";
   const searchSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>';
   const head = `<div class="hv-head"><button type="button" class="hv-search" data-search="1" aria-label="Procurar jogo, adversário ou mês">${searchSvg}<span>Pesquisar</span></button>${(typeof liveIntroHtml_ === "function") ? liveIntroHtml_() : ""}${(typeof todayStripHtml_ === "function") ? todayStripHtml_(withD) : ""}</div>`;
-  const colA = o("o-hero", homeHeroHtml_(hero)) + o("o-win", (typeof winInviteHtml_ === "function") ? winInviteHtml_(done) : "") + o("o-cta", (typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("inicio") : "") + o("o-res", resultsHtml) + o("o-news", (typeof newsHomeHtml_ === "function") ? newsHomeHtml_() : "");
-  const colB = o("o-week", week) + o("o-mod", (typeof sportsGridHtml_ === "function") ? sportsGridHtml_(sportsAll, upcoming) : "");
+  const colA = o("o-hero", homeHeroHtml_(hero)) + o("o-win", (typeof winInviteHtml_ === "function") ? winInviteHtml_(done) : "") + o("o-cta", (typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("inicio") : "") + o("o-res", resultsHtml) + o("o-mod", (typeof sportsGridHtml_ === "function") ? sportsGridHtml_(sportsAll, upcoming) : "") + o("o-news", (typeof newsHomeHtml_ === "function") ? newsHomeHtml_() : "");
+  const colB = o("o-week", week);
   const html = `<div class="hv-top">${head}<div class="hv-cols"><div class="hv-colA">${colA}</div><div class="hv-colB">${colB}</div></div>${o("o-cls", clsHtml)}</div>`;
   host.innerHTML = html;
   if(typeof bindNotifyCta_ === "function") bindNotifyCta_(host, ()=>renderHomeView_(true));

@@ -1,14 +1,15 @@
+function themeBtnIcon_(isLight){ const b = document.getElementById("themeToggleBtn"); if(b){ b.innerHTML = uiIco_(isLight ? "sun" : "moon", 18) + '<span class="tt-lbl">Tema</span>'; b.setAttribute("aria-label", "Alternar tema claro/escuro"); } }
 function applySavedTheme(){
   let saved = null;
   try{ saved = localStorage.getItem("dia22-theme"); }catch(e){}
   const isLight = saved === "light";
   document.documentElement.classList.toggle("theme-light", isLight);
-  document.getElementById("themeToggleBtn").textContent = isLight ? "☀️" : "🌙";
+  themeBtnIcon_(isLight);
 }
 document.getElementById("themeToggleBtn").onclick = ()=>{
   const isLight = document.documentElement.classList.toggle("theme-light");
   try{ localStorage.setItem("dia22-theme", isLight ? "light" : "dark"); }catch(e){}
-  document.getElementById("themeToggleBtn").textContent = isLight ? "☀️" : "🌙";
+  themeBtnIcon_(isLight);
 };
 applySavedTheme();
 

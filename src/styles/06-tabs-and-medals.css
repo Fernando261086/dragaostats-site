@@ -1269,3 +1269,47 @@ html.theme-light .sh-cap{background:#f3f6fb;color:#12213d}
 /* 11. contraste das legendas pequenas */
 :root:not(.theme-light){ --muted:#a9b8d2; --text-dim:#a3b2cc; }
 .sp-sub p, .gp-share-s, .foot-links .feedback-btn{ color:var(--text-dim); }
+
+/* ===================== v260 ===================== */
+.ui-ico{ vertical-align:-3px; flex:none; }
+.foot-links .feedback-btn .ui-ico, .foot-chip .ui-ico{ margin-right:2px; }
+.ms-ico{ display:inline-flex; align-items:center; justify-content:center; }
+.hist-flat{ display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px; margin:0 0 12px; padding:8px 12px; border:1px solid var(--line); border-radius:12px; background:var(--panel); font-size:14px; }
+.hist-flat .hs-sm{ font-size:12.5px; color:var(--text-dim); }
+.hist-flat .hs-sep{ color:var(--text-dim); }
+/* 6. seletor do mês com o aspeto das pílulas */
+#histMonthSel{ appearance:none; -webkit-appearance:none; padding:9px 34px 9px 16px; border-radius:999px; font-weight:600; cursor:pointer;
+  background:var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2393a2bd' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center; }
+/* 3. seta do jogo no calendário */
+.match-row .mr-chev{ margin-left:2px; padding:4px 6px; font-size:22px; line-height:1; color:var(--text-dim); }
+.match-row .mr-foot{ margin-top:2px; }
+/* 1+4. calendário: filtros mais juntos e filas deslizantes com esbatido à direita */
+html.mode-matches .day-tabs{ display:flex; flex-wrap:nowrap; overflow-x:auto; gap:8px; margin:0 0 8px; scrollbar-width:none; }
+html.mode-matches .day-tabs::-webkit-scrollbar{ display:none; }
+html.mode-matches .day-tabs > *{ flex:none; }
+html.mode-matches .search-row{ margin:0 0 8px; }
+html.mode-matches .sport-cards{ margin:0 0 4px; padding-bottom:6px; }
+.sport-cards, html.mode-matches .day-tabs{ -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent); mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent); }
+@media (min-width:900px){ .sport-cards{ -webkit-mask-image:none; mask-image:none; } }
+/* 8. pesquisa na barra de separadores (computador) */
+.tabs-search{ display:none; }
+@media (min-width:1000px){
+  html.mode-matches .view-tabs{ display:flex; align-items:center; }
+  html.mode-matches .tabs-search{ display:inline-flex; align-items:center; gap:7px; margin-left:auto; padding:7px 14px; border-radius:999px; border:1px solid var(--line); background:var(--panel); color:var(--text-dim); font:inherit; font-size:13px; cursor:pointer; }
+  html.mode-matches .tabs-search:hover{ border-color:var(--gold-dim); color:var(--text); }
+  .hv-search{ display:none !important; }
+}
+/* 9. botão do tema */
+.theme-toggle .tt-lbl{ display:none; margin-left:6px; font-size:13px; }
+@media (min-width:601px){ .theme-toggle .tt-lbl{ display:inline; } }
+.theme-toggle{ display:inline-flex; align-items:center; justify-content:center; }
+/* 11. áreas de toque de pelo menos 44 px sem mudar o aspeto */
+.nc-no, .li-card .nc-no, .mr-more, .mr-stats, .hv-favbtn, .hv-cls-hint, .hv-empty-btn, .hv-panel-head a, .hv-panel-head button{ position:relative; }
+.nc-no::after, .mr-more::after, .mr-stats::after, .hv-favbtn::after, .hv-panel-head a::after, .hv-panel-head button::after{ content:""; position:absolute; inset:-8px -6px; }
+.hv-chip, .sc-pill, .sport-cards > *, .day-tabs > *, .hide-toggle{ min-height:40px; }
+/* 12. estado vazio com saída */
+.hv-empty-btn{ display:block; margin:12px auto 0; padding:9px 16px; }
+/* 13. transição suave entre vistas */
+@keyframes viewIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+.home-view{ animation:viewIn .18s ease-out; }
+@media (prefers-reduced-motion:reduce){ .home-view{ animation:none; } }

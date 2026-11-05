@@ -34,7 +34,7 @@ function renderDailyFact_(){
   const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
   const fact = DAILY_FACTS_[dayOfYear % DAILY_FACTS_.length];
   el.classList.add("daily-fact-box");
-  el.innerHTML = `<div class="dfb-title${dailyFactOpen ? ' open' : ''}"><span class="dfb-badge">💡 Sabias que</span><span class="fo-arrow">▾</span></div>` +
+  el.innerHTML = `<div class="dfb-title${dailyFactOpen ? ' open' : ''}"><span class="dfb-badge">${uiIco_("bulb", 14)} Sabias que</span><span class="fo-arrow">▾</span></div>` +
     `<div class="dfb-text${dailyFactOpen ? '' : ' collapsed'}">${fact}</div>`;
   el.style.display = "flex";
   el.querySelector('.dfb-title').onclick = ()=>{

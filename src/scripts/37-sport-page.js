@@ -99,7 +99,7 @@ function renderSportPage_(){
     };
     const nextRest = upcoming.slice(1);
     body = `${nextRest.length ? `<div class="hv-panel"><div class="hv-panel-head"><h3>Calendário</h3></div>${nextRest.map(row).join("")}</div>` : ""}
-      <div class="hv-panel"><div class="hv-panel-head"><h3>Resultados</h3></div>${done.length ? done.map(row).join("") : '<div class="hv-empty">Ainda sem resultados.</div>'}</div>`;
+      <div class="hv-panel"><div class="hv-panel-head"><h3>Resultados</h3></div>${done.length ? done.map(row).join("") : '<div class="hv-empty">Ainda sem resultados nesta modalidade.<button type="button" class="hv-btn hv-btn-ghost hv-empty-btn" data-goview="viewCalendarBtn">Ver o calendário</button></div>'}</div>`;
   }else if(sportPageTab_ === "noticias"){
     body = (typeof newsPanelHtml_ === "function") ? newsPanelHtml_(sport) : "";
   }else if(sportPageTab_ === "plantel"){
@@ -134,7 +134,7 @@ function renderSportPage_(){
       const tag = idx >= 0 ? "button type=\"button\" data-sqp=\"" + idx + "\"" : "div";
       const end = idx >= 0 ? "button" : "div";
       return `<${tag} class="hv-row${idx >= 0 ? " sq-click" : ""}" style="${idx >= 0 ? "" : "cursor:default; "}--sc:${color};"><span class="hv-tag">${i + 1}º</span><span class="hv-row-body"><span class="hv-row-match">${esc(r.n)}</span><span class="hv-sport-next">${r.games} jogo${r.games === 1 ? "" : "s"}${media}</span></span><span class="hv-row-time">${porMedia ? marcadoresFmtMedia_(r.media) : r.total}</span></${end}>`;
-    }).join("") : (porMedia ? `<div class="hv-empty">Ainda sem jogadores com pelo menos ${MARCADORES_MIN_JOGOS_MEDIA_} jogos registados.</div>` : '<div class="hv-empty">Ainda sem estatísticas registadas nesta modalidade.</div>')}${porMedia && ranked.length ? `<div class="hv-empty">Média por jogo · só jogadores com pelo menos ${MARCADORES_MIN_JOGOS_MEDIA_} jogos.</div>` : ""}</div>`;
+    }).join("") : (porMedia ? `<div class="hv-empty">Ainda sem jogadores com pelo menos ${MARCADORES_MIN_JOGOS_MEDIA_} jogos registados.</div>` : '<div class="hv-empty">Ainda sem estatísticas registadas nesta modalidade.<button type="button" class="hv-btn hv-btn-ghost hv-empty-btn" data-goview="viewHistoryBtn">Ver os resultados</button></div>')}${porMedia && ranked.length ? `<div class="hv-empty">Média por jogo · só jogadores com pelo menos ${MARCADORES_MIN_JOGOS_MEDIA_} jogos.</div>` : ""}</div>`;
   }
   // v196: subscrever o calendário desta modalidade (ficheiro .ics servido pelo _worker.js; atualiza sozinho no telemóvel)
   const icsSlug = { "Andebol":"andebol", "Basquetebol":"basquetebol", "Hóquei Patins":"hoquei-em-patins", "Voleibol":"voleibol", "Futebol Feminino":"futebol-feminino", "Futebol":"futebol", "Equipa A":"futebol", "Futsal":"futsal", "Equipa B":"equipa-b" }[sport];

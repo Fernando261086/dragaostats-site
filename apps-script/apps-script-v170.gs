@@ -6260,6 +6260,28 @@ function testarFichasAgora() {
 }
 
 // ===== utilitários manuais (v166: mantidos da limpeza) =====
+
+// v170: teste SEM enviar nada a ninguém. Põe um aviso falso (jogo que não existe) na fila, deixa passar o tempo de espera e corre o gatilho.
+// O aviso falso nunca chega a avisos reais (o jogo não existe, por isso o gatilho descarta-o sem enviar). Mostra no Registo se a marca
+// "há avisos à espera" ligou e desligou e se a fila ficou vazia.
+function testarFilaAvisosAgora() {
+  const props = PropertiesService.getScriptProperties();
+  const sheet = getSheet_();
+  const lock = LockService.getScriptLock(); lock.waitLock(25000);
+  try {
+    const antes = readPendingResultNotifs_(sheet);
+    const falso = { id: "__teste_fila__", compId: "__teste_fila__", readyAt: new Date(Date.now() - 1000).toISOString() };
+    writePendingResultNotifs_(sheet, antes.concat([falso]));
+    Logger.log("1) fila com o aviso falso · marca = " + props.getProperty("pendResFlag") + " (esperado 1)");
+    checkPendingResultNotifications_();
+    const depois = readPendingResultNotifs_(sheet).filter(function(x) { return x.id === "__teste_fila__"; });
+    Logger.log("2) depois do gatilho: avisos falsos na fila = " + depois.length + " (esperado 0) · nada foi enviado a ninguém");
+    checkPendingResultNotifications_();
+    Logger.log("3) marca = " + props.getProperty("pendResFlag") + " (0 se a fila ficou vazia; 1 se havia avisos reais à espera)");
+    Logger.log(depois.length === 0 ? "TESTE OK" : "TESTE FALHOU: o aviso falso ficou na fila");
+  } finally { try { lock.releaseLock(); } catch (e) {} }
+}
+
 function sendTestPush() {
   sendPushToAll_("🔔 Teste", "Se estás a ver isto, os avisos a sério estão a funcionar!");
 }

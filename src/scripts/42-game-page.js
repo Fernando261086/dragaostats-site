@@ -181,7 +181,7 @@ function renderGamePage_(){
   const acoes = `<div class="gp-actions">
     ${lembrete}
     ${ev.watchUrl ? `<a class="hv-btn hv-btn-main gp-act" href="${esc(ev.watchUrl)}" target="_blank" rel="noopener">📺 Ver transmissão</a>` : ""}
-    ${(resultado && fim) ? "" : '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpShare">${GP_ICO_.share} Partilhar</button>'}
+    ${(resultado && fim) ? "" : '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpShare">' + GP_ICO_.share + ' Partilhar</button>'}
     ${(!resultado && !liveData) ? '<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpIcs">📅 Adicionar ao calendário</button>' : ""}
     ${((resultado && fim) || READONLY_MODE) ? "" : `<button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpImg">🖼️ ${resultado ? "Imagem do resultado" : "Imagem para promover"}</button>
     <button type="button" class="hv-btn hv-btn-ghost gp-act" id="gpReel">🎬 ${resultado ? "Reel do resultado" : "Reel para promover"}</button>`}

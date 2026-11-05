@@ -949,6 +949,18 @@ function getStatTypesFor(sport){
 // Para modalidades onde só se costuma registar quem marcou, "Marcadores" é mais
 // intuitivo do que "Estatísticas do jogo" (que soa a algo mais completo/técnico)
 const MARCADORES_LABEL_SPORTS = new Set(["Equipa A", "Futebol", "Futebol Feminino", "Futsal", "Equipa B", "Hóquei Patins"]);
+// v258: no Basquetebol os Marcadores ordenam-se pela MÉDIA por jogo (só com um mínimo de jogos); nas outras modalidades pelo total
+const MARCADORES_MEDIA_SPORTS_ = new Set(["Basquetebol"]);
+const MARCADORES_MIN_JOGOS_MEDIA_ = 2;
+function marcadoresRank_(sport, totals){
+  // totals: { nome: { total, games } } → lista ordenada [{ n, total, games, media }]
+  const list = Object.keys(totals).map(n=>({ n, total: totals[n].total, games: totals[n].games, media: totals[n].games ? totals[n].total / totals[n].games : 0 }));
+  if(MARCADORES_MEDIA_SPORTS_.has(sport)){
+    return list.filter(r=>r.total > 0 && r.games >= MARCADORES_MIN_JOGOS_MEDIA_).sort((a, b)=>(b.media - a.media) || (b.total - a.total));
+  }
+  return list.filter(r=>r.total > 0).sort((a, b)=>b.total - a.total);
+}
+function marcadoresFmtMedia_(m){ return (Math.round(m * 10) / 10).toString().replace(".", ","); }
 // Voleibol não tem estatísticas de jogadoras, só a pontuação de cada set
 const SET_SCORE_SPORTS = new Set(["Voleibol"]);
 // v206: equipas femininas dizem "jogadoras" (Futebol Feminino e Voleibol); as outras "jogadores"

@@ -124,16 +124,17 @@ function renderSportPage_(){
       names.forEach(count);
       Object.keys(per).forEach(n=>{ count(n); totals[n].total += per[n]; });
     });
-    const ranked = Object.keys(totals).map(n=>({ n, ...totals[n] })).filter(r=>r.total > 0).sort((a, b)=>b.total - a.total).slice(0, 15);
+    const porMedia = MARCADORES_MEDIA_SPORTS_.has(sport);
+    const ranked = marcadoresRank_(sport, totals).slice(0, 15);
     const chips = stats.length > 1 ? `<div class="filters" style="display:flex; margin-bottom:10px;">${stats.map(s=>`<button class="chip${s === sportPageStat_ ? " active" : ""}" data-spstat="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : "";
     body = `<div class="hv-panel"><div class="hv-panel-head"><h3>Marcadores · ${esc(sportPageStat_)}</h3></div>${chips}${ranked.length ? ranked.map((r, i)=>{
       // v179: no Basquetebol mostra-se também a média por jogo; tocar abre a folha do jogador (se estiver no plantel)
-      const media = sport === "Basquetebol" && r.games ? ` · ${(Math.round(r.total / r.games * 10) / 10).toString().replace(".", ",")} por jogo` : "";
+      const media = porMedia ? ` · total ${r.total}` : "";
       const idx = (typeof squadIndexOf_ === "function") ? squadIndexOf_(sport, r.n) : -1;
       const tag = idx >= 0 ? "button type=\"button\" data-sqp=\"" + idx + "\"" : "div";
       const end = idx >= 0 ? "button" : "div";
-      return `<${tag} class="hv-row${idx >= 0 ? " sq-click" : ""}" style="${idx >= 0 ? "" : "cursor:default; "}--sc:${color};"><span class="hv-tag">${i + 1}º</span><span class="hv-row-body"><span class="hv-row-match">${esc(r.n)}</span><span class="hv-sport-next">${r.games} jogo${r.games === 1 ? "" : "s"}${media}</span></span><span class="hv-row-time">${r.total}</span></${end}>`;
-    }).join("") : '<div class="hv-empty">Ainda sem estatísticas registadas nesta modalidade.</div>'}</div>`;
+      return `<${tag} class="hv-row${idx >= 0 ? " sq-click" : ""}" style="${idx >= 0 ? "" : "cursor:default; "}--sc:${color};"><span class="hv-tag">${i + 1}º</span><span class="hv-row-body"><span class="hv-row-match">${esc(r.n)}</span><span class="hv-sport-next">${r.games} jogo${r.games === 1 ? "" : "s"}${media}</span></span><span class="hv-row-time">${porMedia ? marcadoresFmtMedia_(r.media) : r.total}</span></${end}>`;
+    }).join("") : (porMedia ? `<div class="hv-empty">Ainda sem jogadores com pelo menos ${MARCADORES_MIN_JOGOS_MEDIA_} jogos registados.</div>` : '<div class="hv-empty">Ainda sem estatísticas registadas nesta modalidade.</div>')}${porMedia && ranked.length ? `<div class="hv-empty">Média por jogo · só jogadores com pelo menos ${MARCADORES_MIN_JOGOS_MEDIA_} jogos.</div>` : ""}</div>`;
   }
   // v196: subscrever o calendário desta modalidade (ficheiro .ics servido pelo _worker.js; atualiza sozinho no telemóvel)
   const icsSlug = { "Andebol":"andebol", "Basquetebol":"basquetebol", "Hóquei Patins":"hoquei-em-patins", "Voleibol":"voleibol", "Futebol Feminino":"futebol-feminino", "Futebol":"futebol", "Equipa A":"futebol", "Futsal":"futsal", "Equipa B":"equipa-b" }[sport];

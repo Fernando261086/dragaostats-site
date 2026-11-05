@@ -262,15 +262,18 @@ function renderLeaderboardView(){
     });
   });
 
-  const ranked = Object.keys(totals).map(name=>({ name, ...totals[name] })).sort((a,b)=> b.total - a.total);
+  const porMedia_ = MARCADORES_MEDIA_SPORTS_.has(leaderboardSport);
+  const ranked = porMedia_
+    ? marcadoresRank_(leaderboardSport, totals).map(r=>({ name: r.n, total: r.total, games: r.games, media: r.media }))
+    : Object.keys(totals).map(name=>({ name, ...totals[name] })).sort((a,b)=> b.total - a.total);
 
   const listHtml = ranked.length === 0
-    ? `<div class="medal-empty">Sem registos de "${leaderboardStat}" em ${leaderboardSport} ainda.</div>`
+    ? `<div class="medal-empty">${porMedia_ ? "Ainda sem jogadores com pelo menos " + MARCADORES_MIN_JOGOS_MEDIA_ + " jogos registados em " + leaderboardSport + "." : "Sem registos de \"" + leaderboardStat + "\" em " + leaderboardSport + " ainda."}</div>`
     : `<div class="hv-panel">` + ranked.map((r,idx)=>`
       <div class="hv-row" style="cursor:default;">
         <span class="hv-tag">${idx+1}º</span>
-        <span class="hv-row-body"><span class="hv-row-match" data-player-profile="${r.name.replace(/"/g,'&quot;')}" style="cursor:pointer;">${r.name}</span><span class="hv-sport-next">${r.games} jogo${r.games===1?'':'s'}</span></span>
-        <span class="hv-row-time">${r.total}</span>
+        <span class="hv-row-body"><span class="hv-row-match" data-player-profile="${r.name.replace(/"/g,'&quot;')}" style="cursor:pointer;">${r.name}</span><span class="hv-sport-next">${r.games} jogo${r.games===1?'':'s'}${porMedia_ ? " · total " + r.total : ""}</span></span>
+        <span class="hv-row-time">${porMedia_ ? marcadoresFmtMedia_(r.media) : r.total}</span>
       </div>
     `).join("") + `</div>`;
 

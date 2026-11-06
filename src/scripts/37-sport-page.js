@@ -72,7 +72,7 @@ function renderSportPage_(){
       </div>
     </div>
   </div>`;
-  const tabs = `<div class="sp-tabs"><button type="button" class="${sportPageTab_ === "jogos" ? "active" : ""}" data-sptab="jogos">Jogos</button><button type="button" class="${sportPageTab_ === "classificacao" ? "active" : ""}" data-sptab="classificacao">Classificação</button><button type="button" class="${sportPageTab_ === "marcadores" ? "active" : ""}" data-sptab="marcadores">Marcadores</button>${(typeof newsHas_ === "function" && newsHas_(sport)) ? `<button type="button" class="${sportPageTab_ === "noticias" ? "active" : ""}" data-sptab="noticias">Notícias</button>` : ""}${(typeof squadHas_ === "function" && squadHas_(sport)) ? `<button type="button" class="${sportPageTab_ === "plantel" ? "active" : ""}" data-sptab="plantel">Plantel</button>` : ""}</div>`;
+  const tabs = `<div class="sp-tabs"><button type="button" class="${sportPageTab_ === "jogos" ? "active" : ""}" data-sptab="jogos">Jogos</button><button type="button" class="${sportPageTab_ === "classificacao" ? "active" : ""}" data-sptab="classificacao">Classificação</button><button type="button" class="${sportPageTab_ === "marcadores" ? "active" : ""}" data-sptab="marcadores">Marcadores</button>${(typeof newsHas_ === "function" && newsHas_(sport)) ? `<button type="button" class="${sportPageTab_ === "noticias" ? "active" : ""}" data-sptab="noticias">Notícias</button>` : ""}${(typeof squadHas_ === "function" && squadHas_(sport)) ? `<button type="button" class="${sportPageTab_ === "plantel" ? "active" : ""}" data-sptab="plantel">Plantel</button>` : ""}${(done.length && typeof h2hSportPanelHtml_ === "function") ? `<button type="button" class="${sportPageTab_ === "h2h" ? "active" : ""}" data-sptab="h2h">Confrontos</button>` : ""}</div>`;
   let heroHtml = (sportPageTab_ === "jogos" && typeof homeHeroHtml_ === "function") ? `<div class="sp-hero">${homeHeroHtml_(next)}</div>` : "";
   if(sportPageTab_ === "jogos" && !next && done.length){
     // v159: sem próximo jogo marcado → em vez de um destaque vazio, mostra o último resultado
@@ -102,6 +102,8 @@ function renderSportPage_(){
       <div class="hv-panel"><div class="hv-panel-head"><h3>Resultados</h3></div>${done.length ? done.map(row).join("") : '<div class="hv-empty">Ainda sem resultados nesta modalidade.<button type="button" class="hv-btn hv-btn-ghost hv-empty-btn" data-goview="viewCalendarBtn">Ver o calendário</button></div>'}</div>`;
   }else if(sportPageTab_ === "noticias"){
     body = (typeof newsPanelHtml_ === "function") ? newsPanelHtml_(sport) : "";
+  }else if(sportPageTab_ === "h2h"){
+    body = (typeof h2hSportPanelHtml_ === "function") ? h2hSportPanelHtml_(sport) : "";
   }else if(sportPageTab_ === "plantel"){
     body = (typeof squadPanelHtml_ === "function") ? squadPanelHtml_(sport) : "";
   }else if(sportPageTab_ === "classificacao"){
@@ -155,5 +157,6 @@ function renderSportPage_(){
   host.querySelectorAll("[data-go]").forEach(b=>{ b.onclick = ()=>goToEventCard(b.getAttribute("data-go")); });
   host.querySelectorAll("[data-sqp]").forEach(b=>{ b.onclick = ()=>openPlayerSheet_(sport, parseInt(b.getAttribute("data-sqp"), 10)); });
   if(sportPageTab_ === "classificacao" && typeof wireStandingsPanel_ === "function") wireStandingsPanel_(host, sport);
+  if(typeof h2hWire_ === "function") h2hWire_(host); // v264
   host.querySelectorAll("[data-remind]").forEach(b=>{ b.onclick = ()=>toggleGameReminder_(b.getAttribute("data-remind"), b); });
 }

@@ -53,7 +53,7 @@ function pregameHtml_(ev){
 
   // último confronto e balanço
   const diretos = feitos.filter(e=>pgSameTeam_(e.athlete, ev.athlete));
-  if(diretos.length){
+  if(diretos.length && typeof h2hHtml_ !== "function"){ // v264: com o cartão «Frente a frente» (66) este bloco já não é preciso
     const u = diretos[0], st = pgDone_(u), t = postTeams_(u);
     const bal = { win: 0, draw: 0, loss: 0 };
     diretos.forEach(e=>{ const tg = pgTag_(pgDone_(e)); if(tg) bal[tg]++; });
@@ -85,4 +85,5 @@ function pregameWire_(host){
     b.onclick = go;
     b.onkeydown = (e)=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); go(); } };
   });
+  if(typeof h2hWire_ === "function") h2hWire_(host); // v264
 }

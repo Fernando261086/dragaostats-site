@@ -144,6 +144,47 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     errs.length ? bad('fichas: erros JS → ' + errs.join(' | ')) : ok('fichas: sem erros JS');
     await page.close();
   }
+  { // v264: frente a frente (várias épocas), jogador do jogo (voto único) e «Fui ao jogo»
+    const iso = n => { const d = new Date(); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+    const m3 = { ok:true, hasAdminAuth:false, competitions:[{id:'c1',name:'Época 26/27',mode:'matches'},{id:'c0',name:'Época 25/26',mode:'matches'}], reactions:{},
+      plantel:{ Voleibol:{ t:Date.now(), j:[[1,'Ana Silva','P'],[2,'Bia Costa','C'],[3,'Carla Dias','L'],[4,'Dora Lima','O'],[5,'Eva Reis','P'],[6,'Filipa Sá','C']], s:[] } },
+      data:{ c0:{ events:[{id:'o1',day:'2025-11-02',t:'18:00',sport:'Voleibol',athlete:'Sporting CP',local:'casa',detail:'Campeonato'}], status:{ o1:{resultado:'3-0',resultTag:'win'} } },
+             c1:{ events:[{id:'n1',day:iso(-20),t:'18:00',sport:'Voleibol',athlete:'Sporting',local:'casa'},{id:'n2',day:iso(-1),t:'18:00',sport:'Voleibol',athlete:'Benfica',local:'casa'},{id:'n3',day:iso(5),t:'18:00',sport:'Voleibol',athlete:'Sporting',local:'casa'}],
+                  status:{ n1:{resultado:'3-1',resultTag:'win'}, n2:{resultado:'3-2',resultTag:'win'} } } } };
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    const errs = []; page.on('pageerror', e => errs.push(e.message));
+    await page.addInitScript(d => {
+      window.__posts = []; try { localStorage.setItem('dia22-viewer-name', 'Teste'); localStorage.removeItem('dia22-mvp'); localStorage.removeItem('dia22-fui'); } catch (e) {}
+      const f = window.fetch; window.fetch = (...a) => { if (String(a[0]).includes('script.google.com')) {
+        if (a[1] && a[1].method === 'POST') { window.__posts.push(a[1].body); return Promise.resolve(new Response('{"ok":true}', {status:200})); }
+        return Promise.resolve(new Response(JSON.stringify(d), {status:200, headers:{'content-type':'application/json'}})); } return f.apply(window, a); };
+    }, m3);
+    await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+    await page.goto(`http://localhost:${port}/index.html?view=readonly`, { waitUntil: 'load' });
+    await page.waitForTimeout(1500);
+    await page.evaluate(() => { const o = document.getElementById('introOverlay'); if (o) o.style.display = 'none'; openGamePage_('n3'); });
+    await page.waitForTimeout(400);
+    const h2h = await page.evaluate(() => { const e = document.querySelector('.h2h-card'); return e ? e.innerText.replace(/\s+/g, ' ') : ''; });
+    /2 jogos/.test(h2h) && /2\s*VIT/i.test(h2h) && /25\/26/.test(h2h) ? ok('frente a frente: soma jogos de duas épocas') : bad('frente a frente → ' + h2h);
+    await page.evaluate(() => openGamePage_('n2')); await page.waitForTimeout(400);
+    const nc = await page.evaluate(() => document.querySelectorAll('.mvp-pick').length);
+    nc === 6 ? ok('jogador do jogo: 6 candidatos (plantel)') : bad('jogador do jogo: candidatos = ' + nc);
+    await page.click('.mvp-pick >> nth=1'); await page.click('#mvpOk'); await page.waitForTimeout(300);
+    await page.click('#fuiBtn'); await page.waitForTimeout(300);
+    const posts = await page.evaluate(() => window.__posts.join(' '));
+    posts.includes('mvp:Bia Costa') && posts.includes('"emoji":"fui"') ? ok('voto e presença enviados ao Apps Script') : bad('POSTs → ' + posts);
+    await page.evaluate(() => { gameSig_ = ''; renderGamePage_(); }); await page.waitForTimeout(300);
+    const dep = await page.evaluate(() => ({ pick: document.querySelectorAll('.mvp-pick').length, fui: document.querySelectorAll('#fuiBtn').length }));
+    dep.pick === 0 && dep.fui === 0 ? ok('voto e presença só uma vez por aparelho') : bad('depois de votar → ' + JSON.stringify(dep));
+    await page.evaluate(() => openSportPage_('Voleibol')); await page.waitForTimeout(300);
+    await page.click('[data-sptab=h2h]'); await page.waitForTimeout(200);
+    const nOpp = await page.evaluate(() => document.querySelectorAll('.h2h-opp').length);
+    nOpp === 2 ? ok('separador Confrontos: 2 adversários') : bad('separador Confrontos: ' + nOpp);
+    const ovf = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    ovf > 1 ? bad('confrontos: deslize lateral de ' + ovf + 'px') : ok('confrontos: sem deslize lateral');
+    errs.length ? bad('v264: erros JS → ' + errs.join(' | ')) : ok('v264: sem erros JS');
+    await page.close();
+  }
   await browser.close(); srv.close();
   console.log(fails ? `\n${fails} problema(s) — NÃO publicar.` : '\nTudo ok.'); process.exit(fails ? 1 : 0);
 })();

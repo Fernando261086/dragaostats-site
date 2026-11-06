@@ -1399,3 +1399,6 @@ html.mode-matches .sport-cards{ margin:0 0 4px; padding-bottom:6px; }
 .af-acts{ display:flex; gap:8px; padding-bottom:8px; flex-wrap:wrap; }
 .af-btn{ width:auto !important; padding:8px 16px !important; font-size:13px !important; }
 html.theme-light .af-btn{ color:var(--text,#0b1b3f); border-color:rgba(11,27,63,.3); }
+
+/* v268: o botão 📝 «Gerar o texto do dia» saiu do editor (o painel «Partilhar» já dá imagem, reel e legenda); o elemento fica escondido porque o código ainda o referencia */
+#postTextBtn{ display:none !important; }

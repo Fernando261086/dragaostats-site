@@ -29,7 +29,20 @@ function getWeekShareGames_(weekStart, weekEnd){
   return rows;
 }
 
+// v265: intervalo escolhido no painel «Partilhar» (window.__weekCtx_ = {wm: "semana"|"falta"|"fds", wk}); sem painel = semana toda, como sempre
+function weekCtx_(){ const c = window.__weekCtx_ || {}; return { wm: c.wm || "semana", wk: c.wk || 0 }; }
+function weekTitles_(){
+  const c = weekCtx_();
+  if(c.wm === "falta") return { card: "JOGOS QUE FALTAM", rl1: "O QUE FALTA", rl2: "NO DRAGÃO", post: "Jogos que faltam esta semana", reel: n=>`Ainda ${n === 1 ? "falta 1 jogo" : "faltam " + n + " jogos"} do FC Porto esta semana` };
+  if(c.wm === "fds") return c.wk === 1
+    ? { card: "PRÓXIMO FIM DE SEMANA", rl1: "PRÓXIMO FIM", rl2: "DE SEMANA", post: "Jogos do próximo fim de semana", reel: n=>`No próximo fim de semana ${n === 1 ? "há 1 jogo" : "há " + n + " jogos"} do FC Porto` }
+    : { card: "FIM DE SEMANA", rl1: "ESTE FIM", rl2: "DE SEMANA", post: "Jogos deste fim de semana", reel: n=>`Este fim de semana ${n === 1 ? "há 1 jogo" : "há " + n + " jogos"} do FC Porto` };
+  return { card: "JOGOS DA SEMANA", rl1: "ESTA SEMANA", rl2: "NO DRAGÃO", post: "Jogos desta semana", reel: n=>`Esta semana ${n === 1 ? "há 1 jogo" : "há " + n + " jogos"} do FC Porto` };
+}
 function weekShareDateRangeLabel_(weekStart, weekEndDisplay){
+  if(weekStart.getFullYear() === weekEndDisplay.getFullYear() && weekStart.getMonth() === weekEndDisplay.getMonth() && weekStart.getDate() === weekEndDisplay.getDate()){
+    return `${weekStart.getDate()} de ${MONTH_NAMES[weekStart.getMonth()].toLowerCase()}`; // um só dia (ex.: «O que falta» ao domingo)
+  }
   const sameMonth = weekStart.getMonth() === weekEndDisplay.getMonth();
   const mStart = MONTH_NAMES[weekStart.getMonth()].toLowerCase();
   const mEnd = MONTH_NAMES[weekEndDisplay.getMonth()].toLowerCase();
@@ -43,7 +56,7 @@ function weekShareDateRangeLabel_(weekStart, weekEndDisplay){
 function buildWeekPostText_(games, weekStart, weekEndDisplay){
   if(!games.length) return "";
   const rangeLabel = weekShareDateRangeLabel_(weekStart, weekEndDisplay);
-  let text = `💙 Jogos desta semana (${rangeLabel}):\n\n`;
+  let text = `💙 ${weekTitles_().post} (${rangeLabel}):\n\n`;
   games.forEach(({ ev })=>{
     const emoji = postSportEmoji_(ev.sport);
     const t = postTeams_(ev);
@@ -105,7 +118,7 @@ async function generateWeekShareCard_(games, weekStart, weekEndDisplay){
 
   ctx.font = "400 92px 'Bebas Neue', sans-serif";
   ctx.fillStyle = "#e3b23c";
-  ctx.fillText("JOGOS DA SEMANA", 70, 240);
+  ctx.fillText(weekTitles_().card, 70, 240);
   ctx.font = "600 24px 'Archivo Narrow', sans-serif";
   ctx.fillStyle = "#cdd8e8";
   ctx.fillText(weekShareDateRangeLabel_(weekStart, weekEndDisplay), 72, 290);

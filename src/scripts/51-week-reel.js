@@ -13,7 +13,7 @@ function buildWeekReelText_(games, weekStart, weekEndDisplay){
   const linhaModalidades = order.map(s=>`${postSportEmoji_(s)} ${s}${count[s] > 1 ? " ×" + count[s] : ""}`).join(" · ");
   const tags = ["#FCPorto", "#DragaoStats"];
   order.forEach(s=>{ const h = postSportHashtag_(s); if(h && tags.indexOf(h) === -1) tags.push(h); });
-  return `💙 Esta semana ${n === 1 ? "há 1 jogo" : "há " + n + " jogos"} do FC Porto (${weekShareDateRangeLabel_(weekStart, weekEndDisplay)})!\n\n${linhaModalidades}\n\nHoras e onde ver em https://dragaostats.pt\n\n${tags.join(" ")}`;
+  return `💙 ${weekTitles_().reel(n)} (${weekShareDateRangeLabel_(weekStart, weekEndDisplay)})!\n\n${linhaModalidades}\n\nHoras e onde ver em https://dragaostats.pt\n\n${tags.join(" ")}`;
 }
 
 // ecrãs do vídeo: abertura + um por dia (no máximo 4 jogos por ecrã) + fecho
@@ -94,8 +94,8 @@ async function generateWeekReel_(games, weekStart, weekEndDisplay){
   function drawIntro(lt){
     const a = ease(lt / 0.8), b = ease((lt - 0.5) / 0.8), c = ease((lt - 1.1) / 0.8);
     ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
-    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = "#eef2f8"; bigText("ESTA SEMANA", W/2, 820 + (1 - a) * 40, 170, 900); ctx.restore();
-    ctx.save(); ctx.globalAlpha = b; ctx.fillStyle = "#e3b23c"; bigText("NO DRAGÃO", W/2, 1040 + (1 - b) * 40, 230, 900); ctx.restore();
+    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = "#eef2f8"; bigText(weekTitles_().rl1, W/2, 820 + (1 - a) * 40, 170, 900); ctx.restore();
+    ctx.save(); ctx.globalAlpha = b; ctx.fillStyle = "#e3b23c"; bigText(weekTitles_().rl2, W/2, 1040 + (1 - b) * 40, 230, 900); ctx.restore();
     ctx.save(); ctx.globalAlpha = c; ctx.fillStyle = "#cdd8e8"; ctx.font = `600 44px ${FONT}`; ctx.fillText(weekShareDateRangeLabel_(weekStart, weekEndDisplay), W/2, 1150);
     const sportsN = new Set(games.map(g=>g.ev.sport)).size;
     ctx.fillStyle = "#93a2bd"; ctx.font = `500 36px ${FONT}`; ctx.fillText(`${games.length} ${games.length === 1 ? "jogo" : "jogos"} · ${sportsN} ${sportsN === 1 ? "modalidade" : "modalidades"}`, W/2, 1215); ctx.restore();

@@ -185,6 +185,34 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     errs.length ? bad('v264: erros JS → ' + errs.join(' | ')) : ok('v264: sem erros JS');
     await page.close();
   }
+  { // v265: «Partilhar» da semana — Semana toda / O que falta / Fim de semana (relógio fixo numa sexta-feira)
+    const m4 = { ok:true, hasAdminAuth:false, competitions:[{id:'c1',name:'Época 26/27',mode:'matches'}], reactions:{}, data:{ c1:{ events:[
+      {id:'a',day:'2026-11-02',t:'18:00',sport:'Andebol',athlete:'Sporting',local:'casa'}, {id:'b',day:'2026-11-04',t:'20:00',sport:'Basquetebol',athlete:'Benfica',local:'fora'},
+      {id:'c',day:'2026-11-06',t:'21:00',sport:'Futsal',athlete:'Braga',local:'casa'}, {id:'d',day:'2026-11-07',t:'18:00',sport:'Voleibol',athlete:'Leões',local:'casa'},
+      {id:'e',day:'2026-11-08',t:'16:00',sport:'Andebol',athlete:'ABC',local:'fora'}, {id:'f',day:'2026-11-14',t:'17:00',sport:'Hóquei Patins',athlete:'Oliveirense',local:'casa'} ],
+      status:{ a:{resultado:'30-25',resultTag:'win'} } } } };
+    const page = await browser.newPage({ viewport: { width: 390, height: 900 } });
+    const errs = []; page.on('pageerror', e => errs.push(e.message));
+    await page.clock.install({ time: new Date('2026-11-06T12:00:00') });
+    await page.addInitScript(d => { try { localStorage.setItem('dia22-viewer-name', 'Teste'); } catch (e) {}
+      const f = window.fetch; window.fetch = (...a) => String(a[0]).includes('script.google.com')
+        ? Promise.resolve(new Response(JSON.stringify(d), {status:200, headers:{'content-type':'application/json'}})) : f.apply(window, a); }, m4);
+    await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+    await page.goto(`http://localhost:${port}/index.html?view=edit`, { waitUntil: 'load' });
+    await page.waitForTimeout(1500);
+    await page.evaluate(() => openShareHub_({ scope: 'semana', weekOffset: 0, fmt: 'img' })); await page.waitForTimeout(1500);
+    const inf = () => page.evaluate(() => { const w = shWeek_(SHARE_S_); return SHARE_S_.wm + ':' + w.games.map(g => g.ev.id).join(''); });
+    (await inf()) === 'falta:cde' ? ok('semana: à sexta, por omissão «O que falta» (hoje a domingo)') : bad('semana: omissão → ' + await inf());
+    const res = {};
+    for (const m of ['semana', 'fds', 'falta']) { await page.click(`[data-wm="${m}"]`); await page.waitForTimeout(1000); res[m] = [await inf(), (await page.evaluate(() => (document.getElementById('shCap') || {}).value || '')).split('\n')[0]]; }
+    res.semana[0] === 'semana:bcde' && res.fds[0] === 'fds:de' && res.falta[0] === 'falta:cde' ? ok('semana: jogos certos em cada intervalo') : bad('semana: intervalos → ' + JSON.stringify(res));
+    /Jogos desta semana/.test(res.semana[1]) && /Jogos deste fim de semana \(7 a 8 de novembro\)/.test(res.fds[1]) && /Jogos que faltam esta semana \(6 a 8 de novembro\)/.test(res.falta[1]) ? ok('semana: legendas adaptadas ao intervalo') : bad('semana: legendas → ' + JSON.stringify(res));
+    await page.click('[data-wk="1"]'); await page.waitForTimeout(800);
+    const chips = await page.evaluate(() => [...document.querySelectorAll('[data-wm]')].map(b => b.dataset.wm).join(','));
+    chips === 'semana,fds' ? ok('semana: «O que falta» só na semana atual') : bad('semana: chips da próxima → ' + chips);
+    errs.length ? bad('semana: erros JS → ' + errs.join(' | ')) : ok('semana: sem erros JS');
+    await page.close();
+  }
   await browser.close(); srv.close();
   console.log(fails ? `\n${fails} problema(s) — NÃO publicar.` : '\nTudo ok.'); process.exit(fails ? 1 : 0);
 })();

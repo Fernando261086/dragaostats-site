@@ -77,9 +77,17 @@ function shWeek_(S){
   const ws = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7) + S.wk * 7);
   const we = new Date(ws); we.setDate(ws.getDate() + 7);
   const wd = new Date(we); wd.setDate(we.getDate() - 1);
-  return { ws, we, wd, games: getWeekShareGames_(ws, we) };
+  // v265: intervalo — «semana» (toda), «falta» (de hoje até domingo, só a semana atual) ou «fds» (sábado e domingo, desta semana ou da próxima)
+  let wm = S.wm || "semana";
+  if(S.wk !== 0 && wm === "falta") wm = "semana";
+  if(S.wk < 0 && wm === "fds") wm = "semana";
+  S.wm = wm;
+  let ini = ws;
+  if(wm === "falta") ini = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  else if(wm === "fds"){ ini = new Date(ws); ini.setDate(ws.getDate() + 5); }
+  return { ws: ini, we, wd, wm, games: getWeekShareGames_(ini, we) };
 }
-function shSelKey_(S){ return [S.scope, S.day, S.evId, S.dayKind, S.wk, S.fmt].join("|"); }
+function shSelKey_(S){ return [S.scope, S.day, S.evId, S.dayKind, S.wk, S.wm, S.fmt].join("|"); }
 
 (function(){
   if(READONLY_MODE) return;
@@ -115,7 +123,8 @@ function openShareHub_(opts){
   const o = opts || {};
   let day = o.day || hoje;
   if(o.evId){ const ev0 = EVENTS.find(e=>e.id === o.evId); if(ev0 && ev0.day) day = ev0.day; }
-  SHARE_S_ = { scope: o.scope || "dia", day, evId: o.evId || "", dayKind: o.dayKind || "", wk: (o.weekOffset != null ? o.weekOffset : weekOffset), fmt: o.fmt || "img",
+  const wk0 = (o.weekOffset != null ? o.weekOffset : weekOffset);
+  SHARE_S_ = { scope: o.scope || "dia", day, evId: o.evId || "", dayKind: o.dayKind || "", wk: wk0, wm: o.weekMode || (wk0 === 0 && new Date().getDay() !== 1 ? "falta" : "semana"), fmt: o.fmt || "img",
     size, rede: "ig", srcBlob: null, srcName: "", out: null, url: "", busy: false, token: prevTok + 1, key: "", caption: "", capReddit: "" };
   window.__shareHubOpen_ = true;
   if(!exists){
@@ -165,9 +174,14 @@ function shPaint_(){
   let h = `<div class="sh-sec">1 · O que queres partilhar?</div><div class="sh-days">` +
     [["jogo", "⚽ Um jogo"], ["dia", "📅 Um dia"], ["semana", "🗓️ A semana"]].map(x=>chip(S.scope === x[0], `data-scope="${x[0]}"`, x[1])).join("") + `</div>`;
   if(S.scope === "semana"){
-    const lab = (S.wk === 0 ? "Esta semana" : S.wk === -1 ? "Semana passada" : S.wk === 1 ? "Próxima semana" : "Semana " + (S.wk > 0 ? "+" : "") + S.wk);
-    h += `<div class="sh-days" style="margin-top:8px">` + [[-1, "Passada"], [0, "Esta semana"], [1, "Próxima"]].map(x=>chip(S.wk === x[0], `data-wk="${x[0]}"`, x[1])).join("") + `</div>
-      <div class="sh-date">${shE_(lab)}: ${shE_(weekShareDateRangeLabel_(N.w.ws, N.w.wd))} · ${N.n ? N.n + (N.n === 1 ? " jogo por realizar" : " jogos por realizar") : "sem jogos por realizar"}</div>`;
+    const wm = N.w.wm;
+    const lab = wm === "falta" ? "O que falta" : wm === "fds" ? (S.wk === 1 ? "Próximo fim de semana" : "Fim de semana") : (S.wk === 0 ? "Esta semana" : S.wk === -1 ? "Semana passada" : S.wk === 1 ? "Próxima semana" : "Semana " + (S.wk > 0 ? "+" : "") + S.wk);
+    h += `<div class="sh-days" style="margin-top:8px">` + [[-1, "Passada"], [0, "Esta semana"], [1, "Próxima"]].map(x=>chip(S.wk === x[0], `data-wk="${x[0]}"`, x[1])).join("") + `</div>`;
+    if(S.wk >= 0){ // v265: que jogos entram
+      const opts = [["semana", "Semana toda"]]; if(S.wk === 0) opts.push(["falta", "O que falta"]); opts.push(["fds", "Fim de semana"]);
+      h += `<div class="sh-days" style="margin-top:8px">` + opts.map(x=>chip(wm === x[0], `data-wm="${x[0]}"`, x[1])).join("") + `</div>`;
+    }
+    h += `<div class="sh-date">${shE_(lab)}: ${shE_(weekShareDateRangeLabel_(N.w.ws, N.w.wd))} · ${N.n ? N.n + (N.n === 1 ? " jogo por realizar" : " jogos por realizar") : "sem jogos por realizar" + (wm !== "semana" ? " neste intervalo — experimenta «Semana toda»" : "")}</div>`;
   }else{
     const quick = [["Ontem", dayShareAddDays_(hoje, -1)], ["Hoje", hoje], ["Amanhã", dayShareAddDays_(hoje, 1)]];
     h += `<div class="sh-days" style="margin-top:8px">` + quick.map(q=>chip(q[1] === S.day, `data-d="${q[1]}"`, q[0])).join("") +
@@ -196,6 +210,7 @@ function shPaint_(){
   ctl.innerHTML = h;
   ctl.querySelectorAll("[data-scope]").forEach(b=>{ b.onclick = ()=>{ if(S.busy) return; S.scope = b.getAttribute("data-scope"); shChanged_(); }; });
   ctl.querySelectorAll("[data-wk]").forEach(b=>{ b.onclick = ()=>{ if(S.busy) return; S.wk = Number(b.getAttribute("data-wk")); shChanged_(); }; });
+  ctl.querySelectorAll("[data-wm]").forEach(b=>{ b.onclick = ()=>{ if(S.busy) return; S.wm = b.getAttribute("data-wm"); shChanged_(); }; }); // v265
   ctl.querySelectorAll("[data-d]").forEach(b=>{ b.onclick = ()=>{ if(S.busy) return; S.day = b.getAttribute("data-d"); S.evId = ""; shChanged_(); }; });
   const di = ctl.querySelector("#shDateIn"); if(di) di.onchange = e=>{ if(S.busy || !e.target.value) return; S.day = e.target.value; S.evId = ""; shChanged_(); };
   ctl.querySelectorAll("[data-ev]").forEach(b=>{ b.onclick = ()=>{ if(S.busy) return; S.evId = b.getAttribute("data-ev"); shChanged_(); }; });
@@ -251,6 +266,7 @@ async function shGenerate_(){
       }
     }else{
       const w = N.w;
+      window.__weekCtx_ = { wm: w.wm, wk: S.wk }; // v265: títulos e legendas do intervalo escolhido (limpa-se no fim)
       if(reel){
         const r = await shCapture_(()=>generateWeekReel_(w.games, w.ws, w.wd), 300000);
         blob = r.blob; name = r.name; caption = buildWeekReelText_(w.games, w.ws, w.wd);
@@ -267,6 +283,7 @@ async function shGenerate_(){
   }catch(e){
     if(my === S.token){ const o = shOut_(); if(o) o.innerHTML = `<div class="sh-status">${reel ? "Não foi possível criar o reel neste aparelho. Tenta noutro browser (Chrome) ou no computador." : "⚠️ Não foi possível gerar a imagem."}</div>`; }
   }
+  window.__weekCtx_ = null;
   if(my === S.token){ S.busy = false; shPaint_(); }
 }
 

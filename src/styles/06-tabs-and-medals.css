@@ -1389,3 +1389,13 @@ html.mode-matches .sport-cards{ margin:0 0 4px; padding-bottom:6px; }
 .fui-stats div{ border-radius:12px; padding:10px; background:var(--ink-2); text-align:center; }
 .fui-stats b{ display:block; font-size:24px; line-height:1; }
 .fui-stats span{ display:block; margin-top:4px; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--text-dim); }
+
+/* v266: «Sabias que» automático no Início */
+.hv-o.o-fact{ order:8; }
+.af-card{ border-left:3px solid var(--sc,#e3b23c); }
+.af-ico{ display:inline-flex; vertical-align:-3px; color:var(--sc,#e3b23c); margin-right:4px; }
+.af-next{ background:none; border:0; color:var(--gold,#e3b23c); font:inherit; font-size:13px; font-weight:700; cursor:pointer; padding:6px 4px; position:relative; }
+.af-text{ font-size:16px; line-height:1.45; padding:4px 2px 10px; overflow-wrap:anywhere; }
+.af-acts{ display:flex; gap:8px; padding-bottom:8px; flex-wrap:wrap; }
+.af-btn{ width:auto !important; padding:8px 16px !important; font-size:13px !important; }
+html.theme-light .af-btn{ color:var(--text,#0b1b3f); border-color:rgba(11,27,63,.3); }

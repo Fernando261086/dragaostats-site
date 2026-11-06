@@ -213,6 +213,44 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     errs.length ? bad('semana: erros JS → ' + errs.join(' | ')) : ok('semana: sem erros JS');
     await page.close();
   }
+  { // v266: «Sabias que» automáticos + atalhos da app (?ir=)
+    const iso = n => { const d = new Date(); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+    const ev = [], stt = {};
+    ['Sporting','Benfica','Braga','Boavista'].forEach((a, i) => { const id = 'h' + i; ev.push({ id, day: iso(-10 + i * 2), t: '18:00', sport: 'Andebol', athlete: a, local: 'casa' }); stt[id] = { resultado: '30-25', resultTag: 'win' }; });
+    ev.push({ id: 'hj', day: iso(0), t: '23:30', sport: 'Futsal', athlete: 'Leões', local: 'casa' });
+    const m5 = { ok:true, hasAdminAuth:false, competitions:[{id:'c1',name:'Época 26/27',mode:'matches'}], reactions:{}, data:{ c1:{ events: ev, status: stt } } };
+    const abre = async (q) => {
+      const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+      page.__errs = []; page.on('pageerror', e => page.__errs.push(e.message));
+      await page.addInitScript(d => { try { localStorage.setItem('dia22-viewer-name', 'Teste'); } catch (e) {}
+        const f = window.fetch; window.fetch = (...a) => String(a[0]).includes('script.google.com')
+          ? Promise.resolve(new Response(JSON.stringify(d), {status:200, headers:{'content-type':'application/json'}})) : f.apply(window, a); }, m5);
+      await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+      await page.goto(`http://localhost:${port}/index.html?view=readonly${q}`, { waitUntil: 'load' });
+      await page.waitForTimeout(1500);
+      return page;
+    };
+    let page = await abre('');
+    await page.evaluate(() => { const o = document.getElementById('introOverlay'); if (o) o.style.display = 'none'; });
+    const lista = await page.evaluate(() => autoFactsData_().map(f => f.t));
+    lista.some(t => /4 vitórias seguidas/.test(t)) ? ok('sabias que: série de vitórias calculada') : bad('sabias que: factos → ' + JSON.stringify(lista));
+    const card = await page.evaluate(() => { const e = document.querySelector('.af-card .af-text'); return e ? e.innerText : ''; });
+    card ? ok('sabias que: cartão no Início') : bad('sabias que: sem cartão no Início');
+    await page.click('[data-afnext]'); await page.waitForTimeout(300);
+    const card2 = await page.evaluate(() => { const e = document.querySelector('.af-card .af-text'); return e ? e.innerText : ''; });
+    card2 && card2 !== card ? ok('sabias que: «Outro» muda o facto') : bad('sabias que: «Outro» não mudou');
+    const png = await page.evaluate(async () => { const b = await autoFactImage_(autoFactNow_()); return b ? b.size : 0; });
+    png > 2000 ? ok('sabias que: imagem gerada') : bad('sabias que: imagem = ' + png);
+    const ovf = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    ovf > 1 ? bad('sabias que: deslize lateral de ' + ovf + 'px') : ok('sabias que: sem deslize lateral');
+    page.__errs.length ? bad('sabias que: erros JS → ' + page.__errs.join(' | ')) : ok('sabias que: sem erros JS');
+    await page.close();
+    const vistas = {};
+    for (const ir of ['semana', 'hoje', 'ao-vivo']) { page = await abre('&ir=' + ir); vistas[ir] = await page.evaluate(() => window.__curView_); if (page.__errs.length) bad('atalho ' + ir + ': erros JS → ' + page.__errs.join(' | ')); await page.close(); }
+    vistas.semana === 'hoje-todas' && vistas.hoje === 'jogo' && vistas['ao-vivo'] === 'inicio' ? ok('atalhos: semana, hoje (1 jogo → página do jogo) e ao vivo (sem jogo → Início)') : bad('atalhos → ' + JSON.stringify(vistas));
+    const man = JSON.parse(fs.readFileSync(path.join(DIST, 'manifest.json'), 'utf8'));
+    man.shortcuts.length <= 4 && man.shortcuts.every(x => /^\.\/\?/.test(x.url)) ? ok('manifest: ' + man.shortcuts.length + ' atalhos') : bad('manifest: atalhos inválidos');
+  }
   await browser.close(); srv.close();
   console.log(fails ? `\n${fails} problema(s) — NÃO publicar.` : '\nTudo ok.'); process.exit(fails ? 1 : 0);
 })();

@@ -169,12 +169,13 @@ function renderHomeView_(force){
   const searchSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>';
   const head = `<div class="hv-head"><button type="button" class="hv-search" data-search="1" aria-label="Procurar jogo, adversário ou mês">${searchSvg}<span>Pesquisar</span></button>${(typeof liveIntroHtml_ === "function") ? liveIntroHtml_() : ""}${(typeof todayStripHtml_ === "function") ? todayStripHtml_(withD) : ""}</div>`;
   const colA = o("o-hero", homeHeroHtml_(hero)) + o("o-win", (typeof winInviteHtml_ === "function") ? winInviteHtml_(done) : "") + o("o-cta", (typeof notifyCtaHtml_ === "function") ? notifyCtaHtml_("inicio") : "") + o("o-res", resultsHtml) + o("o-mod", (typeof sportsGridHtml_ === "function") ? sportsGridHtml_(sportsAll, upcoming) : "") + o("o-news", (typeof newsHomeHtml_ === "function") ? newsHomeHtml_() : "");
-  const colB = o("o-week", week);
+  const colB = o("o-week", week) + o("o-fact", (typeof autoFactHtml_ === "function") ? autoFactHtml_() : "");
   const html = `<div class="hv-top">${head}<div class="hv-cols"><div class="hv-colA">${colA}</div><div class="hv-colB">${colB}</div></div>${o("o-cls", clsHtml)}</div>`;
   host.innerHTML = html;
   if(typeof bindNotifyCta_ === "function") bindNotifyCta_(host, ()=>renderHomeView_(true));
   if(typeof bindLiveIntro_ === "function") bindLiveIntro_(host, ()=>renderHomeView_(true));
   if(typeof bindNews_ === "function") bindNews_(host, ()=>renderHomeView_(true));
+  if(typeof autoFactBind_ === "function") autoFactBind_(host);
   host.querySelectorAll("[data-search]").forEach(b=>{ b.onclick = ()=>{ if(typeof openSearchSheet_ === "function") openSearchSheet_(); }; });
   host.querySelectorAll("[data-go]").forEach(b=>{ b.onclick = ()=>goToEventCard(b.getAttribute("data-go")); });
   host.querySelectorAll("[data-remind]").forEach(b=>{ b.onclick = ()=>toggleGameReminder_(b.getAttribute("data-remind"), b); });

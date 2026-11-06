@@ -207,7 +207,11 @@ function showStaleDataBanner_(at){
   // com o mesmo destaque a piscar que o banner do "Próximo jogo" usa
   const linkedEvId = params.get("jogo");
   if(linkedEvId){ window.__linkedGame_ = true; goToEventCard(linkedEvId); }
-  else if(!linkedSport && typeof openHomeByDefault_ === "function") openHomeByDefault_();
+  else if(!linkedSport){
+    // v266: atalhos do ícone da app (?ir=hoje|ao-vivo|semana); se não for tratado, o Início por defeito
+    const irAtalho = params.get("ir");
+    if(!(irAtalho && typeof appShortcut_ === "function" && appShortcut_(irAtalho)) && typeof openHomeByDefault_ === "function") openHomeByDefault_();
+  }
   // atualiza periodicamente para ver provas, marcações e competições feitas por outra pessoa,
   // sem nunca apagar uma marcação local mais recente
   // v243: no link «só ver», longe de qualquer jogo (e sem nada ao vivo) basta ir buscar os dados de ~25 em 25 s em vez de 6 em 6;

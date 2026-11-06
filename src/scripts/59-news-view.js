@@ -9,7 +9,7 @@ function renderNewsView_(){
   if(!sports.length){ host.innerHTML = '<div class="hv-top"><div class="cls-head"><h2>Notícias</h2></div><div class="hv-panel"><div class="hv-empty">Ainda sem notícias.</div></div></div>'; return; }
   if(newsSport_ && !sports.includes(newsSport_)) newsSport_ = "";
   const pills = ['<button type="button" class="hv-pillbtn' + (newsSport_ ? "" : " active") + '" data-nwsport="">Todas</button>']
-    .concat(sports.map(sp=>`<button type="button" class="hv-pillbtn${sp === newsSport_ ? " active" : ""}" data-nwsport="${esc(sp)}">${esc(sp)}</button>`)).join("");
+    .concat(sports.map(sp=>`<button type="button" class="hv-pillbtn${sp === newsSport_ ? " active" : ""}" data-nwsport="${esc(sp)}">${esc(sportShow_(sp))}</button>`)).join("");
   let items = [];
   const seen = new Set();
   sports.filter(sp=>!newsSport_ || sp === newsSport_).forEach(sp=>newsRecent_(sp).forEach(n=>{ if(seen.has(n.id)) return; seen.add(n.id); items.push({ n, sp }); }));

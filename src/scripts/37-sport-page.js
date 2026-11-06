@@ -65,7 +65,7 @@ function renderSportPage_(){
   const next = upcoming[0];
   const head = `<div class="sp-head" style="--sc:${color};">
     <button type="button" class="sp-back" id="spBack" aria-label="Voltar">‹</button>
-    <div class="sp-titles"><h2>${esc(sport)}</h2>
+    <div class="sp-titles"><h2>${esc(sportShow_(sport))}</h2>
       <div class="sp-stats">
         <span><b>${evs.length}</b> jogos</span><span><b>${done.length}</b> com resultado</span>
         ${done.length ? `<span class="sp-w"><b>${w}</b> V</span><span><b>${dr}</b> E</span><span class="sp-l"><b>${l}</b> D</span>` : ""}
@@ -79,7 +79,7 @@ function renderSportPage_(){
     const u = done[0], tt = postTeams_(u.ev), tag = u.st.resultTag === "win" ? "Vitória" : u.st.resultTag === "loss" ? "Derrota" : u.st.resultTag === "draw" ? "Empate" : "Terminado";
     const det = [u.ev.detail, u.ev.phase].filter(Boolean).join(" · ");
     heroHtml = `<div class="sp-hero"><div class="hv-hero"><div class="hv-hero-top"><span class="hv-kicker">Último resultado</span><span class="hv-pill">${esc(tag)}</span></div>
-      <div class="hv-hero-sport">${esc(sport)}${det ? " · " + esc(det) : ""}</div>
+      <div class="hv-hero-sport">${esc(sportShow_(sport))}${det ? " · " + esc(det) : ""}</div>
       <div class="hv-hero-match hm-long"><span class="hm-a">${esc(tt.home)}</span><span class="hm-b"><b>${esc(String(u.st.resultado).trim())}</b> ${esc(tt.away)}</span></div>
       <div class="hv-hero-meta"><span>${esc(homeLongDate_(u.d))}</span><span>Sem próximo jogo marcado</span></div>
       <div class="hv-hero-actions"><button type="button" class="hv-btn hv-btn-main" data-go="${esc(u.ev.id)}">Ver jogo</button></div></div></div>`;
@@ -93,7 +93,7 @@ function renderSportPage_(){
       const detail = [ev.detail, ev.phase].filter(Boolean).join(" · ");
       return `<button type="button" class="hv-row" data-go="${esc(ev.id)}" style="--sc:${color};">
         <span class="hv-date"><b>${x.d.getDate()}</b><i>${WD[x.d.getDay()]}</i></span>
-        <span class="hv-row-body"><span class="hv-row-sport">${esc(detail || sport)}</span><span class="hv-row-match">${res ? `${crestName_(ev, t.home)} <b>${esc(String(x.st.resultado).trim())}</b> ${crestNameEnd_(ev, t.away)}` : matchTitleHtml_(ev) + matchNeutralTag_(ev)}</span></span>
+        <span class="hv-row-body"><span class="hv-row-sport">${esc(detail || sportShow_(sport))}</span><span class="hv-row-match">${res ? `${crestName_(ev, t.home)} <b>${esc(String(x.st.resultado).trim())}</b> ${crestNameEnd_(ev, t.away)}` : matchTitleHtml_(ev) + matchNeutralTag_(ev)}</span></span>
         ${res ? (tag[0] ? `<span class="hv-tag hv-tag-${tag[1]}">${tag[0]}</span>` : "") : `<span class="hv-row-time">${esc(ev.t || "")}</span>`}
       </button>`;
     };
@@ -138,7 +138,7 @@ function renderSportPage_(){
   }
   // v196: subscrever o calendário desta modalidade (ficheiro .ics servido pelo _worker.js; atualiza sozinho no telemóvel)
   const icsSlug = { "Andebol":"andebol", "Basquetebol":"basquetebol", "Hóquei Patins":"hoquei-em-patins", "Voleibol":"voleibol", "Futebol Feminino":"futebol-feminino", "Futebol":"futebol", "Equipa A":"futebol", "Futsal":"futsal", "Equipa B":"equipa-b" }[sport];
-  const subBtn = icsSlug ? `<div class="sp-sub"><button type="button" class="hv-btn hv-btn-ghost" id="spSub">${(typeof GP_ICO_ !== "undefined") ? GP_ICO_.cal : ""} Subscrever calendário de ${esc(sport)}</button><p>Os jogos aparecem sozinhos no calendário do telemóvel e mudam se a hora mudar.</p></div>` : "";
+  const subBtn = icsSlug ? `<div class="sp-sub"><button type="button" class="hv-btn hv-btn-ghost" id="spSub">${(typeof GP_ICO_ !== "undefined") ? GP_ICO_.cal : ""} Subscrever calendário de ${esc(sportShow_(sport))}</button><p>Os jogos aparecem sozinhos no calendário do telemóvel e mudam se a hora mudar.</p></div>` : "";
   host.innerHTML = head + tabs + heroHtml + body + subBtn;
   const bSub = host.querySelector("#spSub");
   if(bSub) bSub.onclick = async ()=>{

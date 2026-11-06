@@ -82,7 +82,7 @@ function renderFormOverview(){
     `<div class="form-overview-chips${formOverviewOpen ? '' : ' collapsed'}">` +
     sports.map(sport=>`
       <div class="form-overview-row" data-form-sport="${sport.replace(/"/g,'&quot;')}">
-        <span class="fo-sport">${sport}</span>
+        <span class="fo-sport">${sportShow_(sport)}</span>
         ${formDotsHtml_(getRecentForm_(sport))}${streakCompactHtml_(sport)}
       </div>
     `).join('') + '</div>';

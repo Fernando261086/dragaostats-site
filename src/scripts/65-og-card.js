@@ -21,7 +21,7 @@ async function ogCardJpeg_(ev){
   // topo
   x.textBaseline = "alphabetic"; x.textAlign = "left";
   x.fillStyle = cor; x.font = "700 30px " + B;
-  x.fillText(String(ev.sport || "").toUpperCase(), 56, 74);
+  x.fillText(sportShow_(String(ev.sport || "")).toUpperCase(), 56, 74);
   const det = [ev.detail, ev.phase].filter(Boolean).join(" · ");
   if(det){ x.fillStyle = "rgba(255,255,255,.75)"; x.font = "400 26px " + B; x.fillText(det, 56, 112); }
   x.textAlign = "right"; x.fillStyle = "rgba(255,255,255,.7)"; x.font = "700 26px " + B; x.fillText("dragaostats.pt", W - 56, 74);

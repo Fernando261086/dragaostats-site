@@ -44,7 +44,7 @@ function renderCrossCompetitionList(container, filterFn, emptyMessage){
       const safe = x => String(x == null ? "" : x).replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
       return `<button type="button" class="hv-row" data-comp="${r.compId}" data-day="${r.ev.day}" data-ev-id="${r.ev.id}" style="--sc:${color};">
         <span class="hv-date"><b>${dd.getDate()}</b><i>${wd}</i></span>
-        <span class="hv-row-body"><span class="hv-row-sport">${safe(r.ev.sport)}${detail ? " · " + safe(detail) : ""}</span><span class="hv-row-match">${result ? `${crestName_(r.ev, tt.home)} <b>${safe(result)}</b> ${crestNameEnd_(r.ev, tt.away)}` : matchTitleHtml_(r.ev) + matchNeutralTag_(r.ev)}</span></span>
+        <span class="hv-row-body"><span class="hv-row-sport">${safe(sportShow_(r.ev.sport))}${detail ? " · " + safe(detail) : ""}</span><span class="hv-row-match">${result ? `${crestName_(r.ev, tt.home)} <b>${safe(result)}</b> ${crestNameEnd_(r.ev, tt.away)}` : matchTitleHtml_(r.ev) + matchNeutralTag_(r.ev)}</span></span>
         ${result ? (tagC ? `<span class="hv-tag hv-tag-${tagC[1]}">${tagC[0]}</span>` : "") : `<span class="hv-row-time">${safe(r.ev.t || "")}</span>`}
       </button>`;
     }
@@ -290,7 +290,7 @@ function renderQuestionPanel(){
 
   panel.innerHTML = `
     <div class="medal-section-title">🎯 Pergunta de prognóstico</div>
-    <div style="font-size:12px; color:var(--text-dim); margin-bottom:10px;">${ev.sport} · vs ${ev.athlete || '?'}</div>
+    <div style="font-size:12px; color:var(--text-dim); margin-bottom:10px;">${sportShow_(ev.sport)} · vs ${ev.athlete || '?'}</div>
     ${current ? `<div style="background:rgba(227,178,60,0.1); border:1px solid var(--gold-dim); border-radius:8px; padding:8px 10px; margin-bottom:12px; font-size:13px; color:var(--text);">Pergunta atual: <b>${current.text}</b></div>` : ''}
     <div style="font-size:12px; color:var(--text-dim); margin-bottom:6px;">Escolhe uma pergunta-modelo:</div>
     ${templatesHtml || '<div class="medal-empty">Ainda sem perguntas-modelo para esta modalidade.</div>'}
@@ -300,7 +300,7 @@ function renderQuestionPanel(){
       ${current ? '<button class="del-btn" id="clearQuestionBtn">Remover pergunta</button>' : ''}
       <button class="add-cancel" id="closeQuestionBtn">Fechar</button>
     </div>
-    <div class="medal-section-title" style="margin-top:20px; font-size:14px;">+ Nova pergunta-modelo para ${ev.sport}</div>
+    <div class="medal-section-title" style="margin-top:20px; font-size:14px;">+ Nova pergunta-modelo para ${sportShow_(ev.sport)}</div>
     <div style="display:flex; gap:8px; margin-bottom:8px;">
       <select id="newQTypeSelect" class="gate-input" style="width:auto;">
         <option value="simnao">Sim/Não</option>

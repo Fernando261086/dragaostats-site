@@ -28,7 +28,7 @@ function todayStripHtml_(withD){
       const j = (typeof cevLiveFor_ === "function") ? cevLiveFor_(ev) : null;
       const live = !res && j && j.estado === "vivo";
       const right = res ? esc(res) : (live ? '<i class="hv-dot"></i>AO VIVO' : esc(ev.t || ""));
-      return `<button type="button" class="hv-tday${live ? " is-live" : ""}" data-tday="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};"><span class="td-sp">${esc(ev.sport)}</span><span class="td-t">${right}</span></button>`;
+      return `<button type="button" class="hv-tday${live ? " is-live" : ""}" data-tday="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};"><span class="td-sp">${esc(sportShow_(ev.sport))}</span><span class="td-t">${right}</span></button>`;
     }).join("");
     return `<div class="hv-today"><span class="hv-today-h"><i class="hv-today-dot"></i>Jogos de hoje<em>${items.length} ${items.length === 1 ? "jogo" : "jogos"}</em></span><div class="hv-today-row">${chips}</div></div>`;
   }catch(e){ return ""; }
@@ -149,7 +149,7 @@ function shareTextFan_(ev){
   const link = gameLink_(ev);
   const tag = st.resultTag === "win" ? " (Vitória)" : st.resultTag === "loss" ? " (Derrota)" : st.resultTag === "draw" ? " (Empate)" : (resultWin_(ev, st) ? " (Vitória)" : "");
   const emoji = (typeof postSportEmoji_ === "function") ? postSportEmoji_(ev.sport) : "💙";
-  const titulo = score ? `${emoji} ${ev.sport} — ${t.home} ${score} ${t.away}${tag}` : `${emoji} ${ev.sport} — ${t.home} vs ${t.away}${ev.t ? " (" + ev.t + ")" : ""}`;
+  const titulo = score ? `${emoji} ${sportShow_(ev.sport)} — ${t.home} ${score} ${t.away}${tag}` : `${emoji} ${sportShow_(ev.sport)} — ${t.home} vs ${t.away}${ev.t ? " (" + ev.t + ")" : ""}`;
   // v195/v251: marcadores no texto de partilha (só jogo terminado; basquetebol com os pontos do Sofascore)
   let marc = "";
   try{ const sc = score ? shareScorers_(ev) : null; if(sc && sc.items.length) marc = "\n" + sc.label + ": " + sc.items.join(", "); }catch(e){}
@@ -198,7 +198,7 @@ function sportsGridHtml_(sportsAll, upcoming){
       const s = (typeof STANDINGS === "object" && STANDINGS) ? STANDINGS[sp] : null;
       const me = s && (s.rows || []).find(r=>r.me);
       const pos = me ? `<i class="sg-pos">${esc(me.p)}.º</i>` : "";
-      return `<button type="button" class="hv-sg" data-sportpage="${esc(sp)}" style="--sc:${homeColor_(sp)};"><span class="sg-n">${esc(sp)}${pos}</span><span class="sg-s">${esc(when)}</span></button>`;
+      return `<button type="button" class="hv-sg" data-sportpage="${esc(sp)}" style="--sc:${homeColor_(sp)};"><span class="sg-n">${esc(sportShow_(sp))}${pos}</span><span class="sg-s">${esc(when)}</span></button>`;
     }).join("");
     return `<div class="hv-panel hv-modgrid"><div class="hv-panel-head"><h3>Modalidades</h3><span class="hv-cls-hint">Abrir a página</span></div><div class="sg-grid">${tiles}</div></div>`;
   }catch(e){ return ""; }

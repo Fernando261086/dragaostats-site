@@ -203,7 +203,7 @@ function renderGamePage_(){
 
   const nomeA = esc(t.home), nomeB = esc(t.away);
   host.innerHTML = `<div class="gp" style="--sc:${color};">
-    <div class="gp-top"><button type="button" class="gp-back" id="gpBack" aria-label="Voltar">‹ Voltar</button><span class="gp-sport">${esc(ev.sport)}</span></div>
+    <div class="gp-top"><button type="button" class="gp-back" id="gpBack" aria-label="Voltar">‹ Voltar</button><span class="gp-sport">${esc(sportShow_(ev.sport))}</span></div>
     <div class="gp-hero${pillCls}">
       <div class="gp-pill-row"><span class="gp-pill">${liveData ? '<i class="hv-dot"></i>' : ""}${esc(pill)}</span></div>
       <div class="gp-teams${[t.home, t.away].some(n=>String(n).split(/\s+/).some(w=>w.length > 6)) ? " gp-teams-long" : ""}">

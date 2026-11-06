@@ -164,7 +164,7 @@ function renderRecordsShelf_(){
       const r = bySport[sport];
       const local = r.ev.local || "casa"; // mesma regra de 'parseOursTheirs_', para não desalinhar o placar mostrado
       const placar = local === "casa" ? `${r.ours}-${r.theirs}` : `${r.theirs}-${r.ours}`;
-      return `<div class="form-overview-row" style="cursor:default;"><span class="fo-sport">🏆 Maior vitória <span style="color:var(--text-dim); font-weight:500;">(${sport})</span>: ${placar} vs ${r.ev.athlete || 'Adversário'}</span></div>`;
+      return `<div class="form-overview-row" style="cursor:default;"><span class="fo-sport">🏆 Maior vitória <span style="color:var(--text-dim); font-weight:500;">(${sportShow_(sport)})</span>: ${placar} vs ${r.ev.athlete || 'Adversário'}</span></div>`;
     }).join('') + '</div>';
   el.style.display = "flex";
   el.querySelector('.form-overview-title').onclick = ()=>{

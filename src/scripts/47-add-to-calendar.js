@@ -9,7 +9,7 @@ function gameIcsText_(ev){
   const dur = ev.sport === "Futebol Feminino" || ev.sport === "Equipa B" ? 120 : (ev.sport === "Hóquei Patins" ? 90 : 120);
   const fim = new Date(ini.getTime() + dur * 60000);
   const t = (typeof postTeams_ === "function") ? postTeams_(ev) : { home: "FC Porto", away: ev.athlete };
-  const titulo = ev.sport + ": " + t.home + " vs " + t.away;
+  const titulo = sportShow_(ev.sport) + ": " + t.home + " vs " + t.away;
   const link = (typeof gameLink_ === "function") ? gameLink_(ev) : "https://dragaostats.pt";
   const desc = [ev.detail, ev.phase, ev.watchUrl ? "Ver: " + ev.watchUrl : "", link].filter(Boolean).join("\n");
   return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Dragão Stats//PT", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",

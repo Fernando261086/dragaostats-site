@@ -47,7 +47,7 @@ function buildDayResultsText_(games){
     const st = getEv(ev.id) || {};
     const t = postTeams_(ev);
     const tag = dayResultTagText_(ev);
-    text += `${postSportEmoji_(ev.sport)} ${ev.sport} — ${t.home} ${String(st.resultado).trim()} ${t.away}${tag ? ' (' + tag + ')' : ''}\n`;
+    text += `${postSportEmoji_(ev.sport)} ${sportShow_(ev.sport)} — ${t.home} ${String(st.resultado).trim()} ${t.away}${tag ? ' (' + tag + ')' : ''}\n`;
   });
   const tags = ["#FCPorto", "#DragaoStats"];
   games.forEach(ev=>{ const h = postSportHashtag_(ev.sport); if(h && tags.indexOf(h)===-1) tags.push(h); });
@@ -69,7 +69,7 @@ function buildDayPostText_(games, live){
     const emoji = postSportEmoji_(ev.sport);
     const t = postTeams_(ev);
     const dp = [ev.detail, ev.phase].filter(Boolean).join(", ");
-    text += `${emoji} ${ev.sport} — ${t.home} vs ${t.away}${ev.t ? ' — ' + ev.t : ''}${live && hasLiveCoverage_(ev) ? ' 🔴 AO VIVO' : ''}\n`;
+    text += `${emoji} ${sportShow_(ev.sport)} — ${t.home} vs ${t.away}${ev.t ? ' — ' + ev.t : ''}${live && hasLiveCoverage_(ev) ? ' 🔴 AO VIVO' : ''}\n`;
     if(dp) text += dp + "\n";
   });
   const tags = ["#FCPorto", "#DragaoStats"];

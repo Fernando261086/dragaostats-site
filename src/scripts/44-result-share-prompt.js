@@ -15,7 +15,7 @@ function resultShareText_(ev, st){
   }
   const dp = [ev.detail, ev.phase].filter(Boolean).join(", ");
   const tags = ["#FCPorto", "#DragaoStats"], h = postSportHashtag_(ev.sport); if(h) tags.push(h);
-  return `${postSportEmoji_(ev.sport)} ${ev.sport} — ${t.home} ${score} ${t.away}${tag ? " (" + tag + ")" : ""}\n${dp ? dp + "\n" : ""}\nTodos os resultados e classificações em https://dragaostats.pt\n\n${tags.join(" ")}`;
+  return `${postSportEmoji_(ev.sport)} ${sportShow_(ev.sport)} — ${t.home} ${score} ${t.away}${tag ? " (" + tag + ")" : ""}\n${dp ? dp + "\n" : ""}\nTodos os resultados e classificações em https://dragaostats.pt\n\n${tags.join(" ")}`;
 }
 function closeResultPrompt_(){ const el = document.getElementById("resultSharePrompt"); if(el) el.remove(); }
 function showResultSharePrompt_(evId){

@@ -124,7 +124,7 @@ function applyFormModeUI(){
   if(matches){
     const known = Object.keys(SPORT_LINKS);
     const current = sportInput.value;
-    sportSelect.innerHTML = known.map(s=>`<option value="${s}">${s}</option>`).join("")
+    sportSelect.innerHTML = known.map(s=>`<option value="${s}">${sportShow_(s)}</option>`).join("")
       + `<option value="__outra__">Outra modalidade...</option>`;
     if(current && known.includes(current)){
       sportSelect.value = current;

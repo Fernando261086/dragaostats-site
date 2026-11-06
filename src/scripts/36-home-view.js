@@ -57,7 +57,7 @@ function homeHeroHtml_(item, label){
   const ico = (n) => (typeof n === "string") ? n : "";
   return `<div class="hv-hero hv-hero-click${live ? " is-live" : ""}${liveData ? " has-score" : ""}" data-hero="${esc(ev.id)}">
     <div class="hv-hero-top"><span class="hv-kicker">${liveData ? "A decorrer" : (live ? "A decorrer" : esc(label || "Próximo jogo"))}</span><span class="hv-pill">${liveData ? '<i class="hv-dot"></i>' : ""}${esc(pill)}</span></div>
-    <div class="hv-hero-sport">${esc(ev.sport)}${detail ? " · " + esc(detail) : ""}</div>
+    <div class="hv-hero-sport">${esc(sportShow_(ev.sport))}${detail ? " · " + esc(detail) : ""}</div>
     <div class="hv-hero-match${homeOpp_(ev).length > 16 ? " hm-long" : ""}"><span class="hm-a">${crestOnly_(ev, postTeams_(ev).home)}${esc(postTeams_(ev).home)}</span><span class="hm-b"><span class="hv-vs">vs</span> ${esc(postTeams_(ev).away)}${(c=>c ? `<span class="crest-end">${c}</span>` : "")(crestOnly_(ev, postTeams_(ev).away))}</span></div>
     ${scoreHtml}
     ${(liveData && typeof liveRecentHtml_ === "function") ? liveRecentHtml_(ev) : ""}
@@ -110,13 +110,13 @@ function renderHomeView_(force){
   const listUse = (weekList.length || homeSport_ === "Todas") ? weekList : base.slice(0, 6);
   const weekTitle = (within.length || homeSport_ !== "Todas") ? "Esta semana" : "Próximos jogos";
   const favSp = (typeof favSport_ === "function") ? favSport_() : "";
-  const pills = ["Todas"].concat(sportsAll).map(sp=>`<button type="button" class="hv-pillbtn${sp === homeSport_ ? " active" : ""}" data-hsport="${esc(sp)}">${sp === favSp ? "★ " : ""}${esc(sp)}</button>`).join("");
+  const pills = ["Todas"].concat(sportsAll).map(sp=>`<button type="button" class="hv-pillbtn${sp === homeSport_ ? " active" : ""}" data-hsport="${esc(sp)}">${sp === favSp ? "★ " : ""}${esc(sportShow_(sp))}</button>`).join("");
   const favBtn = (homeSport_ !== "Todas" && typeof favSport_ === "function") ? `<button type="button" class="hv-favbtn" data-fav="${esc(homeSport_)}">${homeSport_ === favSp ? "★ É a tua favorita · tirar" : "☆ Tornar favorita"}</button>` : "";
   const rows = listUse.map(x=>{
     const ev = x.ev;
     return `<button type="button" class="hv-row" data-go="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};">
       <span class="hv-date"><b>${x.d.getDate()}</b><i>${HOME_WD_[x.d.getDay()]}</i></span>
-      <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)}</span><span class="hv-row-match">${matchTitleHtml_(ev)}${matchNeutralTag_(ev)}</span></span>
+      <span class="hv-row-body"><span class="hv-row-sport">${esc(sportShow_(ev.sport))}</span><span class="hv-row-match">${matchTitleHtml_(ev)}${matchNeutralTag_(ev)}</span></span>
       <span class="hv-row-time">${esc(ev.t || "")}</span>
     </button>`;
   }).join("");
@@ -139,7 +139,7 @@ function renderHomeView_(force){
       const tag = st.resultTag === "win" ? ["V", "win"] : st.resultTag === "loss" ? ["D", "loss"] : st.resultTag === "draw" ? ["E", "draw"] : null;
       return `<button type="button" class="hv-row hv-res" data-go="${esc(ev.id)}" style="--sc:${homeColor_(ev.sport)};">
         ${tag ? `<span class="hv-tag hv-tag-${tag[1]}">${tag[0]}</span>` : '<span class="hv-tag"></span>'}
-        <span class="hv-row-body"><span class="hv-row-sport">${esc(ev.sport)} · ${esc(formatShortDate(ev.day))}</span><span class="hv-row-match">${crestOnly_(ev, t.home)}${esc(t.home)} <span class="hv-vs">vs</span> ${crestNameEnd_(ev, t.away)}</span></span>
+        <span class="hv-row-body"><span class="hv-row-sport">${esc(sportShow_(ev.sport))} · ${esc(formatShortDate(ev.day))}</span><span class="hv-row-match">${crestOnly_(ev, t.home)}${esc(t.home)} <span class="hv-vs">vs</span> ${crestNameEnd_(ev, t.away)}</span></span>
         <span class="hv-row-time hv-res-score">${esc(String(st.resultado).trim())}</span>
       </button>`;
     }).join("");
@@ -156,7 +156,7 @@ function renderHomeView_(force){
     const big = (me && played > 0) ? esc(me.p) + ".º" : "—";
     const sub = (me && played > 0) ? `<b>${esc(pts)}</b> pts · ${esc(played)} jogos` : "ainda sem jogos";
     return `<button type="button" class="hv-cls" data-cls="${esc(sp)}" style="--sc:${homeColor_(sp)};">
-      <span class="hv-cls-sport">${esc(sp)}</span>
+      <span class="hv-cls-sport">${esc(sportShow_(sp))}</span>
       <span class="hv-cls-pos">${big}</span>
       <span class="hv-cls-sub">${sub}</span>
       <span class="hv-cls-of">de ${s.rows.length} equipas</span>

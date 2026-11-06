@@ -176,7 +176,7 @@ function shPaint_(){
       const all = N.d.all;
       h += all.length ? `<div class="sh-games">` + all.map(e=>{
         const st = getEv(e.id) || {}, sc = String(st.resultado || "").trim(), t = postTeams_(e);
-        return `<button type="button" class="sh-game${e.id === S.evId ? " on" : ""}" data-ev="${shE_(e.id)}"><span>${shE_(e.t || "--:--")}</span><b>${postSportEmoji_(e.sport)} ${shE_(e.sport)}</b><em>${shE_(t.home)} ${shE_(sc || "vs")} ${shE_(t.away)}</em></button>`;
+        return `<button type="button" class="sh-game${e.id === S.evId ? " on" : ""}" data-ev="${shE_(e.id)}"><span>${shE_(e.t || "--:--")}</span><b>${postSportEmoji_(e.sport)} ${shE_(sportShow_(e.sport))}</b><em>${shE_(t.home)} ${shE_(sc || "vs")} ${shE_(t.away)}</em></button>`;
       }).join("") + `</div>` : `<div class="medal-empty">Não há jogos neste dia.</div>`;
     }else{
       const kinds = [["jogos", "Por realizar", N.d.jogos.length], ["live", "🔴 Com Ao vivo", N.d.live.length], ["res", "🏆 Resultados", N.d.res.length]];

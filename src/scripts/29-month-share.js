@@ -46,7 +46,7 @@ function buildMonthPostText_(games, monthStart){
     const emoji = postSportEmoji_(ev.sport);
     const t = postTeams_(ev);
     const tagEmoji = tag==="win" ? "✅" : tag==="loss" ? "❌" : tag==="draw" ? "🟰" : "";
-    text += `${emoji} ${ev.sport} — ${t.home} ${st.resultado.trim()} ${t.away}${tagEmoji ? ' ' + tagEmoji : ''}\n`;
+    text += `${emoji} ${sportShow_(ev.sport)} — ${t.home} ${st.resultado.trim()} ${t.away}${tagEmoji ? ' ' + tagEmoji : ''}\n`;
   });
   const tags = ["#FCPorto", "#DragaoStats"];
   games.forEach(({ ev })=>{ const h = postSportHashtag_(ev.sport); if(h && tags.indexOf(h)===-1) tags.push(h); });

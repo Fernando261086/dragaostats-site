@@ -28,7 +28,7 @@ function newsCardHtml_(n, sport, showSport, noHide){
   return `<div class="nw-wrap" style="--sc:${color};"><a class="nw-card" href="${esc(url)}" target="_blank" rel="noopener noreferrer" data-news="${esc(n.id)}">
     <span class="nw-img${img ? "" : " nw-noimg"}">${img}</span>
     <span class="nw-body"><span class="nw-title">${esc(n.t)}</span>
-    <span class="nw-meta">${showSport ? `<b class="nw-sport">${(typeof favSport_ === "function" && favSport_() === sport) ? "★ " : ""}${esc(sport)}</b>` : ""}<span>${esc(n.f || "")}</span><span>${esc(newsAgo_(n.d))}</span></span></span></a>
+    <span class="nw-meta">${showSport ? `<b class="nw-sport">${(typeof favSport_ === "function" && favSport_() === sport) ? "★ " : ""}${esc(sportShow_(sport))}</b>` : ""}<span>${esc(n.f || "")}</span><span>${esc(newsAgo_(n.d))}</span></span></span></a>
     ${(READONLY_MODE || noHide) ? "" : `<button type="button" class="nw-hide" data-nhide="${esc(n.id)}" title="Esconder esta notícia" aria-label="Esconder esta notícia">✕</button>`}</div>`;
 }
 const NEWS_NOTE_ = '<p class="nw-note">Notícias de sites de terceiros: ao tocar, abres o site original. O Dragão Stats não é autor destes textos.</p>';

@@ -43,7 +43,7 @@ function renderSportCards_(){
 
   const esc = s => (typeof liveEsc_ === "function") ? liveEsc_(s) : String(s == null ? "" : s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const pill = (sport, label, live) => `<button type="button" class="hv-pillbtn${activeSport === sport ? " active" : ""}" data-sport="${esc(sport)}" aria-pressed="${activeSport === sport}">${esc(label)}${live ? '<span class="pill-live" title="Ao vivo"></span>' : ""}</button>`;
-  host.innerHTML = pill("Todos", "Todas", false) + list.map(s=>pill(s.sport, s.sport, !!(s.next && isLive(s.next)))).join("");
+  host.innerHTML = pill("Todos", "Todas", false) + list.map(s=>pill(s.sport, sportShow_(s.sport), !!(s.next && isLive(s.next)))).join("");
   host.querySelectorAll(".hv-pillbtn").forEach(btn=>{
     btn.onclick = ()=>{
       const sport = btn.getAttribute("data-sport");

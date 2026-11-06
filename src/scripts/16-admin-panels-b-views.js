@@ -4,7 +4,7 @@ function renderSportLinksPanel(){
 
   const rows = Object.keys(SPORT_LINKS).map(sport => `
     <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
-      <span style="width:110px; flex-shrink:0; font-size:13px; color:var(--text-dim);">${sport}</span>
+      <span style="width:110px; flex-shrink:0; font-size:13px; color:var(--text-dim);">${sportShow_(sport)}</span>
       <input class="result-input" data-link-for="${sport.replace(/"/g,'&quot;')}" value="${(SPORT_LINKS[sport]||'').replace(/"/g,'&quot;')}" placeholder="Link da classificação geral" style="flex:1;">
       <button class="del-btn" data-remove-sport="${sport.replace(/"/g,'&quot;')}" title="Remover esta modalidade">✕</button>
     </div>
@@ -212,7 +212,7 @@ function renderLeaderboardView(){
   const availableStats = MARCADORES_LABEL_SPORTS.has(leaderboardSport) ? ["Golos"] : getStatTypesFor(leaderboardSport);
   if(!leaderboardStat || !availableStats.includes(leaderboardStat)) leaderboardStat = availableStats[0];
 
-  const sportChips = sports.map(s=>`<button class="chip${s===leaderboardSport?' active':''}" data-lb-sport="${s.replace(/"/g,'&quot;')}">${s}</button>`).join('');
+  const sportChips = sports.map(s=>`<button class="chip${s===leaderboardSport?' active':''}" data-lb-sport="${s.replace(/"/g,'&quot;')}">${sportShow_(s)}</button>`).join('');
   const statChips = availableStats.map(s=>`<button class="chip${s===leaderboardStat?' active':''}" data-lb-stat="${s.replace(/"/g,'&quot;')}">${s}</button>`).join('');
 
   const totals = {}; // nome do jogador -> { total, games }
@@ -309,7 +309,7 @@ function renderHistoryView(){
     : "";
 
   const chipsHtml = `<div class="filters" style="margin-bottom:14px; display:flex;">
-    ${sports.map(s=>`<button class="chip${s===historyFilterSport?' active':''}" data-hsport="${s.replace(/"/g,'&quot;')}">${s}</button>`).join('')}
+    ${sports.map(s=>`<button class="chip${s===historyFilterSport?' active':''}" data-hsport="${s.replace(/"/g,'&quot;')}">${sportShow_(s)}</button>`).join('')}
   </div>`;
 
   // v213: meses com jogos passados (da modalidade escolhida), do mais recente para o mais antigo
@@ -342,7 +342,7 @@ function renderHistoryView(){
 
   let listHtml;
   if(past.length === 0){
-    listHtml = `<div class="medal-empty">Sem resultados passados${historyFilterSport!=='Todos' ? ' de '+historyFilterSport : ''} ainda.</div>`;
+    listHtml = `<div class="medal-empty">Sem resultados passados${historyFilterSport!=='Todos' ? ' de '+sportShow_(historyFilterSport) : ''} ainda.</div>`;
   }else{
     // resumo V/E/D do que está a ser mostrado, com detalhe Casa/Fora (jogos em campo
     // neutro entram no total, mas não em nenhuma das duas colunas)
@@ -373,7 +373,7 @@ function renderHistoryView(){
       const safe = x => String(x == null ? "" : x).replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
       return `<button type="button" class="hv-row" data-ev-id="${ev.id}" style="--sc:${color};">
         <span class="hv-date"><b>${dd.getDate()}</b><i>${wd}</i></span>
-        <span class="hv-row-body"><span class="hv-row-sport">${safe(ev.sport)} · ${safe(local)}${ev.phase ? " · " + safe(ev.phase) : ""}</span><span class="hv-row-match">${res ? `${crestName_(ev, tt.home)} <b>${safe(res)}</b> ${crestNameEnd_(ev, tt.away)}` : `${matchTitleHtml_(ev)}${matchNeutralTag_(ev)} <span class="hist-nores">sem resultado</span>`}</span></span>
+        <span class="hv-row-body"><span class="hv-row-sport">${safe(sportShow_(ev.sport))} · ${safe(local)}${ev.phase ? " · " + safe(ev.phase) : ""}</span><span class="hv-row-match">${res ? `${crestName_(ev, tt.home)} <b>${safe(res)}</b> ${crestNameEnd_(ev, tt.away)}` : `${matchTitleHtml_(ev)}${matchNeutralTag_(ev)} <span class="hist-nores">sem resultado</span>`}</span></span>
         ${tag ? `<span class="hv-tag hv-tag-${tag[1]}">${tag[0]}</span>` : ""}
       </button>`;
     }).join("");
@@ -439,7 +439,7 @@ function renderStatsView(){
     const color = SPORT_COLORS[sport] || "#e3b23c";
     return `<div class="medal-row" style="flex-direction:column; align-items:stretch; gap:6px;">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span class="sport" style="--sport-color:${color}; color:${color};">${sport}</span>
+        <span class="sport" style="--sport-color:${color}; color:${color};">${sportShow_(sport)}</span>
         <span class="what">${s.total} prova${s.total===1?'':'s'}</span>
       </div>
       <div style="display:flex; gap:14px; font-size:12.5px; color:var(--text-dim);">
@@ -614,9 +614,9 @@ function buildDaySummaryText(){
       const local = ev.local === "fora" ? "fora" : ev.local === "neutro" ? "em campo neutro" : "em casa";
       if(r){
         const label = r==="win" ? "venceu" : r==="loss" ? "perdeu" : "empatou";
-        text += `${ev.sport}: ${label} contra ${ev.athlete}, ${local}, por ${st.resultado}. `;
+        text += `${sportShow_(ev.sport)}: ${label} contra ${ev.athlete}, ${local}, por ${st.resultado}. `;
       }else{
-        text += `${ev.sport}: joga contra ${ev.athlete}, ${local}, ${formatFullDate(ev.day)} às ${ev.t}. `;
+        text += `${sportShow_(ev.sport)}: joga contra ${ev.athlete}, ${local}, ${formatFullDate(ev.day)} às ${ev.t}. `;
       }
     });
     return text;
@@ -724,7 +724,7 @@ function checkUpcomingForNotifications(){
         changed = true;
         showAppNotification(
           "🔔 Resultado por escrever",
-          `${ev.sport} vs ${ev.athlete} (${formatShortDate(ev.day)}) ainda não tem resultado`
+          `${sportShow_(ev.sport)} vs ${ev.athlete} (${formatShortDate(ev.day)}) ainda não tem resultado`
         );
       }
     });

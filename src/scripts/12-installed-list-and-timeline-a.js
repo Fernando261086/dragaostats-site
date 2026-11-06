@@ -335,7 +335,7 @@ function renderTimeline(){
         line.innerHTML = `
           <div class="mr-main">
             <span class="hv-date"><b>${isNaN(dd) ? "" : dd.getDate()}</b><i>${wd}</i></span>
-            <span class="hv-row-body"><span class="hv-row-sport">${mesc(ev.sport)}${sub ? " · " + mesc(sub) : ""}</span>
+            <span class="hv-row-body"><span class="hv-row-sport">${mesc(sportShow_(ev.sport))}${sub ? " · " + mesc(sub) : ""}</span>
               <span class="hv-row-match">${result ? `${crestName_(ev, tt.home)} <b>${mesc(result)}</b> ${crestNameEnd_(ev, tt.away)}` : matchTitleHtml_(ev) + matchNeutralTag_(ev)}</span>${(!result && cevj && cevj.estado === "vivo") ? `<span class="live-score">${cevLiveText_(ev, cevj)}</span>` : ""}</span>
             ${liveNow ? '<span class="live-flag">AO VIVO</span>' : (result ? (tagTxt ? `<span class="hv-tag hv-tag-${tagTxt[1]}">${tagTxt[0]}</span>` : "") : `<span class="hv-row-time">${mesc(ev.t || "")}</span>`)}
             <button type="button" class="mr-more mr-chev" data-mrmore="1" aria-label="Ver detalhes do jogo">›</button>
@@ -361,7 +361,7 @@ function renderTimeline(){
       line.innerHTML = `
         <div class="cl-row1">
           <span class="c-time">${timeLabel}</span>
-          <span class="c-sport" style="--sport-color:${color}">${ev.sport}</span>
+          <span class="c-sport" style="--sport-color:${color}">${sportShow_(ev.sport)}</span>
           <span class="c-athlete">${ev.athlete}</span>
           <span class="c-medal">${medalIcon}</span>
         </div>
@@ -420,7 +420,7 @@ function renderTimeline(){
       <div class="dot-col"><div class="dot"></div></div>
       <div class="card" style="--sport-color:${color}">
         <div class="card-top">
-          <span class="sport">${ev.sport}</span>
+          <span class="sport">${sportShow_(ev.sport)}</span>
           ${(() => {
             if(!matchesMode || (st.resultado && st.resultado.trim())) return '';
             const cev = cevLiveFor_(ev);
@@ -480,7 +480,7 @@ function renderTimeline(){
       url.searchParams.set('day', ev.day);
       url.searchParams.set('ev', ev.id);
       const link = url.toString();
-      const shareText = `${ev.athlete} — ${ev.sport}${ev.detail ? " · "+ev.detail : ""} (${ev.t})`;
+      const shareText = `${ev.athlete} — ${sportShow_(ev.sport)}${ev.detail ? " · "+ev.detail : ""} (${ev.t})`;
       if(navigator.share){
         try{ await navigator.share({ title: shareText, url: link }); }catch(e){ /* cancelado, ignora */ }
       }else if(navigator.clipboard){

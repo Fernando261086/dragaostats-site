@@ -19,7 +19,7 @@ function renderClsView_(){
     const withData = sports.filter(sp=>STANDINGS && STANDINGS[sp] && (STANDINGS[sp].rows || []).length);
     clsSport_ = (fav && sports.includes(fav)) ? fav : (withData[0] || sports[0]);
   }
-  const pills = sports.map(sp=>`<button type="button" class="hv-pillbtn${sp === clsSport_ ? " active" : ""}" data-clssport="${esc(sp)}">${esc(sp)}</button>`).join("");
+  const pills = sports.map(sp=>`<button type="button" class="hv-pillbtn${sp === clsSport_ ? " active" : ""}" data-clssport="${esc(sp)}">${esc(sportShow_(sp))}</button>`).join("");
   host.innerHTML = `<div class="hv-top" style="--sc:${homeColor_(clsSport_)};"><div class="cls-head"><h2>Classificações</h2></div><div class="hv-pills">${pills}</div>${(typeof standingsPanelHtml_ === "function") ? standingsPanelHtml_(clsSport_) : ""}</div>`;
   host.querySelectorAll("[data-clssport]").forEach(b=>{ b.onclick = ()=>{ clsSport_ = b.getAttribute("data-clssport"); if(typeof track_ === "function") track_("classificacao_aberta"); renderClsView_(); }; });
   if(typeof wireStandingsPanel_ === "function") wireStandingsPanel_(host, clsSport_);

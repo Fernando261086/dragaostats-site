@@ -14,7 +14,7 @@ function renderPushNowPanel(){
     return diffDays >= -4 && diffDays <= 4;
   }).sort((a,b)=> new Date(a.day+"T"+(a.t||"00:00")) - new Date(b.day+"T"+(b.t||"00:00"))) : [];
   const eventOptionsHtml = nearbyEvents.map(ev=>
-    `<option value="${ev.id}">${formatShortDate(ev.day)} · ${ev.sport} · vs ${ev.athlete}</option>`
+    `<option value="${ev.id}">${formatShortDate(ev.day)} · ${sportShow_(ev.sport)} · vs ${ev.athlete}</option>`
   ).join("");
 
   panel.innerHTML = `

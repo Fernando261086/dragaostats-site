@@ -162,7 +162,7 @@ function openStandingsEditor_(sport){
   const ov = document.createElement("div");
   ov.id = "stEditor"; ov.className = "st-editor";
   ov.innerHTML = `<div class="st-editor-box" role="dialog" aria-label="Classificação à mão">
-    <h3>Classificação · ${esc(sport)}</h3>
+    <h3>Classificação · ${esc(sportShow_(sport))}</h3>
     <p class="st-help">Copia a tabela do site (uma equipa por linha, da 1.ª à última) e cola aqui. Escolhe a ordem das colunas que o site de onde copiaste usa.</p>
     <label>Competição<input type="text" id="stComp" placeholder="ex.: Liga Placard" value="${esc(cur ? cur.comp : "")}"></label>
     <label>Ordem das colunas<select id="stPreset">${Object.keys(STANDINGS_PRESETS_).map(k=>`<option value="${k}">${esc(STANDINGS_PRESETS_[k].label)}</option>`).join("")}</select></label>

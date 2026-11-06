@@ -41,7 +41,7 @@ async function generateShareCard(ev, st, sportColor){
 
   // badge da modalidade — ou "PROMOÇÃO"/jogo ainda por vir, no cartão de aviso
   ctx.font = "700 26px 'Archivo Narrow', sans-serif";
-  const sportText = (ev.sport || "").toUpperCase();
+  const sportText = sportShow_(ev.sport || "").toUpperCase();
   const sportW = ctx.measureText(sportText).width;
   const badgeX = CARD/2 - (sportW+56)/2, badgeY = 190, badgeH = 52;
   ctx.fillStyle = hasResult ? (sportColor || "#e3b23c") : BLUE;

@@ -17,7 +17,7 @@ function renderPlayerStatsPanel(){
 
   const headerHtml = `
     <div style="margin-bottom:12px;">
-      <div style="font-size:13px; color:var(--text-dim);">${ev.sport}${ev.detail ? ' · '+ev.detail : ''}</div>
+      <div style="font-size:13px; color:var(--text-dim);">${sportShow_(ev.sport)}${ev.detail ? ' · '+ev.detail : ''}</div>
       <div style="font-size:20px; font-weight:700; color:var(--text); font-family:'Archivo Narrow',sans-serif;">
         ${ev.local === 'fora' ? `${ev.athlete || ''} ${evStatus.resultado ? evStatus.resultado.trim() : '– : –'} FC Porto` : `FC Porto ${evStatus.resultado ? evStatus.resultado.trim() : '– : –'} ${ev.athlete || ''}`}
       </div>
@@ -164,7 +164,7 @@ function renderPlayerStatsPanel(){
     ${headerHtml}
     ${rowsHtml || `<div class="medal-empty">Ainda sem ${gJog_(ev.sport,true)} adicionad${FEM_PLAYER_SPORTS.has(ev.sport)?"a":"o"}s.</div>`}
     <button class="add-save" id="addPlayerRowBtn" style="width:100%; margin-bottom:10px;">+ Adicionar ${gJog_(ev.sport,false)}</button>
-    <div style="font-size:11px; color:var(--text-dim); margin-bottom:6px;">Estatísticas de ${ev.sport} (toca no ✕ para remover uma que não precises):</div>
+    <div style="font-size:11px; color:var(--text-dim); margin-bottom:6px;">Estatísticas de ${sportShow_(ev.sport)} (toca no ✕ para remover uma que não precises):</div>
     <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
       ${statNames.map(s=>`<span class="chip" style="cursor:default; display:inline-flex; align-items:center; gap:6px;">${s} <span data-remove-stattype="${s.replace(/"/g,'&quot;')}" style="cursor:pointer; opacity:0.75; font-weight:700;">✕</span></span>`).join("")}
     </div>
@@ -188,7 +188,7 @@ function renderPlayerStatsPanel(){
   panel.querySelectorAll('[data-remove-stattype]').forEach(btn=>{
     btn.onclick = ()=>{
       const stat = btn.getAttribute('data-remove-stattype');
-      if(!confirm(`Remover "${stat}" das estatísticas de ${ev.sport}? Isto não apaga valores já guardados noutros jogos, só deixa de aparecer para preencher.`)) return;
+      if(!confirm(`Remover "${stat}" das estatísticas de ${sportShow_(ev.sport)}? Isto não apaga valores já guardados noutros jogos, só deixa de aparecer para preencher.`)) return;
       STAT_TYPES[ev.sport] = (STAT_TYPES[ev.sport] || []).filter(s => s !== stat);
       saveStatTypes();
       renderPlayerStatsPanel();
@@ -308,7 +308,7 @@ function downloadMatchICS(ev){
   const end = new Date(start.getTime() + 90*60000); // assume 90 min de duração
   function fmt(d){ return d.toISOString().replace(/[-:]/g,"").split(".")[0] + "Z"; }
   const local = localLabel(ev.local);
-  const title = `${ev.sport}: FC Porto vs ${ev.athlete} (${local})`;
+  const title = `${sportShow_(ev.sport)}: FC Porto vs ${ev.athlete} (${local})`;
   const desc = [ev.detail, ev.phase, ev.notes].filter(Boolean).join(" — ");
   const ics = [
     "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//CompeticoesInternacionais//PT","BEGIN:VEVENT",

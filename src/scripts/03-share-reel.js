@@ -42,7 +42,7 @@ async function generateShareReel(ev, st, sportColor){
   const isAway = ev.local === "fora";
   const topName = isAway ? (ev.athlete || "") : "FC Porto";
   const bottomName = isAway ? "FC Porto" : (ev.athlete || "");
-  const sportText = (ev.sport || "").toUpperCase();
+  const sportText = sportShow_(ev.sport || "").toUpperCase();
   const metaLine = [ev.detail, ev.phase, ev.venue].filter(Boolean).join(" · ");
 
   // easing simples: entra rápido, desacelera no fim — fica mais suave que linear

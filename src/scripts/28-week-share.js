@@ -50,7 +50,7 @@ function buildWeekPostText_(games, weekStart, weekEndDisplay){
     const dayLabel = WEEKDAY_NAMES[new Date(ev.day+"T00:00:00").getDay()].toLowerCase();
     const when = [dayLabel, ev.t].filter(Boolean).join(" ");
     const dp = [ev.detail, ev.phase].filter(Boolean).join(", ");
-    text += `${emoji} ${ev.sport} — ${t.home} vs ${t.away}`;
+    text += `${emoji} ${sportShow_(ev.sport)} — ${t.home} vs ${t.away}`;
     text += when ? ` — ${when}\n` : "\n";
     if(dp) text += dp + "\n";
     text += "\n";

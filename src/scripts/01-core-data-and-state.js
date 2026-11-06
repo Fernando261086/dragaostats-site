@@ -124,3 +124,8 @@ function localLabel(local, style){
   return style==="short" ? "🏠 Casa" : "Casa";
 }
 
+
+
+// v263: nome a mostrar das equipas de futebol (o identificador interno continua «Equipa A»/«Equipa B»: dados, cores, avisos e ligações não mudam)
+const SPORT_SHOW_ = { "Equipa A": "Futebol - Equipa A", "Equipa B": "Futebol - Equipa B" };
+function sportShow_(s){ return SPORT_SHOW_[s] || s; }

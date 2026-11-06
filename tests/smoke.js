@@ -251,6 +251,29 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     const man = JSON.parse(fs.readFileSync(path.join(DIST, 'manifest.json'), 'utf8'));
     man.shortcuts.length <= 4 && man.shortcuts.every(x => /^\.\/\?/.test(x.url)) ? ok('manifest: ' + man.shortcuts.length + ' atalhos') : bad('manifest: atalhos inválidos');
   }
+  { // v267: renomear a competição de vários jogos (Basquetebol: Champions League → FIBA Champions League, em duas épocas)
+    const m6 = { ok:true, hasAdminAuth:false, competitions:[{id:'c1',name:'Época 26/27',mode:'matches'},{id:'c0',name:'Época 25/26',mode:'matches'}], reactions:{}, data:{
+      c1:{ events:[{id:'a',day:'2026-11-10',t:'20:00',sport:'Basquetebol',athlete:'Rival A',local:'casa',detail:'Champions League',phase:'Grupo'},{id:'b',day:'2026-11-12',t:'20:00',sport:'Basquetebol',athlete:'Rival B',local:'fora',detail:'Liga Betclic'},{id:'c',day:'2026-11-13',t:'20:00',sport:'Andebol',athlete:'Rival C',local:'fora',detail:'Champions League'}], status:{} },
+      c0:{ events:[{id:'z',day:'2025-11-10',t:'20:00',sport:'Basquetebol',athlete:'Rival Z',local:'casa',detail:'Champions League'}], status:{} } } };
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    const errs = []; page.on('pageerror', e => errs.push(e.message));
+    const resp = ['Basquetebol', '1', 'FIBA Champions League'];
+    page.on('dialog', d => { const t = d.type(); if (t === 'prompt') d.accept(resp.shift() || ''); else d.accept(); });
+    await page.addInitScript(d => { window.__posts = []; try { localStorage.setItem('dia22-viewer-name', 'Teste'); } catch (e) {}
+      const f = window.fetch; window.fetch = (...a) => { if (String(a[0]).includes('script.google.com')) {
+        if (a[1] && a[1].method === 'POST') { window.__posts.push(a[1].body); return Promise.resolve(new Response('{"ok":true}', {status:200})); }
+        return Promise.resolve(new Response(JSON.stringify(d), {status:200, headers:{'content-type':'application/json'}})); } return f.apply(window, a); }; }, m6);
+    await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+    await page.goto(`http://localhost:${port}/index.html?view=edit`, { waitUntil: 'load' });
+    await page.waitForTimeout(1500);
+    await page.evaluate(() => document.getElementById('renameDetailBtn').click()); await page.waitForTimeout(1500);
+    const posts = (await page.evaluate(() => window.__posts)).map(x => JSON.parse(x));
+    const det = id => posts.flatMap(p => p.compData.events).filter(e => e.id === id).map(e => e.detail + '|' + (e.phase || ''));
+    const bom = det('a')[0] === 'FIBA Champions League|Grupo' && det('z')[0] === 'FIBA Champions League|' && det('b')[0] === 'Liga Betclic|' && det('c')[0] === 'Champions League|';
+    bom && posts.length === 2 ? ok('renomear competição: 2 épocas gravadas, só o Basquetebol e só o nome') : bad('renomear → ' + JSON.stringify(posts.map(p => [p.compId, p.compData.events.map(e => e.id + ':' + e.detail)])));
+    errs.length ? bad('renomear: erros JS → ' + errs.join(' | ')) : ok('renomear: sem erros JS');
+    await page.close();
+  }
   await browser.close(); srv.close();
   console.log(fails ? `\n${fails} problema(s) — NÃO publicar.` : '\nTudo ok.'); process.exit(fails ? 1 : 0);
 })();

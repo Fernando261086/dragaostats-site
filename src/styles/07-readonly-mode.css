@@ -7,6 +7,7 @@
   body.readonly-mode .add-panel,
   body.readonly-mode #newCompBtn,
   body.readonly-mode #nextSeasonBtn,
+  body.readonly-mode #renameDetailBtn,
   body.readonly-mode #deleteCompBtn,
   body.readonly-mode #archiveCompBtn,
   body.readonly-mode #showArchivedBtn,

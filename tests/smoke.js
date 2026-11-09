@@ -213,6 +213,35 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     errs.length ? bad('semana: erros JS → ' + errs.join(' | ')) : ok('semana: sem erros JS');
     await page.close();
   }
+  { // v269: «Partilhar» da semana — Resultados da semana passada (relógio fixo numa segunda-feira)
+    const m6 = { ok:true, hasAdminAuth:false, competitions:[{id:'c1',name:'Época 26/27',mode:'matches'}], reactions:{}, data:{ c1:{ events:[
+      {id:'a',day:'2026-11-02',t:'18:00',sport:'Andebol',athlete:'Sporting',local:'casa'}, {id:'b',day:'2026-11-04',t:'20:00',sport:'Basquetebol',athlete:'Benfica',local:'fora'},
+      {id:'c',day:'2026-11-08',t:'16:00',sport:'Voleibol',athlete:'Leões',local:'casa'}, {id:'d',day:'2026-11-14',t:'17:00',sport:'Hóquei Patins',athlete:'Oliveirense',local:'casa'} ],
+      status:{ a:{resultado:'30-25',resultTag:'win'}, b:{resultado:'70-80',resultTag:'loss'}, c:{resultado:'3-1',resultTag:'win'} } } } };
+    const page = await browser.newPage({ viewport: { width: 390, height: 900 } });
+    const errs = []; page.on('pageerror', e => errs.push(e.message));
+    await page.clock.install({ time: new Date('2026-11-09T12:00:00') });
+    await page.addInitScript(d => { try { localStorage.setItem('dia22-viewer-name', 'Teste'); } catch (e) {}
+      const f = window.fetch; window.fetch = (...a) => String(a[0]).includes('script.google.com')
+        ? Promise.resolve(new Response(JSON.stringify(d), {status:200, headers:{'content-type':'application/json'}})) : f.apply(window, a); }, m6);
+    await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+    await page.goto(`http://localhost:${port}/index.html?view=edit`, { waitUntil: 'load' });
+    await page.waitForTimeout(1500);
+    await page.evaluate(() => openShareHub_({ scope: 'semana', weekOffset: -1, fmt: 'img' })); await page.waitForTimeout(2000);
+    const k = await page.evaluate(() => SHARE_S_.wkKind + ':' + shWeek_(SHARE_S_).res.map(g => g.ev.id).join(''));
+    k === 'res:abc' ? ok('resultados da semana: a semana passada abre em «Resultados» com os 3 jogos') : bad('resultados da semana → ' + k);
+    const cap = await page.evaluate(() => (document.getElementById('shCap') || {}).value || '');
+    /Resultados da semana \(2 a 8 de novembro\)/.test(cap) && /Balanço: 2 vitórias · 1 derrota/.test(cap) && /30-25/.test(cap) && /https:\/\/dragaostats\.pt/.test(cap) ? ok('resultados da semana: legenda com balanço e link') : bad('resultados da semana: legenda → ' + cap);
+    const img = await page.evaluate(() => SHARE_S_.out && SHARE_S_.out.kind + ':' + SHARE_S_.out.blob.size);
+    /^img:\d{4,}/.test(img) ? ok('resultados da semana: imagem gerada') : bad('resultados da semana: imagem → ' + img);
+    const reel = await page.evaluate(() => document.querySelector('[data-fmt="reel"]').disabled);
+    reel ? ok('resultados da semana: sem reel') : bad('resultados da semana: reel disponível');
+    await page.click('[data-wk="0"]'); await page.waitForTimeout(800);
+    const k2 = await page.evaluate(() => SHARE_S_.wkKind);
+    k2 === 'jogos' ? ok('resultados da semana: esta semana volta a «Por realizar»') : bad('resultados da semana: esta semana → ' + k2);
+    errs.length ? bad('resultados da semana: erros JS → ' + errs.join(' | ')) : ok('resultados da semana: sem erros JS');
+    await page.close();
+  }
   { // v266: «Sabias que» automáticos + atalhos da app (?ir=)
     const iso = n => { const d = new Date(); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
     const ev = [], stt = {};

@@ -9,7 +9,8 @@
 
 // Jogos da semana (todas as competições em Modo Modalidades) que ainda não têm
 // resultado — é isto que interessa promover, tal como a imagem feita à mão.
-function getWeekShareGames_(weekStart, weekEnd){
+// v269: com `comRes` = true devolve, ao contrário, só os jogos JÁ com resultado (para o resumo da semana que passou)
+function getWeekShareGames_(weekStart, weekEnd, comRes){
   const rows = [];
   ALL.competitions.filter(c=>(c.mode||"medals")==="matches").forEach(c=>{
     const compData = ALL.data[c.id] || { events: [], status: {} };
@@ -18,7 +19,8 @@ function getWeekShareGames_(weekStart, weekEnd){
       const d = new Date(ev.day + "T00:00:00");
       if(isNaN(d) || d < weekStart || d >= weekEnd) return;
       const st = (compData.status && compData.status[ev.id]) || {};
-      if(st.resultado && String(st.resultado).trim()) return; // já tem resultado — não é "por vir"
+      const temRes = !!(st.resultado && String(st.resultado).trim());
+      if(comRes ? !temRes : temRes) return; // sem `comRes`: já tem resultado — não é "por vir"
       rows.push({ ev, st });
     });
   });
@@ -253,4 +255,96 @@ function renderWeekShareBox_(weekStart, weekEnd, weekEndDisplay){
     const hint = box.querySelector("div");
     if(hint) hint.textContent = "⚠️ Não foi possível gerar a imagem.";
   });
+}
+
+
+// ===================== RESULTADOS DA SEMANA (v269) =====================
+// Pedido pelo Fernando (editor): no painel «Partilhar» → «A semana», além dos jogos por realizar, poder partilhar os
+// RESULTADOS já registados (semana passada, esta semana ou fim de semana): imagem com todos + texto com o balanço V/E/D.
+function weekResTitles_(){
+  const c = weekCtx_();
+  return c.wm === "fds" ? { card: "RESULTADOS DO FIM DE SEMANA", post: "Resultados do fim de semana" } : { card: "RESULTADOS DA SEMANA", post: "Resultados da semana" };
+}
+function weekResTagKind_(st){ return st && (st.resultTag === "win" || st.resultTag === "loss" || st.resultTag === "draw") ? st.resultTag : ""; }
+function weekResBalance_(rows){
+  const n = { win: 0, draw: 0, loss: 0 };
+  rows.forEach(({ st })=>{ const k = weekResTagKind_(st); if(k) n[k]++; });
+  const parts = [];
+  if(n.win) parts.push(n.win + (n.win === 1 ? " vitória" : " vitórias"));
+  if(n.draw) parts.push(n.draw + (n.draw === 1 ? " empate" : " empates"));
+  if(n.loss) parts.push(n.loss + (n.loss === 1 ? " derrota" : " derrotas"));
+  return parts;
+}
+function buildWeekResultsText_(rows, weekStart, weekEndDisplay){
+  if(!rows.length) return "";
+  const bal = weekResBalance_(rows);
+  let text = `💙 ${weekResTitles_().post} (${weekShareDateRangeLabel_(weekStart, weekEndDisplay)}):\n`;
+  if(bal.length) text += `Balanço: ${bal.join(" · ")}\n`;
+  text += "\n";
+  rows.forEach(({ ev, st })=>{
+    const t = postTeams_(ev), k = weekResTagKind_(st);
+    const tag = k === "win" ? "Vitória" : k === "loss" ? "Derrota" : k === "draw" ? "Empate" : "";
+    text += `${postSportEmoji_(ev.sport)} ${sportShow_(ev.sport)} — ${t.home} ${String(st.resultado).trim()} ${t.away}${tag ? " (" + tag + ")" : ""}\n`;
+  });
+  const tags = ["#FCPorto", "#DragaoStats"];
+  rows.forEach(({ ev })=>{ const h = postSportHashtag_(ev.sport); if(h && tags.indexOf(h) === -1) tags.push(h); });
+  text += "\nTodos os resultados e classificações em https://dragaostats.pt\n\n" + tags.join(" ");
+  return text;
+}
+async function generateWeekResultsCard_(rows, weekStart, weekEndDisplay){
+  const W = 1080, rowH = 150, headerH = 380, footerH = 150, H = headerH + rows.length * rowH + footerH;
+  const canvas = document.createElement("canvas"); canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, "#16294a"); bg.addColorStop(1, "#0a1626");
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  try{
+    const logo = await new Promise((res, rej)=>{ const im = new Image(); im.onload = ()=>res(im); im.onerror = rej; im.src = "header-emblem.png"; });
+    ctx.save(); ctx.beginPath(); ctx.arc(106, 106, 42, 0, Math.PI * 2); ctx.closePath(); ctx.clip(); ctx.drawImage(logo, 64, 64, 84, 84); ctx.restore();
+  }catch(e){ /* sem logo */ }
+  ctx.textBaseline = "middle"; ctx.textAlign = "left";
+  ctx.fillStyle = "#eef2f8"; ctx.font = "700 30px 'Archivo Narrow', sans-serif"; ctx.fillText("DRAGÃO STATS", 166, 96);
+  ctx.font = "500 18px 'Archivo Narrow', sans-serif"; ctx.fillStyle = "#9fb0c8"; ctx.fillText("Jogos e resultados das modalidades do FC Porto", 166, 124);
+  const titulo = weekResTitles_().card;
+  ctx.fillStyle = "#e3b23c"; let tam = 92; ctx.font = `400 ${tam}px 'Bebas Neue', sans-serif`;
+  while(tam > 40 && ctx.measureText(titulo).width > W - 140){ tam -= 4; ctx.font = `400 ${tam}px 'Bebas Neue', sans-serif`; }
+  ctx.fillText(titulo, 70, 240);
+  const bal = weekResBalance_(rows);
+  ctx.font = "600 24px 'Archivo Narrow', sans-serif"; ctx.fillStyle = "#cdd8e8";
+  ctx.fillText(weekShareDateRangeLabel_(weekStart, weekEndDisplay) + (bal.length ? "  ·  " + bal.join(" · ") : ""), 72, 290);
+  const COR_TAG = { win: "#5fd38d", loss: "#ef6b6b", draw: "#cdd8e8" };
+  let y = headerH;
+  rows.forEach(({ ev, st })=>{
+    const color = SPORT_COLORS[ev.sport] || "#e3b23c", k = weekResTagKind_(st);
+    const rowY = y + 18, rowX = 70, rowW = W - 140, rowRH = rowH - 36;
+    ctx.fillStyle = "rgba(255,255,255,0.045)"; ctx.strokeStyle = "rgba(255,255,255,0.09)";
+    if(ctx.roundRect){ ctx.beginPath(); ctx.roundRect(rowX, rowY, rowW, rowRH, 14); ctx.fill(); ctx.stroke(); } else ctx.fillRect(rowX, rowY, rowW, rowRH);
+    ctx.fillStyle = color; ctx.fillRect(rowX, rowY, 6, rowRH);
+    ctx.textAlign = "left";
+    ctx.fillStyle = COR_TAG[k] || "#e3b23c"; ctx.font = "400 54px 'Bebas Neue', sans-serif";
+    ctx.fillText(String(st.resultado).trim(), rowX + 26, rowY + rowRH / 2 - 8);
+    const d = new Date(ev.day + "T00:00:00");
+    ctx.font = "600 17px 'Archivo Narrow', sans-serif"; ctx.fillStyle = "#9fb0c8";
+    ctx.fillText(`${WEEKDAY_NAMES[d.getDay()].slice(0, 3).toUpperCase()} ${formatShortDate(ev.day)}`, rowX + 26, rowY + rowRH / 2 + 30);
+    const badge = sportShow_(ev.sport).toUpperCase();
+    ctx.font = "700 14px 'Archivo Narrow', sans-serif";
+    const bw = ctx.measureText(badge).width + 28, bx = rowX + 210, by = rowY + 18;
+    ctx.fillStyle = color; if(ctx.roundRect){ ctx.beginPath(); ctx.roundRect(bx, by, bw, 30, 15); ctx.fill(); } else ctx.fillRect(bx, by, bw, 30);
+    ctx.fillStyle = "#0a1626"; ctx.textAlign = "center"; ctx.fillText(badge, bx + bw / 2, by + 16);
+    const t = postTeams_(ev); ctx.textAlign = "left"; ctx.font = "700 27px 'Archivo Narrow', sans-serif"; ctx.fillStyle = "#eef2f8";
+    const maxW = rowW - 260; let fit = `${t.home} – ${t.away}`;
+    while(ctx.measureText(fit).width > maxW && fit.length > 3) fit = fit.slice(0, -4) + "…";
+    ctx.fillText(fit, rowX + 210, rowY + rowRH / 2 + 16);
+    const meta = [ev.detail, ev.phase].filter(Boolean).join(" · ");
+    if(meta){
+      ctx.font = "400 15px 'Archivo', sans-serif"; ctx.fillStyle = "#9fb0c8"; let mf = meta;
+      while(ctx.measureText(mf).width > maxW && mf.length > 3) mf = mf.slice(0, -4) + "…";
+      ctx.fillText(mf, rowX + 210, rowY + rowRH - 20);
+    }
+    y += rowH;
+  });
+  ctx.strokeStyle = "rgba(255,255,255,0.1)"; ctx.beginPath(); ctx.moveTo(70, y + 20); ctx.lineTo(W - 70, y + 20); ctx.stroke();
+  ctx.textAlign = "left"; ctx.font = "700 26px 'Archivo Narrow', sans-serif"; ctx.fillStyle = "#e3b23c"; ctx.fillText("dragaostats.pt", 70, y + 64);
+  ctx.textAlign = "right"; ctx.font = "400 16px 'Archivo', sans-serif"; ctx.fillStyle = "#9fb0c8";
+  ctx.fillText("Projeto de adeptos, sem ligação oficial ao FC Porto", W - 70, y + 64);
+  return new Promise(res=>canvas.toBlob(blob=>res({ canvas, blob }), "image/png"));
 }

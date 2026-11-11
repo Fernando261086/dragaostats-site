@@ -105,6 +105,7 @@ function gameDetailsHtml_(ev){
 // v243: onze inicial (Equipa A, Feminino, Equipa B). Aparece assim que o Sofascore tem o onze (provável ou confirmado) e fica no jogo depois.
 function onzeHtml_(ev){
   const o = (ONZE && typeof ONZE === "object") ? ONZE[ev.id] : null;
+  if(o && o.hq && Array.isArray(o.j) && o.j.length >= 8) return hqFichaHtml_(ev, o);
   if(!o || !Array.isArray(o.j) || o.j.length < 10) return "";
   const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
   const linhas = [["G", "GR"], ["D", "Defesas"], ["M", "Médios"], ["F", "Avançados"]];
@@ -117,6 +118,23 @@ function onzeHtml_(ev){
   };
   const adv = (typeof homeOpp_ === "function") ? homeOpp_(ev) : (ev.athlete || "Adversário");
   return `<div class="hv-panel gd-onze"><div class="hv-panel-head"><h3>Onze inicial</h3><span class="gd-onze-tag ${o.c ? "ok" : ""}">${o.c ? "Confirmado" : "Provável"}</span></div><div class="gd-onze-g">${lado(0, "FC Porto")}${lado(1, adv)}</div></div>`;
+}
+
+// v271: hóquei em patins — ficha de jogo do hoqueipatins.pt (cinco inicial + suplentes + treinadores). j: [nome, camisola, lado, "G"|"C", titular 1/0, capitão 1/0]
+function hqFichaHtml_(ev, o){
+  const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
+  const adv = (typeof homeOpp_ === "function") ? homeOpp_(ev) : (ev.athlete || "Adversário");
+  const pl = x=>`<span class="gd-onze-p">${x[1] ? `<i>${esc(x[1])}</i>` : ""}${esc(x[0])}${x[5] ? " (C)" : ""}${x[3] === "G" ? " · GR" : ""}</span>`;
+  const lado = (n, nome)=>{
+    const js = o.j.filter(x=>(x[2] === 1 ? 1 : 0) === n);
+    if(!js.length) return "";
+    const ord = (a, b)=>(a[3] === "G" ? 0 : 1) - (b[3] === "G" ? 0 : 1);
+    const ini = js.filter(x=>x[4]).sort(ord), sup = js.filter(x=>!x[4]).sort(ord);
+    const tr = (o.tr && o.tr[n]) ? o.tr[n].map(t=>esc(t[0]) + (t[1] && !/^treinador$/i.test(t[1]) ? ` <i>${esc(t[1])}</i>` : "")).join(" · ") : "";
+    const lin = (t, l)=>l.length ? `<div class="gd-onze-l"><span class="gd-onze-pos">${t}</span><span class="gd-onze-ps">${l.map(pl).join("")}</span></div>` : "";
+    return `<div class="gd-onze-t"><div class="gd-onze-n">${esc(nome)}</div>${lin("Cinco inicial", ini)}${lin("Suplentes", sup)}${tr ? `<div class="gd-onze-l"><span class="gd-onze-pos">Treinador</span><span class="gd-onze-ps">${tr}</span></div>` : ""}</div>`;
+  };
+  return `<div class="hv-panel gd-onze"><div class="hv-panel-head"><h3>Ficha de jogo</h3><span class="gd-onze-tag ok">hoqueipatins.pt</span></div><div class="gd-onze-g">${lado(0, "FC Porto")}${lado(1, adv)}</div></div>`;
 }
 
 // v177: últimos acontecimentos no cartão "ao vivo" do Início (3 mais recentes da cronologia, se houver)

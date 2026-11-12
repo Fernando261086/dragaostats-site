@@ -44,6 +44,9 @@ export default {
         if ((path === "/" || path === "/index.html") && url.searchParams.get("jogo")) {
           const r = await jogoPage_(request, env, ctx, url);
           if (r) return r;
+        } else if (path === "/hoje" || path === "/hoje.html") {
+          const r = await hojePage_(request, env, ctx);
+          if (r) return r;
         } else if (SPORT_PAGES[path.endsWith(".html") ? path : path + ".html"]) {
           const key = path.endsWith(".html") ? path : path + ".html";
           const r = await sportPage_(request, env, ctx, SPORT_PAGES[key]);
@@ -316,4 +319,69 @@ async function relatorioErros_(request) {
     });
     return new Response(null, { status: r.ok ? 200 : 204 });
   } catch (e) { return new Response(null, { status: 204 }); }
+}
+
+// ---------- 3) /hoje: jogos de hoje, próximos dias e últimos resultados (todas as modalidades)
+function lisbonDay_(ms) { return new Date(ms).toLocaleDateString("sv-SE", { timeZone: "Europe/Lisbon" }); }
+function weekdayLabel_(day) {
+  const d = new Date(day + "T12:00:00Z");
+  return ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"][d.getUTCDay()];
+}
+function hojeConteudo_(events, nowMs) {
+  const hoje = lisbonDay_(nowMs), fim = lisbonDay_(nowMs + 7 * 86400000);
+  const link = e => SITE + "/?comp=" + encodeURIComponent(e.comp || "") + "&jogo=" + encodeURIComponent(e.id);
+  const li = (e, mostrarRes) => {
+    const t = teams_(e);
+    const dir = mostrarRes && e.res
+      ? '<span class="jg-r">' + ESC(e.res) + "</span>"
+      : '<span class="jg-t">' + ESC(e.t || "—") + "</span>";
+    return '<li><a href="' + ESC(link(e)) + '"><span><b>' + ESC(emoji_(e.sport) + " " + t.home + " vs " + t.away) + "</b>" +
+      '<span class="jg-m">' + ESC(e.sport + (e.det ? " · " + e.det : "") + (e.venue ? " · " + e.venue : "")) + "</span></span>" + dir + "</a></li>";
+  };
+  const porHora = (a, b) => (a.t || "99:99").localeCompare(b.t || "99:99");
+  const dHoje = events.filter(e => e.day === hoje).sort(porHora);
+  const prox = events.filter(e => e.day > hoje && e.day <= fim && !e.res).sort((a, b) => a.day.localeCompare(b.day) || porHora(a, b)).slice(0, 12);
+  const ult = events.filter(e => e.res && e.day <= hoje).sort((a, b) => b.day.localeCompare(a.day) || (b.t || "").localeCompare(a.t || "")).slice(0, 8);
+  let html = '<section class="jg-sec"><h2>Hoje, ' + ESC(weekdayLabel_(hoje) + ", " + dateLabel_(hoje)) + "</h2>";
+  html += dHoje.length ? "<ul>" + dHoje.map(e => li(e, true)).join("") + "</ul>" : '<p class="jg-vazio">Hoje não há jogos do FC Porto nas modalidades que acompanhamos.</p>';
+  html += "</section>";
+  if (prox.length) html += '<section class="jg-sec"><h2>Próximos dias</h2><ul>' + prox.map(e => li({ ...e, t: dateLabel_(e.day) + " · " + (e.t || "") }, false)).join("") + "</ul></section>";
+  if (ult.length) html += '<section class="jg-sec"><h2>Últimos resultados</h2><ul>' + ult.map(e => li(e, true)).join("") + "</ul></section>";
+  const ld = dHoje.concat(prox).map(e => {
+    const t = teams_(e), s0 = startInfo_(e.day, e.t);
+    const o = { "@context": "https://schema.org", "@type": "SportsEvent", name: t.home + " vs " + t.away, sport: e.sport, url: link(e),
+      startDate: s0 ? e.day + "T" + String(e.t).padStart(5, "0") + ":00" + s0.offset : e.day,
+      eventStatus: e.res ? "https://schema.org/EventCompleted" : "https://schema.org/EventScheduled",
+      homeTeam: { "@type": "SportsTeam", name: t.home }, awayTeam: { "@type": "SportsTeam", name: t.away } };
+    if (e.venue) o.location = { "@type": "Place", name: e.venue };
+    return o;
+  });
+  const n = dHoje.length;
+  const dia = weekdayLabel_(hoje) + ", " + dateLabel_(hoje);
+  const title = (n ? "Jogos do FC Porto hoje, " : "FC Porto: próximos jogos, ") + dateLabel_(hoje) + " | Dragão Stats";
+  const desc = n
+    ? "Hoje, " + dia + ", o FC Porto joga em " + n + (n === 1 ? " modalidade" : " modalidades") + ": " + dHoje.slice(0, 4).map(e => e.sport + (e.t ? " às " + e.t : "")).join(", ") + ". Horários, local e resultados."
+    : "Hoje, " + dia + ", não há jogos do FC Porto. Vê os próximos jogos e os últimos resultados de todas as modalidades.";
+  return { html, ld, title, desc, h1: n ? "Jogos do <b>FC Porto</b> hoje" : "Próximos jogos do <b>FC Porto</b>", n };
+}
+async function hojePage_(request, env, ctx) {
+  const data = await getData_(env, ctx);
+  if (!data) return null;
+  const c = hojeConteudo_(data.events, Date.now());
+  const res = await env.ASSETS.fetch(request);
+  const out = new HTMLRewriter()
+    .on("title", { element(e) { e.setInnerContent(c.title); } })
+    .on('meta[name="description"]', { element(e) { e.setAttribute("content", c.desc); } })
+    .on('meta[property="og:title"]', { element(e) { e.setAttribute("content", c.title); } })
+    .on('meta[property="og:description"]', { element(e) { e.setAttribute("content", c.desc); } })
+    .on('meta[name="twitter:title"]', { element(e) { e.setAttribute("content", c.title); } })
+    .on('meta[name="twitter:description"]', { element(e) { e.setAttribute("content", c.desc); } })
+    .on("#hojeTitulo", { element(e) { e.setInnerContent(c.h1, { html: true }); } })
+    .on("#hojeIntro", { element(e) { e.setInnerContent(c.desc); } })
+    .on("#jogos-hoje", { element(e) { e.setInnerContent(c.html, { html: true }); } })
+    .on("head", { element(e) { if (c.ld.length) e.append('<script type="application/ld+json">' + JSON.stringify(c.ld).replace(/</g, "\\u003c") + "</script>", { html: true }); } })
+    .transform(res);
+  const r = new Response(out.body, out);
+  r.headers.set("Cache-Control", "public, max-age=300");
+  return r;
 }

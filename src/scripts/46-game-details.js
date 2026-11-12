@@ -62,7 +62,8 @@ function gameDetailsHtml_(ev){
       const x = it.x, tipo = x[1];
       const min = esc(x[0]), nome = esc(x[3] || ""), extra = esc(x[4] || "");
       let txt = "";
-      if(tipo === "S") txt = `<b>↑ ${nome}</b>${extra ? ` <i>↓ ${extra}</i>` : ""}`;
+      if(tipo === "N") txt = `<span class="gd-cm">${esc(x[5] || "")}</span>`; // v271: nota solta do relator (hóquei)
+      else if(tipo === "S") txt = `<b>↑ ${nome}</b>${extra ? ` <i>↓ ${extra}</i>` : ""}`;
       else if(tipo === "GP") txt = `<b>${nome}</b> <i>(penálti)</i>`;
       else if(tipo === "AG") txt = `<b>${nome}</b> <i>(auto-golo)</i>`;
       else if(tipo === "G") txt = `<b>${nome}</b>${extra ? ` <i>(ass. ${extra})</i>` : ""}`;
@@ -70,7 +71,8 @@ function gameDetailsHtml_(ev){
       else txt = `<b>${nome}</b>${extra ? ` <i>${esc(gdTr_(x[4] || "", GD_INC_PT_))}</i>` : ""}`;
       if(!nome && !extra){ const rotulo = { G:"Golo", GP:"Golo de penálti", AG:"Auto-golo", CA:"Cartão amarelo", CV:"Cartão vermelho", CA2:"2.º amarelo", S:"Substituição" }[tipo]; if(rotulo) txt = `<b>${rotulo}</b>`; }
       else if(!nome && tipo === "G") txt = `<b>Golo</b>${extra ? ` <i>(ass. ${extra})</i>` : ""}`;
-      const ic = `<span class="gd-ic">${icone[tipo] || "•"}</span>`;
+      if(x[5] && tipo !== "N") txt += `<span class="gd-cm">${esc(x[5])}</span>`; // v271: comentário do relator por baixo do lance (hóquei)
+      const ic = `<span class="gd-ic">${tipo === "N" ? "" : (icone[tipo] || "•")}</span>`;
       const cel = it.esq ? `<span class="gd-c gd-l">${ic}<span class="gd-tx">${txt}</span></span><span class="gd-mid"><b class="gd-min">${mn(x[0])}</b>${it.placar ? `<em class="gd-sc">${it.placar}</em>` : ""}</span><span class="gd-c"></span>`
                          : `<span class="gd-c"></span><span class="gd-mid"><b class="gd-min">${mn(x[0])}</b>${it.placar ? `<em class="gd-sc">${it.placar}</em>` : ""}</span><span class="gd-c gd-r"><span class="gd-tx">${txt}</span>${ic}</span>`;
       return `<div class="gd-row3${k >= LIM ? " gd-hide" : ""}">${cel}</div>`;
@@ -140,7 +142,7 @@ function hqFichaHtml_(ev, o){
 // v177: últimos acontecimentos no cartão "ao vivo" do Início (3 mais recentes da cronologia, se houver)
 function liveRecentHtml_(ev){
   const d = (DETALHES && typeof DETALHES === "object") ? DETALHES[ev.id] : null;
-  const inc = d && Array.isArray(d.inc) ? d.inc.filter(x=>x && x[1] && x[1] !== "O" && x[1] !== "S").slice(-3).reverse() : [];
+  const inc = d && Array.isArray(d.inc) ? d.inc.filter(x=>x && x[1] && x[1] !== "O" && x[1] !== "S" && x[1] !== "N").slice(-3).reverse() : [];
   if(!inc.length) return "";
   const esc = (typeof homeEsc_ === "function") ? homeEsc_ : (s=>String(s == null ? "" : s));
   const icone = {G:"⚽", GP:"⚽", AG:"⚽", CA:"🟨", CV:"🟥", CA2:"🟥"};

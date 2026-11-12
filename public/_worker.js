@@ -31,6 +31,7 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     try {
+      if (request.method === "POST" && path === "/rep") return await relatorioErros_(request);
       if (request.method === "GET" && path === "/sitemap-jogos.xml") {
         const r = await sitemapJogos_(env, ctx);
         if (r) return r;
@@ -295,4 +296,24 @@ async function sitemapJogos_(env, ctx) {
     .map(e => "<url><loc>" + ESC(SITE + "/?comp=" + encodeURIComponent(e.comp || "") + "&jogo=" + encodeURIComponent(e.id)) + "</loc><lastmod>" + ESC(e.day) + "</lastmod></url>");
   const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + itens.join("\n") + "\n</urlset>\n";
   return new Response(xml, { headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600" } });
+}
+
+// ---------- 1d) (v273) relatório de erros: /rep reencaminha para o Sentry (UE) os relatórios do site.
+// Só passa envelopes do NOSSO projeto, só o corpo (nenhum cabeçalho do visitante, por isso o IP dele não chega ao Sentry).
+const SENTRY_HOST = "o4512419488727040.ingest.de.sentry.io";
+const SENTRY_PROJECT = "4512419564683344";
+async function relatorioErros_(request) {
+  try {
+    const buf = await request.arrayBuffer();
+    if (buf.byteLength === 0 || buf.byteLength > 200000) return new Response(null, { status: 204 });
+    const bytes = new Uint8Array(buf);
+    const nl = bytes.indexOf(10);
+    const head = JSON.parse(new TextDecoder().decode(nl > 0 ? bytes.subarray(0, nl) : bytes));
+    const dsn = new URL(String(head.dsn || ""));
+    if (dsn.hostname !== SENTRY_HOST || dsn.pathname.replace(/^\//, "") !== SENTRY_PROJECT) return new Response(null, { status: 204 });
+    const r = await fetch("https://" + SENTRY_HOST + "/api/" + SENTRY_PROJECT + "/envelope/", {
+      method: "POST", body: buf, headers: { "Content-Type": "application/x-sentry-envelope" }
+    });
+    return new Response(null, { status: r.ok ? 200 : 204 });
+  } catch (e) { return new Response(null, { status: 204 }); }
 }

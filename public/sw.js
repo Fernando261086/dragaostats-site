@@ -14,7 +14,7 @@ firebase.initializeApp({
 });
 firebase.messaging(); // já trata sozinho de mostrar a notificação quando chega em segundo plano
 
-const CACHE_NAME = "dia22-cache-v349";
+const CACHE_NAME = "dia22-cache-v350";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -67,7 +67,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   // Estatísticas do Cloudflare (Web Analytics) e relatório de erros (Sentry) — deixa passar direto, sem tocar.
-  if (url.includes("cloudflareinsights.com") || url.includes("sentry-cdn.com") || url.includes("sentry.io")) {
+  if (url.includes("cloudflareinsights.com") || url.includes("sentry-cdn.com") || url.includes("sentry.io") || new URL(url).pathname === "/rep") {
     return;
   }
 

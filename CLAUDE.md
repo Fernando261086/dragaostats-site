@@ -476,6 +476,8 @@ parada, é quase sempre o endereço da fonte):
 
 **v275 (só site; cache `dia22-cache-v353`):** `GET /diag` no `_worker.js` (`diagnostico_`): JSON em texto simples com versão do worker, cache, nº de jogos lidos do Apps Script e erro; serve para saber se o worker corre em produção. Em 12/11/2026 `/hoje` (sem jogos preenchidos), `/sitemap-jogos.xml` e `/calendario/*.ics` davam `ERR_INVALID_RESPONSE` e `POST /rep` dava 404 apesar da v274 publicada: causa por apurar com `/diag`.
 
+**v276 (só site; cache `dia22-cache-v354`):** o projeto `dragaostats` no Cloudflare é um **Worker só com ficheiros estáticos** (a janela Configurações diz «apenas ativos estáticos»): aí o `_worker.js` NÃO corre (descoberto em 12/11/2026: `/rep`, `/diag`, `.ics`, `sitemap-jogos.xml` falhavam). Tem de ser um projeto **Pages com upload direto** (Workers e Pages → «Continuar para o Pages» → «Arraste e solte»): criado `dragaostats-pages` (`dragaostats-pages.pages.dev`), o domínio `dragaostats.pt` ainda tem de passar para lá. No Pages o worker corre, mas o Apps Script demora >4,5 s (`/diag`: «operation was aborted», 4533 ms): `getData_` passou a ter cópia fresca (2 min) + cópia velha (1 dia, devolvida logo enquanto atualiza em segundo plano com `ctx.waitUntil`, limite 25 s) e 15 s na 1.ª vez; `/diag` diz `worker: v276`.
+
 ## Regras de trabalho pedidas pelo Fernando (12/11/2026)
 
 **Permanente — verificação a cada ecrã alterado** (pedido dele): sempre que mudares um ecrã, confirma (com Playwright, não de cabeça):

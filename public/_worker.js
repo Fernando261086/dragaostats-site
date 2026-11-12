@@ -116,21 +116,34 @@ async function calendarioIcs_(env, ctx, path) {
 
 // ---------- dados (cache de 2 min, com tempo limite)
 async function getData_(env, ctx) {
+  // cópia fresca (2 min) e cópia velha (1 dia): o Apps Script pode demorar vários segundos,
+  // por isso quem chega com a fresca caducada recebe já a velha e a atualização corre em segundo plano.
   const cache = caches.default;
-  const key = new Request(SITE + "/__cache/dados-v1");
-  const hit = await cache.match(key);
+  const keyF = new Request(SITE + "/__cache/dados-v1");
+  const keyS = new Request(SITE + "/__cache/dados-velha-v1");
+  const hit = await cache.match(keyF);
   if (hit) return await hit.json();
-  const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), FETCH_TIMEOUT_MS);
-  let d;
-  try {
-    const r = await fetch((env.STORE_URL || STORE_URL_DEFAULT) + "?_=" + Date.now(), { signal: ctl.signal, redirect: "follow" });
-    d = await r.json();
-  } finally { clearTimeout(timer); }
-  if (!d || !d.competitions) return null;
-  const c = compact_(d);
-  ctx.waitUntil(cache.put(key, new Response(JSON.stringify(c), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_SECONDS } })));
-  return c;
+  const refresh = async (timeoutMs) => {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), timeoutMs);
+    let d;
+    try {
+      const r = await fetch((env.STORE_URL || STORE_URL_DEFAULT) + "?_=" + Date.now(), { signal: ctl.signal, redirect: "follow" });
+      d = await r.json();
+    } finally { clearTimeout(timer); }
+    if (!d || !d.competitions) return null;
+    const c = compact_(d);
+    const body = JSON.stringify(c);
+    await cache.put(keyF, new Response(body, { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_SECONDS } }));
+    await cache.put(keyS, new Response(body, { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=86400" } }));
+    return c;
+  };
+  const velha = await cache.match(keyS);
+  if (velha) {
+    ctx.waitUntil(refresh(25000).catch(() => null));
+    return await velha.json();
+  }
+  return await refresh(15000); // 1.ª vez: espera mais tempo
 }
 
 function compact_(d) {
@@ -389,7 +402,7 @@ async function hojePage_(request, env, ctx) {
 
 // ---------- diagnóstico: /diag (texto simples; diz se o worker corre e se lê os dados)
 async function diagnostico_(env, ctx) {
-  const out = { worker: "v275", hora: new Date().toISOString() };
+  const out = { worker: "v276", hora: new Date().toISOString() };
   const t0 = Date.now();
   try {
     const cache = await caches.default.match(new Request(SITE + "/__cache/dados-v1"));

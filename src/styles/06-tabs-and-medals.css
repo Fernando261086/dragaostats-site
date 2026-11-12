@@ -1405,3 +1405,8 @@ html.theme-light .af-btn{ color:var(--text,#0b1b3f); border-color:rgba(11,27,63,
 
 /* v271: comentários do relator no «Lance a lance» do hóquei */
 .gd-cm{display:block;margin-top:2px;font-size:11.5px;line-height:1.35;font-weight:400;font-style:normal;color:var(--muted,#93a2bd)}
+
+/* v274: ligações rastreáveis para as páginas de modalidade (SEO) */
+.foot-sports{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 14px;margin:10px 0 4px;}
+.foot-sports a{color:var(--text-dim);font-size:12px;text-decoration:none;padding:8px 2px;min-height:24px;}
+.foot-sports a:hover{color:var(--text);text-decoration:underline;}

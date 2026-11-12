@@ -27,30 +27,56 @@ try{
   // browser sem suporte, ou bloqueado — os avisos locais continuam a funcionar à mesma
 }
 
+// v278: devolve "ok" ou o motivo da falha (nunca lança). 1x por sessão conta push_ok / push_falhou_<motivo> (os bloqueadores
+// de anúncios cortam o Firebase ou o pedido ao Apps Script: o aparelho tem permissão mas o servidor nunca o chega a conhecer).
+function pushReport_(motivo){
+  try{
+    if(sessionStorage.getItem("dia22-push-rep")) return;
+    sessionStorage.setItem("dia22-push-rep", motivo);
+    if(typeof track_ === "function") track_(motivo === "ok" ? "push_ok" : "push_falhou_" + motivo);
+  }catch(e){}
+}
 async function registerForPushNotifications(){
-  if(!fcmMessaging) return; // browser sem suporte a isto — não é um erro, só não faz nada
-  const registration = await navigator.serviceWorker.ready;
-  const token = await fcmMessaging.getToken({ vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: registration });
-  if(!token) return;
-  currentPushToken = token; // guardado para se anexar a um feedback, se algum for enviado depois
-  const myName = getCurrentPersonName() || "?";
-  await fetch(STORE_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ registerPushToken: { token: token, name: myName } })
-  });
+  let motivo = "ok";
+  try{
+    if(!fcmMessaging){ motivo = "sem_firebase"; return motivo; } // browser sem suporte, ou o Firebase foi bloqueado
+    const registration = await navigator.serviceWorker.ready;
+    const token = await fcmMessaging.getToken({ vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: registration });
+    if(!token){ motivo = "sem_token"; return motivo; }
+    currentPushToken = token; // guardado para se anexar a um feedback, se algum for enviado depois
+    const myName = getCurrentPersonName() || "?";
+    const r = await fetch(STORE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ registerPushToken: { token: token, name: myName } })
+    });
+    if(!r.ok) motivo = "rede";
+  }catch(e){
+    motivo = (e && e.name === "TypeError") ? "rede" : "token_erro";
+  }finally{
+    pushReport_(motivo); // no finally: os return acima também passam por aqui
+  }
+  return motivo;
 }
 
 async function enableNotifications(){
   if(!("Notification" in window)){
     try{ if(typeof track_ === "function") track_("avisos_sem_suporte"); }catch(e){}
-    alert("Este browser não suporta notificações.");
+    showToast("Este browser não suporta notificações.");
     return false;
   }
-  const perm = await Notification.requestPermission();
+  let perm;
+  try{ perm = await Notification.requestPermission(); }catch(e){ perm = Notification.permission; }
+  if(perm === "default"){
+    // v278: fechou o pedido do browser sem escolher — não é uma recusa (antes contava como tal e mostrava um alerta)
+    try{ if(typeof track_ === "function") track_("avisos_fechou"); }catch(e){}
+    try{ if(typeof notifyCtaSnooze_ === "function") notifyCtaSnooze_(2); }catch(e){}
+    showToast("Sem problema. Podes ativar os avisos mais tarde.");
+    return false;
+  }
   if(perm !== "granted"){
     try{ if(typeof track_ === "function") track_("avisos_recusados"); }catch(e){}
-    alert("Sem permissão para mostrar notificações — não é possível ativar os avisos.");
+    if(typeof notifyBlockedSheet_ === "function") notifyBlockedSheet_(); else showToast("Os avisos estão bloqueados neste browser.");
     return false;
   }
   notificationsEnabled = true;
@@ -59,10 +85,10 @@ async function enableNotifications(){
   if(nudge) nudge.style.display = "none";
   checkUpcomingForNotifications();
   updateNotifyBtnLabel();
-  // além dos avisos locais (só funcionam com a app aberta), tenta também registar
-  // este aparelho para avisos a sério via push — se isto falhar por alguma razão,
-  // os avisos locais continuam a funcionar na mesma, não trava nada
-  try{ await registerForPushNotifications(); }catch(e){}
+  // além dos avisos locais (só funcionam com a app aberta), regista este aparelho para avisos a sério via push.
+  // Se falhar, os avisos locais continuam, mas avisa-se (antes ficava «ligado» sem o servidor saber do aparelho).
+  const motivo = await registerForPushNotifications();
+  if(motivo !== "ok") showToast("Avisos ligados, mas o aparelho não ficou registado no servidor. Um bloqueador de anúncios pode ser a causa.");
   return true;
 }
 

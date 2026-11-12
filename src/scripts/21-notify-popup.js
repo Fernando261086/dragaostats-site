@@ -5,6 +5,10 @@
 // o pedido do browser (nunca pedimos a permissão sozinhos). "Agora não" volta a perguntar
 // passados 5 dias, até 3 vezes; depois deixa em paz. Só para quem vê (não para o admin),
 // no máximo uma vez por dia, e nunca por cima de outro popup aberto.
+// v278: desligado. Aparecia ao mesmo tempo que o cartão de convite, o aviso «Novo: ao vivo» e a barra de momento (até 4 pedidos seguidos,
+// cada um com o seu «Agora não»). Fica o cartão (Início e jogo) + a barra de momento, que partilham o mesmo silêncio de 5 dias.
+// Para voltar a ligar: NOTIFY_NUDGE_ON_ = true.
+const NOTIFY_NUDGE_ON_ = false;
 const NOTIFY_NUDGE_DELAY_MS = 60000;
 const NOTIFY_NUDGE_SNOOZE_DAYS = 5;
 const NOTIFY_NUDGE_MAX_DISMISSALS = 3;
@@ -26,6 +30,7 @@ function notifyNudgeVariant_(){
   return null;
 }
 function notifyNudgeEligible_(){
+  if(!NOTIFY_NUDGE_ON_) return null;
   if(!READONLY_MODE) return null;
   const variant = notifyNudgeVariant_();
   if(!variant) return null;
@@ -87,7 +92,7 @@ function noteEngagement_(){
   setTimeout(()=>{ notifyNudgeScheduled = false; tryShowNotifyNudge_(8); }, 1500);
 }
 function startNotifyNudgeTimer_(){
-  if(!READONLY_MODE) return;
+  if(!NOTIFY_NUDGE_ON_ || !READONLY_MODE) return;
   setTimeout(()=> tryShowNotifyNudge_(8), NOTIFY_NUDGE_DELAY_MS);
 }
 

@@ -303,6 +303,66 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     errs.length ? bad('renomear: erros JS → ' + errs.join(' | ')) : ok('renomear: sem erros JS');
     await page.close();
   }
+  { // v278: um convite de avisos de cada vez, «Agora não» comum, pedido de permissão claro e registo do aparelho contado (360 px, claro e escuro)
+    const m7 = { ok:true, hasAdminAuth:false, competitions:[{id:'c1',name:'Época 26/27',mode:'matches'}], data:{ c1:{ events:[
+      {id:'h1',day:'2026-11-13',t:'20:30',sport:'Basquetebol',athlete:'Vitória SC',local:'fora',detail:'Liga Portuguesa'},
+      {id:'h2',day:'2026-11-08',t:'19:00',sport:'Andebol',athlete:'Sporting',local:'casa'} ], status:{ h2:{resultado:'28-24',resultTag:'win'} } } } };
+    for (const theme of ['dark', 'light']) {
+      const mk = async (perm, seen) => {
+        const page = await browser.newPage({ viewport: { width: 360, height: 740 } });
+        const errs = []; page.on('pageerror', e => errs.push(e.message)); const dialogs = []; page.on('dialog', d => { dialogs.push(d.message()); d.dismiss(); });
+        await page.addInitScript(([d, perm, seen]) => {
+          try { localStorage.setItem('dia22-viewer-name', 'Teste'); localStorage.setItem('dia22-intro-seen', window.INTRO_VERSION || 'x'); if (seen) localStorage.setItem('dia22-live-intro-v1', '1'); } catch (e) {}
+          window.__perm = 'default'; try { Object.defineProperty(Notification, 'permission', { get: () => window.__perm }); } catch (e) {}
+          Notification.requestPermission = () => Promise.resolve(perm);
+          const f = window.fetch; window.fetch = (...a) => String(a[0]).includes('script.google.com')
+            ? Promise.resolve(new Response(JSON.stringify(d), {status:200, headers:{'content-type':'application/json'}})) : f.apply(window, a);
+        }, [m7, perm, seen]);
+        await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+        await page.goto(`http://localhost:${port}/index.html?view=readonly`, { waitUntil: 'load' });
+        await page.waitForTimeout(1500);
+        await page.evaluate(t => { const o = document.getElementById('introOverlay'); if (o) o.style.display = 'none'; if (t === 'light') document.documentElement.classList.add('theme-light'); }, theme);
+        return { page, errs, dialogs };
+      };
+      const tag = `convites ${theme}`;
+      { // 1.ª visita: só o aviso «Novo: ao vivo» (com o botão), sem cartão repetido nem popup
+        const { page, errs } = await mk('granted', false);
+        await page.evaluate(() => { try { tryShowNotifyNudge_(0); } catch (e) {} }); await page.waitForTimeout(300);
+        const st = await page.evaluate(() => ({ cards: document.querySelectorAll('.nc-card').length, li: document.querySelectorAll('.li-card [data-liyes]').length, popup: getComputedStyle(document.getElementById('notifyNudge')).display, ov: document.documentElement.scrollWidth - innerWidth }));
+        st.cards === 1 && st.li === 1 && st.popup === 'none' ? ok(`${tag}: 1.ª visita com um só convite e sem popup`) : bad(`${tag}: 1.ª visita → ${JSON.stringify(st)}`);
+        st.ov > 1 ? bad(`${tag}: deslize lateral de ${st.ov}px`) : ok(`${tag}: 360 px sem deslize lateral`);
+        // «Agora não» no aviso → fica tudo calado (nada de cartão logo a seguir)
+        await page.click('.li-card [data-lino]'); await page.waitForTimeout(400);
+        const st2 = await page.evaluate(() => ({ cards: document.querySelectorAll('.nc-card').length, until: localStorage.getItem('dia22-notify-cta-until') }));
+        st2.cards === 0 && st2.until ? ok(`${tag}: «Agora não» cala todos os convites`) : bad(`${tag}: depois do «Agora não» → ${JSON.stringify(st2)}`);
+        errs.length ? bad(`${tag}: erros JS → ${errs.join(' | ')}`) : ok(`${tag}: sem erros JS`); await page.close();
+      }
+      { // aviso já visto: aparece o cartão normal, um só
+        const { page } = await mk('granted', true);
+        const n = await page.evaluate(() => document.querySelectorAll('.nc-card').length);
+        n === 1 ? ok(`${tag}: com o aviso já visto, um só cartão de convite`) : bad(`${tag}: ${n} cartões (esperado 1)`); await page.close();
+      }
+      { // pedido do browser fechado sem escolher: sem alert, convite calado 2 dias, conta avisos_fechou
+        const { page, dialogs } = await mk('default', true);
+        await page.click('.nc-yes'); await page.waitForTimeout(600);
+        const r = await page.evaluate(() => ({ toast: document.body.innerText.includes('Sem problema'), buf: JSON.stringify(trackBuf_), until: localStorage.getItem('dia22-notify-cta-until') }));
+        !dialogs.length && r.toast && /avisos_fechou/.test(r.buf) && !/avisos_recusados/.test(r.buf) && r.until ? ok(`${tag}: pedido fechado não conta como recusa nem mostra alert`) : bad(`${tag}: pedido fechado → dialogs=${dialogs.length} ${JSON.stringify(r)}`); await page.close();
+      }
+      { // recusado: painel com o passo-a-passo (sem alert) e sem deslize
+        const { page, dialogs } = await mk('denied', true);
+        await page.click('.nc-yes'); await page.waitForTimeout(600);
+        const r = await page.evaluate(() => ({ sheet: !!document.getElementById('nbSheet'), buf: JSON.stringify(trackBuf_), ov: document.documentElement.scrollWidth - innerWidth }));
+        !dialogs.length && r.sheet && /avisos_recusados/.test(r.buf) && r.ov <= 1 ? ok(`${tag}: recusa mostra o painel «Os avisos estão bloqueados»`) : bad(`${tag}: recusa → dialogs=${dialogs.length} ${JSON.stringify(r)}`); await page.close();
+      }
+      { // concedido mas o aparelho não fica registado (Firebase/servidor bloqueado): avisa e conta
+        const { page, dialogs, errs } = await mk('granted', true);
+        await page.click('.nc-yes'); await page.waitForTimeout(800);
+        const r = await page.evaluate(() => ({ toast: document.body.innerText.includes('não ficou registado'), buf: JSON.stringify(trackBuf_) }));
+        !dialogs.length && r.toast && /avisos_aceites/.test(r.buf) && /push_falhou_/.test(r.buf) ? ok(`${tag}: permissão dada sem registo → avisa e conta push_falhou`) : bad(`${tag}: sem registo → dialogs=${dialogs.length} ${JSON.stringify(r)}`);
+        errs.length ? bad(`${tag}: erros JS → ${errs.join(' | ')}`) : ok(`${tag}: sem erros JS (permissão)`); await page.close();
+      }
+    }
+  }
   await browser.close(); srv.close();
   console.log(fails ? `\n${fails} problema(s) — NÃO publicar.` : '\nTudo ok.'); process.exit(fails ? 1 : 0);
 })();

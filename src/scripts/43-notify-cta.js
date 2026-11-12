@@ -14,11 +14,32 @@ function notifyCtaHidden_(){
   try{ const u = localStorage.getItem("dia22-notify-cta-until"); return !!(u && todayISO_() < u); }catch(e){ return false; }
 }
 function notifyCtaShow_(){ return !!notifyCtaVariant_() && !notifyCtaHidden_(); }
+// v278: o «Agora não» é um só para todos os convites (cartão, aviso «Novo: ao vivo», barra de momento).
+function notifyCtaSnooze_(dias){
+  try{ localStorage.setItem("dia22-notify-cta-until", shiftISODay_(todayISO_(), dias || 5)); }catch(e){}
+}
+// v278: permissão recusada no browser → explica como voltar a ligar (antes: um alert() seco).
+function notifyBlockedSheet_(){
+  if(document.getElementById("nbSheet")) return;
+  const el = document.createElement("div");
+  el.id = "nbSheet"; el.className = "sh-overlay";
+  el.innerHTML = `<div class="sh-sheet" role="dialog" aria-label="Avisos bloqueados">
+    <div class="sh-top"><b>Os avisos estão bloqueados</b><button type="button" class="sh-x" aria-label="Fechar">✕</button></div>
+    <p class="ios-p">Este browser tem os avisos do Dragão Stats bloqueados. Para os ligar: toca no <b>cadeado</b> (ou nos três pontos) junto ao endereço, abre <b>Definições do site</b> ou <b>Permissões</b>, escolhe <b>Notificações</b> e põe <b>Permitir</b>. Depois volta cá e toca em «Ativar avisos».</p>
+    <button type="button" class="hv-btn hv-btn-main nb-ok">Percebi</button>
+  </div>`;
+  document.body.appendChild(el);
+  const close = ()=>el.remove();
+  el.querySelector(".sh-x").onclick = close; el.querySelector(".nb-ok").onclick = close;
+  el.addEventListener("click", e=>{ if(e.target === el) close(); });
+}
 let ncSeen_ = false;
 // v248: o texto muda com o momento (início, jogo ao vivo, antes do jogo, jogo terminado, link partilhado) e diz o que se recebe.
 // state (só na página do jogo): "vivo" | "antes" | "fim"
 function notifyCtaHtml_(ctx, state){
   if(!notifyCtaShow_()) return "";
+  // v278: no Início, se o aviso «Novo: ao vivo» já traz o botão «Ativar avisos», não se repete o convite
+  if(ctx === "inicio" && typeof liveIntroOffersNotify_ === "function" && liveIntroOffersNotify_()) return "";
   const ios = notifyCtaVariant_() === "ios";
   let titulo = "Não percas nenhum resultado";
   let txt = "Recebe um aviso quando o jogo começa, os golos das equipas de futebol e o resultado final.";

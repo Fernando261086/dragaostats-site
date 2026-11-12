@@ -222,18 +222,25 @@ function sportsGridHtml_(sportsAll, upcoming){
 // Para retirar de vez: LIVE_INTRO_ON_ = false. Para voltar a mostrar a toda a gente com uma novidade nova: mudar LIVE_INTRO_KEY_.
 const LIVE_INTRO_ON_ = true;
 const LIVE_INTRO_KEY_ = "dia22-live-intro-v1";
+// v278: o aviso traz o botão «Ativar avisos» só se ainda faz sentido pedir (permissão por decidir e sem «Agora não» recente)
+function liveIntroOffersNotify_(){
+  try{
+    if(!LIVE_INTRO_ON_ || !READONLY_MODE || localStorage.getItem(LIVE_INTRO_KEY_)) return false;
+    return typeof notifyCtaVariant_ === "function" && notifyCtaVariant_() === "enable" && !(typeof notifyCtaHidden_ === "function" && notifyCtaHidden_());
+  }catch(e){ return false; }
+}
 function liveIntroHtml_(){
   try{
     if(!LIVE_INTRO_ON_ || !READONLY_MODE) return "";
     if(localStorage.getItem(LIVE_INTRO_KEY_)) return "";
-    const canNotify = typeof notifyCtaVariant_ === "function" && notifyCtaVariant_() === "enable";
+    const canNotify = liveIntroOffersNotify_();
     return `<div class="nc-card li-card"><span class="nc-ico">${uiIco_("radio", 22)}</span><div class="nc-body"><b class="nc-t">Novo: jogos ao vivo!</b><span class="nc-s">Acompanha o resultado e o minuto dos jogos do FC Porto em direto, aqui no Dragão Stats.</span></div>
-      <div class="nc-btns">${canNotify ? `<button type="button" class="hv-btn hv-btn-main nc-yes" data-liyes="1">Ativar avisos</button>` : ""}<button type="button" class="nc-no" data-lino="1">${canNotify ? "Agora não" : "Percebi"}</button></div></div>`;
+      <div class="nc-btns">${canNotify ? `<button type="button" class="hv-btn hv-btn-main nc-yes" data-liyes="1">Ativar avisos</button>` : ""}<button type="button" class="nc-no" data-lino="1"${canNotify ? ' data-lisnooze="1"' : ""}>${canNotify ? "Agora não" : "Percebi"}</button></div></div>`;
   }catch(e){ return ""; }
 }
 function bindLiveIntro_(host, rerender){
   const done = ()=>{ try{ localStorage.setItem(LIVE_INTRO_KEY_, String(Date.now())); }catch(e){} try{ rerender(); }catch(e){} };
-  host.querySelectorAll("[data-lino]").forEach(b=>{ b.onclick = done; });
+  host.querySelectorAll("[data-lino]").forEach(b=>{ b.onclick = ()=>{ if(b.hasAttribute("data-lisnooze")){ try{ track_("nc_agora_nao"); }catch(e){} if(typeof notifyCtaSnooze_ === "function") notifyCtaSnooze_(5); } done(); }; });
   host.querySelectorAll("[data-liyes]").forEach(b=>{ b.onclick = async ()=>{ try{ track_("li_ativar"); }catch(e){} try{ await enableNotifications(); }catch(e){} done(); }; });
 }
 

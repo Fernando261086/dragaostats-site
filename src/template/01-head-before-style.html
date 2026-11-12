@@ -19,6 +19,65 @@
 <meta name="twitter:description" content="Calendário, resultados e estatísticas dos jogos do FC Porto em futebol feminino, futsal, basquetebol, andebol, hóquei em patins e voleibol.">
 <meta name="twitter:image" content="https://dragaostats.pt/og-image.png">
 
+<!-- v272: relatório de erros (Sentry, servidor na UE). Só descarrega o SDK quando acontece um erro;
+     sem replay, sem traços de desempenho, sem dados pessoais. Ver CLAUDE.md (v272). -->
+<script>
+(function(){
+  var DSN="https://0a384e88614f4c303ce844e9546ffe7a@o4512419488727040.ingest.de.sentry.io/4512419564683344";
+  var SRC="https://browser.sentry-cdn.com/11.12.0/bundle.min.js";
+  var SRI="sha384-fpjRzLWxkdRneAxDGo5pt5gKsjCWYV5ksPD+S1lx80QHBhs6Oe58hf8sKUKubCES";
+  var RELEASE="dragaostats@__SITE_VERSION__";
+  var TEST=!!window.__DS_ERR_TEST__;
+  try{ if(!TEST && (navigator.webdriver || /^(localhost|127\.|\[::1\])/.test(location.hostname))) return; }catch(e){}
+  var q=[], loading=false, ready=false, total=0;
+  var IGNORE=/ResizeObserver loop|Script error\.?$|Non-Error promise rejection|Load failed|Failed to fetch|NetworkError|The operation was aborted|AbortError|webkit-masked-url|chrome-extension:|moz-extension:|safari-extension:|__gCrWeb|instantSearchSDKJSBridgeClearHighlight|Java object is gone/i;
+  function txt(e){ try{ return String((e&&e.message)||e||"")+" "+String((e&&e.stack)||""); }catch(x){ return ""; } }
+  function ignore(e){ return IGNORE.test(txt(e)); }
+  function modo(){ return (/[?&]view=edit/.test(location.search)||/\/edicao\/?$/i.test(location.pathname))?"edicao":"publico"; }
+  function clean(u){ try{ return String(u).replace(/[?#].*$/,""); }catch(x){ return u; } }
+  function flush(){
+    if(!ready||!window.Sentry) return;
+    while(q.length){ var it=q.shift(); try{ Sentry.captureException(it); }catch(x){} }
+  }
+  function load(){
+    if(loading) return; loading=true;
+    var s=document.createElement("script");
+    s.src=SRC; if(!TEST) s.integrity=SRI; s.crossOrigin="anonymous";
+    s.onload=function(){
+      try{
+        Sentry.init({
+          dsn:DSN, release:RELEASE, environment:"production",
+          sendDefaultPii:false, tracesSampleRate:0, maxBreadcrumbs:15, sampleRate:1,
+          denyUrls:[/extensions\//i,/^chrome:\/\//i,/^moz-extension:/i,/^safari-/i],
+          beforeBreadcrumb:function(b){ return (b&&(b.category==="ui.click"||b.category==="navigation"))?b:null; },
+          beforeSend:function(ev){
+            try{
+              if(++total>5) return null;
+              if(ev.request&&ev.request.url) ev.request.url=clean(ev.request.url);
+              if(ev.request) delete ev.request.query_string;
+              if(ev.request) delete ev.request.cookies;
+              ev.user=undefined;
+              ev.tags=ev.tags||{}; ev.tags.modo=modo();
+              ev.tags.pwa=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)?"sim":"nao";
+            }catch(x){}
+            return ev;
+          }
+        });
+        ready=true; flush();
+      }catch(x){}
+    };
+    s.onerror=function(){ q.length=0; };
+    (document.head||document.documentElement).appendChild(s);
+  }
+  function add(e){ if(ignore(e)||q.length>=5) return; q.push(e instanceof Error?e:new Error(txt(e).slice(0,300))); if(ready) flush(); else load(); }
+  window.addEventListener("error",function(ev){
+    if(ev.target&&ev.target!==window) return;
+    add(ev.error||{message:ev.message,stack:(ev.filename||"")+":"+ev.lineno+":"+ev.colno});
+  });
+  window.addEventListener("unhandledrejection",function(ev){ add(ev.reason); });
+})();
+</script>
+
 <!-- PWA: permite "Instalar" a app no telemóvel/computador -->
 <link rel="manifest" href="manifest.json" id="pwaManifestLink">
 <script>

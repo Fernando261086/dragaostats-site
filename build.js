@@ -45,7 +45,13 @@ function build() {
     }
   }
 
-  const html = headBeforeStyle + css + betweenStyleAndScript + js + tail;
+  // v272: o número da versão (do nome da cache em public/sw.js) vai para o relatório de erros
+  let siteVersion = "dev";
+  try {
+    const m = /dia22-cache-v(\d+)/.exec(fs.readFileSync(path.join(PUBLIC, "sw.js"), "utf-8"));
+    if (m) siteVersion = "v" + m[1];
+  } catch (e) {}
+  const html = (headBeforeStyle + css + betweenStyleAndScript + js + tail).split("__SITE_VERSION__").join(siteVersion);
 
   // v192: limpa o dist antes (para ficheiros apagados em public/ não ficarem esquecidos no zip)
   fs.rmSync(DIST, { recursive: true, force: true });

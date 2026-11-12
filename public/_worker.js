@@ -31,6 +31,7 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
     try {
+      if (request.method === "GET" && path === "/diag") return await diagnostico_(env, ctx);
       if (request.method === "POST" && path === "/rep") return await relatorioErros_(request);
       if (request.method === "GET" && path === "/sitemap-jogos.xml") {
         const r = await sitemapJogos_(env, ctx);
@@ -384,4 +385,20 @@ async function hojePage_(request, env, ctx) {
   const r = new Response(out.body, out);
   r.headers.set("Cache-Control", "public, max-age=300");
   return r;
+}
+
+// ---------- diagnóstico: /diag (texto simples; diz se o worker corre e se lê os dados)
+async function diagnostico_(env, ctx) {
+  const out = { worker: "v275", hora: new Date().toISOString() };
+  const t0 = Date.now();
+  try {
+    const cache = await caches.default.match(new Request(SITE + "/__cache/dados-v1"));
+    out.cache = !!cache;
+    const d = await getData_(env, ctx);
+    out.dados = d ? "ok" : "vazio";
+    out.jogos = d ? d.events.length : 0;
+  } catch (e) { out.dados = "erro"; out.erro = String(e && e.message || e).slice(0, 200); }
+  out.ms = Date.now() - t0;
+  out.storeUrl = (env.STORE_URL ? "env" : "defeito");
+  return new Response(JSON.stringify(out), { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
 }

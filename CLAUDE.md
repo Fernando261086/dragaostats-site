@@ -474,6 +474,8 @@ parada, é quase sempre o endereço da fonte):
 
 **v274 (só site; Apps Script continua v181; cache `dia22-cache-v352`):** página `/hoje` (`public/hoje.html` + `hojePage_`/`hojeConteudo_` em `public/_worker.js`): o worker troca título/descrição/H1 e preenche `#jogos-hoje` com «Hoje» (data de Lisboa), «Próximos dias» (7 dias) e «Últimos resultados», com ligações rastreáveis `/?comp=&jogo=` e JSON-LD `SportsEvent`; `Cache-Control: public, max-age=300`; sem dados → página estática. Entrada no `sitemap.xml`, pílula «Jogos de hoje» nas 8 páginas SEO e `<nav class="foot-sports">` no rodapé do site (template 02) com ligações HTML para `/hoje` e as 8 modalidades (antes o site principal não ligava às páginas SEO: causa provável do Futsal «descoberto, sem indexar»). Futsal em si estava correto (canonical, sitemap, sem noindex). Não se pode ter `export` nomeado no `_worker.js` (só o `default`).
 
+**v275 (só site; cache `dia22-cache-v353`):** `GET /diag` no `_worker.js` (`diagnostico_`): JSON em texto simples com versão do worker, cache, nº de jogos lidos do Apps Script e erro; serve para saber se o worker corre em produção. Em 12/11/2026 `/hoje` (sem jogos preenchidos), `/sitemap-jogos.xml` e `/calendario/*.ics` davam `ERR_INVALID_RESPONSE` e `POST /rep` dava 404 apesar da v274 publicada: causa por apurar com `/diag`.
+
 ## Regras de trabalho pedidas pelo Fernando (12/11/2026)
 
 **Permanente — verificação a cada ecrã alterado** (pedido dele): sempre que mudares um ecrã, confirma (com Playwright, não de cabeça):

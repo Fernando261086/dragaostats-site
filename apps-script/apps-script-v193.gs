@@ -7351,10 +7351,11 @@ function testarTennisExplorerAgora() {
     if (/rank|doubl|double/i.test(u)) links[u] = 1;
   });
   Object.keys(links).slice(0, 40).forEach(function(u) { L("  link: " + u); });
+  L("data do ranking: " + ((base.t.match(/rankings on - [0-9.]+/i) || [])[0] || "?"));
   const datas = (base.t.match(/(updated|update|as of|actualiz)[^<]{0,60}/gi) || []).slice(0, 5);
   L("textos de data: " + (datas.join(" | ") || "nenhum"));
-  const cands = Object.keys(links).filter(function(u) { return /doubl/i.test(u); });
-  ["/ranking/atp-men-doubles/", "/ranking/atp-doubles/", "/ranking/atp-men/?doubles=1", "/ranking/doubles-men/", "/ranking/atp-men/?type=doubles"].forEach(function(p) { if (cands.indexOf(p) < 0) cands.push(p); });
+  const cands = [];
+  ["/ranking/atp-men/?t=doubles", "/ranking/atp-men/?t=doubles&page=2", "/ranking/atp-men/?t=doubles&page=3", "/ranking/atp-men/?t=doubles&page=4", "/ranking/atp-men/?t=doubles&country=portugal"].forEach(function(p) { if (cands.indexOf(p) < 0) cands.push(p); });
   cands.slice(0, 12).forEach(function(u) {
     const full = u.indexOf("http") === 0 ? u : "https://www.tennisexplorer.com" + u;
     const r = get(full);

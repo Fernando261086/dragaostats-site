@@ -35,10 +35,10 @@ function tnRankingsHtml_(){
   if(!L.length) h += `<p class="tn-empty">Ainda sem dados. Carrega em «🔄 Atualizar».</p>`;
   else h += `<div class="tn-list">` + L.map(p => `<button type="button" class="tn-row" data-pid="${p.id}"><span class="tn-pos">${p.r ? "#" + p.r : "—"}</span><span class="tn-nm">${tnEsc_(p.n)}</span><span class="tn-sub">${p.p ? p.p + " pts" : ""}${p.lr && p.lr !== p.r ? " · ao vivo #" + p.lr : ""}</span><span class="tn-mv">${tnMove_(p)}</span></button>`).join("") + `</div>`;
   // pares
-  const pares = L.map(p => ({ p, d: p.d ? { r: p.d[0], pts: p.d[1] } : (p.m && p.m.pm ? { r: p.m.pm.r, pts: p.m.pm.pts, man: 1 } : null) })).filter(x => x.d).sort((a, b) => a.d.r - b.d.r);
-  h += `<h4 class="tn-h">Portugueses · pares${g==="M" ? ' <small>(manual)</small>' : ""}</h4>`;
-  h += pares.length ? `<div class="tn-list">` + pares.map(x => `<button type="button" class="tn-row" data-pid="${x.p.id}"><span class="tn-pos">#${x.d.r}</span><span class="tn-nm">${tnEsc_(x.p.n)}</span><span class="tn-sub">${x.d.pts ? x.d.pts + " pts" : ""}${x.d.man ? " · à mão" : ""}</span><span class="tn-mv"></span></button>`).join("") + `</div>`
-    : `<p class="tn-empty">${g==="M" ? "Os pares masculinos não têm fonte automática: abre a ficha do tenista e escreve a posição." : "Sem pares encontrados."}</p>`;
+  const pares = L.map(p => ({ p, d: p.d ? { r: p.d[0], pts: p.d[1], mv: p.d[2] } : (p.m && p.m.pm ? { r: p.m.pm.r, pts: p.m.pm.pts, man: 1 } : null) })).filter(x => x.d).sort((a, b) => a.d.r - b.d.r);
+  h += `<h4 class="tn-h">Portugueses · pares</h4>`;
+  h += pares.length ? `<div class="tn-list">` + pares.map(x => `<button type="button" class="tn-row" data-pid="${x.p.id}"><span class="tn-pos">#${x.d.r}</span><span class="tn-nm">${tnEsc_(x.p.n)}</span><span class="tn-sub">${x.d.pts ? x.d.pts + " pts" : ""}${x.d.man ? " · à mão" : ""}</span><span class="tn-mv">${x.d.mv > 0 ? `<span class="tn-up">▲${x.d.mv}</span>` : x.d.mv < 0 ? `<span class="tn-dn">▼${-x.d.mv}</span>` : x.d.mv === 0 ? `<span class="tn-eq">=</span>` : ""}</span></button>`).join("") + `</div>`
+    : `<p class="tn-empty">Sem pares encontrados. Acrescenta o tenista em «Atletas» e, se for dos mais bem classificados, os pares aparecem sozinhos.</p>`;
   h += `<h4 class="tn-h">Top 10 do mundo</h4>` + (top.length ? `<div class="tn-list tn-top">` + top.map(t => `<div class="tn-row tn-static"><span class="tn-pos">#${t[0]}</span><span class="tn-nm">${tnEsc_(t[1])}</span><span class="tn-sub">${t[3] != null ? t[3] + " pts" : ""}</span><span class="tn-mv">${tnEsc_(t[2])}</span></div>`).join("") + `</div>` : `<p class="tn-empty">—</p>`);
   return h;
 }
@@ -99,8 +99,8 @@ function tnAddDialog_(p){
     <div class="sh-top"><b>${p ? "Editar tenista" : "Acrescentar tenista"}</b><button type="button" class="sh-x" id="tnDX" aria-label="Fechar">✕</button></div>
     <label class="tn-fl">Nome do atleta<input id="tnFN" class="sh-in" type="text" autocomplete="off" value="${tnEsc_(p ? p.n : "")}"></label>
     <div class="tn-fl">Masculino ou feminino<div class="tn-seg"><button type="button" class="sh-chip${g0 === "M" ? " on" : ""}" data-fg="M">Masculino</button><button type="button" class="sh-chip${g0 === "F" ? " on" : ""}" data-fg="F">Feminino</button></div></div>
-    <label class="tn-fl">Ranking singulares <small>(opcional)</small><input id="tnFS" class="sh-in" type="text" inputmode="numeric" placeholder="ex.: 49" value="${p && p.r ? p.r : ""}"></label>
-    <label class="tn-fl">Ranking pares <small>(opcional)</small><input id="tnFP" class="sh-in" type="text" inputmode="numeric" placeholder="ex.: 12" value="${p && p.d ? p.d[0] : ""}"></label>
+    <label class="tn-fl">Ranking singulares <small>(opcional)</small><input id="tnFS" class="sh-in" type="text" inputmode="numeric" placeholder="ex.: 49" value="${p && p.r && p.src !== "te" ? p.r : ""}"></label>
+    <label class="tn-fl">Ranking pares <small>(opcional)</small><input id="tnFP" class="sh-in" type="text" inputmode="numeric" placeholder="ex.: 12" value="${p && p.d && p.dsrc !== "te" ? p.d[0] : ""}"></label>
     <p class="tn-msg" id="tnFM"></p>
     <div class="tn-fb"><button type="button" class="sh-chip" id="tnFC">Cancelar</button><button type="button" class="sh-chip on" id="tnFOK">Guardar</button></div></div>`;
   document.body.appendChild(ov);

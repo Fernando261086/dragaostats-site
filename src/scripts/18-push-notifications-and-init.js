@@ -66,7 +66,17 @@ document.getElementById("viewOnlyLinkBtn").onclick = async ()=>{
   prompt("Copia este link:", link);
 };
 
+// v282: tira o ecrã de arranque (#bootScreen) com um esbatido; chamada no fim do init, no ecrã de erro e, por segurança, ao fim de 15 s
+function bootDone_(){
+  const b = document.getElementById("bootScreen");
+  if(!b || b.__done_) return;
+  b.__done_ = true;
+  b.classList.add("boot-out");
+  setTimeout(()=>{ try{ b.remove(); }catch(e){} }, 400);
+}
+setTimeout(bootDone_, 15000);
 function showLoadErrorScreen_(){
+  bootDone_();
   const el = document.getElementById("loadErrorScreen");
   if(el) el.style.display = "flex";
   const tl = document.getElementById("timeline");
@@ -212,6 +222,7 @@ function showStaleDataBanner_(at){
     const irAtalho = params.get("ir");
     if(!(irAtalho && typeof appShortcut_ === "function" && appShortcut_(irAtalho)) && typeof openHomeByDefault_ === "function") openHomeByDefault_();
   }
+  bootDone_(); // v282: o ecrã final já está desenhado por baixo
   // atualiza periodicamente para ver provas, marcações e competições feitas por outra pessoa,
   // sem nunca apagar uma marcação local mais recente
   // v243: no link «só ver», longe de qualquer jogo (e sem nada ao vivo) basta ir buscar os dados de ~25 em 25 s em vez de 6 em 6;

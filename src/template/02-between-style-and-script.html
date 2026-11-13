@@ -2,6 +2,36 @@
 </head>
 <body>
 <a class="skip-link" href="#conteudo">Saltar para o conteúdo</a>
+<!-- v282: ecrã de arranque único (público e edição): cobre o calendário antigo enquanto os dados chegam; sai em bootDone_() (fim do init) -->
+<script>try{ if(localStorage.getItem("dia22-theme")==="light") document.documentElement.classList.add("theme-light"); }catch(e){}</script>
+<style>
+#bootScreen{position:fixed;inset:0;z-index:90;background:var(--ink);color:var(--text);overflow:hidden;transition:opacity .25s ease;}
+#bootScreen.boot-out{opacity:0;pointer-events:none;}
+#bootScreen .bs-in{max-width:1100px;margin:0 auto;padding:0 16px;}
+#bootScreen .bs-top{display:flex;align-items:center;gap:12px;height:60px;border-bottom:1px solid var(--line);}
+#bootScreen .bs-top img{width:36px;height:36px;object-fit:contain;}
+#bootScreen .bs-top b{font-family:"Bebas Neue",Impact,sans-serif;font-size:24px;letter-spacing:.04em;font-weight:400;}
+#bootScreen .bs-b{background:var(--panel);border:1px solid var(--line);border-radius:14px;position:relative;overflow:hidden;}
+#bootScreen .bs-b::after,#bootScreen .bs-l::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);transform:translateX(-100%);animation:bsShim 1.4s infinite;}
+html.theme-light #bootScreen .bs-b::after,html.theme-light #bootScreen .bs-l::after{background:linear-gradient(90deg,transparent,rgba(20,30,50,.06),transparent);}
+#bootScreen .bs-hero{height:190px;margin-top:16px;}
+#bootScreen .bs-h{height:18px;width:42%;margin:22px 0 10px;border-radius:6px;}
+#bootScreen .bs-row{height:64px;margin-bottom:10px;}
+#bootScreen .bs-l{position:relative;overflow:hidden;background:var(--panel);}
+#bootScreen .bs-bar{position:absolute;left:0;right:0;bottom:0;height:calc(56px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--header-bg);display:none;}
+@media (max-width:899px){#bootScreen .bs-bar{display:block;}}
+@keyframes bsShim{to{transform:translateX(100%);}}
+@media (prefers-reduced-motion:reduce){#bootScreen .bs-b::after,#bootScreen .bs-l::after{animation:none;}}
+</style>
+<div id="bootScreen" role="status" aria-label="A carregar">
+  <div class="bs-in">
+    <div class="bs-top"><img src="header-emblem-128.webp" alt="" width="36" height="36"><b>Dragão Stats</b></div>
+    <div class="bs-b bs-hero"></div>
+    <div class="bs-l bs-h"></div>
+    <div class="bs-b bs-row"></div><div class="bs-b bs-row"></div><div class="bs-b bs-row"></div>
+  </div>
+  <div class="bs-bar"></div>
+</div>
 <script>
   // Decide já aqui, mesmo antes de desenhar a barra de ferramentas, se estamos
   // em /edicao (ou ?view=edit, como alternativa) — evita o "flash" em que os

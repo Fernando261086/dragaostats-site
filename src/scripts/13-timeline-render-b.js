@@ -198,7 +198,7 @@ function renderTodayAllView(){
       container,
       (ev, compId)=>{
         const comp = ALL.competitions.find(c=>c.id===compId);
-        if(((comp && comp.mode) || "medals") !== "medals") return false;
+        if(((comp && comp.mode) || "medals") !== currentCompRawMode_()) return false; // v285: o ténis só se cruza com ténis
         return parseInt(ev.day,10) === todayNum;
       },
       "Sem provas hoje em nenhuma competição."

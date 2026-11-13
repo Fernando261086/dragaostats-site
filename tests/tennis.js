@@ -4,7 +4,7 @@ const { chromium } = require('playwright');
 const DIST = path.join(__dirname, '..', 'dist');
 const MIME = { '.html':'text/html', '.js':'text/javascript', '.json':'application/json', '.png':'image/png', '.css':'text/css' };
 const shots = process.argv.includes('--shots') ? process.argv[process.argv.indexOf('--shots') + 1] : null;
-const mock = { ok:true, hasAdminAuth:false, competitions:[{id:'c1',name:'Época 26/27',mode:'matches'}], data:{ c1:{ events:[], status:{} } } };
+const mock = { ok:true, hasAdminAuth:false, competitions:[{id:'c1',name:'Época 26/27',mode:'matches'},{id:'t1',name:'Ténis 2026',mode:'tenis'}], data:{ c1:{ events:[], status:{} }, t1:{ events:[], status:{} } } };
 const now = Math.floor(Date.now()/1000);
 const J = (id,n,g,r,extra) => Object.assign({ id, n, g, c:'PT', r, p: 1000-r, pr: r+3, b: r-10, t: 20, res: [], h: [], m: {}, u: '2026-11-13 21:00' }, extra||{});
 let tenis = { ok:true, top:{ M:[[1,'Alexander Zverev','DE',9000],[2,'Jannik Sinner','IT',8800]], F:[[1,'Elena Rybakina','KZ',8099]] },
@@ -23,7 +23,7 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     const page = await browser.newPage({ viewport: { width: w, height: 800 } }), tag = `${label} ${theme} ${w}px`;
     const errs = [], posts = []; page.on('pageerror', e => errs.push(e.message));
     await page.addInitScript(([d, t, theme]) => {
-      try { localStorage.setItem('dia22-viewer-name','Teste'); localStorage.setItem('dia22-theme', theme); } catch (e) {}
+      try { localStorage.setItem('dia22-viewer-name','Teste'); localStorage.setItem('dia22-theme', theme); localStorage.setItem('dia22-pinned-comp','t1'); } catch (e) {}
       const f = window.fetch; window.fetch = (u, o) => {
         if (String(u).includes('script.google.com')) {
           if (o && o.method === 'POST') { let b = {}; try { b = JSON.parse(o.body); } catch (e) {} window.__posts = (window.__posts||[]).concat([b]);

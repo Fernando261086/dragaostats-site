@@ -10,7 +10,14 @@
   btn.innerHTML = "🎾 Ténis";
   (document.getElementById("healthBtn") || document.getElementById("shareHubBtn") || tog).insertAdjacentElement("afterend", btn);
   btn.onclick = openTennisPanel_;
+  btn.style.display = "none"; // v285: só aparece dentro de uma competição de ténis (tnSyncBtn_)
 })();
+function tnSyncBtn_(){
+  const b = document.getElementById("tennisBtn"); if(!b) return;
+  const on = typeof isTenis_ === "function" && isTenis_();
+  b.style.display = on ? "" : "none";
+  if(!on) closeTennisPanel_();
+}
 
 const TN_ = { data: null, tab: "rank", gen: "M", sel: null, msg: "" };
 function tnEsc_(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }

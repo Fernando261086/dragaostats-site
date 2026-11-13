@@ -66,7 +66,8 @@ const SPORT_COLORS = {
   "Hóquei Patins":"#8ce35c",
   "Futsal":"#5ce3b8",
   "Futebol Feminino":"#5cb8e3",
-  "Equipa B":"#8c5ce3"
+  "Equipa B":"#8c5ce3",
+  "Ténis":"#b4d84a"
 };
 
 let STANDINGS = {}; // classificações por modalidade (vêm do Apps Script v94): { "Andebol": { comp, fase, source, updated, manual, cols:[], rows:[{p,t,c:[],me}] } }
@@ -94,9 +95,17 @@ let expandedIds = new Set(); // provas abertas manualmente enquanto em modo comp
 
 // Modo da competição ativa: "medals" (provas/medalhas, como sempre foi) ou
 // "matches" (jogos por jornada, calendário mensal)
-function currentCompMode(){
+// v285: existe um 3.º tipo, "tenis" (só para editores). Para toda a lógica do site comporta-se como o Modo
+// Medalhas (dias, Passou/Não, medalhas, privado no «só ver»); só os campos e textos do ténis são próprios.
+function compModeOf_(c){ const m = (c && c.mode) || "medals"; return m === "tenis" ? "medals" : m; }
+function currentCompRawMode_(){
   const comp = ALL.competitions.find(c=>c.id===activeCompId);
   return (comp && comp.mode) || "medals";
+}
+function isTenis_(){ return currentCompRawMode_() === "tenis"; }
+function currentCompMode(){
+  const comp = ALL.competitions.find(c=>c.id===activeCompId);
+  return compModeOf_(comp);
 }
 const MONTH_NAMES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 function monthLabel(monthKey){ // "2026-09" -> "Setembro 2026"

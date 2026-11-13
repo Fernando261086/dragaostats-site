@@ -132,8 +132,13 @@ function applyFormModeUI(){
   const fDia = document.getElementById("fDia");
   fDia.type = matches ? "date" : "text";
   fDia.placeholder = matches ? "" : ("Dia (ex: " + activeDay + ")");
-  document.getElementById("fAtleta").placeholder = matches ? "Adversário" : "Atleta / Equipa";
-  document.getElementById("fDetalhe").placeholder = matches ? "Competição (ex: Liga Portugal)" : "Detalhe (ex: 100m)";
+  const tn = isTenis_(); // v285: campos próprios do ténis
+  document.getElementById("fAtleta").placeholder = matches ? "Adversário" : (tn ? "Atleta (português)" : "Atleta / Equipa");
+  if(tn && !document.getElementById("fSport").value) document.getElementById("fSport").value = "Ténis";
+  document.getElementById("fOpp").style.display = tn ? "block" : "none";
+  document.getElementById("fCountry").style.display = tn ? "block" : "none";
+  document.getElementById("fDetalhe").setAttribute("list", tn ? "tnDetalhes" : "");
+  document.getElementById("fDetalhe").placeholder = matches ? "Competição (ex: Liga Portugal)" : (tn ? "Singulares ou Pares" : "Detalhe (ex: 100m)");
   document.getElementById("fFase").placeholder = matches ? "Jornada ou Fase (ex: Jornada 5)" : "Fase (ex: Final)";
   document.getElementById("fLocal").style.display = matches ? "block" : "none";
   document.getElementById("fNotes").style.display = matches ? "block" : "none";
@@ -290,7 +295,7 @@ function refreshAthleteSuggestions(){
   // só sugere nomes de competições do MESMO modo — "Adversário" nunca deve
   // mostrar atletas do modo Medalhas, e vice-versa
   ALL.competitions.forEach(c=>{
-    if(((c.mode)||"medals") !== mode) return;
+    if(((c.mode)||"medals") !== currentCompRawMode_()) return; // v285: compara o tipo cru (ténis ≠ medalhas)
     const comp = ALL.data[c.id] || {};
     (comp.events || []).forEach(ev=>{
       if(!ev.athlete) return;
@@ -333,6 +338,8 @@ function openEditForm(ev){
   document.getElementById("fAtleta").value = ev.athlete || "";
   document.getElementById("fDetalhe").value = ev.detail || "";
   document.getElementById("fFase").value = ev.phase || "";
+  document.getElementById("fOpp").value = ev.opp || "";
+  document.getElementById("fCountry").value = ev.country || "";
   document.getElementById("fWatch").value = ev.watchUrl || "";
   document.getElementById("fWatchName").value = ev.watchName || "";
   document.getElementById("fLocal").value = ev.local || "casa";
@@ -360,6 +367,8 @@ function openDuplicateForm(ev){
   document.getElementById("fAtleta").value = ev.athlete || "";
   document.getElementById("fDetalhe").value = ev.detail || "";
   document.getElementById("fFase").value = ev.phase || "";
+  document.getElementById("fOpp").value = ev.opp || "";
+  document.getElementById("fCountry").value = ev.country || "";
   document.getElementById("fWatch").value = ev.watchUrl || "";
   document.getElementById("fWatchName").value = ev.watchName || "";
   document.getElementById("fLocal").value = ev.local || "casa";
@@ -385,7 +394,7 @@ function closeEditForm(){
   editingId = null;
   document.getElementById("addSaveBtn").textContent = "Guardar prova";
   document.getElementById("addCancelBtn").style.display = "none";
-  ["fDia","fHora","fSport","fAtleta","fDetalhe","fFase","fWatch","fWatchName","fLiveId","fVenue","fNotes","fClassLink"].forEach(id=>document.getElementById(id).value = "");
+  ["fDia","fHora","fSport","fAtleta","fOpp","fCountry","fDetalhe","fFase","fWatch","fWatchName","fLiveId","fVenue","fNotes","fClassLink"].forEach(id=>document.getElementById(id).value = "");
   document.getElementById("fApprox").checked = false;
   document.getElementById("fCond").checked = false;
   document.getElementById("fNoAuto").checked = false;
@@ -410,6 +419,8 @@ document.getElementById("addSaveBtn").onclick = async ()=>{
     day, t, sport, athlete,
     detail: document.getElementById("fDetalhe").value.trim(),
     phase: document.getElementById("fFase").value.trim(),
+    opp: document.getElementById("fOpp").value.trim(),
+    country: document.getElementById("fCountry").value.trim(),
     watchUrl: document.getElementById("fWatch").value.trim(),
     watchName: document.getElementById("fWatchName").value.trim(),
     local: document.getElementById("fLocal").value,
@@ -529,7 +540,7 @@ document.getElementById("compSelect").addEventListener("change", (e)=>{
 });
 
 // criação efetiva (usada por "+ Nova competição" e por "Época seguinte")
-async function createCompetitionNow_(trimmed, mode){
+async function createCompetitionNow_(trimmed, mode){ // mode: "matches" | "medals" | "tenis"
   const id = "c" + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
   ALL.competitions.push({ id, name: trimmed, mode });
   ALL.data[id] = { events: [], status: {} };
@@ -566,7 +577,8 @@ document.getElementById("newCompBtn").onclick = async ()=>{
     'Criar em "Modo Modalidades" (jogos por jornada, com data completa e resultado)?\n\n' +
     'OK = Modo Modalidades\nCancelar = Modo normal (provas/medalhas)'
   );
-  const mode = wantsMatches ? "matches" : "medals";
+  let mode = wantsMatches ? "matches" : "medals";
+  if(!wantsMatches && confirm('É uma competição de TÉNIS (só para editores: tenistas portugueses, rankings, Passou/Não passou, Campeão/Vice)?\n\nOK = Ténis\nCancelar = Modo normal (provas/medalhas)')) mode = "tenis";
   await createCompetitionNow_(trimmed, mode);
 };
 

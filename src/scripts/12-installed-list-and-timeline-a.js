@@ -362,7 +362,7 @@ function renderTimeline(){
         <div class="cl-row1">
           <span class="c-time">${timeLabel}</span>
           <span class="c-sport" style="--sport-color:${color}">${sportShow_(ev.sport)}</span>
-          <span class="c-athlete">${ev.athlete}</span>
+          <span class="c-athlete">${ev.opp ? ev.athlete + " vs " + ev.opp : ev.athlete}</span>
           <span class="c-medal">${medalIcon}</span>
         </div>
         <div class="cl-row2">
@@ -401,19 +401,19 @@ function renderTimeline(){
           <input class="result-input${st.resultado && st.resultado.trim() ? ' has-result' : ''}" type="text" placeholder="Resultado / tempo / posição" value="${st.resultado ? st.resultado.replace(/"/g,'&quot;') : ''}">
         </div>
         <div class="medal-picker">
-          <button class="medal-btn on-gold ${st.medal==='gold'?'active':''}" data-medal="gold">🥇 Ouro</button>
-          <button class="medal-btn on-silver ${st.medal==='silver'?'active':''}" data-medal="silver">🥈 Prata</button>
-          <button class="medal-btn on-bronze ${st.medal==='bronze'?'active':''}" data-medal="bronze">🥉 Bronze</button>
+          <button class="medal-btn on-gold ${st.medal==='gold'?'active':''}" data-medal="gold">${isTenis_() ? "🏆 Campeão" : "🥇 Ouro"}</button>
+          <button class="medal-btn on-silver ${st.medal==='silver'?'active':''}" data-medal="silver">${isTenis_() ? "🥈 Vice-campeão" : "🥈 Prata"}</button>
+          ${isTenis_() ? "" : `<button class="medal-btn on-bronze ${st.medal==='bronze'?'active':''}" data-medal="bronze">🥉 Bronze</button>`}
         </div>`;
 
     const metaLine = matchesMode
       ? [localLabel(ev.local,'short'), ev.venue, ev.detail, ev.phase].filter(Boolean).join(" · ")
-      : [ev.detail, ev.phase].filter(Boolean).join(" · ");
+      : [ev.detail, ev.phase, ev.country].filter(Boolean).join(" · ");
     const notesLine = (matchesMode && ev.notes) ? `<div class="out-note" style="color:var(--text-dim);">${ev.notes}</div>` : '';
     // v257: o canal ("Onde ver", ou deduzido do link) também aparece no cartão do calendário; as Observações ficam só para notas livres
     const watchChan = (matchesMode && (ev.watchName || ev.watchUrl) && typeof watchLabel_ === "function")
       ? `<div class="out-note watch-chan" style="color:var(--text-dim);">📺 ${String(watchLabel_(ev)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>` : '';
-    const athleteLabel = matchesMode ? matchTitleText_(ev) : ev.athlete;
+    const athleteLabel = matchesMode ? matchTitleText_(ev) : (ev.opp ? ev.athlete + " vs " + ev.opp : ev.athlete);
 
     row.innerHTML = `
       <div class="time">${matchesMode ? `<span class="time-date">${formatShortDate(ev.day)}</span><br>` : ''}${ev.t}${ev.approx ? '<span class="approx"> ~</span>' : ''}</div>

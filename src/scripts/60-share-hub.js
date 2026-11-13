@@ -45,6 +45,11 @@ function shareLoadImg_(blob){
 function shareCanvasBlob_(c){ return new Promise(res=>c.toBlob(b=>res(b), "image/png")); }
 
 // ---- legendas
+function shareTikTok_(t){ // TikTok: os links da legenda não são clicáveis → o texto remete para a bio; legenda curta
+  let r = String(t).replace(/(https?:\/\/dragaostats\.pt\S*)/g, "$1 (link na bio)");
+  if(r.length > 1800) r = r.slice(0, 1800).replace(/\s+\S*$/, "");
+  return r;
+}
 function shareNoHashtags_(t){ return String(t).split("\n").filter(l=>!/^\s*(#\S+\s*)+$/.test(l)).join("\n").replace(/\n{3,}/g, "\n\n").trim(); }
 function gameCaption_(ev){
   const st = (typeof getEv === "function" && getEv(ev.id)) || {}, score = String(st.resultado || "").trim();
@@ -127,7 +132,7 @@ function openShareHub_(opts){
   if(o.evId){ const ev0 = EVENTS.find(e=>e.id === o.evId); if(ev0 && ev0.day) day = ev0.day; }
   const wk0 = (o.weekOffset != null ? o.weekOffset : weekOffset);
   SHARE_S_ = { scope: o.scope || "dia", day, evId: o.evId || "", dayKind: o.dayKind || "", wk: wk0, wkKind: o.weekKind || "", wm: o.weekMode || (wk0 === 0 && new Date().getDay() !== 1 ? "falta" : "semana"), fmt: o.fmt || "img",
-    size, rede: "ig", srcBlob: null, srcName: "", out: null, url: "", busy: false, token: prevTok + 1, key: "", caption: "", capReddit: "" };
+    size, rede: "ig", srcBlob: null, srcName: "", out: null, url: "", busy: false, token: prevTok + 1, key: "", caption: "", capReddit: "", capTikTok: "" };
   window.__shareHubOpen_ = true;
   if(!exists){
     const el = document.createElement("div");
@@ -293,7 +298,7 @@ async function shGenerate_(){
     }
     if(my !== S.token) return; // mudou-se de escolha entretanto
     if(!blob) throw new Error("sem ficheiro");
-    S.srcBlob = blob; S.srcName = name; S.caption = caption; S.capReddit = shareNoHashtags_(caption);
+    S.srcBlob = blob; S.srcName = name; S.caption = caption; S.capReddit = shareNoHashtags_(caption); S.capTikTok = shareTikTok_(caption);
     if(reel) shShowVid_(); else await shShowImg_();
   }catch(e){
     if(my === S.token){ const o = shOut_(); if(o) o.innerHTML = `<div class="sh-status">${reel ? "Não foi possível criar o reel neste aparelho. Tenta noutro browser (Chrome) ou no computador." : "⚠️ Não foi possível gerar a imagem."}</div>`; }
@@ -332,10 +337,10 @@ function shRenderOut_(){
   o.innerHTML = `<div class="sh-prev">${v.kind === "img" ? `<img src="${S.url}" alt="Pré-visualização">` : `<video src="${S.url}" controls playsinline loop></video>`}</div>
     <div class="sh-meta">✅ Pronto · ${shE_(v.label)}</div>
     <div class="sh-sec">Legenda</div>
-    <div class="sh-days"><button type="button" class="sh-chip${S.rede === "ig" ? " on" : ""}" data-rede="ig">Instagram / Facebook</button><button type="button" class="sh-chip${S.rede === "rd" ? " on" : ""}" data-rede="rd">Reddit (sem #)</button></div>
-    <textarea id="shCap" class="sh-cap" rows="9">${shE_(S.rede === "rd" ? S.capReddit : S.caption)}</textarea>
+    <div class="sh-days"><button type="button" class="sh-chip${S.rede === "ig" ? " on" : ""}" data-rede="ig">Instagram / Facebook</button><button type="button" class="sh-chip${S.rede === "rd" ? " on" : ""}" data-rede="rd">Reddit (sem #)</button><button type="button" class="sh-chip${S.rede === "tt" ? " on" : ""}" data-rede="tt">TikTok</button></div>
+    <textarea id="shCap" class="sh-cap" rows="9">${shE_(S.rede === "rd" ? S.capReddit : S.rede === "tt" ? S.capTikTok : S.caption)}</textarea>
     <div class="sh-btnrow"><button type="button" class="hv-btn hv-btn-ghost" id="shCopy">📋 Copiar texto</button><button type="button" class="hv-btn hv-btn-main" id="shShare">↗ Partilhar</button><button type="button" class="hv-btn hv-btn-ghost" id="shDl">⬇️ Descarregar</button></div>
-    <div class="sh-note">«Partilhar» copia o texto primeiro: cola-o na legenda da publicação (o Instagram ignora o texto enviado com o ficheiro).</div>`;
+    <div class="sh-note">«Partilhar» copia o texto primeiro: cola-o na legenda da publicação (o Instagram ignora o texto enviado com o ficheiro).${S.rede === "tt" ? " No TikTok os links da legenda não abrem: põe https://dragaostats.pt na bio do perfil." : ""}</div>`;
   o.querySelectorAll("[data-rede]").forEach(b=>{ b.onclick = ()=>{ S.rede = b.getAttribute("data-rede"); shRenderOut_(); }; });
   const cap = o.querySelector("#shCap");
   const copy = async ()=>{ try{ await navigator.clipboard.writeText(cap.value); return true; }catch(e){ cap.select(); try{ return document.execCommand("copy"); }catch(e2){ return false; } } };

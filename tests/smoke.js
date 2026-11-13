@@ -94,6 +94,9 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     await page.click('[data-rede="rd"]');
     const rd = await page.evaluate(() => document.getElementById('shCap').value);
     rd.includes('#') ? bad('partilhar: legenda Reddit ainda tem hashtags') : ok('partilhar: legenda Reddit sem hashtags');
+    await page.click('[data-rede="tt"]');
+    const tt = await page.evaluate(() => ({ v: document.getElementById('shCap').value, n: document.querySelector('.sh-note').innerText }));
+    (tt.v.includes('#') && tt.v.includes('https://dragaostats.pt (link na bio)') && /bio/.test(tt.n)) ? ok('partilhar: legenda TikTok (hashtags + link na bio)') : bad('partilhar: legenda TikTok errada: ' + tt.v.slice(0,120));
     await page.click('[data-scope="dia"]'); await page.waitForTimeout(400); await page.click('[data-fmt="reel"]'); await page.click('#shGo');
     let pronto = false; for (let i = 0; i < 60 && !pronto; i++) { await page.waitForTimeout(2000); pronto = await page.evaluate(() => !!document.querySelector('#shOut video')); }
     pronto ? ok('partilhar: reel do dia criado') : bad('partilhar: reel do dia não ficou pronto');

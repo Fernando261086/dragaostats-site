@@ -134,7 +134,9 @@ function applyFormModeUI(){
   fDia.type = (matches || tn) ? "date" : "text"; // v286: o ténis também escolhe a data no calendário
   fDia.placeholder = (matches || tn) ? "" : ("Dia (ex: " + activeDay + ")");
   document.getElementById("fPiso").style.display = tn ? "block" : "none";
-  document.getElementById("fVenue").placeholder = tn ? "Torneio / local (opcional)" : "Pavilhão/local (opcional)";
+  document.getElementById("fVenue").placeholder = tn ? "Torneio (ex.: Monte Carlo) — junta os jogos nos Resultados" : "Pavilhão/local (opcional)";
+  document.getElementById("fVenue").setAttribute("list", tn ? "tnTorneios" : ""); // v289: sugere os torneios já escritos (evita «Monte Carlo» vs «Monte-Carlo»)
+  if(tn){ const dl = document.getElementById("tnTorneios"); if(dl) dl.innerHTML = Array.from(new Set(EVENTS.map(e => String(e.venue || "").trim()).filter(Boolean))).map(v => `<option value="${v.replace(/"/g, "&quot;")}">`).join(""); }
   document.getElementById("fAtleta").placeholder = matches ? "Adversário" : (tn ? "Atleta (português)" : "Atleta / Equipa");
   if(tn && !document.getElementById("fSport").value) document.getElementById("fSport").value = "Ténis";
   document.getElementById("fOpp").style.display = tn ? "block" : "none";

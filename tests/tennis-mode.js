@@ -41,9 +41,13 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
       tb.res === 'Resultados' && tb.resVis && !tb.stats && tb.rk ? ok(`${tag}: separadores Resultados + Rankings, sem Estatísticas`) : bad(`${tag}: separadores ${JSON.stringify(tb)}`);
       !tb.poll && !tb.nl && !tb.box ? ok(`${tag}: sem sondagem, banner de avisos/newsletter nem caixa de newsletter`) : bad(`${tag}: avisos visíveis ${JSON.stringify(tb)}`);
       await page.evaluate(() => document.getElementById('viewMedalsBtn').click()); await page.waitForTimeout(300);
-      const rs = await page.evaluate(() => ({ t: document.getElementById('medalsView').textContent, win: document.querySelectorAll('#medalsView .tn-rr.win').length, ov: Math.max(document.documentElement.scrollWidth - window.innerWidth, 0) }));
-      /Títulos/.test(rs.t) && /Nuno Borges/.test(rs.t) && /Campeão/.test(rs.t) && /6-4 7-6/.test(rs.t) && rs.win === 1 && !/Ouro|Bronze/.test(rs.t) ? ok(`${tag}: Resultados com histórico, destaque do título e contagem`) : bad(`${tag}: Resultados ${JSON.stringify(rs)}`);
+      const rs = await page.evaluate(() => ({ t: document.getElementById('medalsView').textContent, win: document.querySelectorAll('#medalsView .tn-tc.win').length, ov: Math.max(document.documentElement.scrollWidth - window.innerWidth, 0) }));
+      /Títulos/.test(rs.t) && /Nuno Borges/.test(rs.t) && /Campeão/.test(rs.t) && rs.win === 1 && !/Ouro|Bronze/.test(rs.t) ? ok(`${tag}: Resultados por torneio com destaque do título e contagem`) : bad(`${tag}: Resultados ${JSON.stringify(rs)}`);
       rs.ov > 1 ? bad(`${tag}: Resultados com deslize lateral ${rs.ov}px`) : ok(`${tag}: Resultados sem deslize lateral`);
+      await page.evaluate(() => document.querySelector('#medalsView [data-tsel]').click()); await page.waitForTimeout(250);
+      const dt = await page.evaluate(() => ({ t: document.getElementById('medalsView').textContent, win: document.querySelectorAll('#medalsView .tn-rr.win').length, back: !!document.querySelector('[data-rback]'), ov: Math.max(document.documentElement.scrollWidth - window.innerWidth, 0) }));
+      /6-4 7-6/.test(dt.t) && /Casper Ruud/.test(dt.t) && dt.win === 1 && dt.back && dt.ov <= 1 ? ok(`${tag}: detalhe do torneio com jogos e resultados`) : bad(`${tag}: detalhe ${JSON.stringify(dt)}`);
+      await page.evaluate(() => document.querySelector('[data-rback]').click()); await page.waitForTimeout(200);
       await page.evaluate(() => document.getElementById('viewRankingsBtn').click()); await page.waitForTimeout(500);
       const rk = await page.evaluate(() => ({ shown: document.getElementById('tennisView').offsetParent !== null, cal: document.getElementById('timeline').offsetParent !== null }));
       rk.shown && !rk.cal ? ok(`${tag}: separador Rankings abre a vista`) : bad(`${tag}: Rankings ${JSON.stringify(rk)}`);

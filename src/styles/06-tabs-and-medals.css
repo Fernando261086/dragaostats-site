@@ -1476,3 +1476,19 @@ html.theme-light .tn-ra.win,html.theme-light .tn-rr.win{background:#fff4d6}
 .tn-rfil .tn-ra{flex:0 0 auto;cursor:pointer;color:inherit;font:inherit;font-size:13px;align-items:center;gap:8px;max-width:78vw}
 .tn-rfil .tn-ra.on{border-color:var(--accent,#b48be0);box-shadow:0 0 0 1px var(--accent,#b48be0);background:rgba(180,139,224,.14)}
 .tn-rord{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 6px}
+
+/* v289: Resultados do ténis por torneio */
+.tn-tc{position:relative;display:flex;flex-direction:column;gap:3px;width:100%;text-align:left;padding:12px 34px 12px 14px;margin:0 0 8px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:inherit;font:inherit;cursor:pointer;min-width:0}
+.tn-tc.win{border-color:#e3b23c;background:rgba(227,178,60,.12)}
+.tn-tc1{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
+.tn-tc1 b{font-size:15px;overflow-wrap:anywhere}.tn-tc1 em{font-style:normal;font-size:12px;font-weight:700;color:var(--accent,#b48be0);white-space:nowrap}
+.tn-tc.win .tn-tc1 em{color:#e3b23c}
+.tn-tc2{font-size:13px}.tn-tc3{font-size:12px;color:var(--text-dim);overflow-wrap:anywhere}
+.tn-chev{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:22px;color:var(--text-dim)}
+.tn-rback{margin:0 0 10px}
+.tn-rhead{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin:0 0 12px}
+.tn-rhead.win{border-color:#e3b23c;background:rgba(227,178,60,.12)}
+.tn-rh1{font-size:18px;font-weight:700;overflow-wrap:anywhere}.tn-rh2{font-size:13px;margin-top:2px}.tn-rh3{font-size:12px;color:var(--text-dim);margin-top:2px}.tn-rh4{font-size:13px;font-weight:700;margin-top:6px;color:var(--accent,#b48be0)}
+.tn-rhead.win .tn-rh4{color:#e3b23c}
+html.theme-light .tn-tc,html.theme-light .tn-rhead{background:#f3f5f9}
+html.theme-light .tn-tc.win,html.theme-light .tn-rhead.win{background:#fff4d6}

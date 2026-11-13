@@ -38,11 +38,13 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
       if (lab.length) (lab.some(t => /Campeão/.test(t)) && lab.some(t => /Vice/.test(t)) && !lab.some(t => /Bronze|Ouro/.test(t))) ? ok(`${tag}: Campeão / Vice-campeão (sem Ouro/Bronze)`) : bad(`${tag}: etiquetas ${lab}`);
       await page.evaluate(() => document.getElementById('addToggleBtn').click()); await page.waitForTimeout(300);
       const f = await page.evaluate(() => ({ opp: document.getElementById('fOpp').offsetParent !== null, ctry: document.getElementById('fCountry').offsetParent !== null, sport: document.getElementById('fSport').value, det: document.getElementById('fDetalhe').getAttribute('list') }));
+      const f2 = await page.evaluate(() => ({ type: document.getElementById('fDia').type, piso: document.getElementById('fPiso').offsetParent !== null }));
+      f2.type === 'date' && f2.piso ? ok(`${tag}: «Dia» é calendário e há campo Piso`) : bad(`${tag}: dia/piso ${JSON.stringify(f2)}`);
       f.opp && f.ctry && f.sport === 'Ténis' && f.det === 'tnDetalhes' ? ok(`${tag}: formulário com adversário, país e «Ténis» por defeito`) : bad(`${tag}: formulário ${JSON.stringify(f)}`);
-      await page.evaluate(() => { document.getElementById('fHora').value='12:00'; document.getElementById('fAtleta').value='Jaime Faria'; document.getElementById('fOpp').value='Fulano'; document.getElementById('fCountry').value='Portugal'; document.getElementById('fDetalhe').value='Pares'; document.getElementById('fFase').value='Meias'; });
+      await page.evaluate(() => { document.getElementById('fDia').value='2026-11-19'; document.getElementById('fPiso').value='Terra batida'; document.getElementById('fHora').value='12:00'; document.getElementById('fAtleta').value='Jaime Faria'; document.getElementById('fOpp').value='Fulano'; document.getElementById('fCountry').value='Portugal'; document.getElementById('fDetalhe').value='Pares'; document.getElementById('fFase').value='Meias'; });
       await page.evaluate(() => document.getElementById('addSaveBtn').click()); await page.waitForTimeout(600);
       const ev = await page.evaluate(() => EVENTS.find(e => e.athlete === 'Jaime Faria'));
-      ev && ev.opp === 'Fulano' && ev.country === 'Portugal' ? ok(`${tag}: guarda adversário e país`) : bad(`${tag}: evento guardado ${JSON.stringify(ev)}`);
+      ev && ev.opp === 'Fulano' && ev.country === 'Portugal' && ev.piso === 'Terra batida' && ev.day === '19' && ev.date === '2026-11-19' ? ok(`${tag}: guarda adversário, país, piso, dia e data`) : bad(`${tag}: evento guardado ${JSON.stringify(ev)}`);
       // competição de medalhas normal NÃO tem os campos do ténis
       await page.evaluate(() => switchToCompetition('m1')); await page.waitForTimeout(400);
       const m = await page.evaluate(() => ({ btn: document.getElementById('tennisBtn').offsetParent !== null, tn: isTenis_(), opp: document.getElementById('fOpp').offsetParent !== null }));

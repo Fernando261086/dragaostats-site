@@ -408,7 +408,7 @@ function renderTimeline(){
 
     const metaLine = matchesMode
       ? [localLabel(ev.local,'short'), ev.venue, ev.detail, ev.phase].filter(Boolean).join(" · ")
-      : [ev.detail, ev.phase, ev.country].filter(Boolean).join(" · ");
+      : [ev.detail, ev.phase, ev.country, ev.piso].filter(Boolean).join(" · ");
     const notesLine = (matchesMode && ev.notes) ? `<div class="out-note" style="color:var(--text-dim);">${ev.notes}</div>` : '';
     // v257: o canal ("Onde ver", ou deduzido do link) também aparece no cartão do calendário; as Observações ficam só para notas livres
     const watchChan = (matchesMode && (ev.watchName || ev.watchUrl) && typeof watchLabel_ === "function")

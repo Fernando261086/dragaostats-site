@@ -130,9 +130,10 @@ function applyFormModeUI(){
   const matches = currentCompMode()==="matches";
   if(matches) cleanupSportLinks(); // nunca mostrar modalidades do outro modo no menu
   const fDia = document.getElementById("fDia");
-  fDia.type = matches ? "date" : "text";
-  fDia.placeholder = matches ? "" : ("Dia (ex: " + activeDay + ")");
   const tn = isTenis_(); // v285: campos próprios do ténis
+  fDia.type = (matches || tn) ? "date" : "text"; // v286: o ténis também escolhe a data no calendário
+  fDia.placeholder = (matches || tn) ? "" : ("Dia (ex: " + activeDay + ")");
+  document.getElementById("fPiso").style.display = tn ? "block" : "none";
   document.getElementById("fAtleta").placeholder = matches ? "Adversário" : (tn ? "Atleta (português)" : "Atleta / Equipa");
   if(tn && !document.getElementById("fSport").value) document.getElementById("fSport").value = "Ténis";
   document.getElementById("fOpp").style.display = tn ? "block" : "none";
@@ -331,8 +332,22 @@ function liveIdFromText_(txt){
   return m ? m[1] : "";
 }
 
+// v286: no ténis o campo "Dia" é um calendário; guarda-se a data completa em ev.date
+// e o número do dia em ev.day (os separadores "Dia N" continuam a funcionar).
+function tnDateForForm_(ev){
+  if(ev.date && /^\d{4}-\d{2}-\d{2}$/.test(ev.date) && String(parseInt(ev.date.slice(8),10)) === String(ev.day)) return ev.date;
+  const n = parseInt(ev.day, 10);
+  if(!n) return "";
+  const d = new Date(); // sem data completa: usa o mês e o ano de hoje
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(n).padStart(2,"0");
+}
+function fDiaFill_(ev){
+  document.getElementById("fDia").value = isTenis_() ? tnDateForForm_(ev) : (ev.day || "");
+  document.getElementById("fPiso").value = ev.piso || "";
+}
+
 function openEditForm(ev){
-  document.getElementById("fDia").value = ev.day || "";
+  fDiaFill_(ev);
   document.getElementById("fHora").value = ev.t || "";
   document.getElementById("fSport").value = ev.sport || "";
   document.getElementById("fAtleta").value = ev.athlete || "";
@@ -361,7 +376,7 @@ function openEditForm(ev){
 }
 
 function openDuplicateForm(ev){
-  document.getElementById("fDia").value = ev.day || "";
+  fDiaFill_(ev);
   document.getElementById("fHora").value = ev.t || "";
   document.getElementById("fSport").value = ev.sport || "";
   document.getElementById("fAtleta").value = ev.athlete || "";
@@ -394,7 +409,7 @@ function closeEditForm(){
   editingId = null;
   document.getElementById("addSaveBtn").textContent = "Guardar prova";
   document.getElementById("addCancelBtn").style.display = "none";
-  ["fDia","fHora","fSport","fAtleta","fOpp","fCountry","fDetalhe","fFase","fWatch","fWatchName","fLiveId","fVenue","fNotes","fClassLink"].forEach(id=>document.getElementById(id).value = "");
+  ["fDia","fHora","fSport","fAtleta","fOpp","fCountry","fDetalhe","fFase","fWatch","fWatchName","fLiveId","fVenue","fPiso","fNotes","fClassLink"].forEach(id=>document.getElementById(id).value = "");
   document.getElementById("fApprox").checked = false;
   document.getElementById("fCond").checked = false;
   document.getElementById("fNoAuto").checked = false;
@@ -407,7 +422,12 @@ document.getElementById("addSaveBtn").onclick = async ()=>{
   const dayRaw = document.getElementById("fDia").value.trim() ||
     (currentCompMode()==="matches" ? new Date().toISOString().slice(0,10) : activeDay);
   // normaliza "01" para "1" — evita a inconsistência que já deu vários problemas
-  const day = /^\d+$/.test(dayRaw) ? String(parseInt(dayRaw,10)) : dayRaw;
+  let day = /^\d+$/.test(dayRaw) ? String(parseInt(dayRaw,10)) : dayRaw;
+  let tnDate = "";
+  if(isTenis_() && /^\d{4}-\d{2}-\d{2}$/.test(dayRaw)){ // v286: calendário → dia + data completa
+    tnDate = dayRaw;
+    day = String(parseInt(dayRaw.slice(8),10));
+  }
   const t = document.getElementById("fHora").value.trim();
   const athlete = document.getElementById("fAtleta").value.trim();
   const sport = document.getElementById("fSport").value.trim();
@@ -425,6 +445,7 @@ document.getElementById("addSaveBtn").onclick = async ()=>{
     watchName: document.getElementById("fWatchName").value.trim(),
     local: document.getElementById("fLocal").value,
     venue: document.getElementById("fVenue").value.trim(),
+    piso: document.getElementById("fPiso").value.trim(),
     liveId: liveIdFromText_(document.getElementById("fLiveId").value),
     noAuto: document.getElementById("fNoAuto").checked,
     notes: document.getElementById("fNotes").value.trim(),
@@ -432,6 +453,7 @@ document.getElementById("addSaveBtn").onclick = async ()=>{
     approx: document.getElementById("fApprox").checked,
     cond: document.getElementById("fCond").checked
   };
+  if(isTenis_()) fields.date = tnDate;
 
   if(editingId){
     const idx = EVENTS.findIndex(e=>e.id===editingId);

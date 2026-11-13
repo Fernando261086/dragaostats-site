@@ -438,19 +438,33 @@ function nextSeq(){
 
 // Vai buscar TUDO à Sheet numa só chamada. Reconhece automaticamente o formato antigo
 // (uma só competição) e converte-o para o novo formato multi-competição, sem perder nada.
-async function fetchAll(){
+async function fetchAll(opts){
   try{
-    // cache:'no-store' + um parâmetro que muda sempre, para o browser nunca guardar
-    // esta resposta em cache e mostrar dados antigos sem darmos por isso
-    // 10s de limite: sem isto, uma resposta lenta do Apps Script deixa a app presa
-    // no ecrã inicial para sempre, sem nunca chegar a mostrar nada (nem um erro)
-    const ctrl = new AbortController();
-    const timeoutId = setTimeout(()=> ctrl.abort(), 10000);
-    let r;
-    try{
-      r = await fetch(STORE_URL + "?_=" + Date.now(), { method: 'GET', cache: 'no-store', signal: ctrl.signal });
-    }finally{
-      clearTimeout(timeoutId);
+    let r = null;
+    // v280: só na 1.ª carga do link «só ver»: tenta os dados já preparados pelo worker (cópia de poucos segundos; o Apps Script
+    // demora 5-7 s). Qualquer falha → segue para o pedido direto de sempre. As atualizações (syncPoll_) nunca passam por aqui.
+    if(opts && opts.worker && typeof READONLY_MODE !== "undefined" && READONLY_MODE && location.protocol.indexOf("http") === 0){
+      const cw = new AbortController();
+      const tw = setTimeout(()=> cw.abort(), 8000);
+      try{
+        const rw = await fetch("/api/dados", { cache: "no-store", signal: cw.signal });
+        if(rw.ok){ r = rw; window.__viaWorkerAge_ = Number(rw.headers.get("X-DS-Age") || 0); try{ track_("dados_worker"); }catch(e){} }
+        else { try{ track_("dados_worker_falhou"); }catch(e){} }
+      }catch(e){ try{ track_("dados_worker_falhou"); }catch(e2){} }
+      finally{ clearTimeout(tw); }
+    }
+    if(!r){
+      // cache:'no-store' + um parâmetro que muda sempre, para o browser nunca guardar
+      // esta resposta em cache e mostrar dados antigos sem darmos por isso
+      // 10s de limite: sem isto, uma resposta lenta do Apps Script deixa a app presa
+      // no ecrã inicial para sempre, sem nunca chegar a mostrar nada (nem um erro)
+      const ctrl = new AbortController();
+      const timeoutId = setTimeout(()=> ctrl.abort(), 10000);
+      try{
+        r = await fetch(STORE_URL + "?_=" + Date.now(), { method: 'GET', cache: 'no-store', signal: ctrl.signal });
+      }finally{
+        clearTimeout(timeoutId);
+      }
     }
     if(!r.ok) return { ok:false, all:null };
     const raw = await r.json();

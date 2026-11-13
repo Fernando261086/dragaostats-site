@@ -14,7 +14,7 @@ firebase.initializeApp({
 });
 firebase.messaging(); // já trata sozinho de mostrar a notificação quando chega em segundo plano
 
-const CACHE_NAME = "dia22-cache-v357";
+const CACHE_NAME = "dia22-cache-v358";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -56,6 +56,11 @@ self.addEventListener("fetch", (event) => {
   // Nunca guardar em cache os pedidos ao Apps Script — têm de ir sempre à rede,
   // é onde vivem os dados reais e atualizados.
   if (url.includes("script.google.com") || url.includes("script.googleusercontent.com")) {
+    return;
+  }
+
+  // v280: os dados pelo worker (/api/dados) também vão sempre à rede
+  if (url.indexOf("/api/") >= 0) {
     return;
   }
 

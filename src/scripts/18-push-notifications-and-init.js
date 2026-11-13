@@ -110,7 +110,7 @@ function showStaleDataBanner_(at){
 }
 
 (async function init(){
-  const result = await fetchAll();
+  const result = await fetchAll({ worker: true }); // v280: 1.ª carga pelo worker (só no link «só ver»); falhou → direto
   if(result.ok && result.all){
     ALL = result.all;
     ALL.competitions = Array.isArray(ALL.competitions) ? ALL.competitions : [];
@@ -259,6 +259,7 @@ function showStaleDataBanner_(at){
       checkNewResultsForNotifications();
     }
     markSynced();
+    if(typeof renderLiveNowBanner_ === "function") renderLiveNowBanner_(); // v280: o cartão «TERMINOU» sai logo que o resultado chega (antes esperava mais um ciclo de 6 s)
     renderCompetitionSelector();
     renderDayTabs();
     renderFilters();
@@ -294,6 +295,8 @@ function showStaleDataBanner_(at){
   // aba, faz-se logo uma sincronização imediata (para apanhar o que mudou
   // entretanto) e o ritmo normal de 6 em 6 segundos retoma.
   let syncIntervalId = setInterval(syncPoll_, 6000);
+  // v280: se a 1.ª carga veio da cópia do worker, pede logo os dados diretos (o ecrã já está pintado; troca em ~1 s)
+  if(window.__viaWorkerAge_ >= 3) setTimeout(syncPoll_, 900);
   document.addEventListener("visibilitychange", ()=>{
     if(document.visibilityState === "hidden"){
       if(syncIntervalId !== null){ clearInterval(syncIntervalId); syncIntervalId = null; }

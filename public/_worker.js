@@ -32,6 +32,7 @@ export default {
     const path = url.pathname;
     try {
       if (request.method === "GET" && path === "/diag") return await diagnostico_(env, ctx);
+      if (request.method === "GET" && path === "/api/dados") return await dadosBrutos_(env, ctx);
       if (request.method === "POST" && path === "/rep") return await relatorioErros_(request);
       if (request.method === "GET" && path === "/sitemap-jogos.xml") {
         const r = await sitemapJogos_(env, ctx);
@@ -400,9 +401,51 @@ async function hojePage_(request, env, ctx) {
   return r;
 }
 
+// ---------- v280: /api/dados — os mesmos dados do Apps Script, só para a 1.ª carga do link «só ver»
+// O site tenta isto primeiro (com limite de tempo) e, se falhar de qualquer maneira, vai direto ao Apps Script como sempre.
+// As atualizações seguintes (de 6 em 6 s, ao vivo) NÃO passam por aqui: vão sempre direto, por isso o marcador nunca fica
+// mais atrasado do que já era. Cópia: fresca até 8 s; de 8 a 45 s serve já e atualiza em segundo plano; acima disso espera
+// pelo Apps Script (máx. 9 s) e, se este falhar, serve a cópia (até 10 min) ou deixa o site ir direto.
+const DADOS_FRESCOS_S = 8, DADOS_MORNOS_S = 45, DADOS_MAX_S = 600;
+let dadosEmCurso_ = null;
+function dadosResposta_(body, idadeS) {
+  return new Response(body, { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex", "X-DS-Age": String(Math.max(0, Math.round(idadeS))) } });
+}
+function dadosAtualizar_(env, cache, key, timeoutMs) {
+  if (!dadosEmCurso_) {
+    dadosEmCurso_ = (async () => {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), timeoutMs);
+      try {
+        const r = await fetch((env.STORE_URL || STORE_URL_DEFAULT) + "?_=" + Date.now(), { signal: ctl.signal, redirect: "follow" });
+        if (!r.ok) return null;
+        const body = await r.text();
+        if (body.charCodeAt(0) !== 123 || body.indexOf('"competitions"') < 0) return null; // não é o JSON dos dados (ex.: página de erro)
+        await cache.put(key, new Response(body, { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + DADOS_MAX_S, "X-DS-At": String(Date.now()) } }));
+        return body;
+      } catch (e) { return null; } finally { clearTimeout(timer); dadosEmCurso_ = null; }
+    })();
+  }
+  return dadosEmCurso_;
+}
+async function dadosBrutos_(env, ctx) {
+  const cache = caches.default, key = new Request(SITE + "/__cache/dados-brutos-v1");
+  const hit = await cache.match(key);
+  const idade = hit ? (Date.now() - Number(hit.headers.get("X-DS-At") || 0)) / 1000 : Infinity;
+  if (hit && idade < DADOS_FRESCOS_S) return dadosResposta_(hit.body, idade);
+  if (hit && idade < DADOS_MORNOS_S) {
+    ctx.waitUntil(dadosAtualizar_(env, cache, key, 25000));
+    return dadosResposta_(hit.body, idade);
+  }
+  const novo = await dadosAtualizar_(env, cache, key, 9000);
+  if (novo) return dadosResposta_(novo, 0);
+  if (hit && idade < DADOS_MAX_S) return dadosResposta_(hit.body, idade);
+  return new Response("", { status: 504, headers: { "Cache-Control": "no-store" } });
+}
+
 // ---------- diagnóstico: /diag (texto simples; diz se o worker corre e se lê os dados)
 async function diagnostico_(env, ctx) {
-  const out = { worker: "v276", hora: new Date().toISOString() };
+  const out = { worker: "v280", hora: new Date().toISOString() };
   const t0 = Date.now();
   try {
     const cache = await caches.default.match(new Request(SITE + "/__cache/dados-v1"));

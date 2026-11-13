@@ -183,7 +183,8 @@ async function generateDayReel_(games, live){
   }catch(e){ blob = null; }
   if(!blob){
     const stream = canvas.captureStream(30);
-    const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9"
+    const mimeType = MediaRecorder.isTypeSupported("video/mp4;codecs=avc1") ? "video/mp4;codecs=avc1"
+      : MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9"
       : (MediaRecorder.isTypeSupported("video/webm;codecs=vp8") ? "video/webm;codecs=vp8" : "video/webm");
     const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 6_000_000 });
     const chunks = [];
@@ -197,10 +198,10 @@ async function generateDayReel_(games, live){
       if(elapsed < TOTAL) requestAnimationFrame(loop); else recorder.stop();
     })(startTime);
     await finished;
-    blob = new Blob(chunks, { type: "video/webm" });
+    blob = new Blob(chunks, { type: mimeType.split(";")[0] });
   }
-  const fileName = `dragaostats-hoje${live ? "-aovivo" : ""}-${dayShareISO_()}.webm`;
-  await shareDeliver_(blob, fileName, "video/webm"); // v249: entrega central
+  const fileName = `dragaostats-hoje${live ? "-aovivo" : ""}-${dayShareISO_()}.${reelExt_(blob)}`;
+  await shareDeliver_(blob, fileName, reelMime_(blob)); // v249: entrega central
 }
 
 

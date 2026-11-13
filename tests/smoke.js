@@ -363,6 +363,42 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
       }
     }
   }
+
+  // ---- v279: avisos sem permissão não geram erro; reels em MP4 quando o aparelho codifica H.264; «Script error» ignorado
+  {
+    const html = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8');
+    const m = html.match(/var IGNORE=(\/.*?\/i);/);
+    const re = m && eval(m[1]);
+    re && re.test('Script error. :0:0') && re.test('Script error.') && !re.test('TypeError: x is not a function') ? ok('v279: «Script error. :0:0» é ignorado pelo relatório de erros') : bad('v279: regex do relatório de erros não ignora «Script error. :0:0»');
+    const page = await browser.newPage({ viewport: { width: 360, height: 800 } });
+    const errs = []; page.on('pageerror', e => errs.push(e.message)); page.on('console', () => {});
+    await page.addInitScript(d => {
+      try { localStorage.setItem('dia22-viewer-name', 'Teste'); } catch (e) {}
+      const f = window.fetch; window.fetch = (...a) => String(a[0]).includes('script.google.com')
+        ? Promise.resolve(new Response(JSON.stringify(d), {status:200, headers:{'content-type':'application/json'}})) : f.apply(window, a);
+      Object.defineProperty(Notification, 'permission', { get: () => 'denied', configurable: true });
+    }, mock);
+    await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+    await page.goto(`http://localhost:${port}/index.html?view=readonly`, { waitUntil: 'load' });
+    await page.waitForTimeout(1200);
+    const r1 = await page.evaluate(async () => { const x = await showAppNotification('t', 'b'); return x; });
+    r1 === false && !errs.length ? ok('v279: showAppNotification sem permissão devolve false e não gera erro') : bad(`v279: showAppNotification → ${r1} erros=${errs.join('|')}`);
+    const enc = await page.evaluate(async () => {
+      const c = document.createElement('canvas'); c.width = 128; c.height = 224; const x = c.getContext('2d');
+      const blob = await webmEncodeFrames_(c, t => { x.fillStyle = `hsl(${t * 200},70%,50%)`; x.fillRect(0, 0, 128, 224); }, 1, 30, null);
+      if (!blob) return null;
+      const buf = new Uint8Array(await blob.arrayBuffer()); let s = ''; for (let i = 0; i < buf.length; i += 8192) s += String.fromCharCode.apply(null, buf.subarray(i, i + 8192));
+      return { type: blob.type, ext: reelExt_(blob), mime: reelMime_(blob), b64: btoa(s) };
+    });
+    if (!enc) ok('v279: este Chromium não tem WebCodecs — o chamador usaria a gravação em tempo real (nada a verificar)');
+    else {
+      const f = path.join(require('os').tmpdir(), 'ds-reel-test.' + enc.ext); fs.writeFileSync(f, Buffer.from(enc.b64, 'base64'));
+      let probe = ''; try { probe = require('child_process').execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,nb_frames -of csv=p=0 "${f}"`).toString().trim(); } catch (e) { probe = 'sem ffprobe'; }
+      /mp4/.test(enc.type) ? (/^h264/.test(probe) ? ok(`v279: reel em MP4 (H.264) válido → ${probe}`) : bad(`v279: MP4 inválido → ${probe}`)) : ok(`v279: este Chromium só codifica WebM (${enc.type}) → fallback ok (${probe})`);
+      enc.ext === (/mp4/.test(enc.type) ? 'mp4' : 'webm') && enc.mime === enc.type.split(';')[0] ? ok('v279: extensão e tipo do ficheiro acompanham o formato') : bad('v279: extensão/tipo não batem com o formato');
+    }
+    await page.close();
+  }
   await browser.close(); srv.close();
   console.log(fails ? `\n${fails} problema(s) — NÃO publicar.` : '\nTudo ok.'); process.exit(fails ? 1 : 0);
 })();

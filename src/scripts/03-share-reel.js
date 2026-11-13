@@ -318,8 +318,8 @@ async function generateShareReel(ev, st, sportColor){
   try{ blob = await webmEncodeFrames_(canvas, t=>draw(Math.min(t, ANIM_END)), TOTAL, 30, null); }catch(e){ blob = null; }
   if(!blob){
     const stream = canvas.captureStream(30);
-    const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
-      ? "video/webm;codecs=vp9"
+    const mimeType = MediaRecorder.isTypeSupported("video/mp4;codecs=avc1") ? "video/mp4;codecs=avc1"
+      : MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9"
       : (MediaRecorder.isTypeSupported("video/webm;codecs=vp8") ? "video/webm;codecs=vp8" : "video/webm");
     const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 6_000_000 });
     const chunks = [];
@@ -334,11 +334,11 @@ async function generateShareReel(ev, st, sportColor){
     }
     requestAnimationFrame(frameLoop);
     await finished;
-    blob = new Blob(chunks, { type: "video/webm" });
+    blob = new Blob(chunks, { type: mimeType.split(";")[0] });
   }
 
-  const fileName = `dragaostats-${(ev.sport||'jogo').toLowerCase().replace(/\s+/g,'-')}-${ev.day||''}.webm`;
-  await shareDeliver_(blob, fileName, "video/webm"); // v249: entrega central
+  const fileName = `dragaostats-${(ev.sport||'jogo').toLowerCase().replace(/\s+/g,'-')}-${ev.day||''}.${reelExt_(blob)}`;
+  await shareDeliver_(blob, fileName, reelMime_(blob)); // v249: entrega central
 }
 
 // Escreve texto centrado, quebrando para uma segunda linha se não couber na

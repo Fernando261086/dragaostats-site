@@ -29,7 +29,7 @@
   var TEST=!!window.__DS_ERR_TEST__;
   try{ if(!TEST && (navigator.webdriver || /^(localhost|127\.|\[::1\])/.test(location.hostname))) return; }catch(e){}
   var q=[], loading=false, ready=false, total=0;
-  var IGNORE=/ResizeObserver loop|Script error\.?$|Non-Error promise rejection|Load failed|Failed to fetch|NetworkError|The operation was aborted|AbortError|webkit-masked-url|chrome-extension:|moz-extension:|safari-extension:|__gCrWeb|instantSearchSDKJSBridgeClearHighlight|Java object is gone/i;
+  var IGNORE=/ResizeObserver loop|Script error\.?(\s|$)|Non-Error promise rejection|Load failed|Failed to fetch|NetworkError|The operation was aborted|AbortError|webkit-masked-url|chrome-extension:|moz-extension:|safari-extension:|__gCrWeb|instantSearchSDKJSBridgeClearHighlight|Java object is gone/i;
   function txt(e){ try{ return String((e&&e.message)||e||"")+" "+String((e&&e.stack)||""); }catch(x){ return ""; } }
   function ignore(e){ return IGNORE.test(txt(e)); }
   function modo(){ return (/[?&]view=edit/.test(location.search)||/\/edicao\/?$/i.test(location.pathname))?"edicao":"publico"; }

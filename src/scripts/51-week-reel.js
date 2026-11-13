@@ -178,7 +178,8 @@ async function generateWeekReel_(games, weekStart, weekEndDisplay){
   }catch(e){ blob = null; }
   if(!blob){
     const stream = canvas.captureStream(30);
-    const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9"
+    const mimeType = MediaRecorder.isTypeSupported("video/mp4;codecs=avc1") ? "video/mp4;codecs=avc1"
+      : MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9"
       : (MediaRecorder.isTypeSupported("video/webm;codecs=vp8") ? "video/webm;codecs=vp8" : "video/webm");
     const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 6_000_000 });
     const chunks = [];
@@ -192,10 +193,10 @@ async function generateWeekReel_(games, weekStart, weekEndDisplay){
       if(elapsed < TOTAL) requestAnimationFrame(loop); else recorder.stop();
     })(startTime);
     await finished;
-    blob = new Blob(chunks, { type: "video/webm" });
+    blob = new Blob(chunks, { type: mimeType.split(";")[0] });
   }
-  const fileName = `dragaostats-semana-${(weekStart.getFullYear())}-${String(weekStart.getMonth() + 1).padStart(2, "0")}-${String(weekStart.getDate()).padStart(2, "0")}.webm`;
-  await shareDeliver_(blob, fileName, "video/webm"); // v249: entrega central
+  const fileName = `dragaostats-semana-${(weekStart.getFullYear())}-${String(weekStart.getMonth() + 1).padStart(2, "0")}-${String(weekStart.getDate()).padStart(2, "0")}.${reelExt_(blob)}`;
+  await shareDeliver_(blob, fileName, reelMime_(blob)); // v249: entrega central
 }
 
 // botão em "Esta semana" (modo edição): mostra a legenda curta e grava o vídeo

@@ -673,13 +673,16 @@ function updateNotifyBtnLabel(){
 
 async function showAppNotification(title, body){
   try{
+    // v279: sem permissão (bloqueada/revogada) não há nada a mostrar; antes a promessa falhava solta e ia parar ao Sentry
+    if(!("Notification" in window) || Notification.permission !== "granted") return false;
     if("serviceWorker" in navigator){
       const reg = await navigator.serviceWorker.ready;
-      reg.showNotification(title, { body, icon: "icon-192.png", badge: "icon-192.png" });
+      await reg.showNotification(title, { body, icon: "icon-192.png", badge: "icon-192.png" });
     }else if("Notification" in window){
       new Notification(title, { body, icon: "icon-192.png" });
     }
-  }catch(e){ console.error("Falha ao mostrar notificação:", e); }
+    return true;
+  }catch(e){ console.error("Falha ao mostrar notificação:", e); return false; }
 }
 
 // Avisa quando aparece um resultado NOVO (escrito por ti, noutro dispositivo) para

@@ -14,7 +14,9 @@
   if(themeBtn && themeBtn.parentNode) themeBtn.parentNode.insertBefore(bell, themeBtn);
   bell.onclick = async ()=>{
     if(typeof notificationsEnabled !== "undefined" && notificationsEnabled){
-      if(typeof showAppNotification === "function") showAppNotification("Notificações ligadas", "Vais receber avisos dos jogos e resultados.");
+      // v279: se o browser entretanto bloqueou os avisos, em vez de não fazer nada mostra como os voltar a ligar
+      if("Notification" in window && Notification.permission === "denied" && typeof notifyBlockedSheet_ === "function") notifyBlockedSheet_();
+      else if(typeof showAppNotification === "function") showAppNotification("Notificações ligadas", "Vais receber avisos dos jogos e resultados.");
     }else{
       document.getElementById("notifyToggleBtn").click();
     }

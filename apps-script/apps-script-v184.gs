@@ -496,7 +496,7 @@ function doPostCore_(e) {
         }
       }
     } else if (incoming.getFullVisitLog) {
-      const fullLog = readFullVisitLog_(sheet);
+      const fullLog = incoming.onlyCurrent ? readVisitLog_(sheet) : readFullVisitLog_(sheet); // v184: onlyCurrent = só a página atual (o que o GET público dava antes da v183)
       SpreadsheetApp.flush();
       return jsonOut_({ ok: true, fullVisitLog: fullLog, SCRIPT_VERSION: SCRIPT_VERSION });
     } else if (incoming.getFullFeedback) {

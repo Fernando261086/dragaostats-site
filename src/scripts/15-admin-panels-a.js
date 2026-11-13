@@ -609,9 +609,32 @@ function renderVisitsChartBody(fullLog){
   document.getElementById("closeVisitsBtn").onclick = ()=>{ panel.style.display = "none"; };
 }
 
+// v281.1: o GET público deixou de trazer o registo de acessos (Apps Script v183); a vista «Lista» pede a página atual com a password
+async function fetchCurrentVisitLog_(){
+  const r = await fetch(STORE_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ getFullVisitLog:true, onlyCurrent:true, adminPassword: getAdminPassword() }) });
+  const j = await r.json();
+  if(j && j.ok && Array.isArray(j.fullVisitLog)){ VISIT_LOG = j.fullVisitLog; return VISIT_LOG; }
+  throw new Error("Resposta inválida do servidor");
+}
+
 function renderVisitsLogPanel(list){
   const panel = document.getElementById("visitsLogPanel");
   const tabsHtml = visitsTabsHtml();
+
+  if(!list && visitsViewMode === "lista"){
+    panel.innerHTML = tabsHtml + `<div class="medal-empty">A carregar acessos...</div>`;
+    attachVisitsTabHandlers();
+    fetchCurrentVisitLog_().then(cur=>{
+      if(visitsViewMode === "lista" && panel.style.display !== "none") renderVisitsLogPanel(cur);
+    }).catch(e=>{
+      if(visitsViewMode !== "lista") return;
+      panel.innerHTML = tabsHtml + `<div class="medal-empty">⚠️ Erro ao ir buscar os acessos: ${e.message}</div>
+        <div class="add-btn-row" style="margin-top:14px;"><button class="add-cancel" id="closeVisitsBtn">Fechar</button></div>`;
+      attachVisitsTabHandlers();
+      document.getElementById("closeVisitsBtn").onclick = ()=>{ panel.style.display = "none"; };
+    });
+    return;
+  }
 
   if(visitsViewMode === "ranking" || visitsViewMode === "grafico"){
     panel.innerHTML = tabsHtml + `<div class="medal-empty">A carregar histórico completo...</div>`;

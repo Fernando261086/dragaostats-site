@@ -437,7 +437,11 @@ async function dadosBrutos_(env, ctx) {
     ctx.waitUntil(dadosAtualizar_(env, cache, key, 25000));
     return dadosResposta_(hit.body, idade);
   }
-  const novo = await dadosAtualizar_(env, cache, key, 9000);
+  // v281.1: o pedido ao Apps Script continua até 25 s em segundo plano (enche a cópia mesmo que demore mais de 9 s);
+  // quem espera só espera 9 s (o site, nesse caso, pede os dados diretamente).
+  const emCurso = dadosAtualizar_(env, cache, key, 25000);
+  ctx.waitUntil(emCurso);
+  const novo = await Promise.race([emCurso, new Promise(res => setTimeout(() => res(null), 9000))]);
   if (novo) return dadosResposta_(novo, 0);
   if (hit && idade < DADOS_MAX_S) return dadosResposta_(hit.body, idade);
   return new Response("", { status: 504, headers: { "Cache-Control": "no-store" } });
@@ -445,7 +449,7 @@ async function dadosBrutos_(env, ctx) {
 
 // ---------- diagnóstico: /diag (texto simples; diz se o worker corre e se lê os dados)
 async function diagnostico_(env, ctx) {
-  const out = { worker: "v281", hora: new Date().toISOString() };
+  const out = { worker: "v281.1", hora: new Date().toISOString() };
   const t0 = Date.now();
   try {
     const cache = await caches.default.match(new Request(SITE + "/__cache/dados-v1"));

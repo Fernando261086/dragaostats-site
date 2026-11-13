@@ -224,6 +224,7 @@ html.theme-light #bootScreen .bs-b::after,html.theme-light #bootScreen .bs-l::af
       <button class="view-tab active" id="viewCalendarBtn">Calendário</button>
       <button class="view-tab" id="viewMedalsBtn" style="display:none;">Medalhas</button>
       <button class="view-tab" id="viewTodayAllBtn">Hoje</button>
+      <button class="view-tab" id="viewRankingsBtn" style="display:none;">Rankings</button>
       <button class="view-tab" id="viewStatsBtn" style="display:none;">Estatísticas</button>
       <button class="view-tab" id="viewHistoryBtn">Histórico</button>
       <button class="view-tab" id="viewStandingsBtn" style="display:none;">Tabelas</button>
@@ -368,6 +369,10 @@ html.theme-light #bootScreen .bs-b::after,html.theme-light #bootScreen .bs-l::af
     <div class="medals-view" id="medalsView" style="display:none;"></div>
     <div class="medals-view" id="todayAllView" style="display:none;"></div>
     <div class="medals-view" id="statsView" style="display:none;"></div>
+    <div class="medals-view tn-view" id="tennisView" style="display:none;">
+      <div class="tn-viewtop"><b>🎾 Rankings e tenistas <small class="tn-priv">privado</small></b><button type="button" class="sh-x" id="tnReload" aria-label="Atualizar" title="Atualizar">🔄</button></div>
+      <div id="tnBody"></div>
+    </div>
     <div class="medals-view" id="historyView" style="display:none;"></div>
     <div class="medals-view" id="leaderboardView" style="display:none;"></div>
     <div class="stats-panel" id="playerProfilePanel" style="display:none;"></div>

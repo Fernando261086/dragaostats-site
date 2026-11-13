@@ -1083,8 +1083,11 @@ function updateModeVisibleTabs(){
   document.getElementById("pinCompBtn").title = isPinned ? "Já é a competição fixa (toca para desmarcar)" : "Abrir sempre nesta competição";
   const hbtn = document.getElementById("viewHomeBtn");
   if(hbtn) hbtn.style.display = matches ? "" : "none";
+  const tnTab_ = typeof isTenis_ === "function" && isTenis_();
   document.getElementById("viewMedalsBtn").style.display = matches ? "none" : "";
-  document.getElementById("viewStatsBtn").style.display = matches ? "none" : "";
+  document.getElementById("viewMedalsBtn").textContent = tnTab_ ? "Resultados" : "Medalhas"; // v287
+  document.getElementById("viewStatsBtn").style.display = (matches || tnTab_) ? "none" : "";
+  if(typeof tnSyncBtn_ === "function") tnSyncBtn_();
   document.getElementById("viewHistoryBtn").style.display = matches ? "" : "none";
   document.getElementById("viewLeaderboardBtn").style.display = matches ? "" : "none";
   const stBtn_ = document.getElementById("viewStandingsBtn");

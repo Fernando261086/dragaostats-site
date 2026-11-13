@@ -134,6 +134,7 @@ function applyFormModeUI(){
   fDia.type = (matches || tn) ? "date" : "text"; // v286: o ténis também escolhe a data no calendário
   fDia.placeholder = (matches || tn) ? "" : ("Dia (ex: " + activeDay + ")");
   document.getElementById("fPiso").style.display = tn ? "block" : "none";
+  document.getElementById("fVenue").placeholder = tn ? "Torneio / local (opcional)" : "Pavilhão/local (opcional)";
   document.getElementById("fAtleta").placeholder = matches ? "Adversário" : (tn ? "Atleta (português)" : "Atleta / Equipa");
   if(tn && !document.getElementById("fSport").value) document.getElementById("fSport").value = "Ténis";
   document.getElementById("fOpp").style.display = tn ? "block" : "none";

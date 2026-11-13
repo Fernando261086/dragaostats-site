@@ -1451,3 +1451,22 @@ html.theme-light .tn-row,html.theme-light .tn-kpis div,html.theme-light .tn-g{ba
 html.theme-light .tn-pos,html.theme-light .tn-lnk,html.theme-light .tn-chart{color:#0a3fa8}
 html.theme-light .tn-pos{color:#0a3fa8}
 @media (max-width:420px){.tn-row{grid-template-columns:46px minmax(0,1fr) 40px}.tn-row .tn-sub{display:none}}
+
+/* v287: ténis — sem sondagem/avisos/newsletter; vista Resultados e separador Rankings */
+html.kind-tenis #pollBanner,html.kind-tenis #newsletterBanner,html.kind-tenis #newsletterBox{display:none!important}
+.tn-viewtop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px}
+.tn-rtot{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:700px){.tn-rtot{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.tn-rath{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:8px;margin:12px 0}
+.tn-ra{display:flex;justify-content:space-between;gap:8px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:13px;min-width:0}
+.tn-ra b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tn-ra.win{border-color:#e3b23c;background:rgba(227,178,60,.12)}
+.tn-rr{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);margin:0 0 8px;min-width:0}
+.tn-rr.win{border-color:#e3b23c;background:rgba(227,178,60,.12);box-shadow:0 0 0 1px rgba(227,178,60,.25)}
+.tn-rr1{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tn-rd{font-size:12px;color:var(--text-dim)}
+.tn-rr2{font-weight:700;margin-top:4px;overflow-wrap:anywhere}.tn-rr2 small{font-weight:400;color:var(--text-dim)}
+.tn-rr3{font-size:15px;margin-top:3px}.tn-rr4{font-size:12px;color:var(--text-dim);margin-top:3px;overflow-wrap:anywhere}
+.tn-badge.gold{background:#e3b23c;color:#1a1a1a}
+html.theme-light .tn-ra,html.theme-light .tn-rr{background:#f3f5f9}
+html.theme-light .tn-ra.win,html.theme-light .tn-rr.win{background:#fff4d6}

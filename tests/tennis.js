@@ -38,13 +38,13 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
     await page.goto(`http://localhost:${port}/index.html${query}`, { waitUntil: 'load' }); await page.waitForTimeout(1500);
     await page.evaluate(() => { const o = document.getElementById('introOverlay'); if (o) o.style.display = 'none'; });
-    const has = await page.evaluate(() => !!document.getElementById('tennisBtn'));
+    const has = await page.evaluate(() => { const b = document.getElementById('viewRankingsBtn'); return !!b && b.style.display !== 'none'; });
     if (label === 'público') { has ? bad(`${tag}: botão Ténis visível no «só ver»`) : ok(`${tag}: sem botão Ténis`); const pn = await page.evaluate(() => typeof openTennisPanel_); errs.length ? bad(`${tag}: erros JS ${errs}`) : ok(`${tag}: sem erros JS`); await page.close(); continue; }
     if (!has) { bad(`${tag}: sem botão Ténis em edição`); await page.close(); continue; }
-    await page.evaluate(() => document.getElementById('tennisBtn').click()); await page.waitForTimeout(600);
+    await page.evaluate(() => document.getElementById('viewRankingsBtn').click()); await page.waitForTimeout(600);
     const rows = await page.evaluate(() => document.querySelectorAll('#tnBody .tn-row[data-pid]').length);
     rows >= 3 ? ok(`${tag}: rankings mostram ${rows} linhas`) : bad(`${tag}: rankings com ${rows} linhas`);
-    const ov = () => page.evaluate(() => { const s = document.querySelector('.tn-sheet'); return Math.max(s.scrollWidth - s.clientWidth, document.documentElement.scrollWidth - window.innerWidth); });
+    const ov = () => page.evaluate(() => { const s = document.getElementById('tennisView'); return Math.max(s.scrollWidth - s.clientWidth, document.documentElement.scrollWidth - window.innerWidth); });
     (await ov()) > 1 ? bad(`${tag}: rankings com deslize lateral ${await ov()}px`) : ok(`${tag}: rankings sem deslize lateral`);
     if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-rank.png` });
     await page.evaluate(() => document.querySelector('#tnBody [data-gen="F"]').click()); await page.waitForTimeout(150);

@@ -23,7 +23,7 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
     await page.goto(`http://localhost:${port}/index.html${query}`, { waitUntil: 'load' }); await page.waitForTimeout(1500);
     await page.evaluate(() => { const o = document.getElementById('introOverlay'); if (o) o.style.display = 'none'; });
-    const info = await page.evaluate(() => ({ comp: activeCompId, mode: currentCompMode(), tenis: isTenis_(), btn: (()=>{ const b = document.getElementById('tennisBtn'); return !!b && b.offsetParent !== null; })(), opts: [...document.querySelectorAll('#compSelect option')].map(o => o.textContent) }));
+    const info = await page.evaluate(() => ({ comp: activeCompId, mode: currentCompMode(), tenis: isTenis_(), btn: (()=>{ const b = document.getElementById('viewRankingsBtn'); return !!b && b.style.display !== 'none'; })(), opts: [...document.querySelectorAll('#compSelect option')].map(o => o.textContent) }));
     if (label === 'público') {
       info.comp !== 't1' ? ok(`${tag}: não entra na competição de ténis`) : bad(`${tag}: entrou na competição de ténis`);
       info.opts.some(t => /Ténis/.test(t)) ? bad(`${tag}: ténis visível no seletor`) : ok(`${tag}: ténis escondido no seletor`);
@@ -36,6 +36,18 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
       /Singulares/.test(card) && /Final/.test(card) && /França/.test(card) ? ok(`${tag}: detalhe, fase e país no cartão`) : bad(`${tag}: falta detalhe/fase/país`);
       const lab = await page.evaluate(() => { const r = document.querySelector('#timeline .card, #timeline .event, #timeline'); document.querySelectorAll('#timeline .c-medal,#timeline .medal-btn').forEach(()=>{}); return [...document.querySelectorAll('#timeline [data-medal]')].map(b => b.textContent.trim()); });
       if (lab.length) (lab.some(t => /Campeão/.test(t)) && lab.some(t => /Vice/.test(t)) && !lab.some(t => /Bronze|Ouro/.test(t))) ? ok(`${tag}: Campeão / Vice-campeão (sem Ouro/Bronze)`) : bad(`${tag}: etiquetas ${lab}`);
+      const tb = await page.evaluate(() => { const vis = id => { const b = document.getElementById(id); return !!b && b.style.display !== 'none' && getComputedStyle(b).display !== 'none'; }; ['pollBanner','newsletterBanner','newsletterBox'].forEach(i => { const e = document.getElementById(i); if(e) e.style.display = 'flex'; });
+        return { res: document.getElementById('viewMedalsBtn').textContent.trim(), resVis: vis('viewMedalsBtn'), stats: vis('viewStatsBtn'), rk: vis('viewRankingsBtn'), poll: vis('pollBanner'), nl: vis('newsletterBanner'), box: vis('newsletterBox') }; });
+      tb.res === 'Resultados' && tb.resVis && !tb.stats && tb.rk ? ok(`${tag}: separadores Resultados + Rankings, sem Estatísticas`) : bad(`${tag}: separadores ${JSON.stringify(tb)}`);
+      !tb.poll && !tb.nl && !tb.box ? ok(`${tag}: sem sondagem, banner de avisos/newsletter nem caixa de newsletter`) : bad(`${tag}: avisos visíveis ${JSON.stringify(tb)}`);
+      await page.evaluate(() => document.getElementById('viewMedalsBtn').click()); await page.waitForTimeout(300);
+      const rs = await page.evaluate(() => ({ t: document.getElementById('medalsView').textContent, win: document.querySelectorAll('#medalsView .tn-rr.win').length, ov: Math.max(document.documentElement.scrollWidth - window.innerWidth, 0) }));
+      /Títulos/.test(rs.t) && /Nuno Borges/.test(rs.t) && /Campeão/.test(rs.t) && /6-4 7-6/.test(rs.t) && rs.win === 1 && !/Ouro|Bronze/.test(rs.t) ? ok(`${tag}: Resultados com histórico, destaque do título e contagem`) : bad(`${tag}: Resultados ${JSON.stringify(rs)}`);
+      rs.ov > 1 ? bad(`${tag}: Resultados com deslize lateral ${rs.ov}px`) : ok(`${tag}: Resultados sem deslize lateral`);
+      await page.evaluate(() => document.getElementById('viewRankingsBtn').click()); await page.waitForTimeout(500);
+      const rk = await page.evaluate(() => ({ shown: document.getElementById('tennisView').offsetParent !== null, cal: document.getElementById('timeline').offsetParent !== null }));
+      rk.shown && !rk.cal ? ok(`${tag}: separador Rankings abre a vista`) : bad(`${tag}: Rankings ${JSON.stringify(rk)}`);
+      await page.evaluate(() => document.getElementById('viewCalendarBtn').click()); await page.waitForTimeout(300);
       await page.evaluate(() => document.getElementById('addToggleBtn').click()); await page.waitForTimeout(300);
       const f = await page.evaluate(() => ({ opp: document.getElementById('fOpp').offsetParent !== null, ctry: document.getElementById('fCountry').offsetParent !== null, sport: document.getElementById('fSport').value, det: document.getElementById('fDetalhe').getAttribute('list') }));
       const f2 = await page.evaluate(() => ({ type: document.getElementById('fDia').type, piso: document.getElementById('fPiso').offsetParent !== null }));
@@ -47,7 +59,7 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
       ev && ev.opp === 'Fulano' && ev.country === 'Portugal' && ev.piso === 'Terra batida' && ev.day === '19' && ev.date === '2026-11-19' ? ok(`${tag}: guarda adversário, país, piso, dia e data`) : bad(`${tag}: evento guardado ${JSON.stringify(ev)}`);
       // competição de medalhas normal NÃO tem os campos do ténis
       await page.evaluate(() => switchToCompetition('m1')); await page.waitForTimeout(400);
-      const m = await page.evaluate(() => ({ btn: document.getElementById('tennisBtn').offsetParent !== null, tn: isTenis_(), opp: document.getElementById('fOpp').offsetParent !== null }));
+      const m = await page.evaluate(() => ({ btn: document.getElementById('viewRankingsBtn').style.display !== 'none', tn: isTenis_(), opp: document.getElementById('fOpp').offsetParent !== null }));
       !m.btn && !m.tn ? ok(`${tag}: medalhas normais sem botão nem campos de ténis`) : bad(`${tag}: medalhas com ténis ${JSON.stringify(m)}`);
       if (shots) { await page.evaluate(() => switchToCompetition('t1')); await page.waitForTimeout(400); await page.screenshot({ path: `${shots}/tm-${theme}-${w}.png`, fullPage: false }); }
     }

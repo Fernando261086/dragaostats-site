@@ -452,6 +452,7 @@ function renderStatsView(){
 }
 
 function renderMedals(){
+  if(typeof isTenis_ === "function" && isTenis_() && typeof renderTennisResults_ === "function") return renderTennisResults_(); // v287
   const box = document.getElementById("medalsView");
   const withMedal = EVENTS.filter(e => getEv(e.id).medal);
   const byType = { gold: [], silver: [], bronze: [] };
@@ -504,6 +505,7 @@ function setView(view){
   const leaderboard = view === "marcadores";
   const cls = view === "classificacoes";
   const nws = view === "noticias";
+  const tnr = view === "tenis-rank";
 
   const hb = document.getElementById("viewHomeBtn");
   if(hb) hb.classList.toggle("active", inicio || sportpg || gamepg);
@@ -529,6 +531,8 @@ function setView(view){
   document.getElementById("viewMedalsBtn").classList.toggle("active", medals);
   document.getElementById("viewTodayAllBtn").classList.toggle("active", todayAll);
   document.getElementById("viewStatsBtn").classList.toggle("active", stats);
+  const rkb = document.getElementById("viewRankingsBtn"); if(rkb) rkb.classList.toggle("active", tnr);
+  const tvw = document.getElementById("tennisView"); if(tvw) tvw.style.display = tnr ? "block" : "none";
   document.getElementById("viewHistoryBtn").classList.toggle("active", history);
   document.getElementById("viewLeaderboardBtn").classList.toggle("active", leaderboard);
 
@@ -552,6 +556,7 @@ function setView(view){
   if(gamepg && typeof renderGamePage_ === "function") renderGamePage_();
   if(inicio && typeof renderHomeView_ === "function") renderHomeView_(true);
   if(medals) renderMedals();
+  if(tnr && typeof renderTennisView_ === "function") renderTennisView_();
   if(todayAll) renderTodayAllView();
   if(stats) renderStatsView();
   if(history) renderHistoryView();
@@ -568,6 +573,7 @@ if(document.getElementById("viewStandingsBtn")) document.getElementById("viewSta
 if(document.getElementById("viewNewsBtn")) document.getElementById("viewNewsBtn").onclick = ()=>{ setView("noticias"); window.scrollTo(0, 0); };
 document.getElementById("viewTodayAllBtn").onclick = ()=>{ weekOffset = 0; weekDay_ = null; setView("hoje-todas"); };
 document.getElementById("viewStatsBtn").onclick = ()=>setView("estatisticas");
+document.getElementById("viewRankingsBtn").onclick = ()=>{ setView("tenis-rank"); window.scrollTo(0, 0); };
 
 document.getElementById("globalSearchBtn").onclick = ()=>{
   globalSearch = !globalSearch;

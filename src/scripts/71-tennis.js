@@ -1,27 +1,15 @@
 // ===================== PAINEL «🎾 TÉNIS» (v284, só modo edição, privado) =====================
 // Os dados NÃO vêm no GET público: o botão pede-os por POST ao Apps Script (v189) com a password de admin
 // ({getTenis:true, adminPassword}). Sem a password certa não há dados. Fontes: Sofascore e API da WTA (ver CLAUDE.md).
-(function(){
-  if(READONLY_MODE) return;
-  const tog = document.getElementById("adminToolsToggle");
-  if(!tog) return;
-  const btn = document.createElement("button");
-  btn.type = "button"; btn.id = "tennisBtn"; btn.className = "admin-tools-toggle share-hub-btn";
-  btn.innerHTML = "🎾 Ténis";
-  (document.getElementById("healthBtn") || document.getElementById("shareHubBtn") || tog).insertAdjacentElement("afterend", btn);
-  btn.onclick = openTennisPanel_;
-  btn.style.display = "none"; // v285: só aparece dentro de uma competição de ténis (tnSyncBtn_)
-})();
-function tnSyncBtn_(){
-  const b = document.getElementById("tennisBtn"); if(!b) return;
-  const on = typeof isTenis_ === "function" && isTenis_();
+function tnSyncBtn_(){ // v287: o separador «Rankings» só existe dentro de uma competição de ténis (só edição)
+  const b = document.getElementById("viewRankingsBtn"); if(!b) return;
+  const on = !READONLY_MODE && typeof isTenis_ === "function" && isTenis_();
   b.style.display = on ? "" : "none";
-  if(!on) closeTennisPanel_();
+  if(!on && window.__curView_ === "tenis-rank" && typeof setView === "function") setView("calendario");
 }
 
 const TN_ = { data: null, tab: "rank", gen: "M", sel: null, msg: "" };
 function tnEsc_(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
-function closeTennisPanel_(){ const el = document.getElementById("tennisPanel"); if(el) el.remove(); document.body.classList.remove("share-hub-open"); }
 
 async function tnPost_(body){
   const r = await fetch(STORE_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ adminPassword: getAdminPassword() }, body)) });
@@ -101,7 +89,7 @@ function tnFichaHtml_(p){
 }
 
 function tnRender_(){
-  const el = document.getElementById("tennisPanel"); if(!el) return;
+  const el = document.getElementById("tennisView"); if(!el) return;
   const box = el.querySelector("#tnBody");
   const d = TN_.data;
   if(!d){ box.innerHTML = `<p class="tn-empty">${tnEsc_(TN_.msg || "A pedir os dados…")}</p>`; return; }
@@ -140,7 +128,7 @@ function tnRender_(){
 }
 
 async function tnLoad_(refresh){
-  const el = document.getElementById("tennisPanel"); if(!el) return;
+  if(!document.getElementById("tennisView")) return;
   TN_.msg = refresh ? "A atualizar (pode demorar uns segundos)…" : "A pedir os dados…"; if(!TN_.data) TN_.data = null; tnRender_();
   try{
     const j = await tnPost_(refresh ? { tenisRefresh: true } : { getTenis: true });
@@ -150,18 +138,40 @@ async function tnLoad_(refresh){
   tnRender_();
 }
 
-function openTennisPanel_(){
-  if(document.getElementById("tennisPanel")) return closeTennisPanel_();
-  const el = document.createElement("div");
-  el.id = "tennisPanel"; el.className = "sh-overlay";
-  el.innerHTML = `<div class="sh-sheet tn-sheet" role="dialog" aria-label="Ténis">
-    <div class="sh-top"><b>🎾 Ténis <small class="tn-priv">privado</small></b><span><button type="button" class="sh-x" id="tnReload" aria-label="Atualizar" title="Atualizar">🔄</button><button type="button" class="sh-x" id="tnClose" aria-label="Fechar">✕</button></span></div>
-    <div id="tnBody"></div></div>`;
-  document.body.appendChild(el);
-  document.body.classList.add("share-hub-open");
-  el.querySelector("#tnClose").onclick = closeTennisPanel_;
-  el.querySelector("#tnReload").onclick = () => tnLoad_(true);
-  el.addEventListener("click", e => { if(e.target === el) closeTennisPanel_(); });
+function renderTennisView_(){ // v287: chamada por setView("tenis-rank")
+  const rl = document.getElementById("tnReload"); if(rl) rl.onclick = () => tnLoad_(true);
   TN_.sel = null;
-  tnLoad_(false);
+  if(TN_.data) tnRender_(); else tnLoad_(false);
+}
+
+// ===================== «RESULTADOS» (v287): substitui «Medalhas» nas competições de ténis =====================
+// Histórico de cada resultado ao longo da época + destaque e contagem de títulos (🏆) e finais (🥈).
+function renderTennisResults_(){
+  const box = document.getElementById("medalsView"); if(!box) return;
+  const rows = EVENTS.map(e => ({ e, st: getEv(e.id) })).filter(r => r.st.passou || r.st.medal || r.st.resultTag || (r.st.resultado && String(r.st.resultado).trim()));
+  const key = r => (r.e.date || "") + String(r.e.seq || 0).padStart(8, "0");
+  rows.sort((a, b) => key(b) < key(a) ? -1 : key(b) > key(a) ? 1 : 0);
+  const tit = rows.filter(r => r.st.medal === "gold").length, fin = rows.filter(r => r.st.medal === "silver").length;
+  const pas = rows.filter(r => r.st.passou === "yes" && !r.st.medal).length, nao = rows.filter(r => r.st.passou === "no").length;
+  const por = {};
+  rows.forEach(r => { const a = r.e.athlete || "—"; const o = por[a] || (por[a] = { t: 0, f: 0, j: 0 }); o.j++; if(r.st.medal === "gold") o.t++; if(r.st.medal === "silver") o.f++; });
+  let h = `<div class="medal-totals tn-rtot">
+    <div class="medal-total-card gold"><div class="num">${tit}</div><div class="lbl">🏆 Títulos</div></div>
+    <div class="medal-total-card silver"><div class="num">${fin}</div><div class="lbl">🥈 Finais</div></div>
+    <div class="medal-total-card total"><div class="num">${pas}</div><div class="lbl">Passou</div></div>
+    <div class="medal-total-card total"><div class="num">${nao}</div><div class="lbl">Não passou</div></div></div>`;
+  const nomes = Object.keys(por).sort((a, b) => (por[b].t - por[a].t) || (por[b].f - por[a].f) || (por[b].j - por[a].j));
+  if(nomes.length) h += `<div class="tn-rath">` + nomes.map(n => { const o = por[n]; return `<div class="tn-ra${o.t ? " win" : ""}"><b>${tnEsc_(n)}</b><span>${o.t ? "🏆 " + o.t : ""}${o.t && o.f ? " · " : ""}${o.f ? "🥈 " + o.f : ""}${!o.t && !o.f ? o.j + (o.j === 1 ? " jogo" : " jogos") : ""}</span></div>`; }).join("") + `</div>`;
+  h += `<div class="medal-section-title">📅 Histórico da época</div>`;
+  if(!rows.length) h += `<div class="medal-empty">Ainda sem resultados. Marca «Passou», «Não passou» ou escreve o resultado no Calendário.</div>`;
+  else h += rows.map(r => {
+    const e = r.e, st = r.st, win = st.medal === "gold";
+    let dt = "Dia " + e.day; if(e.date && /^\d{4}-\d{2}-\d{2}$/.test(e.date)) dt = e.date.slice(8) + "/" + e.date.slice(5, 7);
+    const badge = st.medal === "gold" ? "🏆 Campeão" : st.medal === "silver" ? "🥈 Vice-campeão" : st.passou === "yes" ? "Passou" : st.passou === "no" ? "Não passou" : "";
+    const meta = [e.detail, e.phase, e.venue, e.country, e.piso].filter(Boolean).map(tnEsc_).join(" · ");
+    return `<div class="tn-rr${win ? " win" : ""}"><div class="tn-rr1"><span class="tn-rd">${tnEsc_(dt)}</span>${badge ? `<span class="tn-badge ${win ? "gold" : st.passou === "no" ? "tn-l" : "tn-w"}">${badge}</span>` : ""}</div>
+      <div class="tn-rr2">${tnEsc_(e.athlete)}${e.opp ? " <small>vs</small> " + tnEsc_(e.opp) : ""}</div>
+      ${st.resultado ? `<div class="tn-rr3">${tnEsc_(st.resultado)}</div>` : ""}${meta ? `<div class="tn-rr4">${meta}</div>` : ""}</div>`;
+  }).join("");
+  box.innerHTML = h;
 }

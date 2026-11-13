@@ -146,23 +146,40 @@ function renderTennisView_(){ // v287: chamada por setView("tenis-rank")
 
 // ===================== «RESULTADOS» (v287): substitui «Medalhas» nas competições de ténis =====================
 // Histórico de cada resultado ao longo da época + destaque e contagem de títulos (🏆) e finais (🥈).
+const TN_RES_ = { atl: "", ord: "cron" }; // v288: filtro por atleta e ordem (cronológica | melhores resultados)
+function tnFaseRank_(ph){ // quanto mais alto, melhor a fase alcançada
+  const t = String(ph || "").toLowerCase();
+  if(/qualif|qual\./.test(t)) return 1;
+  if(/final/.test(t) && !/meia|semi|quarto|oitavo/.test(t)) return 7;
+  if(/meia|semi/.test(t)) return 6;
+  if(/quarto|quarter/.test(t)) return 5;
+  if(/oitavo|round of 16|r16|1\/8/.test(t)) return 4;
+  if(/16|round 3|3\.ª|3ª/.test(t)) return 3;
+  return 2;
+}
+function tnMelhor_(r){ // pontuação para «melhores resultados»
+  const st = r.st; return (st.medal === "gold" ? 100 : st.medal === "silver" ? 80 : 0) + tnFaseRank_(r.e.phase) * 5 + (st.passou === "yes" ? 2 : 0);
+}
 function renderTennisResults_(){
   const box = document.getElementById("medalsView"); if(!box) return;
-  const rows = EVENTS.map(e => ({ e, st: getEv(e.id) })).filter(r => r.st.passou || r.st.medal || r.st.resultTag || (r.st.resultado && String(r.st.resultado).trim()));
+  const all = EVENTS.map(e => ({ e, st: getEv(e.id) })).filter(r => r.st.passou || r.st.medal || r.st.resultTag || (r.st.resultado && String(r.st.resultado).trim()));
   const key = r => (r.e.date || "") + String(r.e.seq || 0).padStart(8, "0");
-  rows.sort((a, b) => key(b) < key(a) ? -1 : key(b) > key(a) ? 1 : 0);
-  const tit = rows.filter(r => r.st.medal === "gold").length, fin = rows.filter(r => r.st.medal === "silver").length;
-  const pas = rows.filter(r => r.st.passou === "yes" && !r.st.medal).length, nao = rows.filter(r => r.st.passou === "no").length;
   const por = {};
-  rows.forEach(r => { const a = r.e.athlete || "—"; const o = por[a] || (por[a] = { t: 0, f: 0, j: 0 }); o.j++; if(r.st.medal === "gold") o.t++; if(r.st.medal === "silver") o.f++; });
+  all.forEach(r => { const a = r.e.athlete || "—"; const o = por[a] || (por[a] = { t: 0, f: 0, j: 0 }); o.j++; if(r.st.medal === "gold") o.t++; if(r.st.medal === "silver") o.f++; });
+  const nomes = Object.keys(por).sort((a, b) => (por[b].t - por[a].t) || (por[b].f - por[a].f) || (por[b].j - por[a].j));
+  if(TN_RES_.atl && !por[TN_RES_.atl]) TN_RES_.atl = "";
+  const rows = all.filter(r => !TN_RES_.atl || r.e.athlete === TN_RES_.atl);
+  if(TN_RES_.ord === "melhores") rows.sort((a, b) => (tnMelhor_(b) - tnMelhor_(a)) || (key(b) < key(a) ? -1 : 1));
+  else rows.sort((a, b) => key(b) < key(a) ? -1 : key(b) > key(a) ? 1 : 0);
+  const tit = rows.filter(r => r.st.medal === "gold").length, fin = rows.filter(r => r.st.medal === "silver").length;
   let h = `<div class="medal-totals tn-rtot">
     <div class="medal-total-card gold"><div class="num">${tit}</div><div class="lbl">🏆 Títulos</div></div>
-    <div class="medal-total-card silver"><div class="num">${fin}</div><div class="lbl">🥈 Finais</div></div>
-    <div class="medal-total-card total"><div class="num">${pas}</div><div class="lbl">Passou</div></div>
-    <div class="medal-total-card total"><div class="num">${nao}</div><div class="lbl">Não passou</div></div></div>`;
-  const nomes = Object.keys(por).sort((a, b) => (por[b].t - por[a].t) || (por[b].f - por[a].f) || (por[b].j - por[a].j));
-  if(nomes.length) h += `<div class="tn-rath">` + nomes.map(n => { const o = por[n]; return `<div class="tn-ra${o.t ? " win" : ""}"><b>${tnEsc_(n)}</b><span>${o.t ? "🏆 " + o.t : ""}${o.t && o.f ? " · " : ""}${o.f ? "🥈 " + o.f : ""}${!o.t && !o.f ? o.j + (o.j === 1 ? " jogo" : " jogos") : ""}</span></div>`; }).join("") + `</div>`;
-  h += `<div class="medal-section-title">📅 Histórico da época</div>`;
+    <div class="medal-total-card silver"><div class="num">${fin}</div><div class="lbl">🥈 Finais</div></div></div>`;
+  if(nomes.length){
+    h += `<div class="tn-rfil" role="tablist" aria-label="Filtrar por atleta"><button type="button" class="tn-ra${TN_RES_.atl ? "" : " on"}" data-ratl=""><b>Todos</b><span>${all.length}</span></button>` + nomes.map(n => { const o = por[n]; return `<button type="button" class="tn-ra${o.t ? " win" : ""}${TN_RES_.atl === n ? " on" : ""}" data-ratl="${tnEsc_(n)}"><b>${tnEsc_(n)}</b><span>${o.t ? "🏆 " + o.t : ""}${o.t && o.f ? " · " : ""}${o.f ? "🥈 " + o.f : ""}${!o.t && !o.f ? o.j : ""}</span></button>`; }).join("") + `</div>`;
+    h += `<div class="tn-rord"><button type="button" class="sh-chip${TN_RES_.ord === "cron" ? " on" : ""}" data-rord="cron">Mais recentes</button><button type="button" class="sh-chip${TN_RES_.ord === "melhores" ? " on" : ""}" data-rord="melhores">Melhores resultados</button></div>`;
+  }
+  h += `<div class="medal-section-title">${TN_RES_.atl ? "📅 " + tnEsc_(TN_RES_.atl) : "📅 Histórico da época"}</div>`;
   if(!rows.length) h += `<div class="medal-empty">Ainda sem resultados. Marca «Passou», «Não passou» ou escreve o resultado no Calendário.</div>`;
   else h += rows.map(r => {
     const e = r.e, st = r.st, win = st.medal === "gold";
@@ -170,8 +187,10 @@ function renderTennisResults_(){
     const badge = st.medal === "gold" ? "🏆 Campeão" : st.medal === "silver" ? "🥈 Vice-campeão" : st.passou === "yes" ? "Passou" : st.passou === "no" ? "Não passou" : "";
     const meta = [e.detail, e.phase, e.venue, e.country, e.piso].filter(Boolean).map(tnEsc_).join(" · ");
     return `<div class="tn-rr${win ? " win" : ""}"><div class="tn-rr1"><span class="tn-rd">${tnEsc_(dt)}</span>${badge ? `<span class="tn-badge ${win ? "gold" : st.passou === "no" ? "tn-l" : "tn-w"}">${badge}</span>` : ""}</div>
-      <div class="tn-rr2">${tnEsc_(e.athlete)}${e.opp ? " <small>vs</small> " + tnEsc_(e.opp) : ""}</div>
+      <div class="tn-rr2">${TN_RES_.atl ? "" : tnEsc_(e.athlete)}${e.opp ? (TN_RES_.atl ? "" : " ") + "<small>vs</small> " + tnEsc_(e.opp) : ""}</div>
       ${st.resultado ? `<div class="tn-rr3">${tnEsc_(st.resultado)}</div>` : ""}${meta ? `<div class="tn-rr4">${meta}</div>` : ""}</div>`;
   }).join("");
   box.innerHTML = h;
+  box.querySelectorAll("[data-ratl]").forEach(b => b.onclick = () => { TN_RES_.atl = b.dataset.ratl; renderTennisResults_(); });
+  box.querySelectorAll("[data-rord]").forEach(b => b.onclick = () => { TN_RES_.ord = b.dataset.rord; renderTennisResults_(); });
 }

@@ -260,6 +260,26 @@ document.getElementById("feedbackSubmitBtn").onclick = async ()=>{
 // Painel de administração (só Fernando/irmão) para ver os bugs/sugestões recebidos
 let feedbackShowingFull = false;
 
+// v281: em edição, os reportes (nomes + mensagens) já não vêm no GET público; pede-se a página atual ao servidor
+// com a password de admin, no máximo de 20 em 20 s e nunca com o painel do histórico completo aberto.
+let feedbackSyncAt_ = 0, feedbackSyncBusy_ = false;
+async function feedbackAdminSync_(force){
+  if(READONLY_MODE || feedbackSyncBusy_ || feedbackShowingFull) return;
+  if(!force && Date.now() - feedbackSyncAt_ < 20000) return;
+  let pw = ""; try{ pw = getAdminPassword(); }catch(e){}
+  if(!pw) return;
+  feedbackSyncBusy_ = true; feedbackSyncAt_ = Date.now();
+  try{
+    const r = await fetch(STORE_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ getFullFeedback:true, onlyCurrent:true, adminPassword: pw }) });
+    const j = await r.json();
+    if(j && j.ok && Array.isArray(j.fullFeedback) && !feedbackShowingFull){
+      FEEDBACK_LOG = j.fullFeedback;
+      checkFeedbackUpdates();
+      if(typeof renderTodoPanelBadge_ === "function") renderTodoPanelBadge_();
+    }
+  }catch(e){} finally{ feedbackSyncBusy_ = false; }
+}
+
 // Verifica se há reportes novos desde a última vez que o painel foi aberto —
 // atualiza a bolinha vermelha e dispara um aviso do telemóvel para cada um novo
 // (só uma vez por reporte, mesmo com a sincronização a repetir a cada 6s)

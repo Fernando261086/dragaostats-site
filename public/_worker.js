@@ -417,7 +417,7 @@ function dadosAtualizar_(env, cache, key, timeoutMs) {
       const ctl = new AbortController();
       const timer = setTimeout(() => ctl.abort(), timeoutMs);
       try {
-        const r = await fetch((env.STORE_URL || STORE_URL_DEFAULT) + "?_=" + Date.now(), { signal: ctl.signal, redirect: "follow" });
+        const r = await fetch((env.STORE_URL || STORE_URL_DEFAULT) + "?_=" + Date.now() + "&lite=1", { signal: ctl.signal, redirect: "follow" }); // v281: sem as competições arquivadas do modo Medalhas
         if (!r.ok) return null;
         const body = await r.text();
         if (body.charCodeAt(0) !== 123 || body.indexOf('"competitions"') < 0) return null; // não é o JSON dos dados (ex.: página de erro)
@@ -429,7 +429,7 @@ function dadosAtualizar_(env, cache, key, timeoutMs) {
   return dadosEmCurso_;
 }
 async function dadosBrutos_(env, ctx) {
-  const cache = caches.default, key = new Request(SITE + "/__cache/dados-brutos-v1");
+  const cache = caches.default, key = new Request(SITE + "/__cache/dados-brutos-v2");
   const hit = await cache.match(key);
   const idade = hit ? (Date.now() - Number(hit.headers.get("X-DS-At") || 0)) / 1000 : Infinity;
   if (hit && idade < DADOS_FRESCOS_S) return dadosResposta_(hit.body, idade);
@@ -445,7 +445,7 @@ async function dadosBrutos_(env, ctx) {
 
 // ---------- diagnóstico: /diag (texto simples; diz se o worker corre e se lê os dados)
 async function diagnostico_(env, ctx) {
-  const out = { worker: "v280", hora: new Date().toISOString() };
+  const out = { worker: "v281", hora: new Date().toISOString() };
   const t0 = Date.now();
   try {
     const cache = await caches.default.match(new Request(SITE + "/__cache/dados-v1"));

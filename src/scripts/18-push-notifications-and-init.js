@@ -130,7 +130,7 @@ function showStaleDataBanner_(at){
     // Usa a última cópia boa guardada neste aparelho, com um aviso — ou, sem
     // nenhuma cópia, mostra um ecrã de erro a sério, com botão para tentar de novo.
     let lastGood = null;
-    try{ lastGood = JSON.parse(localStorage.getItem("dia22-last-good-data") || "null"); }catch(e){}
+    try{ lastGood = JSON.parse(localStorage.getItem(READONLY_MODE ? "dia22-last-good-data" : "dia22-last-good-full") || "null"); }catch(e){}
     if(lastGood && lastGood.all){
       ALL = lastGood.all;
       ALL.competitions = Array.isArray(ALL.competitions) ? ALL.competitions : [];

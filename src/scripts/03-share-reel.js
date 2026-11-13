@@ -461,7 +461,7 @@ async function fetchAll(opts){
       const ctrl = new AbortController();
       const timeoutId = setTimeout(()=> ctrl.abort(), 10000);
       try{
-        r = await fetch(STORE_URL + "?_=" + Date.now(), { method: 'GET', cache: 'no-store', signal: ctrl.signal });
+        r = await fetch(STORE_URL + "?_=" + Date.now() + (READONLY_MODE ? "&lite=1" : ""), { method: 'GET', cache: 'no-store', signal: ctrl.signal });
       }finally{
         clearTimeout(timeoutId);
       }
@@ -494,7 +494,11 @@ async function fetchAll(opts){
       // só o sim/não de "existe alguma password configurada" (ver init()).
       if(typeof raw.hasAdminAuth === "boolean") HAS_ADMIN_AUTH = raw.hasAdminAuth;
       if(Array.isArray(raw.visitLog)) VISIT_LOG = raw.visitLog;
-      if(Array.isArray(raw.feedback)){ FEEDBACK_LOG = raw.feedback; checkFeedbackUpdates(); checkMyFeedbackReplies(); }
+      // v281: o GET público só traz {t, reply}; em edição a lista completa vem por feedbackAdminSync_ (com password)
+      if(Array.isArray(raw.feedback)){
+        if(READONLY_MODE){ FEEDBACK_LOG = raw.feedback; checkFeedbackUpdates(); checkMyFeedbackReplies(); }
+        else if(typeof feedbackAdminSync_ === "function") feedbackAdminSync_();
+      }
       if(raw.reactions && typeof raw.reactions === "object") REACTIONS = raw.reactions;
       if(raw.competitionOptions && typeof raw.competitionOptions === "object") COMPETITION_OPTIONS = raw.competitionOptions;
       if(raw.predictions && typeof raw.predictions === "object") PREDICTIONS = raw.predictions;
@@ -523,7 +527,7 @@ async function fetchAll(opts){
       if(raw.announcement !== undefined){ ANNOUNCEMENT = raw.announcement; renderAnnouncementBanner(); }
       if(raw.poll !== undefined){ POLL = raw.poll; renderPollWidget(); }
       const goodAll = { competitions: raw.competitions, data: raw.data || {} };
-      try{ if(!window.__demoLive_) localStorage.setItem("dia22-last-good-data", JSON.stringify({ at: Date.now(), all: goodAll })); }catch(e){}
+      try{ if(!window.__demoLive_) localStorage.setItem(READONLY_MODE ? "dia22-last-good-data" : "dia22-last-good-full", JSON.stringify({ at: Date.now(), all: goodAll })); }catch(e){}
       return { ok:true, all: goodAll, migrated:false };
     }
     if(raw && raw.legacy){

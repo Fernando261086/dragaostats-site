@@ -45,9 +45,9 @@ function tnRankingsHtml_(){
 
 function tnAtletasHtml_(){
   const all = ((TN_.data && TN_.data.jogadores) || []).slice().sort((a, b) => (a.r || 99999) - (b.r || 99999));
-  let h = `<div class="tn-add"><input id="tnNome" class="sh-in" type="text" placeholder="Acrescentar tenista (nome)" autocomplete="off"><button type="button" class="sh-chip" id="tnAdd">➕ Acrescentar</button></div>`;
+  let h = `<div class="tn-add"><button type="button" class="sh-chip on" id="tnAdd">➕ Acrescentar</button></div>`;
   if(TN_.msg) h += `<p class="tn-msg">${tnEsc_(TN_.msg)}</p>`;
-  h += `<div class="tn-list">` + all.map(p => `<button type="button" class="tn-row" data-pid="${p.id}"><span class="tn-pos">${p.r ? "#" + p.r : "—"}</span><span class="tn-nm">${tnEsc_(p.n)}</span><span class="tn-sub">${p.g === "F" ? "WTA" : "ATP"}${p.x ? " · acrescentado" : ""}</span><span class="tn-mv">${tnMove_(p)}</span></button>`).join("") + `</div>`;
+  h += `<div class="tn-list">` + all.map(p => `<button type="button" class="tn-row" data-pid="${p.id}"><span class="tn-pos">${p.r ? "#" + p.r : "—"}</span><span class="tn-nm">${tnEsc_(p.n)}</span><span class="tn-sub">${p.g === "F" ? "WTA" : "ATP"}${p.man ? " · à mão" : p.x ? " · acrescentado" : ""}</span><span class="tn-mv">${tnMove_(p)}</span></button>`).join("") + `</div>`;
   return h;
 }
 
@@ -84,8 +84,41 @@ function tnFichaHtml_(p){
     return `<div class="tn-g"><div class="tn-g1"><span class="tn-badge ${e.c}">${e.t}</span><span class="tn-gd">${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}</span></div><div class="tn-g2">vs ${tnEsc_(r[1])}</div><div class="tn-g3">${tnEsc_(r[3] || "")}${r[8] ? " · " + tnEsc_(r[8]) : ""}</div><div class="tn-g4">${tnEsc_(r[5])}${r[6] ? " · " + tnEsc_(r[6]) : ""}${r[4] ? " · " + tnEsc_(TN_FASES_[r[4]] || r[4]) : ""}${r[7] ? " · " + tnEsc_(r[7]) : ""}</div></div>`; }).join("") + `</div>`
     : `<p class="tn-empty">Sem jogos recentes.</p>`;
   h += `<p class="tn-line tn-small">Atualizado: ${tnEsc_(p.u || "—")}</p>`;
+  if(p.man) h += `<button type="button" class="sh-chip tn-edit">✏️ Editar</button> `;
   if(p.x) h += `<button type="button" class="sh-chip tn-rm">🗑 Deixar de acompanhar</button>`;
   return h;
+}
+
+// v289+: janela «Acrescentar tenista» — nome, género, ranking de singulares e de pares (o que ficar em branco não conta)
+function tnAddDialog_(p){
+  const old = document.getElementById("tnAddOv"); if(old) old.remove();
+  const g0 = p && p.g === "F" ? "F" : "M";
+  const ov = document.createElement("div"); ov.id = "tnAddOv"; ov.className = "sh-overlay tn-ov";
+  ov.innerHTML = `<div class="sh-sheet tn-dlg" role="dialog" aria-label="${p ? "Editar tenista" : "Acrescentar tenista"}">
+    <div class="sh-top"><b>${p ? "Editar tenista" : "Acrescentar tenista"}</b><button type="button" class="sh-x" id="tnDX" aria-label="Fechar">✕</button></div>
+    <label class="tn-fl">Nome do atleta<input id="tnFN" class="sh-in" type="text" autocomplete="off" value="${tnEsc_(p ? p.n : "")}"></label>
+    <div class="tn-fl">Masculino ou feminino<div class="tn-seg"><button type="button" class="sh-chip${g0 === "M" ? " on" : ""}" data-fg="M">Masculino</button><button type="button" class="sh-chip${g0 === "F" ? " on" : ""}" data-fg="F">Feminino</button></div></div>
+    <label class="tn-fl">Ranking singulares <small>(opcional)</small><input id="tnFS" class="sh-in" type="text" inputmode="numeric" placeholder="ex.: 49" value="${p && p.r ? p.r : ""}"></label>
+    <label class="tn-fl">Ranking pares <small>(opcional)</small><input id="tnFP" class="sh-in" type="text" inputmode="numeric" placeholder="ex.: 12" value="${p && p.d ? p.d[0] : ""}"></label>
+    <p class="tn-msg" id="tnFM"></p>
+    <div class="tn-fb"><button type="button" class="sh-chip" id="tnFC">Cancelar</button><button type="button" class="sh-chip on" id="tnFOK">Guardar</button></div></div>`;
+  document.body.appendChild(ov);
+  let g = g0;
+  const q = id => ov.querySelector(id), close = () => ov.remove();
+  ov.querySelectorAll("[data-fg]").forEach(b => b.onclick = () => { g = b.dataset.fg; ov.querySelectorAll("[data-fg]").forEach(x => x.classList.toggle("on", x === b)); });
+  q("#tnDX").onclick = close; q("#tnFC").onclick = close;
+  ov.addEventListener("click", e => { if(e.target === ov) close(); });
+  q("#tnFOK").onclick = async () => {
+    const nome = q("#tnFN").value.trim();
+    if(!nome){ q("#tnFM").textContent = "Escreve o nome do atleta."; q("#tnFN").focus(); return; }
+    const ok = q("#tnFOK"); ok.disabled = true; q("#tnFM").textContent = "A guardar…";
+    try{
+      const j = await tnPost_({ tenisManualAdd: { id: p ? p.id : undefined, nome, g, s: q("#tnFS").value.trim(), p: q("#tnFP").value.trim() } });
+      if(j && j.ok){ TN_.data = j; TN_.msg = ""; TN_.sel = null; close(); tnRender_(); return; }
+      q("#tnFM").textContent = (j && j.erro) || "Não consegui guardar (é preciso o Apps Script v191)."; ok.disabled = false;
+    }catch(e){ q("#tnFM").textContent = "Sem ligação ao Apps Script."; ok.disabled = false; }
+  };
+  setTimeout(() => { try{ q("#tnFN").focus(); }catch(e){} }, 50);
 }
 
 function tnRender_(){
@@ -104,13 +137,9 @@ function tnRender_(){
   box.querySelectorAll("[data-pid]").forEach(b => b.onclick = () => { TN_.sel = Number(b.dataset.pid); tnRender_(); box.scrollIntoView({ block: "start" }); });
   const back = box.querySelector(".tn-back"); if(back) back.onclick = () => { TN_.sel = null; tnRender_(); };
   const add = box.querySelector("#tnAdd");
-  if(add) add.onclick = async () => {
-    const nome = (box.querySelector("#tnNome").value || "").trim(); if(!nome) return;
-    add.disabled = true; TN_.msg = "A procurar «" + nome + "»…"; tnRender_();
-    try{ const j = await tnPost_({ tenisAdd: { nome } }); if(j && j.ok){ TN_.data = j; TN_.msg = "Acrescentado: " + (j.achado || nome); } else TN_.msg = (j && j.erro) || "Não consegui acrescentar."; }
-    catch(e){ TN_.msg = "Sem ligação ao Apps Script."; }
-    tnRender_();
-  };
+  if(add) add.onclick = () => tnAddDialog_(null);
+  const ed = box.querySelector(".tn-edit");
+  if(ed) ed.onclick = () => tnAddDialog_((TN_.data.jogadores || []).find(x => x.id === TN_.sel) || null);
   const rm = box.querySelector(".tn-rm");
   if(rm) rm.onclick = async () => {
     if(!confirm("Deixar de acompanhar este tenista?")) return;

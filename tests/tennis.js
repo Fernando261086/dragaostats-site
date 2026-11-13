@@ -28,7 +28,7 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
         if (String(u).includes('script.google.com')) {
           if (o && o.method === 'POST') { let b = {}; try { b = JSON.parse(o.body); } catch (e) {} window.__posts = (window.__posts||[]).concat([b]);
             let out = t;
-            if (b.tenisAdd) out = Object.assign({}, t, { achado: b.tenisAdd.nome });
+            if (b.tenisManualAdd) { out = JSON.parse(JSON.stringify(t)); const a = b.tenisManualAdd; const rec = { id: -5, n: a.nome, g: a.g, x: 1, man: 1, h: [], res: [] }; if (a.s) rec.r = Number(a.s); if (a.p) rec.d = [Number(a.p), 0]; out.jogadores.push(rec); }
             if (b.tenisManual) { out = JSON.parse(JSON.stringify(t)); const p = out.jogadores.find(x => x.id === b.tenisManual.id); p.m = p.m||{}; if (b.tenisManual.pm) p.m.pm = b.tenisManual.pm; }
             return Promise.resolve(new Response(JSON.stringify(out), {status:200, headers:{'content-type':'application/json'}})); }
           return Promise.resolve(new Response(JSON.stringify(d), {status:200, headers:{'content-type':'application/json'}})); }
@@ -62,8 +62,17 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     pm ? ok(`${tag}: editar pares envia {r:23} com password`) : bad(`${tag}: editar pares não enviou`);
     await page.evaluate(() => document.querySelector('#tnBody .tn-back').click());
     await page.evaluate(() => document.querySelector('#tnBody [data-tab="atl"]').click()); await page.waitForTimeout(100);
-    await page.fill('#tnNome', 'Matilde Jorge'); await page.evaluate(() => document.getElementById('tnAdd').click()); await page.waitForTimeout(300);
-    (await page.evaluate(() => /Acrescentado: Matilde Jorge/.test(document.getElementById('tnBody').textContent))) ? ok(`${tag}: acrescentar tenista`) : bad(`${tag}: acrescentar falhou`);
+    await page.evaluate(() => document.getElementById('tnAdd').click()); await page.waitForTimeout(250);
+    const dlg = await page.evaluate(() => ({ open: !!document.getElementById('tnAddOv'), fields: ['tnFN','tnFS','tnFP'].every(i => !!document.getElementById(i)), ov: Math.max(document.getElementById('tnAddOv').scrollWidth - document.getElementById('tnAddOv').clientWidth, 0) }));
+    dlg.open && dlg.fields && dlg.ov <= 1 ? ok(`${tag}: janela Acrescentar com nome, singulares e pares`) : bad(`${tag}: janela ${JSON.stringify(dlg)}`);
+    await page.evaluate(() => document.getElementById('tnFOK').click()); await page.waitForTimeout(150);
+    (await page.evaluate(() => /Escreve o nome/.test(document.getElementById('tnFM').textContent))) ? ok(`${tag}: nome obrigatório`) : bad(`${tag}: aceitou sem nome`);
+    if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-add.png` });
+    await page.fill('#tnFN', 'Francisco Cabral'); await page.fill('#tnFP', '12'); await page.evaluate(() => document.querySelector('[data-fg="M"]').click());
+    await page.evaluate(() => document.getElementById('tnFOK').click()); await page.waitForTimeout(400);
+    const posted = await page.evaluate(() => (window.__posts || []).filter(x => x.tenisManualAdd).pop());
+    posted && posted.tenisManualAdd.nome === 'Francisco Cabral' && posted.tenisManualAdd.g === 'M' && posted.tenisManualAdd.s === '' && posted.tenisManualAdd.p === '12' && posted.adminPassword !== undefined ? ok(`${tag}: envia nome, género, pares e deixa singulares em branco`) : bad(`${tag}: POST ${JSON.stringify(posted)}`);
+    (await page.evaluate(() => !document.getElementById('tnAddOv') && /Francisco Cabral/.test(document.getElementById('tnBody').textContent) && /à mão/.test(document.getElementById('tnBody').textContent))) ? ok(`${tag}: tenista à mão aparece na lista`) : bad(`${tag}: tenista à mão não apareceu`);
     errs.length ? bad(`${tag}: erros JS ${errs}`) : ok(`${tag}: sem erros JS`);
     await page.close();
   }

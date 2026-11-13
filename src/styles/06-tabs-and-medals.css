@@ -1492,3 +1492,10 @@ html.theme-light .tn-ra.win,html.theme-light .tn-rr.win{background:#fff4d6}
 .tn-rhead.win .tn-rh4{color:#e3b23c}
 html.theme-light .tn-tc,html.theme-light .tn-rhead{background:#f3f5f9}
 html.theme-light .tn-tc.win,html.theme-light .tn-rhead.win{background:#fff4d6}
+
+/* v291: janela «Acrescentar tenista» */
+.tn-ov{z-index:120}
+.tn-dlg{max-width:420px}
+.tn-fl{display:block;margin:12px 0;font-size:13px}.tn-fl .sh-in{display:block;width:100%;margin-top:6px;box-sizing:border-box}
+.tn-fl .tn-seg{margin-top:6px}
+.tn-fb{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}

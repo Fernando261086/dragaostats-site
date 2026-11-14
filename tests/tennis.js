@@ -33,6 +33,7 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
         if (String(u).includes('script.google.com')) {
           if (o && o.method === 'POST') { let b = {}; try { b = JSON.parse(o.body); } catch (e) {} window.__posts = (window.__posts||[]).concat([b]);
             let out = t;
+            if (b.tenisRankHist) { const ms=[]; for (let y=2012;y<=2026;y++) for (let m=1;m<=12;m++) { if (y===2026 && m>10) break; ms.push(y+'-'+String(m).padStart(2,'0')); } const sS=ms.filter(x=>x>='2016-01').map((x,i)=>[x,Math.max(36,1300-i*9),Math.max(10,1000-i*6)]); const sD=ms.filter(x=>x>='2021-06').map((x,i)=>[x,Math.max(80,600-i*7),50]); return Promise.resolve(new Response(JSON.stringify(b.tenisRankHist.nome==='Nuno Borges' ? {ok:true,s:sS,d:sD,pend:0} : {ok:true,s:[],d:[],pend:12}), {status:200, headers:{'content-type':'application/json'}})); }
             if (b.tenisCarreira) return Promise.resolve(new Response(JSON.stringify(b.tenisCarreira.id > 0 ? { ok:true, c:{ id:b.tenisCarreira.id, n:'x', ts:Date.now(), u:'2026-11-14 00:00', j:window.__carrJ } } : { ok:false, erro:'sem ficha' }), {status:200, headers:{'content-type':'application/json'}}));
             if (b.tenisManualAdd) { out = JSON.parse(JSON.stringify(t)); const a = b.tenisManualAdd; const rec = { id: -5, n: a.nome, g: a.g, x: 1, man: 1, h: [], res: [] }; if (a.s) rec.r = Number(a.s); if (a.p) rec.d = [Number(a.p), 0]; out.jogadores.push(rec); }
             if (b.tenisManual) { out = JSON.parse(JSON.stringify(t)); const p = out.jogadores.find(x => x.id === b.tenisManual.id); p.m = p.m||{}; if (b.tenisManual.pm) p.m.pm = b.tenisManual.pm; }
@@ -77,6 +78,38 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     await page.evaluate(() => document.querySelector('#tnBody [data-ccat="Challenger"]').click()); await page.waitForTimeout(150);
     (await page.evaluate(() => !/Paris/.test(document.getElementById('tnBody').textContent))) ? ok(`${tag}: filtro Challenger tira o ATP`) : bad(`${tag}: filtro não funcionou`);
     (await page.evaluate(() => (window.__posts||[]).some(p => p.tenisCarreira && p.tenisCarreira.id === 125006 && p.adminPassword !== undefined))) ? ok(`${tag}: pedido da carreira leva a password`) : bad(`${tag}: pedido sem password`);
+    // v296: separador Ranking (gráfico desde 2010)
+    await page.evaluate(() => document.querySelector('#tnBody [data-ftab="rank"]').click()); await page.waitForTimeout(500);
+    const rk = await page.evaluate(() => ({ svg: !!document.querySelector('#tnBody .tn-rhc'), ls: document.querySelectorAll('#tnBody .tn-rhc polyline').length, rows: document.querySelectorAll('#tnBody .tn-rhr').length, t: document.getElementById('tnBody').textContent, chips: [...document.querySelectorAll('#tnBody [data-rhs]')].map(b => b.dataset.rhs).join() }));
+    rk.svg && rk.ls === 2 && rk.rows >= 8 ? ok(`${tag}: Ranking com gráfico (2 linhas) e ${rk.rows - 1} anos`) : bad(`${tag}: Ranking svg=${rk.svg} linhas=${rk.ls} filas=${rk.rows}`);
+    /Melhor singulares/.test(rk.t) && /#49/.test(rk.t) && rk.chips === 'ambos,s,d' ? ok(`${tag}: Ranking mostra o melhor (#49) e os filtros ${rk.chips}`) : bad(`${tag}: Ranking sem melhor/filtros (${rk.chips})`);
+    (await ov()) > 1 ? bad(`${tag}: Ranking com deslize lateral ${await ov()}px`) : ok(`${tag}: Ranking sem deslize lateral`);
+    if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-ranking.png` });
+    await page.evaluate(() => document.querySelector('#tnBody [data-rhs="d"]').click()); await page.waitForTimeout(100);
+    (await page.evaluate(() => document.querySelectorAll('#tnBody .tn-rhc polyline').length)) === 1 ? ok(`${tag}: filtro Pares deixa 1 linha`) : bad(`${tag}: filtro Pares`);
+    (await page.evaluate(() => (window.__posts||[]).some(p => p.tenisRankHist && p.tenisRankHist.nome === 'Nuno Borges' && p.adminPassword !== undefined))) ? ok(`${tag}: pedido do ranking leva a password`) : bad(`${tag}: pedido do ranking sem password`);
+    // sem histórico (arquivo ainda a importar) e sem separador nas mulheres
+    await page.evaluate(() => { document.querySelector('#tnBody .tn-back').click(); });
+    await page.evaluate(() => document.querySelector('#tnBody [data-pid="199408"]').click()); await page.waitForTimeout(150);
+    (await page.evaluate(() => !document.querySelector('#tnBody [data-ftab="rank"]'))) ? ok(`${tag}: mulheres sem separador Ranking`) : bad(`${tag}: mulheres com separador Ranking`);
+    await page.evaluate(() => document.querySelector('#tnBody .tn-back').click());
+    await page.evaluate(() => document.querySelector('#tnBody [data-pid="125006"]').click()); await page.waitForTimeout(150);
+    // v296: Resultados — época anterior
+    await page.evaluate(() => { setView('medalhas'); }); await page.waitForTimeout(300);
+    (await page.evaluate(() => !!document.getElementById('tnRAno'))) ? ok(`${tag}: Resultados com seletor de época`) : bad(`${tag}: Resultados sem seletor de época`);
+    const ano = String(new Date(carrJ[carrJ.length - 1][0] * 1000).getFullYear());
+    await page.evaluate(a => { const s = document.getElementById('tnRAno'); s.value = a; s.onchange(); }, ano); await page.waitForTimeout(900);
+    const ra = await page.evaluate(() => ({ cards: document.querySelectorAll('#medalsView .tn-tor').length, t: document.getElementById('medalsView').textContent, chips: document.querySelectorAll('#medalsView .tn-ra').length, sel: document.getElementById('tnRAno').value }));
+    ra.cards >= 1 && /Parou em|Campeão|Final|✓/.test(ra.t) && ra.sel === ano ? ok(`${tag}: época ${ano} mostra ${ra.cards} torneios`) : bad(`${tag}: época ${ano} cards=${ra.cards} sel=${ra.sel}`);
+    (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) > 1 ? bad(`${tag}: Resultados ${ano} com deslize lateral`) : ok(`${tag}: Resultados ${ano} sem deslize lateral`);
+    await page.evaluate(() => { document.querySelectorAll('#medalsView details').forEach(d => d.open = true); });
+    (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) > 1 ? bad(`${tag}: Resultados ${ano} aberto com deslize lateral`) : ok(`${tag}: Resultados ${ano} aberto sem deslize lateral`);
+    if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-epoca.png` });
+    await page.evaluate(() => { const s = document.getElementById('tnRAno'); s.value = ''; s.onchange(); }); await page.waitForTimeout(200);
+    (await page.evaluate(() => !document.querySelector('#medalsView .tn-years'))) ? ok(`${tag}: voltar a «Esta época»`) : bad(`${tag}: não voltou a «Esta época»`);
+    await page.evaluate(() => { setView('tenis-rank'); }); await page.waitForTimeout(300);
+    await page.evaluate(() => document.querySelector('#tnBody [data-tab="atl"]').click());
+    await page.evaluate(() => document.querySelector('#tnBody [data-pid="125006"]').click()); await page.waitForTimeout(150);
     await page.evaluate(() => document.querySelector('#tnBody [data-ftab="res"]').click());
     await page.evaluate(() => document.querySelector('#tnBody [data-man="pm"]').click()); await page.waitForTimeout(300);
     const pm = await page.evaluate(() => (window.__posts||[]).some(p => p.tenisManual && p.tenisManual.pm && p.tenisManual.pm.r === 23 && p.adminPassword !== undefined));

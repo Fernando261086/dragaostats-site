@@ -1539,3 +1539,25 @@ html.theme-light .tn-tor.is-w .tn-tr{color:#8a5a00}
   .st-table th.st-team, .st-table td.st-team{ width:100%; max-width:0; }
   .st-table .st-team .crest, .st-table .st-team .st-crest-ph{ margin-right:5px; }
 }
+
+/* v296: Ranking na ficha do tenista (gráfico desde 2010) e seletor de época nos Resultados */
+.tn-rhk{margin-top:6px}
+.tn-rhc{margin-top:6px}
+.tn-rhc .tn-gl{stroke:rgba(255,255,255,.10);stroke-width:1}
+.tn-rhc .tn-ls{stroke:#5bb4f0;fill:none}.tn-rhc .tn-ld{stroke:#f2b84b;fill:none;stroke-dasharray:5 3}
+.tn-rhc circle.tn-best{stroke:none}.tn-rhc circle.tn-ls{fill:#5bb4f0}.tn-rhc circle.tn-ld{fill:#f2b84b}
+.tn-rhc .tn-bt{fill:var(--text,#fff);font-weight:700;font-size:10px}
+.tn-lg{display:inline-block;width:16px;height:0;border-top:3px solid;vertical-align:middle;margin:0 4px 0 6px}
+.tn-lg.tn-ls{border-color:#5bb4f0}.tn-lg.tn-ld{border-top-style:dashed;border-color:#f2b84b}
+.tn-rha{display:grid;gap:4px;margin:6px 0}
+.tn-rhr{display:grid;grid-template-columns:44px minmax(0,1fr) minmax(0,1fr);gap:8px;padding:8px 10px;border:1px solid var(--line,#2a3a5c);border-radius:10px;background:rgba(255,255,255,.03);font-size:13px;align-items:center}
+.tn-rhr span{text-align:center}.tn-rhh{background:none;border:none;font-size:11px;color:var(--text-dim,#9ab);text-transform:uppercase;letter-spacing:.04em;padding-bottom:0}
+.tn-rseason{display:flex;align-items:center;gap:10px;margin:2px 0 10px}
+.tn-rseason label{font-size:12px;color:var(--text-dim,#9ab);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.tn-rseason select{flex:1;min-width:0;min-height:44px;padding:8px 12px;border-radius:999px;border:1px solid var(--line,#2a3a5c);background:rgba(255,255,255,.05);color:inherit;font:inherit;font-weight:700}
+.tn-prog{color:var(--gold,#e3b23c)}
+html.theme-light .tn-rhc .tn-gl{stroke:rgba(11,27,63,.12)}
+html.theme-light .tn-rhc .tn-ls{stroke:#0a58c2}html.theme-light .tn-rhc circle.tn-ls{fill:#0a58c2}html.theme-light .tn-lg.tn-ls{border-color:#0a58c2}
+html.theme-light .tn-rhc .tn-ld{stroke:#a86a00}html.theme-light .tn-rhc circle.tn-ld{fill:#a86a00}html.theme-light .tn-lg.tn-ld{border-color:#a86a00}
+html.theme-light .tn-rhr,html.theme-light .tn-rseason select{background:#f3f5f9}
+@media (max-width:420px){.tn-rhr{grid-template-columns:40px minmax(0,1fr) minmax(0,1fr);padding:8px}.tn-rhk b{font-size:15px}}

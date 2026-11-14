@@ -8,7 +8,7 @@ function tnSyncBtn_(){ // v287: o separador «Rankings» só existe dentro de um
   if(!on && window.__curView_ === "tenis-rank" && typeof setView === "function") setView("calendario");
 }
 
-const TN_ = { data: null, tab: "rank", gen: "M", sel: null, msg: "" };
+const TN_ = { data: null, tab: "rank", gen: "M", sel: null, msg: "", fTab: "res", carr: {}, cat: "todos" }; // v294: fTab = «res»umo | «carr»eira
 function tnEsc_(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 async function tnPost_(body){
@@ -75,6 +75,9 @@ const TN_FASES_ = { "Round of 128": "1.ª ronda", "Round of 64": "1.ª ronda", "
 function tnFichaHtml_(p){
   const m = p.m || {};
   let h = `<button type="button" class="sh-chip tn-back">‹ Voltar</button><h3 class="tn-name">${tnEsc_(p.n)} <small>${p.g === "F" ? "WTA" : "ATP"}</small></h3>`;
+  const temCarr = p.id > 0 && !p.man;
+  if(temCarr) h += `<div class="tn-seg tn-fseg"><button type="button" class="sh-chip ${TN_.fTab !== "carr" ? "on" : ""}" data-ftab="res">Resumo</button><button type="button" class="sh-chip ${TN_.fTab === "carr" ? "on" : ""}" data-ftab="carr">Carreira</button></div>`;
+  if(temCarr && TN_.fTab === "carr") return h + tnCarreiraHtml_(p);
   if(p.r || p.lr || p.b || p.p) h += `<div class="tn-kpis"><div><b>${p.r ? "#" + p.r : "—"}</b><small>Ranking ${tnMove_(p)}</small></div><div><b>${p.lr ? "#" + p.lr : "—"}</b><small>Ao vivo</small></div><div><b>${p.b ? "#" + p.b : "—"}</b><small>Melhor</small></div><div><b>${p.p || "—"}</b><small>Pontos</small></div></div>`;
   const dd = p.d ? { r: p.d[0], pts: p.d[1] } : (m.pm ? { r: m.pm.r, pts: m.pm.pts, man: 1 } : null);
   h += `<p class="tn-line">Pares: <b>${dd ? "#" + dd.r : "—"}</b>${dd && dd.pts ? " · " + dd.pts + " pts" : ""}${dd && dd.man ? " <small>(à mão)</small>" : ""}${!p.d ? ` <button type="button" class="tn-lnk" data-man="pm">✏️ editar</button>` : ""}</p>`;
@@ -137,8 +140,11 @@ function tnRender_(){
   box.innerHTML = h;
   box.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { TN_.tab = b.dataset.tab; tnRender_(); });
   box.querySelectorAll("[data-gen]").forEach(b => b.onclick = () => { TN_.gen = b.dataset.gen; tnRender_(); });
-  box.querySelectorAll("[data-pid]").forEach(b => b.onclick = () => { TN_.sel = Number(b.dataset.pid); tnRender_(); box.scrollIntoView({ block: "start" }); });
-  const back = box.querySelector(".tn-back"); if(back) back.onclick = () => { TN_.sel = null; tnRender_(); };
+  box.querySelectorAll("[data-pid]").forEach(b => b.onclick = () => { TN_.sel = Number(b.dataset.pid); TN_.fTab = "res"; TN_.cat = "todos"; tnRender_(); box.scrollIntoView({ block: "start" }); });
+  const back = box.querySelector(".tn-back"); if(back) back.onclick = () => { TN_.sel = null; TN_.fTab = "res"; tnRender_(); };
+  box.querySelectorAll("[data-ftab]").forEach(b => b.onclick = () => { TN_.fTab = b.dataset.ftab; tnRender_(); if(TN_.fTab === "carr") tnCarrLoad_(TN_.sel, false); });
+  box.querySelectorAll("[data-ccat]").forEach(b => b.onclick = () => { TN_.cat = b.dataset.ccat; tnRender_(); });
+  const crf = box.querySelector("#tnCarrRefresh"); if(crf) crf.onclick = () => tnCarrLoad_(TN_.sel, true);
   const add = box.querySelector("#tnAdd");
   if(add) add.onclick = () => tnAddDialog_(null);
   const ed = box.querySelector(".tn-edit");
@@ -260,4 +266,80 @@ function renderTennisResults_(){
   box.querySelectorAll("[data-ratl]").forEach(b => b.onclick = () => { TN_RES_.atl = b.dataset.ratl; renderTennisResults_(); });
   box.querySelectorAll("[data-rord]").forEach(b => b.onclick = () => { TN_RES_.ord = b.dataset.rord; renderTennisResults_(); });
   box.querySelectorAll("[data-tsel]").forEach(b => b.onclick = () => { TN_RES_.sel = b.dataset.tsel; renderTennisResults_(); window.scrollTo(0, 0); });
+}
+
+
+// ===================== «CARREIRA» (v294): todos os jogos desde sempre, por ano e torneio =====================
+// Os jogos vêm do Apps Script v197 (`{tenisCarreira:{id}}`, Sofascore, ficheiro privado no Drive); só modo edição.
+const TN_CAT_ = { "ATP": "ATP", "Challenger": "Challenger", "ITF Men": "ITF", "ITF Women": "ITF", "Davis Cup": "Taça Davis", "Billie Jean King Cup": "Taça BJK", "WTA": "WTA", "WTA 125": "WTA 125" };
+const TN_CAT_SEM_ = { "Exhibition": 1, "Juniors": 1 }; // não contam para a carreira
+const TN_PISOS_ = [["clay", "Terra batida"], ["hard", "Piso duro"], ["indoor", "Pavilhão"], ["grass", "Relva"]];
+function tnPiso_(g){ const t = String(g || "").toLowerCase(); if(/clay/.test(t)) return "clay"; if(/grass/.test(t)) return "grass"; if(/indoor/.test(t)) return "indoor"; if(/hard/.test(t)) return "hard"; return ""; }
+function tnFase_(f){ const t = String(f || ""); if(TN_FASES_[t]) return TN_FASES_[t]; const q = t.match(/^Qualification round (\d)/i); if(q) return "Qualif. " + q[1]; if(/^Qualification final/i.test(t)) return "Qualif. final"; return t; }
+function tnRondaRk_(f){ const t = String(f || "").toLowerCase();
+  if(/qualif/.test(t)) return 0.5;
+  if(/^final$/.test(t)) return 7; if(/semi/.test(t)) return 6; if(/quarter/.test(t)) return 5; if(/round of 16/.test(t)) return 4;
+  if(/round of 32/.test(t)) return 3; if(/round of 64/.test(t)) return 2; if(/round of 128/.test(t)) return 1; return 2.5; }
+function tnEhTitulo_(r){ return r[2] === "V" && /^final$/i.test(r[4] || "") && !!TN_CAT_[r[6]] && r[6] !== "Davis Cup" && r[6] !== "Billie Jean King Cup"; }
+function tnEhFinalPerdida_(r){ return r[2] === "D" && /^final$/i.test(r[4] || "") && !!TN_CAT_[r[6]] && r[6] !== "Davis Cup" && r[6] !== "Billie Jean King Cup"; }
+function tnPct_(v, d){ return v + d ? Math.round(100 * v / (v + d)) + "%" : "—"; }
+
+async function tnCarrLoad_(id, refresh){
+  if(!id) return;
+  const cur = TN_.carr[id] || {};
+  if(cur.c && !refresh && cur.fresh) return;
+  if(cur.loading) return;
+  TN_.carr[id] = Object.assign({}, cur, { loading: true, erro: "" }); tnRender_();
+  try{
+    const j = await tnPost_({ tenisCarreira: { id, refresh: !!refresh } });
+    if(j && j.ok && j.c) TN_.carr[id] = { c: j.c, loading: false, erro: "", fresh: true };
+    else TN_.carr[id] = Object.assign({}, cur, { loading: false, erro: (j && j.erro) || "Sem resposta válida. É preciso o Apps Script v197 (ou mais recente) publicado." });
+  }catch(e){ TN_.carr[id] = Object.assign({}, cur, { loading: false, erro: "Não consegui falar com o Apps Script: " + e }); }
+  tnRender_();
+}
+
+function tnCarreiraHtml_(p){
+  const st = TN_.carr[p.id] || {};
+  if(!st.c){
+    if(st.erro) return `<p class="tn-empty">${tnEsc_(st.erro)}</p><button type="button" class="sh-chip" id="tnCarrRefresh">↻ Tentar outra vez</button>`;
+    return `<p class="tn-empty">A importar a carreira de ${tnEsc_(p.n)}… A 1.ª vez demora cerca de 15 segundos.</p>`;
+  }
+  const todos = (st.c.j || []).filter(r => !TN_CAT_SEM_[r[6]]);
+  const cats = []; todos.forEach(r => { const k = TN_CAT_[r[6]] || r[6] || "Outros"; if(cats.indexOf(k) < 0) cats.push(k); });
+  const ordem = ["ATP", "WTA", "Challenger", "WTA 125", "ITF", "Taça Davis", "Taça BJK"];
+  cats.sort((a, b) => (ordem.indexOf(a) < 0 ? 99 : ordem.indexOf(a)) - (ordem.indexOf(b) < 0 ? 99 : ordem.indexOf(b)));
+  const cat = cats.indexOf(TN_.cat) >= 0 ? TN_.cat : "todos";
+  const J = todos.filter(r => cat === "todos" || (TN_CAT_[r[6]] || r[6] || "Outros") === cat);
+  let h = `<div class="tn-seg tn-ccats"><button type="button" class="sh-chip ${cat === "todos" ? "on" : ""}" data-ccat="todos">Tudo</button>` + cats.map(c => `<button type="button" class="sh-chip ${cat === c ? "on" : ""}" data-ccat="${tnEsc_(c)}">${tnEsc_(c)}</button>`).join("") + `</div>`;
+  if(!J.length) return h + `<p class="tn-empty">Sem jogos nesta categoria.</p>`;
+  const V = J.filter(r => r[2] === "V").length, D = J.length - V, T = J.filter(tnEhTitulo_).length, F = J.filter(tnEhFinalPerdida_).length;
+  const desde = new Date(J[J.length - 1][0] * 1000).getFullYear();
+  h += `<div class="tn-kpis tn-ckpis"><div><b>${V}–${D}</b><small>Vitórias–derrotas</small></div><div><b>${tnPct_(V, D)}</b><small>% de vitórias</small></div><div><b>${T}</b><small>🏆 Títulos</small></div><div><b>${F}</b><small>🥈 Finais</small></div></div>`;
+  h += `<p class="tn-line tn-small">${J.length} jogos desde ${desde}. Só singulares; os pares não estão incluídos.</p>`;
+  // balanço por piso
+  const pisos = {}; J.forEach(r => { const k = tnPiso_(r[7]); if(!k) return; (pisos[k] = pisos[k] || [0, 0])[r[2] === "V" ? 0 : 1]++; });
+  const ps = TN_PISOS_.filter(x => pisos[x[0]]);
+  if(ps.length) h += `<div class="tn-pisos">` + ps.map(x => `<div><b>${pisos[x[0]][0]}–${pisos[x[0]][1]}</b><small>${x[1]} · ${tnPct_(pisos[x[0]][0], pisos[x[0]][1])}</small></div>`).join("") + `</div>`;
+  // por ano → torneios → jogos
+  const anos = {};
+  J.slice().sort((a, b) => a[0] - b[0]).forEach(r => { const y = new Date(r[0] * 1000).getFullYear(); (anos[y] = anos[y] || []).push(r); });
+  const ys = Object.keys(anos).map(Number).sort((a, b) => b - a);
+  h += `<h4 class="tn-h">Por ano <small>(toca num ano ou num torneio para abrir)</small></h4><div class="tn-years">`;
+  ys.forEach((y, yi) => {
+    const L = anos[y], v = L.filter(r => r[2] === "V").length, d = L.length - v, t = L.filter(tnEhTitulo_).length, f = L.filter(tnEhFinalPerdida_).length;
+    const grupos = []; // torneio = mesmo nome e jogos a menos de 12 dias uns dos outros
+    L.forEach(r => { const g = grupos[grupos.length - 1]; if(g && g.n === r[5] && r[0] - g.fim < 12 * 86400) { g.j.push(r); g.fim = r[0]; } else grupos.push({ n: r[5], j: [r], fim: r[0] }); });
+    h += `<details class="tn-yr"${yi === 0 ? " open" : ""}><summary><b>${y}</b><span>${v}–${d}</span><span>${tnPct_(v, d)}</span><span>${t ? "🏆 " + t : ""}${t && f ? " " : ""}${f ? "🥈 " + f : ""}</span></summary>`;
+    h += grupos.slice().reverse().map(g => {
+      let best = g.j[0]; g.j.forEach(r => { if(tnRondaRk_(r[4]) > tnRondaRk_(best[4]) || (tnRondaRk_(r[4]) === tnRondaRk_(best[4]) && r[2] === "V")) best = r; });
+      const titulo = g.j.some(tnEhTitulo_), final = g.j.some(tnEhFinalPerdida_);
+      const rotulo = titulo ? "🏆 Campeão" : final ? "🥈 Final" : (best[2] === "V" ? tnFase_(best[4]) + " ✓" : "Parou em " + tnFase_(best[4]));
+      const gv = g.j.filter(r => r[2] === "V").length, gd = g.j.length - gv, meta = g.j[0];
+      return `<details class="tn-tor${titulo ? " is-w" : ""}"><summary><span class="tn-tn">${tnEsc_(g.n || "—")}</span><small>${tnEsc_(TN_CAT_[meta[6]] || meta[6] || "")}${meta[7] ? " · " + tnEsc_(meta[7]) : ""}</small><span class="tn-tr">${tnEsc_(rotulo)} · ${gv}–${gd}</span></summary>` +
+        g.j.map(r => { const dt = new Date(r[0] * 1000);
+          return `<div class="tn-cg"><span class="tn-cgd">${String(dt.getDate()).padStart(2, "0")}/${String(dt.getMonth() + 1).padStart(2, "0")}</span><span class="tn-cgr ${r[2] === "V" ? "tn-w" : "tn-l"}">${r[2]}</span><span class="tn-cgo">vs ${tnEsc_(r[1])}</span><span class="tn-cgs">${tnEsc_(r[3] || "")}${r[8] ? " · " + tnEsc_(r[8]) : ""}</span><span class="tn-cgf">${tnEsc_(tnFase_(r[4]))}</span></div>`; }).join("") + `</details>`;
+    }).join("") + `</details>`;
+  });
+  h += `</div><p class="tn-line tn-small">Atualizado: ${tnEsc_(st.c.u || "—")} · fonte: Sofascore ${st.loading ? "· a atualizar…" : ""} <button type="button" class="tn-lnk" id="tnCarrRefresh">↻ Atualizar</button></p>`;
+  return h;
 }

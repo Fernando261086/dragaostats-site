@@ -14,6 +14,11 @@ let tenis = { ok:true, top:{ M:[[1,'Alexander Zverev','DE',9000],[2,'Jannik Sinn
       res:[[now-86400,'Casper Ruud','D','6-7(5) 4-6','Quarterfinals','Paris','ATP','Hardcourt indoor',''],[now-2*86400,'Ignacio Buse','V','6-0 6-2','Round of 16','Paris','ATP','Hardcourt indoor',''],[now-9*86400,'A Muito Comprido Nome Sobrenome Longo / Parceiro Dois','V','7-6(3) 6-4','Final','Challenger de uma cidade com nome enorme, Portugal','Challenger','Clay','Retired']] }),
     J(199408,'Francisca Jorge','F',241,{ d:[107,786,-1], h:[['2026-11-09',241]] }),
     J(555,'Francisco Cabral','M',null,{ x:1, r:undefined, p:undefined, pr:undefined, b:undefined }) ] };
+const carrJ = []; // v294: carreira simulada (singulares)
+{ const T=[['Paris','ATP','Hardcourt indoor'],['Maia Challenger','Challenger','Clay'],['ITF M25 Faro, Portugal','ITF Men','Hardcourt outdoor'],['Torneio com um nome muito comprido de propósito, Portugal','Challenger','Grass']];
+  const rounds=['Qualification round 1','Round of 32','Round of 16','Quarterfinals','Semifinals','Final'];
+  for(let y=0;y<4;y++) for(let t=0;t<T.length;t++){ const base=now-(y*365+t*60)*86400; for(let r=0;r<(t===1&&y===0?6:3);r++) carrJ.push([base-(5-r)*86400,'Adversário '+y+t+r,(t===1&&y===0)||r<2?'V':'D',r%2?'6-4 7-6(5)':'6-3 6-2',rounds[r],T[t][0],T[t][1],T[t][2],'']); }
+  carrJ.push([now-9e7,'Exib','V','6-0 6-0','Final','Show','Exhibition','Hard','']); carrJ.sort((a,b)=>b[0]-a[0]); }
 let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = m => console.log('✅', m);
 (async () => {
   const srv = http.createServer((q, r) => { let p = path.join(DIST, decodeURIComponent(q.url.split('?')[0])); if (p.endsWith(path.sep)) p += 'index.html';
@@ -22,19 +27,20 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
   for (const [label, query] of [['público','?view=readonly'], ['edição','?view=edit']]) for (const theme of ['dark','light']) for (const w of [360, 768]) {
     const page = await browser.newPage({ viewport: { width: w, height: 800 } }), tag = `${label} ${theme} ${w}px`;
     const errs = [], posts = []; page.on('pageerror', e => errs.push(e.message));
-    await page.addInitScript(([d, t, theme]) => {
+    await page.addInitScript(([d, t, theme, c]) => {
       try { localStorage.setItem('dia22-viewer-name','Teste'); localStorage.setItem('dia22-theme', theme); localStorage.setItem('dia22-pinned-comp','t1'); } catch (e) {}
       const f = window.fetch; window.fetch = (u, o) => {
         if (String(u).includes('script.google.com')) {
           if (o && o.method === 'POST') { let b = {}; try { b = JSON.parse(o.body); } catch (e) {} window.__posts = (window.__posts||[]).concat([b]);
             let out = t;
+            if (b.tenisCarreira) return Promise.resolve(new Response(JSON.stringify(b.tenisCarreira.id > 0 ? { ok:true, c:{ id:b.tenisCarreira.id, n:'x', ts:Date.now(), u:'2026-11-14 00:00', j:window.__carrJ } } : { ok:false, erro:'sem ficha' }), {status:200, headers:{'content-type':'application/json'}}));
             if (b.tenisManualAdd) { out = JSON.parse(JSON.stringify(t)); const a = b.tenisManualAdd; const rec = { id: -5, n: a.nome, g: a.g, x: 1, man: 1, h: [], res: [] }; if (a.s) rec.r = Number(a.s); if (a.p) rec.d = [Number(a.p), 0]; out.jogadores.push(rec); }
             if (b.tenisManual) { out = JSON.parse(JSON.stringify(t)); const p = out.jogadores.find(x => x.id === b.tenisManual.id); p.m = p.m||{}; if (b.tenisManual.pm) p.m.pm = b.tenisManual.pm; }
             return Promise.resolve(new Response(JSON.stringify(out), {status:200, headers:{'content-type':'application/json'}})); }
           return Promise.resolve(new Response(JSON.stringify(d), {status:200, headers:{'content-type':'application/json'}})); }
         return f.apply(window, [u, o]); };
-      window.prompt = () => '23 3150';
-    }, [mock, tenis, theme]);
+      window.prompt = () => '23 3150'; window.__carrJ = c;
+    }, [mock, tenis, theme, carrJ]);
     await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
     await page.goto(`http://localhost:${port}/index.html${query}`, { waitUntil: 'load' }); await page.waitForTimeout(1500);
     await page.evaluate(() => { const o = document.getElementById('introOverlay'); if (o) o.style.display = 'none'; });
@@ -59,6 +65,19 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     (/Não passou/.test(ficha.t) && /Passou/.test(ficha.t) && /Campeão/.test(ficha.t)) ? ok(`${tag}: Passou / Não passou / Campeão`) : bad(`${tag}: etiquetas em falta`);
     (await ov()) > 1 ? bad(`${tag}: ficha com deslize lateral ${await ov()}px`) : ok(`${tag}: ficha sem deslize lateral`);
     if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-ficha.png` });
+    // v294: separador Carreira
+    await page.evaluate(() => document.querySelector('#tnBody [data-ftab="carr"]').click()); await page.waitForTimeout(500);
+    const cr = await page.evaluate(() => ({ yrs: document.querySelectorAll('#tnBody .tn-yr').length, tor: document.querySelectorAll('#tnBody .tn-tor').length, t: document.getElementById('tnBody').textContent, cats: [...document.querySelectorAll('#tnBody [data-ccat]')].map(b => b.textContent) }));
+    cr.yrs === 4 && cr.tor >= 8 ? ok(`${tag}: Carreira com ${cr.yrs} anos e ${cr.tor} torneios`) : bad(`${tag}: Carreira anos=${cr.yrs} torneios=${cr.tor}`);
+    /Campeão/.test(cr.t) && /Parou em/.test(cr.t) && /🏆/.test(cr.t) ? ok(`${tag}: Carreira mostra campeão e onde parou`) : bad(`${tag}: Carreira sem rótulos`);
+    !/Show|Exib/.test(cr.t) && cr.cats.join() === 'Tudo,ATP,Challenger,ITF' ? ok(`${tag}: exibições fora e categorias ${cr.cats}`) : bad(`${tag}: categorias ${cr.cats}`);
+    await page.evaluate(() => { document.querySelectorAll('#tnBody details').forEach(d => d.open = true); });
+    (await ov()) > 1 ? bad(`${tag}: Carreira com deslize lateral ${await ov()}px`) : ok(`${tag}: Carreira sem deslize lateral`);
+    if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-carreira.png` });
+    await page.evaluate(() => document.querySelector('#tnBody [data-ccat="Challenger"]').click()); await page.waitForTimeout(150);
+    (await page.evaluate(() => !/Paris/.test(document.getElementById('tnBody').textContent))) ? ok(`${tag}: filtro Challenger tira o ATP`) : bad(`${tag}: filtro não funcionou`);
+    (await page.evaluate(() => (window.__posts||[]).some(p => p.tenisCarreira && p.tenisCarreira.id === 125006 && p.adminPassword !== undefined))) ? ok(`${tag}: pedido da carreira leva a password`) : bad(`${tag}: pedido sem password`);
+    await page.evaluate(() => document.querySelector('#tnBody [data-ftab="res"]').click());
     await page.evaluate(() => document.querySelector('#tnBody [data-man="pm"]').click()); await page.waitForTimeout(300);
     const pm = await page.evaluate(() => (window.__posts||[]).some(p => p.tenisManual && p.tenisManual.pm && p.tenisManual.pm.r === 23 && p.adminPassword !== undefined));
     pm ? ok(`${tag}: editar pares envia {r:23} com password`) : bad(`${tag}: editar pares não enviou`);

@@ -43,8 +43,10 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     if (!has) { bad(`${tag}: sem botão Ténis em edição`); await page.close(); continue; }
     await page.evaluate(() => document.getElementById('viewRankingsBtn').click()); await page.waitForTimeout(600);
     const rows = await page.evaluate(() => document.querySelectorAll('#tnBody .tn-row[data-pid]').length);
-    rows >= 3 ? ok(`${tag}: rankings mostram ${rows} linhas`) : bad(`${tag}: rankings com ${rows} linhas`);
+    rows >= 2 ? ok(`${tag}: rankings mostram ${rows} linhas`) : bad(`${tag}: rankings com ${rows} linhas`);
     const ov = () => page.evaluate(() => { const s = document.getElementById('tennisView'); return Math.max(s.scrollWidth - s.clientWidth, document.documentElement.scrollWidth - window.innerWidth); });
+    const cabralSing = await page.evaluate(() => { const l = document.querySelector('#tnBody .tn-list'); return !!l && /Cabral/.test(l.textContent); });
+    cabralSing ? bad(`${tag}: tenista sem pontos de singulares aparece na lista de singulares`) : ok(`${tag}: sem tenistas sem ranking nos singulares`);
     (await ov()) > 1 ? bad(`${tag}: rankings com deslize lateral ${await ov()}px`) : ok(`${tag}: rankings sem deslize lateral`);
     if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-rank.png` });
     await page.evaluate(() => document.querySelector('#tnBody [data-gen="F"]').click()); await page.waitForTimeout(150);

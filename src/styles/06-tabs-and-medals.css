@@ -1531,3 +1531,11 @@ html.theme-light .tn-pisos div,html.theme-light .tn-yr{background:#f3f5f9}
 html.theme-light .tn-cgr.tn-w{color:#0b6b2e}html.theme-light .tn-cgr.tn-l{color:#b3261e}
 html.theme-light .tn-tor.is-w .tn-tr{color:#8a5a00}
 @media (max-width:420px){.tn-yr>summary{grid-template-columns:44px minmax(0,1fr) 40px minmax(0,auto);padding:12px 10px}}
+
+/* v295: tabelas de classificação com muitas colunas (ex.: Hóquei) cabem no cartão em telemóvel — o nome da equipa encolhe com «…» em vez de a tabela deslizar */
+@media (max-width:520px){
+  .st-table{ table-layout:auto; }
+  .st-table th, .st-table td{ padding-left:3px; padding-right:3px; }
+  .st-table th.st-team, .st-table td.st-team{ width:100%; max-width:0; }
+  .st-table .st-team .crest, .st-table .st-team .st-crest-ph{ margin-right:5px; }
+}

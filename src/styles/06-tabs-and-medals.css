@@ -1601,3 +1601,10 @@ html.theme-light .tn-rhc .tn-ring,html.theme-light .tn-rhc .tn-cross circle{stro
 html.theme-light .tn-tip{background:#fff;box-shadow:0 6px 18px rgba(11,27,63,.18)}
 html.theme-light .tn-tip .tn-tr i{border-top-color:#0a58c2}html.theme-light .tn-tip .tn-tr i.tn-ld{border-top-color:#a86a00}
 .tn-rhc circle,.tn-rhc rect{stroke-dasharray:none}
+
+/* v300: «Carreira» nos Resultados do ténis (lista de tenistas) */
+.tn-ctab{display:grid;gap:6px;margin:6px 0}
+.tn-crow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;text-align:left;width:100%;padding:10px 12px;min-height:44px;border:1px solid var(--line,#2a3a5c);border-radius:12px;background:rgba(255,255,255,.04);color:inherit;font:inherit;cursor:pointer}
+.tn-crow small{grid-column:1;font-size:11px;color:var(--text-dim,#9ab)}
+.tn-crow .tn-tr{grid-column:2;grid-row:1 / span 2;align-self:center}
+html.theme-light .tn-crow{background:#f3f5f9}

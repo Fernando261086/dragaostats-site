@@ -457,11 +457,11 @@ function tnRhHover_(box){ // v298: linha vertical + cartão com o ranking de cad
   svg.addEventListener("pointerleave", ev => { if(ev.pointerType === "mouse") esconder(); });
 }
 
-function tnEpocaSelHtml_(nomes, contagem, total){ // v297/v299: Época (só anos; o ano corrente é o 1.º) + Tenista
+function tnEpocaSelHtml_(nomes, contagem, total, soTenista){ // v297/v299: Época (só anos; o ano corrente é o 1.º) + Tenista
   const y = new Date().getFullYear(), ys = []; for(let a = y; a >= 2014; a--) ys.push(a);
   const cur = String(TN_RES_.ano && TN_RES_.ano !== "manual" ? TN_RES_.ano : y);
-  let h = `<div class="tn-rselrow"><div class="tn-rseason"><label for="tnRAno">Época</label><select id="tnRAno">${ys.map(a => `<option value="${a}"${cur === String(a) ? " selected" : ""}>${a}${a === y ? " (a decorrer)" : ""}</option>`).join("")}</select></div>`;
-  if(nomes && nomes.length) h += `<div class="tn-rseason"><label for="tnRAtl">Tenista</label><select id="tnRAtl"><option value="">Todos os tenistas (${nomes.length})</option>${nomes.map(n => `<option value="${tnEsc_(n)}"${TN_RES_.atl === n ? " selected" : ""}>${tnEsc_(n)} (${contagem[n] || ""})</option>`).join("")}</select></div>`;
+  let h = `<div class="tn-rselrow">` + (soTenista ? "" : `<div class="tn-rseason"><label for="tnRAno">Época</label><select id="tnRAno">${ys.map(a => `<option value="${a}"${cur === String(a) ? " selected" : ""}>${a}${a === y ? " (a decorrer)" : ""}</option>`).join("")}</select></div>`);
+  if(nomes && nomes.length) h += `<div class="tn-rseason"><label for="tnRAtl">Tenista</label><select id="tnRAtl"><option value="">Todos os tenistas (${nomes.length})</option>${nomes.map(n => `<option value="${tnEsc_(n)}"${TN_RES_.atl === n ? " selected" : ""}>${tnEsc_(n)}${contagem[n] ? " (" + contagem[n] + ")" : ""}</option>`).join("")}</select></div>`;
   return h + `</div>`;
 }
 function tnEpocaBind_(box){
@@ -526,7 +526,37 @@ function tnManuaisAno_(gsSofa){ // v299: torneios escritos à mão (competição
     return !gsSofa.some(S => tnNomeChave_(S.ath) === k && ds.some(d => d >= S.j[0][0] - 4 * 86400 && d <= S.fim + 4 * 86400));
   }).map(g => { g.manual = true; g.titulo = g.campeao; g.final = g.final; g.fim = new Date(g.dmax.slice(0, 10) + "T12:00:00").getTime() / 1000 || 0; return g; });
 }
-function tnResultadosAno_(box){ // ano corrente (Sofascore + à mão) e épocas anteriores (carreiras importadas do Sofascore)
+function tnOrdChipsHtml_(){ // v300: «Mais recentes» · «Melhores resultados» · «Carreira»
+  const c = (k, t) => `<button type="button" class="sh-chip${TN_RES_.ord === k ? " on" : ""}" data-rord="${k}">${t}</button>`;
+  return `<div class="tn-rord">${c("cron", "Mais recentes")}${c("melhores", "Melhores resultados")}${c("carreira", "Carreira")}</div>`;
+}
+function tnResultadosCarreira_(box){ // v300: o quadro «Carreira» da ficha, dentro dos Resultados (todos os anos; um tenista ou o resumo de todos)
+  const A = TN_.allC, J = ((TN_.data && TN_.data.jogadores) || []).filter(p => p.id > 0 && !p.man), nomes = J.map(p => p.n);
+  if(TN_RES_.atl && nomes.indexOf(TN_RES_.atl) < 0) TN_RES_.atl = "";
+  if(!TN_RES_.atl && J.length === 1) TN_RES_.atl = J[0].n;
+  let h = tnEpocaSelHtml_(nomes, {}, 0, true) + tnOrdChipsHtml_();
+  if(A.run) h += `<p class="tn-line tn-small tn-prog">A importar as carreiras… ${A.done}/${A.total} <small>(a 1.ª vez demora cerca de 15 segundos por tenista)</small></p>`;
+  if(A.erro) h += `<p class="tn-empty">${tnEsc_(A.erro)}</p>`;
+  const p = J.find(x => x.n === TN_RES_.atl);
+  if(p) h += tnCarreiraHtml_(p);
+  else if(!J.length) h += `<div class="medal-empty">${A.run ? "A importar…" : "Ainda sem tenistas com carreira importada (só tenistas com ficha, não «à mão»)."}</div>`;
+  else {
+    h += `<div class="medal-section-title">🎾 Carreira · todos os tenistas</div><div class="tn-ctab">` + J.map(q => {
+      const c = TN_.carr[q.id], L = c && c.c ? (c.c.j || []).filter(r => !TN_CAT_SEM_[r[6]]) : null;
+      if(!L) return `<button type="button" class="tn-crow" data-ctn="${tnEsc_(q.n)}"><span class="tn-tn">${tnEsc_(q.n)}</span><small>${c && c.erro ? "sem carreira importada" : "a importar…"}</small></button>`;
+      const v = L.filter(r => r[2] === "V").length, d = L.length - v, t = L.filter(tnEhTitulo_).length, f = L.filter(tnEhFinalPerdida_).length;
+      return `<button type="button" class="tn-crow" data-ctn="${tnEsc_(q.n)}"><span class="tn-tn">${tnEsc_(q.n)}</span><small>${v}–${d} · ${tnPct_(v, d)}</small><span class="tn-tr">${t ? "🏆 " + t : ""}${t && f ? " " : ""}${f ? "🥈 " + f : ""}</span></button>`;
+    }).join("") + `</div><p class="tn-line tn-small">Toca num tenista para ver a carreira completa. Fonte: Sofascore (só singulares).</p>`;
+  }
+  box.innerHTML = h;
+  tnEpocaBind_(box);
+  box.querySelectorAll("[data-rord]").forEach(b => b.onclick = () => { TN_RES_.ord = b.dataset.rord; renderTennisResults_(); });
+  box.querySelectorAll("[data-ccat]").forEach(b => b.onclick = () => { TN_.cat = b.dataset.ccat; renderTennisResults_(); });
+  box.querySelectorAll("[data-ctn]").forEach(b => b.onclick = () => { TN_RES_.atl = b.dataset.ctn; renderTennisResults_(); });
+  const crf = box.querySelector("#tnCarrRefresh"); if(crf && p) crf.onclick = async () => { await tnCarrFetchUm_(p.id, true); renderTennisResults_(); };
+}
+function tnResultadosAno_(box){
+  if(TN_RES_.ord === "carreira"){ tnResultadosCarreira_(box); return; } // ano corrente (Sofascore + à mão) e épocas anteriores (carreiras importadas do Sofascore)
   const A = TN_.allC, anoAtual = String(new Date().getFullYear()), ano = TN_RES_.ano && TN_RES_.ano !== "manual" ? String(TN_RES_.ano) : anoAtual;
   const gsS = tnGruposAno_(ano), man = ano === anoAtual ? tnManuaisAno_(gsS) : [], gs = gsS.concat(man);
   const nomes = []; gs.forEach(g => { if(nomes.indexOf(g.ath) < 0) nomes.push(g.ath); });
@@ -540,7 +570,7 @@ function tnResultadosAno_(box){ // ano corrente (Sofascore + à mão) e épocas 
   if(A.erro) h += `<p class="tn-empty">${tnEsc_(A.erro)}</p>`;
   if(A.falhas && A.falhas.length && !A.run) h += `<p class="tn-line tn-small">Sem carreira importada: ${A.falhas.map(tnEsc_).join(", ")}. <button type="button" class="tn-lnk" id="tnRAnoRetry">↻ Tentar outra vez</button></p>`;
   if(nomes.length){
-    h += `<div class="tn-rord"><button type="button" class="sh-chip${TN_RES_.ord === "cron" ? " on" : ""}" data-rord="cron">Mais recentes</button><button type="button" class="sh-chip${TN_RES_.ord === "melhores" ? " on" : ""}" data-rord="melhores">Melhores resultados</button></div>`;
+    h += tnOrdChipsHtml_();
   }
   if(TN_RES_.ord === "melhores") L.sort((a, b) => (b.melhor - a.melhor) || (b.fim - a.fim)); else L.sort((a, b) => b.fim - a.fim);
   h += `<div class="medal-section-title">🎾 Torneios de ${tnEsc_(ano)}${TN_RES_.atl ? " · " + tnEsc_(TN_RES_.atl) : ""}</div><div class="tn-years">`;

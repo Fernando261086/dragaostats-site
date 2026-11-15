@@ -130,6 +130,20 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     await page.evaluate(a => { const s = document.getElementById('tnRAno'); s.value = a; s.onchange(); }, ano); await page.waitForTimeout(500);
     if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-epoca.png` });
     await page.evaluate(() => { const s = document.getElementById('tnRAno'); s.value = ''; s.onchange(); }); await page.waitForTimeout(200);
+    // v300: «Carreira» nos Resultados (ao lado de «Melhores resultados»)
+    const c0 = await page.evaluate(() => [...document.querySelectorAll('#medalsView [data-rord]')].map(b => b.dataset.rord));
+    c0.join() === 'cron,melhores,carreira' ? ok(`${tag}: botões Mais recentes · Melhores · Carreira`) : bad(`${tag}: botões de ordem ${c0}`);
+    await page.evaluate(() => { TN_RES_.atl = ''; document.querySelector('#medalsView [data-rord="carreira"]').click(); }); await page.waitForTimeout(300);
+    const c1 = await page.evaluate(() => ({ rows: document.querySelectorAll('#medalsView .tn-crow').length, ano: !!document.getElementById('tnRAno'), on: document.querySelector('#medalsView [data-rord="carreira"]').classList.contains('on') }));
+    c1.rows >= 1 && !c1.ano && c1.on ? ok(`${tag}: Carreira (todos) lista ${c1.rows} tenistas, sem menu de época`) : bad(`${tag}: Carreira todos ${JSON.stringify(c1)}`);
+    (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) > 1 ? bad(`${tag}: Carreira (todos) com deslize lateral`) : ok(`${tag}: Carreira (todos) sem deslize lateral`);
+    await page.evaluate(() => document.querySelector('#medalsView .tn-crow').click()); await page.waitForTimeout(300);
+    const c2 = await page.evaluate(() => ({ k: document.querySelectorAll('#medalsView .tn-ckpis > div').length, ccat: document.querySelectorAll('#medalsView [data-ccat]').length, yr: document.querySelectorAll('#medalsView .tn-yr').length, pisos: !!document.querySelector('#medalsView .tn-pisos') }));
+    c2.k === 4 && c2.ccat >= 2 && c2.yr >= 1 ? ok(`${tag}: Carreira de um tenista (KPIs, categorias, ${c2.yr} anos)`) : bad(`${tag}: Carreira tenista ${JSON.stringify(c2)}`);
+    await page.evaluate(() => { document.querySelectorAll('#medalsView details').forEach(d => d.open = true); });
+    (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) > 1 ? bad(`${tag}: Carreira (tenista) com deslize lateral`) : ok(`${tag}: Carreira (tenista) sem deslize lateral`);
+    if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-carreira.png` });
+    await page.evaluate(() => { document.querySelector('#medalsView [data-rord="cron"]').click(); TN_RES_.atl = ''; renderTennisResults_(); }); await page.waitForTimeout(200);
     (await page.evaluate(() => { const o = [...document.getElementById('tnRAno').options].map(x => x.textContent); return !o.some(x => /Esta época/.test(x)) && /a decorrer/.test(o[0]); })) ? ok(`${tag}: menu de épocas só com anos (sem «Esta época»)`) : bad(`${tag}: menu de épocas com «Esta época»`);
     await page.evaluate(() => { setView('tenis-rank'); }); await page.waitForTimeout(300);
     await page.evaluate(() => document.querySelector('#tnBody [data-tab="atl"]').click());

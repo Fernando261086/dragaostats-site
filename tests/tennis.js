@@ -66,18 +66,8 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     (/Não passou/.test(ficha.t) && /Passou/.test(ficha.t) && /Campeão/.test(ficha.t)) ? ok(`${tag}: Passou / Não passou / Campeão`) : bad(`${tag}: etiquetas em falta`);
     (await ov()) > 1 ? bad(`${tag}: ficha com deslize lateral ${await ov()}px`) : ok(`${tag}: ficha sem deslize lateral`);
     if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-ficha.png` });
-    // v294: separador Carreira
-    await page.evaluate(() => document.querySelector('#tnBody [data-ftab="carr"]').click()); await page.waitForTimeout(500);
-    const cr = await page.evaluate(() => ({ yrs: document.querySelectorAll('#tnBody .tn-yr').length, tor: document.querySelectorAll('#tnBody .tn-tor').length, t: document.getElementById('tnBody').textContent, cats: [...document.querySelectorAll('#tnBody [data-ccat]')].map(b => b.textContent) }));
-    cr.yrs === 4 && cr.tor >= 8 ? ok(`${tag}: Carreira com ${cr.yrs} anos e ${cr.tor} torneios`) : bad(`${tag}: Carreira anos=${cr.yrs} torneios=${cr.tor}`);
-    /Campeão/.test(cr.t) && /Parou em/.test(cr.t) && /🏆/.test(cr.t) ? ok(`${tag}: Carreira mostra campeão e onde parou`) : bad(`${tag}: Carreira sem rótulos`);
-    !/Show|Exib/.test(cr.t) && cr.cats.join() === 'Tudo,ATP,Challenger,ITF' ? ok(`${tag}: exibições fora e categorias ${cr.cats}`) : bad(`${tag}: categorias ${cr.cats}`);
-    await page.evaluate(() => { document.querySelectorAll('#tnBody details').forEach(d => d.open = true); });
-    (await ov()) > 1 ? bad(`${tag}: Carreira com deslize lateral ${await ov()}px`) : ok(`${tag}: Carreira sem deslize lateral`);
-    if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-carreira.png` });
-    await page.evaluate(() => document.querySelector('#tnBody [data-ccat="Challenger"]').click()); await page.waitForTimeout(150);
-    (await page.evaluate(() => !/Paris/.test(document.getElementById('tnBody').textContent))) ? ok(`${tag}: filtro Challenger tira o ATP`) : bad(`${tag}: filtro não funcionou`);
-    (await page.evaluate(() => (window.__posts||[]).some(p => p.tenisCarreira && p.tenisCarreira.id === 125006 && p.adminPassword !== undefined))) ? ok(`${tag}: pedido da carreira leva a password`) : bad(`${tag}: pedido sem password`);
+    // v301: a ficha já não tem o separador Carreira (passou para os Resultados)
+    (await page.evaluate(() => !document.querySelector('#tnBody [data-ftab="carr"]') && !!document.querySelector('#tnBody [data-ftab="rank"]'))) ? ok(`${tag}: ficha sem separador Carreira (fica Resumo · Ranking)`) : bad(`${tag}: ficha com separador Carreira ou sem Ranking`);
     // v296: separador Ranking (gráfico desde 2010)
     await page.evaluate(() => document.querySelector('#tnBody [data-ftab="rank"]').click()); await page.waitForTimeout(500);
     const rk = await page.evaluate(() => ({ svg: !!document.querySelector('#tnBody .tn-rhc'), ls: document.querySelectorAll('#tnBody .tn-rhc path[stroke-width]').length, rows: document.querySelectorAll('#tnBody .tn-rhr').length, t: document.getElementById('tnBody').textContent, chips: [...document.querySelectorAll('#tnBody [data-rhs]')].map(b => b.dataset.rhs).join() }));
@@ -143,6 +133,7 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     await page.evaluate(() => { document.querySelectorAll('#medalsView details').forEach(d => d.open = true); });
     (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) > 1 ? bad(`${tag}: Carreira (tenista) com deslize lateral`) : ok(`${tag}: Carreira (tenista) sem deslize lateral`);
     if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-carreira.png` });
+    (await page.evaluate(() => (window.__posts||[]).some(p => p.tenisCarreira && p.tenisCarreira.id === 125006 && p.adminPassword !== undefined))) ? ok(`${tag}: pedido da carreira leva a password`) : bad(`${tag}: pedido da carreira sem password`);
     await page.evaluate(() => { document.querySelector('#medalsView [data-rord="cron"]').click(); TN_RES_.atl = ''; renderTennisResults_(); }); await page.waitForTimeout(200);
     (await page.evaluate(() => { const o = [...document.getElementById('tnRAno').options].map(x => x.textContent); return !o.some(x => /Esta época/.test(x)) && /a decorrer/.test(o[0]); })) ? ok(`${tag}: menu de épocas só com anos (sem «Esta época»)`) : bad(`${tag}: menu de épocas com «Esta época»`);
     await page.evaluate(() => { setView('tenis-rank'); }); await page.waitForTimeout(300);

@@ -75,10 +75,8 @@ const TN_FASES_ = { "Round of 128": "1.ª ronda", "Round of 64": "1.ª ronda", "
 function tnFichaHtml_(p){
   const m = p.m || {};
   let h = `<button type="button" class="sh-chip tn-back">‹ Voltar</button><h3 class="tn-name">${tnEsc_(p.n)} <small>${p.g === "F" ? "WTA" : "ATP"}</small></h3>`;
-  const temCarr = p.id > 0 && !p.man;
   const temRank = p.g !== "F"; // v296: histórico do ranking ATP (Tennis Explorer) só para homens
-  if(temCarr || temRank) h += `<div class="tn-seg tn-fseg"><button type="button" class="sh-chip ${TN_.fTab !== "carr" && TN_.fTab !== "rank" ? "on" : ""}" data-ftab="res">Resumo</button>${temCarr ? `<button type="button" class="sh-chip ${TN_.fTab === "carr" ? "on" : ""}" data-ftab="carr">Carreira</button>` : ""}${temRank ? `<button type="button" class="sh-chip ${TN_.fTab === "rank" ? "on" : ""}" data-ftab="rank">Ranking</button>` : ""}</div>`;
-  if(temCarr && TN_.fTab === "carr") return h + tnCarreiraHtml_(p);
+  if(temRank) h += `<div class="tn-seg tn-fseg"><button type="button" class="sh-chip ${TN_.fTab !== "rank" ? "on" : ""}" data-ftab="res">Resumo</button>${temRank ? `<button type="button" class="sh-chip ${TN_.fTab === "rank" ? "on" : ""}" data-ftab="rank">Ranking</button>` : ""}</div>`;
   if(temRank && TN_.fTab === "rank") return h + tnRankHistHtml_(p);
   if(p.r || p.lr || p.b || p.p) h += `<div class="tn-kpis"><div><b>${p.r ? "#" + p.r : "—"}</b><small>Ranking ${tnMove_(p)}</small></div><div><b>${p.lr ? "#" + p.lr : "—"}</b><small>Ao vivo</small></div><div><b>${p.b ? "#" + p.b : "—"}</b><small>Melhor</small></div><div><b>${p.p || "—"}</b><small>Pontos</small></div></div>`;
   const dd = p.d ? { r: p.d[0], pts: p.d[1] } : (m.pm ? { r: m.pm.r, pts: m.pm.pts, man: 1 } : null);

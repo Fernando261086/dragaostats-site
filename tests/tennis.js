@@ -87,7 +87,7 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-ranking.png` });
     // v298: período, cartão ao passar o rato/tocar, área
     const v298 = await page.evaluate(() => ({ per: [...document.querySelectorAll('#tnBody [data-rhp]')].map(b => b.dataset.rhp).join(), areas: document.querySelectorAll('#tnBody .tn-rhc path[fill^="url"]').length }));
-    v298.per === 'tudo,10,5' && v298.areas === 2 ? ok(`${tag}: gráfico com área e períodos ${v298.per}`) : bad(`${tag}: gráfico v298 ${JSON.stringify(v298)}`);
+    v298.per === 'tudo,10,5' && v298.areas === 1 ? ok(`${tag}: gráfico com área e períodos ${v298.per}`) : bad(`${tag}: gráfico v298 ${JSON.stringify(v298)}`);
     const sv = await page.evaluate(() => { const r = document.querySelector('#tnBody .tn-rhc').getBoundingClientRect(); return { x: r.left + r.width * 0.6, y: r.top + r.height * 0.5 }; });
     await page.mouse.move(sv.x, sv.y); await page.waitForTimeout(150);
     const tp = await page.evaluate(() => { const t = document.querySelector('#tnBody .tn-tip'); const r = t.getBoundingClientRect(), w = document.querySelector('#tnBody .tn-rhw').getBoundingClientRect(); return { vis: !t.hidden, txt: t.textContent, dentro: r.left >= w.left - 1 && r.right <= w.right + 1 }; });

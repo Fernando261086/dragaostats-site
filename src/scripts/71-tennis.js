@@ -407,15 +407,15 @@ function tnRankHistHtml_(p){
     let d = `M${P[0][0].toFixed(1)},${P[0][1].toFixed(1)}`;
     for(let i = 0; i < n - 1; i++){ const h3 = dx[i] / 3; d += `C${(P[i][0] + h3).toFixed(1)},${(P[i][1] + t[i] * h3).toFixed(1)} ${(P[i + 1][0] - h3).toFixed(1)},${(P[i + 1][1] - t[i + 1] * h3).toFixed(1)} ${P[i + 1][0].toFixed(1)},${P[i + 1][1].toFixed(1)}`; }
     return d; };
-  const linha = (L, cls, grad, abaixo) => { if(!L.length) return ""; const P = L.map(x => [X(x[0]), Y(x[1])]), d = mono(P);
+  const linha = (L, cls, grad, abaixo, area) => { if(!L.length) return ""; const P = L.map(x => [X(x[0]), Y(x[1])]), d = mono(P);
     const b = L.reduce((m, x) => x[1] < m[1] ? x : m, L[0]), bx = X(b[0]), by = Y(b[1]), ult = P[P.length - 1];
     const txt = "#" + b[1], tw = txt.length * 6 + 10, lx = Math.min(W - PR - tw / 2, Math.max(PL + tw / 2, bx)), ly = abaixo ? by + 20 : by - 9;
     const lyy = !abaixo && ly < PT + 6 ? by + 20 : ly;
-    return `<path d="${d}L${ult[0].toFixed(1)},${bottom}L${P[0][0].toFixed(1)},${bottom}Z" fill="url(#${grad})" stroke="none"/><path d="${d}" fill="none" class="${cls}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>` +
+    return (area ? `<path d="${d}L${ult[0].toFixed(1)},${bottom}L${P[0][0].toFixed(1)},${bottom}Z" fill="url(#${grad})" stroke="none"/>` : "") + `<path d="${d}" fill="none" class="${cls}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>` +
       `<circle cx="${ult[0].toFixed(1)}" cy="${ult[1].toFixed(1)}" r="7" class="${cls} tn-halo"/><circle cx="${ult[0].toFixed(1)}" cy="${ult[1].toFixed(1)}" r="3.4" class="${cls} tn-best"/>` +
       `<circle cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" r="4.2" class="${cls} tn-best tn-ring"/><rect x="${(lx - tw / 2).toFixed(1)}" y="${(lyy - 11).toFixed(1)}" width="${tw}" height="15" rx="7.5" class="${cls} tn-pill"/><text x="${lx.toFixed(1)}" y="${(lyy).toFixed(1)}" text-anchor="middle" class="tn-bt">${txt}</text>`; };
-  if(mostra.d) svg += linha(Dv, "tn-ld", "tnGd", true);
-  if(mostra.s) svg += linha(Sv, "tn-ls", "tnGs", false);
+  if(mostra.d) svg += linha(Dv, "tn-ld", "tnGd", true, !mostra.s); // área só numa linha (duas áreas sobrepostas ficam cinzentas)
+  if(mostra.s) svg += linha(Sv, "tn-ls", "tnGs", false, true);
   svg += `<g class="tn-cross" style="display:none"><line y1="${PT}" y2="${bottom}" class="tn-cl"/><circle r="4.6" class="tn-cs tn-ls" style="display:none"/><circle r="4.6" class="tn-cd tn-ld" style="display:none"/></g></svg>`;
   TN_.rhCh = { S: mostra.s ? Sv : [], D: mostra.d ? Dv : [], x0, span, W, H, PL, PR, PT, lo, hi, bottom };
   const melhor = L => L.length ? L.reduce((m, x) => x[1] < m[1] ? x : m, L[0]) : null, bS = melhor(S), bD = melhor(D);

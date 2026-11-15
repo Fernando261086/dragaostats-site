@@ -40,6 +40,29 @@ function dayResultTagText_(ev){
   const st = getEv(ev.id) || {};
   return st.resultTag === "win" ? "Vitória" : st.resultTag === "loss" ? "Derrota" : st.resultTag === "draw" ? "Empate" : "";
 }
+// v302: fecho interativo (pergunta/destaque) das legendas de resultados. Escolha estável pelo dia (sem aleatório).
+function dayResultsClosing_(games){
+  const k = { win: 0, loss: 0, draw: 0 };
+  let best = null;
+  games.forEach(ev=>{
+    const st = getEv(ev.id) || {}, kind = (typeof resultKind_ === "function") ? resultKind_(ev, st) : "";
+    if(kind) k[kind]++;
+    const m = String(st.resultado || "").match(/(\d+)\s*[-–:]\s*(\d+)/);
+    if(kind === "win" && m){ const d = Math.abs(Number(m[1]) - Number(m[2])); if(!best || d > best.d) best = { d, ev, st }; }
+  });
+  const n = games.length, h = String(dayShareISO_()).split("").reduce((a, c)=>a + c.charCodeAt(0), 0);
+  const pick = arr=>arr[h % arr.length];
+  if(n === 1){
+    if(k.win) return pick(["Quem foi o teu jogador do jogo? 🗳️ Vota em https://dragaostats.pt", "Que vitória! 💙 Qual foi o momento que mais gostaste?"]);
+    if(k.loss) return "Cabeça erguida e já a pensar no próximo! 💪 Qual é o jogo que mais esperas a seguir?";
+    if(k.draw) return "Empate: justo ou ficou a faltar um golo? 👇";
+    return "Que te pareceu o jogo? 👇";
+  }
+  if(k.win === n) return `${n} jogos, ${n} vitórias! 🔥 Qual foi a que mais gostaste?`;
+  if(k.loss === n) return "Dia difícil, mas o Dragão não vira a cara! 💪 Qual é o jogo que mais esperas a seguir?";
+  if(best && best.d >= 2){ const t = postTeams_(best.ev); return `Maior vitória do dia: ${sportShow_(best.ev.sport)}, ${t.home} ${String(best.st.resultado).trim()} ${t.away}! 🔥 E tu, qual escolhes como o melhor resultado?`; }
+  return pick(["Qual foi o resultado do dia para ti? 👇", "Vitória, empate ou derrota, qual foi o jogo que mais te fez vibrar? 👇"]);
+}
 function buildDayResultsText_(games){
   if(!games.length) return "";
   let text = `💙 Resultados ${dayShareDe_()} (${dayShareDateLabel_()}):\n\n`;
@@ -51,7 +74,7 @@ function buildDayResultsText_(games){
   });
   const tags = ["#FCPorto", "#DragaoStats"];
   games.forEach(ev=>{ const h = postSportHashtag_(ev.sport); if(h && tags.indexOf(h)===-1) tags.push(h); });
-  text += "\nTodos os resultados e classificações em https://dragaostats.pt\n\n" + tags.join(" ");
+  text += "\n" + dayResultsClosing_(games) + "\nTodos os resultados e classificações em https://dragaostats.pt\n\n" + tags.join(" ");
   return text;
 }
 
@@ -62,19 +85,19 @@ function dayShareDateLabel_(){
 }
 
 // Texto pronto a colar — mesmo tom/estilo do texto da semana, com link completo.
-function buildDayPostText_(games, live){
+function buildDayPostText_(games, live, misto){
   if(!games.length) return "";
   let text = `💙 Jogos ${dayShareDe_()} (${dayShareDateLabel_()}):\n\n`;
   games.forEach(ev=>{
     const emoji = postSportEmoji_(ev.sport);
     const t = postTeams_(ev);
     const dp = [ev.detail, ev.phase].filter(Boolean).join(", ");
-    text += `${emoji} ${sportShow_(ev.sport)} — ${t.home} vs ${t.away}${ev.t ? ' — ' + ev.t : ''}${live && hasLiveCoverage_(ev) ? ' 🔴 AO VIVO' : ''}\n`;
+    text += `${emoji} ${sportShow_(ev.sport)} — ${t.home} vs ${t.away}${ev.t ? ' — ' + ev.t : ''}${live && hasLiveCoverage_(ev) ? ' 🔵 AO VIVO' : (misto ? ' (sem ao vivo)' : '')}\n`;
     if(dp) text += dp + "\n";
   });
   const tags = ["#FCPorto", "#DragaoStats"];
   games.forEach(ev=>{ const h = postSportHashtag_(ev.sport); if(h && tags.indexOf(h)===-1) tags.push(h); });
-  text += live ? "\n🔴 Acompanha o resultado em direto em https://dragaostats.pt\n\n" : "\nAcompanha tudo em https://dragaostats.pt\n\n";
+  text += live ? "\n🔵 Acompanha o resultado em direto em https://dragaostats.pt\n\n" : "\nAcompanha tudo em https://dragaostats.pt\n\n";
   text += tags.join(" ");
   return text;
 }
@@ -82,7 +105,8 @@ function buildDayPostText_(games, live){
 // Imagem para partilhar — mesmo esqueleto visual do cartão da semana/mês.
 async function generateDayShareCard_(games, modo){
   const resultados = modo === "resultados";
-  const live = modo === "jogos-live";
+  const misto = modo === "jogos-misto"; // v302: todos os jogos do dia, a marcar quais têm ao vivo
+  const live = modo === "jogos-live" || misto;
   const W = 1080;
   const rowH = 150, headerH = 380, footerH = 150;
   const H = headerH + games.length*rowH + footerH;
@@ -162,7 +186,7 @@ async function generateDayShareCard_(games, modo){
         ctx.font = "700 13px 'Archivo Narrow', sans-serif";
         const lw = ctx.measureText("AO VIVO").width + 34, lx = rowX+26, ly = rowY+rowRH/2+2;
         // selo por baixo da hora (a hora fica sempre legível)
-        ctx.fillStyle = "#b84f0c";
+        ctx.fillStyle = "#1d6fd8";
         if(ctx.roundRect){ ctx.beginPath(); ctx.roundRect(lx, ly-1, lw, 24, 12); ctx.fill(); } else ctx.fillRect(lx, ly-1, lw, 24);
         ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(lx+13, ly+11, 4, 0, Math.PI*2); ctx.fill();
         ctx.textAlign = "left"; ctx.fillText("AO VIVO", lx+23, ly+12);
@@ -170,7 +194,10 @@ async function generateDayShareCard_(games, modo){
       }
       ctx.font = "500 17px 'Archivo Narrow', sans-serif";
       ctx.fillStyle = "#9fb0c8";
-      if(!(live && hasLiveCoverage_(ev))) ctx.fillText(localLabel(ev.local), rowX+26, rowY+rowRH/2+16);
+      if(misto && !hasLiveCoverage_(ev)){
+        ctx.font = "600 13px 'Archivo Narrow', sans-serif"; ctx.fillText("SEM AO VIVO", rowX+26, rowY+rowRH/2+10);
+        ctx.font = "500 15px 'Archivo Narrow', sans-serif"; ctx.fillText(localLabel(ev.local), rowX+26, rowY+rowRH-16);
+      }else if(!(live && hasLiveCoverage_(ev))) ctx.fillText(localLabel(ev.local), rowX+26, rowY+rowRH/2+16);
       else { ctx.font = "500 15px 'Archivo Narrow', sans-serif"; ctx.fillText(localLabel(ev.local), rowX+26, rowY+rowRH-16); }
     }
 

@@ -288,7 +288,9 @@ function buildWeekResultsText_(rows, weekStart, weekEndDisplay){
   });
   const tags = ["#FCPorto", "#DragaoStats"];
   rows.forEach(({ ev })=>{ const h = postSportHashtag_(ev.sport); if(h && tags.indexOf(h) === -1) tags.push(h); });
-  text += "\nTodos os resultados e classificações em https://dragaostats.pt\n\n" + tags.join(" ");
+  const nW = rows.filter(r=>weekResTagKind_(r.st) === "win").length, nL = rows.filter(r=>weekResTagKind_(r.st) === "loss").length;
+  const fecho = nL === 0 && nW > 1 ? "Semana sem derrotas! 🔥 Qual foi o jogo que mais gostaste?" : nW > nL ? "Boa semana para o Dragão! 💙 Qual foi o teu jogo da semana?" : nW === 0 && nL > 0 ? "Semana difícil, mas a seguir é que é! 💪 Qual é o jogo que mais esperas?" : "Qual foi o teu jogo da semana? 👇";
+  text += "\n" + fecho + "\nTodos os resultados e classificações em https://dragaostats.pt\n\n" + tags.join(" ");
   return text;
 }
 async function generateWeekResultsCard_(rows, weekStart, weekEndDisplay){

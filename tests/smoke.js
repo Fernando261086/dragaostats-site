@@ -72,7 +72,8 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     const iso = n => { const d = new Date(); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
     const m2 = { ok:true, hasAdminAuth:false, competitions:[{id:'c1',name:'Época 26/27',mode:'matches'}], data:{ c1:{ events:[
       {id:'g1',day:iso(0),t:'18:00',sport:'Andebol',athlete:'Sporting',local:'casa',detail:'Campeonato',phase:'5ª Jornada'},
-      {id:'g3',day:iso(0),t:'11:00',sport:'Voleibol',athlete:'Fonte Bastardo',local:'casa'} ], status:{ g3:{resultado:'3-1',resultTag:'win'} } } } };
+      {id:'g3',day:iso(0),t:'11:00',sport:'Voleibol',athlete:'Fonte Bastardo',local:'casa'},
+      {id:'g4',day:iso(0),t:'20:00',sport:'Futsal',athlete:'Rio Ave',local:'casa'} ], status:{ g3:{resultado:'3-1',resultTag:'win'} } } } };
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
     const errs = []; page.on('pageerror', e => errs.push(e.message));
     await page.addInitScript(d => {
@@ -87,6 +88,13 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     await page.waitForTimeout(900);
     const dim = async () => page.evaluate(async () => { const im = document.querySelector('#shOut img'); if (!im) return ''; await im.decode().catch(() => {}); return im.naturalWidth + 'x' + im.naturalHeight; });
     (await dim()) === '1080x1350' ? ok('partilhar: dia em 4:5 (1080x1350)') : bad('partilhar: dia 4:5 errado → ' + await dim());
+    { // v302: «Todos juntos» (ao vivo + sem ao vivo), azul em vez de vermelho, legendas com pergunta
+      const m = await page.evaluate(() => ({ on: (document.querySelector('[data-dk="misto"].on') || {}).textContent || '', cap: (document.getElementById('shCap') || {}).value || '' }));
+      /Todos juntos/.test(m.on) ? ok('partilhar: «Todos juntos» escolhido por omissão (dia com ao vivo e sem ao vivo)') : bad('partilhar: sem «Todos juntos» → ' + m.on);
+      m.cap.includes('Andebol') && m.cap.includes('Futsal') && m.cap.includes('🔵 AO VIVO') && m.cap.includes('(sem ao vivo)') && !m.cap.includes('🔴') ? ok('partilhar: legenda junta os dois tipos e usa o azul') : bad('partilhar: legenda mista → ' + m.cap);
+      const q = await page.evaluate(() => { DAY_SHARE_DATE_ = ''; return buildDayResultsText_(getDayResultGames_()); });
+      /\?/.test(q) && q.includes('https://dragaostats.pt') ? ok('partilhar: resultados do dia terminam com pergunta') : bad('partilhar: resultados sem pergunta → ' + q);
+    }
     for (const [k, v] of [['1x1', '1080x1080'], ['9x16', '1080x1920']]) { await page.click(`[data-size="${k}"]`); await page.waitForTimeout(500); (await dim()) === v ? ok(`partilhar: ${k} = ${v}`) : bad(`partilhar: ${k} errado → ` + await dim()); }
     await page.click('[data-scope="jogo"]'); await page.waitForTimeout(1000);
     const cap = await page.evaluate(() => (document.getElementById('shCap') || {}).value || '');

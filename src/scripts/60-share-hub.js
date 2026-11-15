@@ -57,7 +57,12 @@ function gameCaption_(ev){
   const s = shareTextFan_(ev), dp = [ev.detail, ev.phase].filter(Boolean).join(", ");
   if(score){
     const body = s.texto.replace(/\nVê o jogo completo:$/, "");
-    return `${body}${dp ? "\n" + dp : ""}\n\nTodos os resultados e classificações em https://dragaostats.pt\n\n${tags.join(" ")}`;
+    const kind = (typeof resultKind_ === "function") ? resultKind_(ev, st) : "";
+    const h = String(ev.id || "").split("").reduce((a, c)=>a + c.charCodeAt(0), 0);
+    const q = kind === "win" ? ["Quem foi o teu jogador do jogo? 🗳️ Vota em https://dragaostats.pt", "Que vitória! 💙 Qual foi o momento que mais gostaste?"][h % 2]
+      : kind === "loss" ? "Cabeça erguida e já a pensar no próximo! 💪 Qual é o jogo que mais esperas a seguir?"
+      : kind === "draw" ? "Empate: justo ou ficou a faltar um golo? 👇" : "Que te pareceu o jogo? 👇";
+    return `${body}${dp ? "\n" + dp : ""}\n\n${q}\nTodos os resultados e classificações em https://dragaostats.pt\n\n${tags.join(" ")}`;
   }
   let l = s.titulo;
   if(dp) l += "\n" + dp;
@@ -163,8 +168,11 @@ function shNormalize_(S){
   }
   if(S.scope === "dia"){
     const d = shDay_(S);
-    if(!S.dayKind || (S.dayKind === "jogos" && !d.jogos.length) || (S.dayKind === "live" && !d.live.length) || (S.dayKind === "res" && !d.res.length)){
-      S.dayKind = d.jogos.length ? "jogos" : (d.res.length ? "res" : "jogos");
+    // v302: «misto» = todos os jogos por realizar, a marcar quais têm ao vivo (só existe se houver das duas espécies)
+    const mistoOk = d.live.length > 0 && d.live.length < d.jogos.length;
+    if(S.dayKind === "jogos" && mistoOk && !S.dayKindPick) S.dayKind = "misto";
+    if(!S.dayKind || (S.dayKind === "jogos" && !d.jogos.length) || (S.dayKind === "live" && !d.live.length) || (S.dayKind === "misto" && !mistoOk) || (S.dayKind === "res" && !d.res.length)){
+      S.dayKind = mistoOk ? "misto" : d.jogos.length ? "jogos" : (d.res.length ? "res" : "jogos");
     }
     const list = S.dayKind === "live" ? d.live : S.dayKind === "res" ? d.res : d.jogos;
     if(S.dayKind === "res" && S.fmt === "reel") S.fmt = "img"; // não existe reel de resultados do dia
@@ -208,7 +216,8 @@ function shPaint_(){
         return `<button type="button" class="sh-game${e.id === S.evId ? " on" : ""}" data-ev="${shE_(e.id)}"><span>${shE_(e.t || "--:--")}</span><b>${postSportEmoji_(e.sport)} ${shE_(sportShow_(e.sport))}</b><em>${shE_(t.home)} ${shE_(sc || "vs")} ${shE_(t.away)}</em></button>`;
       }).join("") + `</div>` : `<div class="medal-empty">Não há jogos neste dia.</div>`;
     }else{
-      const kinds = [["jogos", "Por realizar", N.d.jogos.length], ["live", "🔴 Com Ao vivo", N.d.live.length], ["res", "🏆 Resultados", N.d.res.length]];
+      const kinds = [["jogos", "Por realizar", N.d.jogos.length], ["live", "🔵 Só com Ao vivo", N.d.live.length], ["res", "🏆 Resultados", N.d.res.length]];
+      if(N.d.live.length > 0 && N.d.live.length < N.d.jogos.length) kinds.unshift(["misto", "🔵 Todos juntos", N.d.jogos.length]);
       h += `<div class="sh-days">` + kinds.map(k=>chip(S.dayKind === k[0], `data-dk="${k[0]}"`, `${k[1]} <small>(${k[2]})</small>`, !k[2])).join("") + `</div>`;
     }
   }
@@ -230,7 +239,7 @@ function shPaint_(){
   ctl.querySelectorAll("[data-d]").forEach(b=>{ b.onclick = ()=>{ if(S.busy) return; S.day = b.getAttribute("data-d"); S.evId = ""; shChanged_(); }; });
   const di = ctl.querySelector("#shDateIn"); if(di) di.onchange = e=>{ if(S.busy || !e.target.value) return; S.day = e.target.value; S.evId = ""; shChanged_(); };
   ctl.querySelectorAll("[data-ev]").forEach(b=>{ b.onclick = ()=>{ if(S.busy) return; S.evId = b.getAttribute("data-ev"); shChanged_(); }; });
-  ctl.querySelectorAll("[data-dk]").forEach(b=>{ b.onclick = ()=>{ if(S.busy) return; S.dayKind = b.getAttribute("data-dk"); shChanged_(); }; });
+  ctl.querySelectorAll("[data-dk]").forEach(b=>{ b.onclick = ()=>{ if(S.busy) return; S.dayKind = b.getAttribute("data-dk"); S.dayKindPick = true; shChanged_(); }; });
   ctl.querySelectorAll("[data-fmt]").forEach(b=>{ b.onclick = ()=>{ if(S.busy) return; S.fmt = b.getAttribute("data-fmt"); shChanged_(); }; });
   ctl.querySelectorAll("[data-size]").forEach(b=>{ b.onclick = ()=>{ S.size = b.getAttribute("data-size"); try{ localStorage.setItem("dia22-share-size", S.size); }catch(e){} shPaint_(); if(S.srcBlob && S.out && S.out.kind === "img") shShowImg_(); }; });
   const go = ctl.querySelector("#shGo"); if(go) go.onclick = ()=>shGenerate_();
@@ -269,16 +278,16 @@ async function shGenerate_(){
       const r = await shCapture_(()=> reel ? generateShareReel(ev, st, cor) : generateShareCard(ev, st, cor), reel ? 120000 : 30000);
       blob = r.blob; name = r.name; caption = gameCaption_(ev);
     }else if(S.scope === "dia"){
-      const live = S.dayKind === "live", list = N.list;
+      const misto = S.dayKind === "misto", live = S.dayKind === "live" || misto, list = N.list;
       DAY_SHARE_DATE_ = (S.day === todayISO_()) ? "" : S.day;
       if(reel){
-        const r = await shCapture_(()=>generateDayReel_(list, live), 300000);
-        blob = r.blob; name = r.name; caption = buildDayReelText_(list, live);
+        const r = await shCapture_(()=>generateDayReel_(list, live, misto), 300000);
+        blob = r.blob; name = r.name; caption = buildDayReelText_(list, live, misto);
       }else{
-        const mode = S.dayKind === "res" ? "resultados" : live ? "jogos-live" : "jogos";
+        const mode = S.dayKind === "res" ? "resultados" : misto ? "jogos-misto" : live ? "jogos-live" : "jogos";
         const r = await generateDayShareCard_(list, mode);
-        blob = r.blob; name = `dragaostats-${S.dayKind === "res" ? "resultados" : live ? "hoje-aovivo" : "hoje"}-${S.day}.png`;
-        caption = S.dayKind === "res" ? buildDayResultsText_(list) : buildDayPostText_(list, live);
+        blob = r.blob; name = `dragaostats-${S.dayKind === "res" ? "resultados" : misto ? "hoje-todos" : live ? "hoje-aovivo" : "hoje"}-${S.day}.png`;
+        caption = S.dayKind === "res" ? buildDayResultsText_(list) : buildDayPostText_(list, live, misto);
       }
     }else{
       const w = N.w;

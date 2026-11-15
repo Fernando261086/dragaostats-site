@@ -12,7 +12,7 @@ function dayReelSlides_(games){
 function dayReelDuration_(games){ return DAY_REEL_INTRO_ + dayReelSlides_(games).reduce((a, sl)=>a + sl.dur, 0) + DAY_REEL_OUTRO_; }
 
 // legenda curta para colar junto ao vídeo
-function buildDayReelText_(games, live){
+function buildDayReelText_(games, live, misto){
   const n = games.length;
   const sports = [];
   games.forEach(ev=>{ if(sports.indexOf(ev.sport) === -1) sports.push(ev.sport); });
@@ -23,10 +23,10 @@ function buildDayReelText_(games, live){
   const w = dayShareWord_(), quando = w === "ontem" ? "Ontem" : w === "amanhã" ? "Amanhã" : w === "hoje" ? "Hoje" : dayShareDateLabel_();
   const verbo = w === "ontem" ? (n === 1 ? "houve 1 jogo" : "houve " + n + " jogos") : (n === 1 ? "há 1 jogo" : "há " + n + " jogos");
   return `💙 ${quando} ${verbo} do FC Porto!\n\n${linha}\n\n` +
-    (temLive ? "🔴 Acompanha o resultado em direto em https://dragaostats.pt" : "Horas e onde ver em https://dragaostats.pt") + "\n\n" + tags.join(" ");
+    (temLive ? "🔵 Acompanha o resultado em direto em https://dragaostats.pt" : "Horas e onde ver em https://dragaostats.pt") + "\n\n" + tags.join(" ");
 }
 
-async function generateDayReel_(games, live){
+async function generateDayReel_(games, live, misto){
   const W = 1080, H = 1920;
   const slides = dayReelSlides_(games);
   const TOTAL = dayReelDuration_(games);
@@ -88,7 +88,7 @@ async function generateDayReel_(games, live){
   function livePill(xRight, cy){
     ctx.font = `700 26px ${FONT}`;
     const tw = ctx.measureText("AO VIVO").width, w = tw + 62, h = 44, x = xRight - w, y = cy - h/2;
-    ctx.fillStyle = "#b84f0c"; rr(x, y, w, h, 22); ctx.fill();
+    ctx.fillStyle = "#1d6fd8"; rr(x, y, w, h, 22); ctx.fill();
     ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(x + 25, cy, 8, 0, Math.PI*2); ctx.fill();
     ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText("AO VIVO", x + 44, cy + 1);
     return x;
@@ -124,6 +124,7 @@ async function generateDayReel_(games, live){
       ctx.fillStyle = color; ctx.textAlign = "left"; ctx.font = `700 34px ${FONT}`; ctx.fillText((ev.sport || "").toUpperCase(), 112, y + 44);
       ctx.fillStyle = "#eef2f8"; ctx.textAlign = "right"; ctx.font = `700 46px ${FONT}`; ctx.fillText(ev.t || "", 974, y + 44);
       if(live && hasLiveCoverage_(ev)){ const tw = ctx.measureText(ev.t || "").width; livePill(974 - tw - 18, y + 44); }
+      else if(misto){ const tw = ctx.measureText(ev.t || "").width; ctx.fillStyle = "#93a2bd"; ctx.textAlign = "right"; ctx.font = `600 26px ${FONT}`; ctx.fillText("SEM AO VIVO", 974 - tw - 22, y + 45); }
       const t = postTeams_(ev);
       const cr = n=>crests[ev.sport + "|" + String(n).trim()] || null;
       const cy = y + 135;

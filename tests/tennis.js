@@ -130,7 +130,7 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     await page.evaluate(a => { const s = document.getElementById('tnRAno'); s.value = a; s.onchange(); }, ano); await page.waitForTimeout(500);
     if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-epoca.png` });
     await page.evaluate(() => { const s = document.getElementById('tnRAno'); s.value = ''; s.onchange(); }); await page.waitForTimeout(200);
-    (await page.evaluate(() => !document.querySelector('#medalsView .tn-years'))) ? ok(`${tag}: voltar a «Esta época»`) : bad(`${tag}: não voltou a «Esta época»`);
+    (await page.evaluate(() => { const o = [...document.getElementById('tnRAno').options].map(x => x.textContent); return !o.some(x => /Esta época/.test(x)) && /a decorrer/.test(o[0]); })) ? ok(`${tag}: menu de épocas só com anos (sem «Esta época»)`) : bad(`${tag}: menu de épocas com «Esta época»`);
     await page.evaluate(() => { setView('tenis-rank'); }); await page.waitForTimeout(300);
     await page.evaluate(() => document.querySelector('#tnBody [data-tab="atl"]').click());
     await page.evaluate(() => document.querySelector('#tnBody [data-pid="125006"]').click()); await page.waitForTimeout(150);

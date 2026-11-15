@@ -8,7 +8,7 @@ function tnSyncBtn_(){ // v287: o separador «Rankings» só existe dentro de um
   if(!on && window.__curView_ === "tenis-rank" && typeof setView === "function") setView("calendario");
 }
 
-const TN_ = { data: null, tab: "rank", gen: "M", sel: null, msg: "", fTab: "res", carr: {}, cat: "todos", rh: {}, rhSel: "ambos", rhPer: "tudo", rhCh: null, allC: { run: false, done: 0, total: 0, erro: "" } }; // v294: fTab = «res»umo | «carr»eira
+const TN_ = { data: null, tab: "rank", gen: "M", sel: null, msg: "", fTab: "res", carr: {}, cat: "todos", rh: {}, rhSel: "ambos", rhPer: "tudo", rhCh: null, allCStarted: false, allC: { run: false, done: 0, total: 0, erro: "" } }; // v294: fTab = «res»umo | «carr»eira
 function tnEsc_(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 async function tnPost_(body){
@@ -233,7 +233,10 @@ function tnJogoCard_(r, mostraAtl){
 }
 function renderTennisResults_(){
   const box = document.getElementById("medalsView"); if(!box) return;
-  if(TN_RES_.ano){ tnResultadosAno_(box); return; } // v296: época anterior (histórico importado do Sofascore)
+  if(TN_RES_.ano !== "manual"){ // v299: ano corrente (Sofascore + jogos escritos à mão) e épocas anteriores; «manual» = vista antiga (só testes)
+    if(!TN_.allCStarted){ TN_.allCStarted = true; tnCarrTodas_(); }
+    tnResultadosAno_(box); return;
+  }
   const all = EVENTS.map(e => ({ e, st: getEv(e.id) })).filter(r => r.st.passou || r.st.medal || r.st.resultTag || (r.st.resultado && String(r.st.resultado).trim()));
   const por = {};
   all.forEach(r => { const a = r.e.athlete || "—"; const o = por[a] || (por[a] = { t: 0, f: 0, j: 0 }); o.j++; if(r.st.medal === "gold") o.t++; if(r.st.medal === "silver") o.f++; });
@@ -454,15 +457,16 @@ function tnRhHover_(box){ // v298: linha vertical + cartão com o ranking de cad
   svg.addEventListener("pointerleave", ev => { if(ev.pointerType === "mouse") esconder(); });
 }
 
-function tnEpocaSelHtml_(nomes, contagem, total){ // v297: Época + Tenista, dois menus
+function tnEpocaSelHtml_(nomes, contagem, total){ // v297/v299: Época (só anos; o ano corrente é o 1.º) + Tenista
   const y = new Date().getFullYear(), ys = []; for(let a = y; a >= 2014; a--) ys.push(a);
-  let h = `<div class="tn-rselrow"><div class="tn-rseason"><label for="tnRAno">Época</label><select id="tnRAno"><option value="">Esta época (competição ativa)</option>${ys.map(a => `<option value="${a}"${String(TN_RES_.ano) === String(a) ? " selected" : ""}>${a}${a === y ? " (a decorrer)" : ""}</option>`).join("")}</select></div>`;
-  if(nomes && nomes.length) h += `<div class="tn-rseason"><label for="tnRAtl">Tenista</label><select id="tnRAtl"><option value="">Todos os tenistas (${total})</option>${nomes.map(n => `<option value="${tnEsc_(n)}"${TN_RES_.atl === n ? " selected" : ""}>${tnEsc_(n)} (${contagem[n] || ""})</option>`).join("")}</select></div>`;
+  const cur = String(TN_RES_.ano && TN_RES_.ano !== "manual" ? TN_RES_.ano : y);
+  let h = `<div class="tn-rselrow"><div class="tn-rseason"><label for="tnRAno">Época</label><select id="tnRAno">${ys.map(a => `<option value="${a}"${cur === String(a) ? " selected" : ""}>${a}${a === y ? " (a decorrer)" : ""}</option>`).join("")}</select></div>`;
+  if(nomes && nomes.length) h += `<div class="tn-rseason"><label for="tnRAtl">Tenista</label><select id="tnRAtl"><option value="">Todos os tenistas (${nomes.length})</option>${nomes.map(n => `<option value="${tnEsc_(n)}"${TN_RES_.atl === n ? " selected" : ""}>${tnEsc_(n)} (${contagem[n] || ""})</option>`).join("")}</select></div>`;
   return h + `</div>`;
 }
 function tnEpocaBind_(box){
   const sel = box.querySelector("#tnRAno");
-  if(sel) sel.onchange = () => { TN_RES_.ano = sel.value; TN_RES_.sel = ""; TN_RES_.atl = ""; renderTennisResults_(); if(TN_RES_.ano) tnCarrTodas_(); };
+  if(sel) sel.onchange = () => { TN_RES_.ano = sel.value; TN_RES_.sel = ""; TN_RES_.atl = ""; renderTennisResults_(); tnCarrTodas_(); };
   const at = box.querySelector("#tnRAtl");
   if(at) at.onchange = () => { TN_RES_.atl = at.value; TN_RES_.sel = ""; renderTennisResults_(); };
 }
@@ -489,11 +493,11 @@ async function tnCarrTodas_(force){ // importa (uma vez) a carreira de todos os 
     for(const p of L){
       { const antes = TN_.carr[p.id] && TN_.carr[p.id].c ? TN_.carr[p.id].at : -1; const ok = await tnCarrFetchUm_(p.id, !!force && antes !== -1 ? true : false); if(!ok) TN_.allC.falhas.push(p.n); }
       TN_.allC.done++;
-      if(TN_RES_.ano) renderTennisResults_();
+      if(TN_RES_.ano !== "manual") renderTennisResults_();
     }
   }catch(e){ TN_.allC.erro = String(e.message || e); }
   TN_.allC.run = false;
-  if(TN_RES_.ano) renderTennisResults_();
+  if(TN_RES_.ano !== "manual") renderTennisResults_();
 }
 function tnGruposAno_(ano){ // [{ath, nome, cat, piso, j:[jogos], fim, titulo, final, best, rotulo, melhor}]
   const out = [];
@@ -513,11 +517,20 @@ function tnGruposAno_(ano){ // [{ath, nome, cat, piso, j:[jogos], fim, titulo, f
   });
   return out;
 }
-function tnResultadosAno_(box){ // época anterior, a partir da carreira importada
-  const ano = TN_RES_.ano, A = TN_.allC;
-  const gs = tnGruposAno_(ano);
+function tnNomeChave_(n){ return String(n || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/\s+/).filter(Boolean).sort().join(" "); }
+function tnManuaisAno_(gsSofa){ // v299: torneios escritos à mão (competição ativa) do ano corrente que o Sofascore ainda não trouxe
+  const all = EVENTS.map(e => ({ e, st: getEv(e.id) })).filter(r => r.st.passou || r.st.medal || r.st.resultTag || (r.st.resultado && String(r.st.resultado).trim()));
+  const y = String(new Date().getFullYear()), rows = all.filter(r => String(r.e.date || "").slice(0, 4) === y);
+  return tnTorneios_(rows).filter(g => {
+    const k = tnNomeChave_(g.ath), ds = g.rows.map(r => new Date((r.e.date || "") + "T12:00:00").getTime() / 1000).filter(x => x === x);
+    return !gsSofa.some(S => tnNomeChave_(S.ath) === k && ds.some(d => d >= S.j[0][0] - 4 * 86400 && d <= S.fim + 4 * 86400));
+  }).map(g => { g.manual = true; g.titulo = g.campeao; g.final = g.final; g.fim = new Date(g.dmax.slice(0, 10) + "T12:00:00").getTime() / 1000 || 0; return g; });
+}
+function tnResultadosAno_(box){ // ano corrente (Sofascore + à mão) e épocas anteriores (carreiras importadas do Sofascore)
+  const A = TN_.allC, anoAtual = String(new Date().getFullYear()), ano = TN_RES_.ano && TN_RES_.ano !== "manual" ? String(TN_RES_.ano) : anoAtual;
+  const gsS = tnGruposAno_(ano), man = ano === anoAtual ? tnManuaisAno_(gsS) : [], gs = gsS.concat(man);
   const nomes = []; gs.forEach(g => { if(nomes.indexOf(g.ath) < 0) nomes.push(g.ath); });
-  const cont = {}; nomes.forEach(n => { const o = gs.filter(g => g.ath === n); cont[n] = (o.some(g => g.titulo) ? "🏆 " + o.filter(g => g.titulo).length + " · " : "") + o.length + " torneios"; });
+  const cont = {}; nomes.forEach(n => { const o = gs.filter(g => g.ath === n); cont[n] = (o.some(g => g.titulo) ? "🏆 " + o.filter(g => g.titulo).length + " · " : "") + o.length + (o.length === 1 ? " torneio" : " torneios"); });
   if(TN_RES_.atl && nomes.indexOf(TN_RES_.atl) < 0) TN_RES_.atl = "";
   const L = gs.filter(g => !TN_RES_.atl || g.ath === TN_RES_.atl);
   let h = tnEpocaSelHtml_(nomes, cont, gs.length);
@@ -532,10 +545,11 @@ function tnResultadosAno_(box){ // época anterior, a partir da carreira importa
   if(TN_RES_.ord === "melhores") L.sort((a, b) => (b.melhor - a.melhor) || (b.fim - a.fim)); else L.sort((a, b) => b.fim - a.fim);
   h += `<div class="medal-section-title">🎾 Torneios de ${tnEsc_(ano)}${TN_RES_.atl ? " · " + tnEsc_(TN_RES_.atl) : ""}</div><div class="tn-years">`;
   if(!L.length) h += `<div class="medal-empty">${A.run ? "A importar…" : "Sem jogos em " + tnEsc_(ano) + " nas carreiras importadas (só singulares, dos tenistas com ficha)."}</div>`;
-  h += L.map(g => { const gv = g.j.filter(r => r[2] === "V").length, gd = g.j.length - gv, a = new Date(g.j[0][0] * 1000), b = new Date(g.fim * 1000), f = d => String(d.getDate()).padStart(2, "0") + "/" + String(d.getMonth() + 1).padStart(2, "0");
+  h += L.map(g => { if(g.manual) return `<details class="tn-tor${g.titulo ? " is-w" : ""}"><summary><span class="tn-tn">${tnEsc_(g.nome)}</span><small>${TN_RES_.atl ? "" : tnEsc_(g.ath) + " · "}${tnEsc_(g.cat)}${g.piso ? " · " + tnEsc_(g.piso) : ""}${g.datas ? " · " + tnEsc_(g.datas) : ""}</small><span class="tn-tr">${tnEsc_(g.chegou)}</span></summary>` + g.rows.map(r => tnJogoCard_(r, false)).join("") + `</details>`;
+    const gv = g.j.filter(r => r[2] === "V").length, gd = g.j.length - gv, a = new Date(g.j[0][0] * 1000), b = new Date(g.fim * 1000), f = d => String(d.getDate()).padStart(2, "0") + "/" + String(d.getMonth() + 1).padStart(2, "0");
     return `<details class="tn-tor${g.titulo ? " is-w" : ""}"><summary><span class="tn-tn">${tnEsc_(g.nome)}</span><small>${TN_RES_.atl ? "" : tnEsc_(g.ath) + " · "}${tnEsc_(g.cat)}${g.piso ? " · " + tnEsc_(g.piso) : ""} · ${f(a)}${f(a) !== f(b) ? "–" + f(b) : ""}</small><span class="tn-tr">${tnEsc_(g.rotulo)} <small>${gv}–${gd}</small></span></summary>` +
       g.j.map(r => { const dt = new Date(r[0] * 1000); return `<div class="tn-cg"><span class="tn-cgd">${f(dt)}</span><span class="tn-cgr ${r[2] === "V" ? "tn-w" : "tn-l"}">${r[2]}</span><span class="tn-cgo">vs ${tnEsc_(r[1])}</span><span class="tn-cgs">${tnEsc_(r[3] || "")}</span><span class="tn-cgf">${tnEsc_(tnFase_(r[4]))}</span></div>`; }).join("") + `</details>`; }).join("") + `</div>`;
-  h += `<p class="tn-line tn-small">Fonte: Sofascore (só singulares)${Number(ano) === new Date().getFullYear() ? ` · o ano a decorrer atualiza-se sozinho <button type="button" class="tn-lnk" id="tnRAnoUpd">↻ Atualizar agora</button>` : ""}.</p>`;
+  h += `<p class="tn-line tn-small">Fonte: Sofascore (só singulares)${Number(ano) === new Date().getFullYear() ? ` · o ano a decorrer atualiza-se sozinho e junta o que escreveres à mão no Calendário <button type="button" class="tn-lnk" id="tnRAnoUpd">↻ Atualizar agora</button>` : ""}.</p>`;
   box.innerHTML = h;
   tnEpocaBind_(box);
   box.querySelectorAll("[data-rord]").forEach(b => b.onclick = () => { TN_RES_.ord = b.dataset.rord; renderTennisResults_(); });

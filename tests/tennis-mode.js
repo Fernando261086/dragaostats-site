@@ -40,7 +40,7 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
         return { res: document.getElementById('viewMedalsBtn').textContent.trim(), resVis: vis('viewMedalsBtn'), stats: vis('viewStatsBtn'), rk: vis('viewRankingsBtn'), poll: vis('pollBanner'), nl: vis('newsletterBanner'), box: vis('newsletterBox') }; });
       tb.res === 'Resultados' && tb.resVis && !tb.stats && tb.rk ? ok(`${tag}: separadores Resultados + Rankings, sem Estatísticas`) : bad(`${tag}: separadores ${JSON.stringify(tb)}`);
       !tb.poll && !tb.nl && !tb.box ? ok(`${tag}: sem sondagem, banner de avisos/newsletter nem caixa de newsletter`) : bad(`${tag}: avisos visíveis ${JSON.stringify(tb)}`);
-      await page.evaluate(() => document.getElementById('viewMedalsBtn').click()); await page.waitForTimeout(300);
+      await page.evaluate(() => { TN_RES_.ano = 'manual'; document.getElementById('viewMedalsBtn').click(); }); await page.waitForTimeout(300); // v299: vista antiga (só à mão)
       const rs = await page.evaluate(() => ({ t: document.getElementById('medalsView').textContent, win: document.querySelectorAll('#medalsView .tn-tc.win').length, ov: Math.max(document.documentElement.scrollWidth - window.innerWidth, 0) }));
       /Títulos/.test(rs.t) && /Nuno Borges/.test(rs.t) && /Campeão/.test(rs.t) && rs.win === 1 && !/Ouro|Bronze/.test(rs.t) ? ok(`${tag}: Resultados por torneio com destaque do título e contagem`) : bad(`${tag}: Resultados ${JSON.stringify(rs)}`);
       rs.ov > 1 ? bad(`${tag}: Resultados com deslize lateral ${rs.ov}px`) : ok(`${tag}: Resultados sem deslize lateral`);

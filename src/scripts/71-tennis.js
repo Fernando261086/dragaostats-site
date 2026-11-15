@@ -8,7 +8,7 @@ function tnSyncBtn_(){ // v287: o separador «Rankings» só existe dentro de um
   if(!on && window.__curView_ === "tenis-rank" && typeof setView === "function") setView("calendario");
 }
 
-const TN_ = { data: null, tab: "rank", gen: "M", sel: null, msg: "", fTab: "res", carr: {}, cat: "todos", rh: {}, rhSel: "ambos", allC: { run: false, done: 0, total: 0, erro: "" } }; // v294: fTab = «res»umo | «carr»eira
+const TN_ = { data: null, tab: "rank", gen: "M", sel: null, msg: "", fTab: "res", carr: {}, cat: "todos", rh: {}, rhSel: "ambos", rhPer: "tudo", rhCh: null, allC: { run: false, done: 0, total: 0, erro: "" } }; // v294: fTab = «res»umo | «carr»eira
 function tnEsc_(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 async function tnPost_(body){
@@ -146,6 +146,8 @@ function tnRender_(){
   const back = box.querySelector(".tn-back"); if(back) back.onclick = () => { TN_.sel = null; TN_.fTab = "res"; tnRender_(); };
   box.querySelectorAll("[data-ftab]").forEach(b => b.onclick = () => { TN_.fTab = b.dataset.ftab; tnRender_(); if(TN_.fTab === "carr") tnCarrLoad_(TN_.sel, false); if(TN_.fTab === "rank"){ const pp = (TN_.data.jogadores || []).find(x => x.id === TN_.sel); if(pp) tnRhLoad_(pp.n, false); } });
   box.querySelectorAll("[data-rhs]").forEach(b => b.onclick = () => { TN_.rhSel = b.dataset.rhs; tnRender_(); });
+  box.querySelectorAll("[data-rhp]").forEach(b => b.onclick = () => { TN_.rhPer = b.dataset.rhp; tnRender_(); });
+  tnRhHover_(box);
   const rhr = box.querySelector("#tnRhRefresh"); if(rhr) rhr.onclick = () => { const pp = (TN_.data.jogadores || []).find(x => x.id === TN_.sel); if(pp) tnRhLoad_(pp.n, true); };
   box.querySelectorAll("[data-ccat]").forEach(b => b.onclick = () => { TN_.cat = b.dataset.ccat; tnRender_(); });
   const crf = box.querySelector("#tnCarrRefresh"); if(crf) crf.onclick = () => tnCarrLoad_(TN_.sel, true);
@@ -381,33 +383,75 @@ function tnRankHistHtml_(p){
   if(!S.length && !D.length) return `<p class="tn-empty">Ainda sem histórico para ${tnEsc_(p.n)}${st.pend ? " — o arquivo ainda está a ser importado" : " (o nome pode não coincidir com o do Tennis Explorer)"}.</p>` + nota;
   const sel = (TN_.rhSel === "s" && S.length) || (TN_.rhSel === "d" && D.length) ? TN_.rhSel : "ambos";
   const mostra = { s: sel !== "d" && S.length, d: sel !== "s" && D.length };
-  const todos = [].concat(mostra.s ? S : [], mostra.d ? D : []);
+  // v298: período (zoom) — «tudo» | «10» | «5» anos, contado a partir do último mês
+  const tudoYms = [].concat(mostra.s ? S : [], mostra.d ? D : []).map(x => tnYm_(x[0])), fimYm = Math.max.apply(null, tudoYms), iniYm = Math.min.apply(null, tudoYms);
+  const per = TN_.rhPer === "5" || TN_.rhPer === "10" ? Number(TN_.rhPer) * 12 : 0, podeZoom = fimYm - iniYm > 60;
+  const cut = L => per && podeZoom ? L.filter(x => tnYm_(x[0]) >= fimYm - per) : L;
+  const Sv = cut(S), Dv = cut(D);
+  const todos = [].concat(mostra.s ? Sv : [], mostra.d ? Dv : []);
   const yms = todos.map(x => tnYm_(x[0])), x0 = Math.min.apply(null, yms), x1 = Math.max.apply(null, yms), span = Math.max(1, x1 - x0);
   const rk = todos.map(x => x[1]), rMin = Math.min.apply(null, rk), rMax = Math.max.apply(null, rk);
   const lg = v => Math.log(v), lo = lg(Math.max(1, rMin * 0.8)), hi = lg(rMax * 1.15);
-  const W = 340, H = 210, PL = 38, PR = 12, PT = 12, PB = 24;
+  const W = 340, H = 230, PL = 40, PR = 14, PT = 16, PB = 26;
   const X = ym => PL + (W - PL - PR) * (tnYm_(ym) - x0) / span, Y = r => PT + (H - PT - PB) * (lg(r) - lo) / Math.max(0.01, hi - lo);
   const ticks = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000].filter(v => v >= rMin * 0.8 && v <= rMax * 1.15);
-  let svg = `<svg class="tn-chart tn-rhc" viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolução do ranking ao longo dos anos">`;
-  ticks.forEach(v => { svg += `<line x1="${PL}" x2="${W - PR}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" class="tn-gl"/><text x="${PL - 5}" y="${(Y(v) + 3).toFixed(1)}" text-anchor="end" class="tn-ct">#${v}</text>`; });
-  const a0 = Math.floor(x0 / 12), a1 = Math.floor(x1 / 12), passo = a1 - a0 > 9 ? 2 : 1;
-  for(let a = a0; a <= a1; a += passo){ const xx = PL + (W - PL - PR) * Math.max(0, (a * 12 - x0)) / span; if(a * 12 < x0 - 11) continue; svg += `<text x="${xx.toFixed(1)}" y="${H - 6}" text-anchor="${a === a0 ? "start" : "middle"}" class="tn-ct">${a}</text>`; }
-  const linha = (L, cls) => { if(!L.length) return ""; const pts = L.map(x => X(x[0]).toFixed(1) + "," + Y(x[1]).toFixed(1)).join(" ");
-    const b = L.reduce((m, x) => x[1] < m[1] ? x : m, L[0]);
-    return `<polyline points="${pts}" fill="none" class="${cls}" stroke-width="2" stroke-linejoin="round"/><circle cx="${X(b[0]).toFixed(1)}" cy="${Y(b[1]).toFixed(1)}" r="4" class="${cls} tn-best"/><text x="${Math.min(W - PR - 14, Math.max(PL + 14, X(b[0]))).toFixed(1)}" y="${(Y(b[1]) - 8).toFixed(1)}" text-anchor="middle" class="tn-ct tn-bt">#${b[1]}</text>`; };
-  if(mostra.d) svg += linha(D, "tn-ld");
-  if(mostra.s) svg += linha(S, "tn-ls");
-  svg += `</svg>`;
+  let svg = `<svg class="tn-chart tn-rhc" viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolução do ranking ao longo dos anos"><defs><linearGradient id="tnGs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="tn-gs0" stop-opacity=".34"/><stop offset="1" class="tn-gs0" stop-opacity="0"/></linearGradient><linearGradient id="tnGd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="tn-gd0" stop-opacity=".26"/><stop offset="1" class="tn-gd0" stop-opacity="0"/></linearGradient></defs>`;
+  ticks.forEach(v => { svg += `<line x1="${PL}" x2="${W - PR}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" class="tn-gl"/><text x="${PL - 6}" y="${(Y(v) + 3).toFixed(1)}" text-anchor="end" class="tn-ct">#${v}</text>`; });
+  const a0 = Math.floor(x0 / 12), a1 = Math.floor(x1 / 12), passo = a1 - a0 > 12 ? 3 : a1 - a0 > 7 ? 2 : 1;
+  for(let a = a0; a <= a1; a += passo){ const xx = PL + (W - PL - PR) * (a * 12 - x0) / span; if(xx < PL - 1) continue; svg += `<line x1="${xx.toFixed(1)}" x2="${xx.toFixed(1)}" y1="${H - PB}" y2="${H - PB + 4}" class="tn-gl tn-tk"/><text x="${xx.toFixed(1)}" y="${H - 6}" text-anchor="${xx < PL + 8 ? "start" : "middle"}" class="tn-ct">${a}</text>`; }
+  const bottom = H - PB;
+  const mono = P => { const n = P.length; if(n < 2) return n ? `M${P[0][0].toFixed(1)},${P[0][1].toFixed(1)}` : ""; const dx = [], m = [], t = [];
+    for(let i = 0; i < n - 1; i++){ dx[i] = P[i + 1][0] - P[i][0]; m[i] = (P[i + 1][1] - P[i][1]) / (dx[i] || 1); }
+    t[0] = m[0]; t[n - 1] = m[n - 2];
+    for(let i = 1; i < n - 1; i++) t[i] = (m[i - 1] * m[i] <= 0) ? 0 : 2 * m[i - 1] * m[i] / (m[i - 1] + m[i]);
+    let d = `M${P[0][0].toFixed(1)},${P[0][1].toFixed(1)}`;
+    for(let i = 0; i < n - 1; i++){ const h3 = dx[i] / 3; d += `C${(P[i][0] + h3).toFixed(1)},${(P[i][1] + t[i] * h3).toFixed(1)} ${(P[i + 1][0] - h3).toFixed(1)},${(P[i + 1][1] - t[i + 1] * h3).toFixed(1)} ${P[i + 1][0].toFixed(1)},${P[i + 1][1].toFixed(1)}`; }
+    return d; };
+  const linha = (L, cls, grad, abaixo) => { if(!L.length) return ""; const P = L.map(x => [X(x[0]), Y(x[1])]), d = mono(P);
+    const b = L.reduce((m, x) => x[1] < m[1] ? x : m, L[0]), bx = X(b[0]), by = Y(b[1]), ult = P[P.length - 1];
+    const txt = "#" + b[1], tw = txt.length * 6 + 10, lx = Math.min(W - PR - tw / 2, Math.max(PL + tw / 2, bx)), ly = abaixo ? by + 20 : by - 9;
+    const lyy = !abaixo && ly < PT + 6 ? by + 20 : ly;
+    return `<path d="${d}L${ult[0].toFixed(1)},${bottom}L${P[0][0].toFixed(1)},${bottom}Z" fill="url(#${grad})" stroke="none"/><path d="${d}" fill="none" class="${cls}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>` +
+      `<circle cx="${ult[0].toFixed(1)}" cy="${ult[1].toFixed(1)}" r="7" class="${cls} tn-halo"/><circle cx="${ult[0].toFixed(1)}" cy="${ult[1].toFixed(1)}" r="3.4" class="${cls} tn-best"/>` +
+      `<circle cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" r="4.2" class="${cls} tn-best tn-ring"/><rect x="${(lx - tw / 2).toFixed(1)}" y="${(lyy - 11).toFixed(1)}" width="${tw}" height="15" rx="7.5" class="${cls} tn-pill"/><text x="${lx.toFixed(1)}" y="${(lyy).toFixed(1)}" text-anchor="middle" class="tn-bt">${txt}</text>`; };
+  if(mostra.d) svg += linha(Dv, "tn-ld", "tnGd", true);
+  if(mostra.s) svg += linha(Sv, "tn-ls", "tnGs", false);
+  svg += `<g class="tn-cross" style="display:none"><line y1="${PT}" y2="${bottom}" class="tn-cl"/><circle r="4.6" class="tn-cs tn-ls" style="display:none"/><circle r="4.6" class="tn-cd tn-ld" style="display:none"/></g></svg>`;
+  TN_.rhCh = { S: mostra.s ? Sv : [], D: mostra.d ? Dv : [], x0, span, W, H, PL, PR, PT, lo, hi, bottom };
   const melhor = L => L.length ? L.reduce((m, x) => x[1] < m[1] ? x : m, L[0]) : null, bS = melhor(S), bD = melhor(D);
   let h = `<div class="tn-seg tn-rhsel">${S.length && D.length ? `<button type="button" class="sh-chip ${sel === "ambos" ? "on" : ""}" data-rhs="ambos">Singulares + pares</button>` : ""}${S.length ? `<button type="button" class="sh-chip ${sel === "s" || (sel === "ambos" && !D.length) ? "on" : ""}" data-rhs="s">Singulares</button>` : ""}${D.length ? `<button type="button" class="sh-chip ${sel === "d" || (sel === "ambos" && !S.length) ? "on" : ""}" data-rhs="d">Pares</button>` : ""}</div>`;
   h += `<div class="tn-kpis tn-rhk"><div><b>${bS ? "#" + bS[1] : "—"}</b><small>Melhor singulares${bS ? " · " + tnEsc_(tnYmTxt_(bS[0])) : ""}</small></div><div><b>${bD ? "#" + bD[1] : "—"}</b><small>Melhor pares${bD ? " · " + tnEsc_(tnYmTxt_(bD[0])) : ""}</small></div><div><b>${p.r ? "#" + p.r : "—"}</b><small>Singulares agora</small></div><div><b>${p.d ? "#" + p.d[0] : "—"}</b><small>Pares agora</small></div></div>`;
-  h += svg + `<p class="tn-line tn-small tn-leg">${mostra.s ? `<span class="tn-lg tn-ls"></span> Singulares ` : ""}${mostra.d ? `<span class="tn-lg tn-ld"></span> Pares ` : ""}· o ponto marca o melhor ranking · quanto mais alto, melhor</p>`;
+  if(podeZoom) h += `<div class="tn-seg tn-rhper" aria-label="Período">${[["tudo", "Tudo"], ["10", "10 anos"], ["5", "5 anos"]].map(([k, t]) => `<button type="button" class="sh-chip ${(per ? String(per / 12) : "tudo") === k ? "on" : ""}" data-rhp="${k}">${t}</button>`).join("")}</div>`;
+  h += `<div class="tn-rhw">${svg}<div class="tn-tip" hidden></div></div><p class="tn-line tn-small tn-leg">${mostra.s ? `<span class="tn-lg tn-ls"></span> Singulares ` : ""}${mostra.d ? `<span class="tn-lg tn-ld"></span> Pares ` : ""}· toca ou passa o rato no gráfico para ver cada mês · o ponto com etiqueta é o melhor ranking · quanto mais alto, melhor</p>`;
   // por ano: fim do ano e melhor
   const anos = {}; S.forEach(x => (anos[x[0].slice(0, 4)] = anos[x[0].slice(0, 4)] || { s: [], d: [] }).s.push(x)); D.forEach(x => (anos[x[0].slice(0, 4)] = anos[x[0].slice(0, 4)] || { s: [], d: [] }).d.push(x));
   const fim = L => L.length ? "#" + L[L.length - 1][1] : "—", mel = L => L.length ? "#" + Math.min.apply(null, L.map(x => x[1])) : "—";
   h += `<h4 class="tn-h">Por ano <small>(fim do ano · melhor do ano)</small></h4><div class="tn-rha"><div class="tn-rhr tn-rhh"><span>Ano</span><span>Singulares</span><span>Pares</span></div>` +
     Object.keys(anos).sort((a, b) => b - a).map(y => `<div class="tn-rhr"><b>${y}</b><span>${fim(anos[y].s)} · ${mel(anos[y].s)}</span><span>${fim(anos[y].d)} · ${mel(anos[y].d)}</span></div>`).join("") + `</div>`;
   return h + nota;
+}
+
+function tnRhHover_(box){ // v298: linha vertical + cartão com o ranking de cada mês (rato ou toque)
+  const w = box.querySelector(".tn-rhw"); if(!w || !TN_.rhCh) return;
+  const svg = w.querySelector("svg"), tip = w.querySelector(".tn-tip"), g = svg.querySelector(".tn-cross"), C = TN_.rhCh;
+  const ym2s = i => Math.floor(i / 12) + "-" + String(i % 12 + 1).padStart(2, "0");
+  const perto = (L, i) => { let m = null, dm = 99; L.forEach(x => { const d = Math.abs(tnYm_(x[0]) - i); if(d < dm){ dm = d; m = x; } }); return dm <= 2 ? m : null; };
+  const mover = ev => {
+    const r = svg.getBoundingClientRect(); if(!r.width) return;
+    const sx = (ev.clientX - r.left) * C.W / r.width, i = Math.round(C.x0 + (sx - C.PL) / (C.W - C.PL - C.PR) * C.span), ic = Math.max(C.x0, Math.min(C.x0 + C.span, i));
+    const xx = C.PL + (C.W - C.PL - C.PR) * (ic - C.x0) / C.span, Yy = rr => C.PT + (C.bottom - C.PT) * (Math.log(rr) - C.lo) / Math.max(0.01, C.hi - C.lo);
+    const ps = perto(C.S, ic), pd = perto(C.D, ic);
+    g.style.display = ""; g.querySelector(".tn-cl").setAttribute("x1", xx); g.querySelector(".tn-cl").setAttribute("x2", xx);
+    [[".tn-cs", ps], [".tn-cd", pd]].forEach(([sel, pt]) => { const c = g.querySelector(sel); if(pt){ c.style.display = ""; c.setAttribute("cx", xx); c.setAttribute("cy", Yy(pt[1])); } else c.style.display = "none"; });
+    const lin = (nome, pt, cls) => pt ? `<div class="tn-tr"><i class="${cls}"></i>${nome} <b>#${pt[1]}</b>${pt[2] ? `<small>${String(pt[2]).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} pts</small>` : ""}</div>` : "";
+    tip.innerHTML = `<div class="tn-tm">${tnEsc_(tnYmTxt_(ym2s(ic)))}</div>` + lin("Singulares", ps, "tn-ls") + lin("Pares", pd, "tn-ld");
+    tip.hidden = false;
+    const wr = w.getBoundingClientRect(), px = (xx / C.W) * r.width + (r.left - wr.left), tw = tip.offsetWidth;
+    tip.style.left = Math.max(2, Math.min(wr.width - tw - 2, px - tw / 2)) + "px";
+  };
+  const esconder = () => { g.style.display = "none"; tip.hidden = true; };
+  svg.addEventListener("pointermove", mover); svg.addEventListener("pointerdown", mover);
+  svg.addEventListener("pointerleave", ev => { if(ev.pointerType === "mouse") esconder(); });
 }
 
 function tnEpocaSelHtml_(nomes, contagem, total){ // v297: Época + Tenista, dois menus

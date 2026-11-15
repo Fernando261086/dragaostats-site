@@ -80,13 +80,26 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     (await page.evaluate(() => (window.__posts||[]).some(p => p.tenisCarreira && p.tenisCarreira.id === 125006 && p.adminPassword !== undefined))) ? ok(`${tag}: pedido da carreira leva a password`) : bad(`${tag}: pedido sem password`);
     // v296: separador Ranking (gráfico desde 2010)
     await page.evaluate(() => document.querySelector('#tnBody [data-ftab="rank"]').click()); await page.waitForTimeout(500);
-    const rk = await page.evaluate(() => ({ svg: !!document.querySelector('#tnBody .tn-rhc'), ls: document.querySelectorAll('#tnBody .tn-rhc polyline').length, rows: document.querySelectorAll('#tnBody .tn-rhr').length, t: document.getElementById('tnBody').textContent, chips: [...document.querySelectorAll('#tnBody [data-rhs]')].map(b => b.dataset.rhs).join() }));
+    const rk = await page.evaluate(() => ({ svg: !!document.querySelector('#tnBody .tn-rhc'), ls: document.querySelectorAll('#tnBody .tn-rhc path[stroke-width]').length, rows: document.querySelectorAll('#tnBody .tn-rhr').length, t: document.getElementById('tnBody').textContent, chips: [...document.querySelectorAll('#tnBody [data-rhs]')].map(b => b.dataset.rhs).join() }));
     rk.svg && rk.ls === 2 && rk.rows >= 8 ? ok(`${tag}: Ranking com gráfico (2 linhas) e ${rk.rows - 1} anos`) : bad(`${tag}: Ranking svg=${rk.svg} linhas=${rk.ls} filas=${rk.rows}`);
     /Melhor singulares/.test(rk.t) && /#49/.test(rk.t) && rk.chips === 'ambos,s,d' ? ok(`${tag}: Ranking mostra o melhor (#49) e os filtros ${rk.chips}`) : bad(`${tag}: Ranking sem melhor/filtros (${rk.chips})`);
     (await ov()) > 1 ? bad(`${tag}: Ranking com deslize lateral ${await ov()}px`) : ok(`${tag}: Ranking sem deslize lateral`);
     if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-ranking.png` });
+    // v298: período, cartão ao passar o rato/tocar, área
+    const v298 = await page.evaluate(() => ({ per: [...document.querySelectorAll('#tnBody [data-rhp]')].map(b => b.dataset.rhp).join(), areas: document.querySelectorAll('#tnBody .tn-rhc path[fill^="url"]').length }));
+    v298.per === 'tudo,10,5' && v298.areas === 2 ? ok(`${tag}: gráfico com área e períodos ${v298.per}`) : bad(`${tag}: gráfico v298 ${JSON.stringify(v298)}`);
+    const sv = await page.evaluate(() => { const r = document.querySelector('#tnBody .tn-rhc').getBoundingClientRect(); return { x: r.left + r.width * 0.6, y: r.top + r.height * 0.5 }; });
+    await page.mouse.move(sv.x, sv.y); await page.waitForTimeout(150);
+    const tp = await page.evaluate(() => { const t = document.querySelector('#tnBody .tn-tip'); const r = t.getBoundingClientRect(), w = document.querySelector('#tnBody .tn-rhw').getBoundingClientRect(); return { vis: !t.hidden, txt: t.textContent, dentro: r.left >= w.left - 1 && r.right <= w.right + 1 }; });
+    tp.vis && /#\d+/.test(tp.txt) && tp.dentro ? ok(`${tag}: cartão do mês (${tp.txt.slice(0, 40)})`) : bad(`${tag}: cartão do mês ${JSON.stringify(tp)}`);
+    await page.evaluate(() => document.querySelector('#tnBody [data-rhp="5"]').click()); await page.waitForTimeout(150);
+    const z = await page.evaluate(() => ({ on: document.querySelector('#tnBody [data-rhp="5"]').classList.contains('on'), anos: [...document.querySelectorAll('#tnBody .tn-rhc text.tn-ct')].map(t => t.textContent).filter(t => /^\d{4}$/.test(t)) }));
+    z.on && z.anos.length >= 2 && z.anos.length <= 7 ? ok(`${tag}: zoom 5 anos (${z.anos.join(',')})`) : bad(`${tag}: zoom 5 anos ${JSON.stringify(z)}`);
+    (await ov()) > 1 ? bad(`${tag}: gráfico com deslize lateral`) : ok(`${tag}: gráfico sem deslize lateral`);
+    if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-grafico.png` });
+    await page.evaluate(() => document.querySelector('#tnBody [data-rhp="tudo"]').click()); await page.waitForTimeout(100);
     await page.evaluate(() => document.querySelector('#tnBody [data-rhs="d"]').click()); await page.waitForTimeout(100);
-    (await page.evaluate(() => document.querySelectorAll('#tnBody .tn-rhc polyline').length)) === 1 ? ok(`${tag}: filtro Pares deixa 1 linha`) : bad(`${tag}: filtro Pares`);
+    (await page.evaluate(() => document.querySelectorAll('#tnBody .tn-rhc path[stroke-width]').length)) === 1 ? ok(`${tag}: filtro Pares deixa 1 linha`) : bad(`${tag}: filtro Pares`);
     (await page.evaluate(() => (window.__posts||[]).some(p => p.tenisRankHist && p.tenisRankHist.nome === 'Nuno Borges' && p.adminPassword !== undefined))) ? ok(`${tag}: pedido do ranking leva a password`) : bad(`${tag}: pedido do ranking sem password`);
     // sem histórico (arquivo ainda a importar) e sem separador nas mulheres
     await page.evaluate(() => { document.querySelector('#tnBody .tn-back').click(); });

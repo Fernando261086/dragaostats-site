@@ -1561,3 +1561,12 @@ html.theme-light .tn-rhc .tn-ls{stroke:#0a58c2}html.theme-light .tn-rhc circle.t
 html.theme-light .tn-rhc .tn-ld{stroke:#a86a00}html.theme-light .tn-rhc circle.tn-ld{fill:#a86a00}html.theme-light .tn-lg.tn-ld{border-color:#a86a00}
 html.theme-light .tn-rhr,html.theme-light .tn-rseason select{background:#f3f5f9}
 @media (max-width:420px){.tn-rhr{grid-template-columns:40px minmax(0,1fr) minmax(0,1fr);padding:8px}.tn-rhk b{font-size:15px}}
+
+/* v297: Época + Tenista em menus; opções legíveis */
+.tn-rselrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 14px;margin:2px 0 10px}
+.tn-rselrow .tn-rseason{margin:0}
+.tn-rseason select{color-scheme:dark}
+.tn-rseason select option{background:#16233d;color:#eaf0ff}
+html.theme-light .tn-rseason select{color-scheme:light}
+html.theme-light .tn-rseason select option{background:#fff;color:#15213a}
+@media (max-width:640px){.tn-rselrow{grid-template-columns:minmax(0,1fr)}}

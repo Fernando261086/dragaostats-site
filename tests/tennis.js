@@ -104,6 +104,17 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) > 1 ? bad(`${tag}: Resultados ${ano} com deslize lateral`) : ok(`${tag}: Resultados ${ano} sem deslize lateral`);
     await page.evaluate(() => { document.querySelectorAll('#medalsView details').forEach(d => d.open = true); });
     (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) > 1 ? bad(`${tag}: Resultados ${ano} aberto com deslize lateral`) : ok(`${tag}: Resultados ${ano} aberto sem deslize lateral`);
+    // v297: menu «Tenista» (sem chips), opções legíveis, ano corrente na lista
+    const v297 = await page.evaluate(() => { const a = document.getElementById('tnRAtl'); const y = document.getElementById('tnRAno'); const o = y && y.options[1]; const cs = o && getComputedStyle(o); return { chips: document.querySelectorAll('#medalsView .tn-ra, #medalsView .tn-rfil').length, atl: a ? a.options.length : 0, anos: y ? [...y.options].map(x => x.value) : [], optBg: cs && cs.backgroundColor, optCo: cs && cs.color }; });
+    v297.chips === 0 && v297.atl >= 2 ? ok(`${tag}: menu Tenista (${v297.atl} opções, sem botões)`) : bad(`${tag}: menu Tenista ${JSON.stringify(v297)}`);
+    v297.anos.includes(String(new Date().getFullYear())) ? ok(`${tag}: ano corrente na lista`) : bad(`${tag}: sem ano corrente ${v297.anos}`);
+    v297.optBg !== v297.optCo ? ok(`${tag}: opções com contraste (${v297.optBg} / ${v297.optCo})`) : bad(`${tag}: opções sem contraste`);
+    await page.evaluate(() => { const a = document.getElementById('tnRAtl'); a.value = a.options[1].value; a.onchange(); }); await page.waitForTimeout(150);
+    (await page.evaluate(() => { const a = document.getElementById('tnRAtl'); return a && a.value !== '' && document.querySelectorAll('#medalsView .tn-tor').length >= 1; })) ? ok(`${tag}: filtrar por tenista`) : bad(`${tag}: filtro por tenista`);
+    (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) > 1 ? bad(`${tag}: menus com deslize lateral`) : ok(`${tag}: menus sem deslize lateral`);
+    await page.evaluate(a => { const s = document.getElementById('tnRAno'); s.value = String(new Date().getFullYear()); s.onchange(); }, ano); await page.waitForTimeout(700);
+    (await page.evaluate(() => /Torneios de \d{4}/.test(document.getElementById('medalsView').textContent) && !!document.getElementById('tnRAnoUpd'))) ? ok(`${tag}: ano corrente abre com «Atualizar agora»`) : bad(`${tag}: ano corrente sem botão atualizar`);
+    await page.evaluate(a => { const s = document.getElementById('tnRAno'); s.value = a; s.onchange(); }, ano); await page.waitForTimeout(500);
     if (shots) await page.screenshot({ path: `${shots}/tn-${theme}-${w}-epoca.png` });
     await page.evaluate(() => { const s = document.getElementById('tnRAno'); s.value = ''; s.onchange(); }); await page.waitForTimeout(200);
     (await page.evaluate(() => !document.querySelector('#medalsView .tn-years'))) ? ok(`${tag}: voltar a «Esta época»`) : bad(`${tag}: não voltou a «Esta época»`);

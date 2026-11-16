@@ -30,6 +30,10 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
+    // v303: o modo de edição não deve aparecer no Google (o Search Console tinha /edicao indexado)
+    if ((request.method === "GET" || request.method === "HEAD") && /^\/edicao\/?$/i.test(path)) {
+      return new Response(null, { status: 302, headers: { "Location": "/?view=edit", "X-Robots-Tag": "noindex, nofollow", "Cache-Control": "no-store" } });
+    }
     try {
       if (request.method === "GET" && path === "/diag") return await diagnostico_(env, ctx);
       if (request.method === "GET" && path === "/api/dados") return await dadosBrutos_(env, ctx);
@@ -284,6 +288,18 @@ async function sportPage_(request, env, ctx, info) {
           (ij >= 0 ? '<td style="text-align:right;opacity:.8;">' + ESC(c[ij]) + " J</td>" : "") +
           (ip >= 0 ? '<td style="text-align:right;width:56px;">' + ESC(c[ip]) + " pts</td>" : "") + "</tr>";
       }).join("") + "</table></div>";
+  }
+  // v303: últimos resultados em texto (antes só havia a caixa que o script do navegador preenche, invisível para o Google)
+  const ultimos = data.events
+    .filter(e => e.sport === sport && e.res)
+    .sort((a, b) => (b.day + " " + (b.t || "")).localeCompare(a.day + " " + (a.t || "")))
+    .slice(0, 5);
+  if (ultimos.length) {
+    html += '<div style="' + box + '"><div style="' + lbl + '">Últimos resultados</div>' + ultimos.map(e => {
+      const t = teams_(e), w = resultWord_(e);
+      return '<div style="display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:15px;"><span>' + ESC(t.home) + " " + ESC(e.res) + " " + ESC(t.away) +
+        (w ? ' <span style="opacity:.7;">(' + w + ")</span>" : "") + '</span><span style="opacity:.7;white-space:nowrap;">' + ESC(dateLabel_(e.day)) + "</span></div>";
+    }).join("") + "</div>";
   }
   if (!html) return null;
   const ld = proximos.map(x => {

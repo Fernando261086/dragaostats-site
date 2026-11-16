@@ -88,6 +88,14 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     await page.waitForTimeout(900);
     const dim = async () => page.evaluate(async () => { const im = document.querySelector('#shOut img'); if (!im) return ''; await im.decode().catch(() => {}); return im.naturalWidth + 'x' + im.naturalHeight; });
     (await dim()) === '1080x1350' ? ok('partilhar: dia em 4:5 (1080x1350)') : bad('partilhar: dia 4:5 errado → ' + await dim());
+    { // v303: o modo de edição leva «noindex» (Google); o link público não
+      const ed = await page.evaluate(() => (document.querySelector('meta[name="robots"]') || {}).content || '');
+      /noindex/.test(ed) ? ok('SEO: modo de edição com meta robots noindex') : bad('SEO: edição sem noindex → ' + ed);
+      const pub = await browser.newPage(); await pub.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+      await pub.goto(`http://localhost:${port}/index.html?view=readonly`, { waitUntil: 'load' });
+      (await pub.evaluate(() => !document.querySelector('meta[name="robots"]'))) ? ok('SEO: link público sem noindex') : bad('SEO: link público ficou com noindex');
+      await pub.close();
+    }
     { // v302: «Todos juntos» (ao vivo + sem ao vivo), azul em vez de vermelho, legendas com pergunta
       const m = await page.evaluate(() => ({ on: (document.querySelector('[data-dk="misto"].on') || {}).textContent || '', cap: (document.getElementById('shCap') || {}).value || '' }));
       /Todos juntos/.test(m.on) ? ok('partilhar: «Todos juntos» escolhido por omissão (dia com ao vivo e sem ao vivo)') : bad('partilhar: sem «Todos juntos» → ' + m.on);

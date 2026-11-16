@@ -61,6 +61,13 @@ async function registerForPushNotifications(){
 
 async function enableNotifications(){
   if(!("Notification" in window)){
+    // v304: no iPhone/iPad, fora da app instalada, o Safari não tem notificações — em vez de um beco sem saída
+    // (antes: «Este browser não suporta notificações»), mostra o guia de 3 passos. Vale para «Lembrar-me», o sino, etc.
+    if(typeof isIOSDevice === "function" && isIOSDevice() && !(typeof isStandaloneMode === "function" && isStandaloneMode()) && typeof iosInstallSheet_ === "function"){
+      try{ if(typeof track_ === "function") track_("nc_ios_ajuda"); }catch(e){}
+      iosInstallSheet_();
+      return false;
+    }
     try{ if(typeof track_ === "function") track_("avisos_sem_suporte"); }catch(e){}
     showToast("Este browser não suporta notificações.");
     return false;

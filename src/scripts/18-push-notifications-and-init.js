@@ -375,7 +375,8 @@ document.getElementById("installBannerBtn").onclick = async ()=>{
     deferredInstallPrompt = null;
     document.getElementById("installBanner").style.display = "none";
   }else if(isIOSDevice()){
-    alert("Para instalar no iPhone/iPad: toca no ícone de Partilhar 🔗 na barra do Safari e depois em \"Adicionar ao ecrã principal\".");
+    if(typeof iosInstallSheet_ === "function"){ try{ track_("nc_ios_ajuda"); }catch(e){} iosInstallSheet_(); }
+    else alert("Para instalar no iPhone/iPad: toca no ícone de Partilhar 🔗 na barra do Safari e depois em \"Adicionar ao ecrã principal\".");
   }
 };
 document.getElementById("installBannerDismiss").onclick = ()=>{
@@ -405,7 +406,8 @@ document.getElementById("installBannerDismiss").onclick = ()=>{
       document.getElementById("installBanner").style.display = "none";
       if(outcome === "accepted"){ btn.style.display = "none"; btn.classList.remove("needs-attention"); }
     }else if(isIOSDevice()){
-      alert("Para instalar no iPhone/iPad: toca no ícone de Partilhar 🔗 na barra do Safari e depois em \"Adicionar ao ecrã principal\".");
+      if(typeof iosInstallSheet_ === "function"){ try{ track_("nc_ios_ajuda"); }catch(e){} iosInstallSheet_(); }
+    else alert("Para instalar no iPhone/iPad: toca no ícone de Partilhar 🔗 na barra do Safari e depois em \"Adicionar ao ecrã principal\".");
     }else{
       alert("Para instalar: abre o menu do browser (⋮ ou ⋯) e escolhe \"Instalar app\" ou \"Adicionar ao ecrã principal\". No computador, com Chrome ou Edge, procura o ícone de instalar na barra de endereço.");
     }

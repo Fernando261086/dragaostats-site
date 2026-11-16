@@ -138,3 +138,31 @@ document.addEventListener("click", async e=>{
   try{ await enableNotifications(); }catch(x){}
   try{ if(typeof renderLiveNowBanner_ === "function") renderLiveNowBanner_(); }catch(x){}
 }, true);
+
+// v304: 1.ª vez que o iPhone abre a app JÁ instalada (ecrã principal). O passo 3 do guia era onde mais gente se perdia:
+// instala, abre o ícone e ninguém lhe diz para ligar os avisos (no iPhone a permissão só pode ser pedida a partir da app).
+// Uma só vez por aparelho (a app instalada tem armazenamento próprio, separado do Safari); ignora o «Agora não» do Safari.
+function iosAppWelcome_(){
+  try{
+    if(!READONLY_MODE || typeof isIOSDevice !== "function" || !isIOSDevice() || !isStandaloneMode()) return;
+    if(!("Notification" in window) || Notification.permission !== "default" || notificationsEnabled) return;
+    try{ if(localStorage.getItem("dia22-ios-welcome")) return; }catch(e){}
+    const boot = document.getElementById("bootScreen");
+    if(boot || document.getElementById("ncMoment")){ if(!iosAppWelcome_.n || iosAppWelcome_.n < 8){ iosAppWelcome_.n = (iosAppWelcome_.n || 0) + 1; setTimeout(iosAppWelcome_, 1500); } return; }
+    try{ localStorage.setItem("dia22-ios-welcome", String(Date.now())); }catch(e){}
+    const el = document.createElement("div");
+    el.id = "ncMoment"; el.className = "nc-moment"; el.setAttribute("role", "status");
+    el.innerHTML = `<span class="nm-t">App instalada! Liga os avisos para saberes quando o FC Porto joga e o resultado final.</span><button type="button" class="hv-btn hv-btn-main nm-yes">Ativar avisos</button><button type="button" class="nm-no" aria-label="Fechar">✕</button>`;
+    document.body.appendChild(el);
+    try{ if(typeof track_ === "function") track_("ios_app_boas_vindas"); }catch(e){}
+    el.querySelector(".nm-no").onclick = ()=>{ el.remove(); };
+    el.querySelector(".nm-yes").onclick = async ()=>{
+      el.remove();
+      try{ track_("ios_app_ativar"); }catch(e){}
+      try{ await enableNotifications(); }catch(e){}
+      try{ if(typeof renderHomeView_ === "function") renderHomeView_(true); }catch(e){}
+    };
+    setTimeout(()=>{ const x = document.getElementById("ncMoment"); if(x) x.remove(); }, 30000);
+  }catch(e){}
+}
+setTimeout(iosAppWelcome_, 3500);

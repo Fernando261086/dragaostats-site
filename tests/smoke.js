@@ -418,6 +418,47 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     }
     await page.close();
   }
+  { // v304: iPhone — Safari sem a app (guia de instalação em vez de «não suporta») e app instalada (boas-vindas, 1 vez)
+    const UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1';
+    for (const theme of ['dark', 'light']) {
+      for (const modo of ['safari', 'app']) {
+        const ctx = await browser.newContext({ viewport: { width: 360, height: 780 }, userAgent: UA });
+        const page = await ctx.newPage(); const errs = []; page.on('pageerror', e => errs.push(e.message));
+        await page.addInitScript(([d, m]) => {
+          try { localStorage.setItem('dia22-viewer-name', 'Teste'); } catch (e) {}
+          if (m === 'safari') { try { delete window.Notification; Object.defineProperty(window, 'Notification', { value: undefined, configurable: true }); } catch (e) {} try { delete window.Notification; } catch (e) {} }
+          else { try { Object.defineProperty(navigator, 'standalone', { value: true, configurable: true }); } catch (e) {} try { Object.defineProperty(Notification, 'permission', { get: () => 'default', configurable: true }); } catch (e) {} }
+          const f = window.fetch; window.fetch = (...a) => String(a[0]).includes('script.google.com')
+            ? Promise.resolve(new Response(JSON.stringify(d), {status:200, headers:{'content-type':'application/json'}})) : f.apply(window, a);
+        }, [mock, modo]);
+        await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+        await page.goto(`http://localhost:${port}/index.html?view=readonly`, { waitUntil: 'load' });
+        await page.evaluate(t => { const o = document.getElementById('introOverlay'); if (o) o.style.display = 'none'; if (t === 'light') document.documentElement.classList.add('theme-light'); }, theme);
+        const tag = `iPhone ${modo} ${theme}`;
+        if (modo === 'safari') {
+          await page.waitForTimeout(1500);
+          await page.evaluate(() => enableNotifications());
+          await page.waitForTimeout(300);
+          const n = await page.evaluate(() => ({ sheet: !!document.getElementById('iosSheet'), passos: document.querySelectorAll('#iosSheet .ios-step').length, toast: /não suporta/i.test(document.body.innerText) }));
+          (n.sheet && n.passos === 3 && !n.toast) ? ok(`${tag}: enableNotifications abre o guia de 3 passos (sem «não suporta»)`) : bad(`${tag}: guia ${JSON.stringify(n)}`);
+          await page.evaluate(() => document.getElementById('iosSheet').remove());
+          await page.evaluate(() => { document.getElementById('installAppBtn').click(); });
+          await page.waitForTimeout(200);
+          (await page.evaluate(() => !!document.getElementById('iosSheet'))) ? ok(`${tag}: «Instalar app» abre o guia (sem alert)`) : bad(`${tag}: «Instalar app» não abriu o guia`);
+        } else {
+          await page.waitForTimeout(7000);
+          const w = await page.evaluate(() => { const e = document.getElementById('ncMoment'); return e ? e.innerText : ''; });
+          /App instalada/.test(w) ? ok(`${tag}: boas-vindas com «Ativar avisos»`) : bad(`${tag}: sem boas-vindas (${w})`);
+          const again = await page.evaluate(() => { document.getElementById('ncMoment') && document.getElementById('ncMoment').remove(); iosAppWelcome_(); return !!document.getElementById('ncMoment'); });
+          again ? bad(`${tag}: boas-vindas repetida`) : ok(`${tag}: boas-vindas só uma vez`);
+        }
+        const ov = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+        ov > 1 ? bad(`${tag}: deslize lateral de ${ov}px`) : ok(`${tag}: sem deslize lateral`);
+        errs.length ? bad(`${tag}: erros JS → ${errs.join(' | ')}`) : ok(`${tag}: sem erros JS`);
+        await ctx.close();
+      }
+    }
+  }
   await browser.close(); srv.close();
   console.log(fails ? `\n${fails} problema(s) — NÃO publicar.` : '\nTudo ok.'); process.exit(fails ? 1 : 0);
 })();

@@ -50,6 +50,9 @@ export default {
         if ((path === "/" || path === "/index.html") && url.searchParams.get("jogo")) {
           const r = await jogoPage_(request, env, ctx, url);
           if (r) return r;
+        } else if (path === "/adversarios" || /^\/adversario\/[a-z0-9-]+\/?$/.test(path)) {
+          const r = await adversarioPage_(request, env, ctx, path);
+          if (r) return r;
         } else if (path === "/hoje" || path === "/hoje.html") {
           const r = await hojePage_(request, env, ctx);
           if (r) return r;
@@ -328,6 +331,10 @@ async function sitemapJogos_(env, ctx) {
   const itens = data.events.filter(e => { const t = Date.parse(e.day + "T12:00:00Z"); return t >= de && t <= ate; })
     .sort((a, b) => b.day.localeCompare(a.day)).slice(0, 1500)
     .map(e => "<url><loc>" + ESC(SITE + "/?comp=" + encodeURIComponent(e.comp || "") + "&jogo=" + encodeURIComponent(e.id)) + "</loc><lastmod>" + ESC(e.day) + "</lastmod></url>");
+  // v305: páginas de adversário (/adversario/<nome>) e o índice
+  const advs = advGrupos_(data.events);
+  advs.forEach(a => itens.push("<url><loc>" + ESC(SITE + "/adversario/" + a.slug) + "</loc><changefreq>daily</changefreq></url>"));
+  if (advs.length) itens.push("<url><loc>" + ESC(SITE + "/adversarios") + "</loc></url>");
   const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + itens.join("\n") + "\n</urlset>\n";
   return new Response(xml, { headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600" } });
 }
@@ -417,6 +424,117 @@ async function hojePage_(request, env, ctx) {
   return r;
 }
 
+// ---------- v305: /adversario/<nome> e /adversarios — uma página por adversário com o historico do FC Porto contra ele
+// (todas as modalidades da época em curso), os próximos jogos e os resultados; texto no HTML para o Google ler.
+// Só há página para quem tem pelo menos 2 jogos (marcados ou realizados); nome desconhecido → 404 sem indexar.
+function advSlug_(nome) {
+  return String(nome || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+function advGrupos_(events) {
+  const m = {};
+  events.forEach(e => {
+    const slug = advSlug_(e.adv);
+    if (!slug || slug === "fc-porto") return;
+    const g = m[slug] || (m[slug] = { slug, nomes: {}, jogos: [] });
+    g.nomes[e.adv] = (g.nomes[e.adv] || 0) + 1;
+    g.jogos.push(e);
+  });
+  return Object.keys(m).map(k => {
+    const g = m[k];
+    g.nome = Object.keys(g.nomes).sort((a, b) => g.nomes[b] - g.nomes[a])[0];
+    return g;
+  }).filter(g => g.jogos.length >= 2).sort((a, b) => b.jogos.length - a.jogos.length || a.nome.localeCompare(b.nome, "pt"));
+}
+function adversarioConteudo_(g, nowMs) {
+  const hoje = lisbonDay_(nowMs);
+  const link = e => SITE + "/?comp=" + encodeURIComponent(e.comp || "") + "&jogo=" + encodeURIComponent(e.id);
+  const fcpAdv = e => { const m = e.res.match(/(\d+)\s*[-–:]\s*(\d+)/); return m ? (e.fora ? [Number(m[2]), Number(m[1])] : [Number(m[1]), Number(m[2])]) : null; };
+  const feitos = g.jogos.filter(e => e.res).sort((a, b) => b.day.localeCompare(a.day) || (b.t || "").localeCompare(a.t || ""));
+  const prox = g.jogos.filter(e => !e.res && e.day >= hoje).sort((a, b) => a.day.localeCompare(b.day) || (a.t || "").localeCompare(b.t || ""));
+  const cont = { Vitória: 0, Empate: 0, Derrota: 0 };
+  const porMod = {};
+  feitos.forEach(e => {
+    const w = resultWord_(e); if (!w) return;
+    cont[w]++;
+    const o = porMod[e.sport] || (porMod[e.sport] = { n: 0, Vitória: 0, Empate: 0, Derrota: 0 });
+    o.n++; o[w]++;
+  });
+  const dec = cont.Vitória + cont.Empate + cont.Derrota;
+  const pl = (n, s, p) => n + " " + (n === 1 ? s : p);
+  const li = (e, mostrarRes) => {
+    const t = teams_(e);
+    const w = mostrarRes ? resultWord_(e) : "";
+    const dir = mostrarRes ? '<span class="jg-r">' + ESC(e.res) + "</span>" : '<span class="jg-t">' + ESC(dateLabel_(e.day) + (e.t ? " · " + e.t : "")) + "</span>";
+    return '<li><a href="' + ESC(link(e)) + '"><span><b>' + ESC(emoji_(e.sport) + " " + t.home + " vs " + t.away) + "</b>" +
+      '<span class="jg-m">' + ESC(e.sport + (e.det ? " · " + e.det : "") + (e.fase ? " · " + e.fase : "") + " · " + dateLabel_(e.day) + (w ? " · " + w : "")) + "</span></span>" + dir + "</a></li>";
+  };
+  let html = "";
+  if (prox.length) html += '<section class="jg-sec"><h2>Próximos jogos</h2><ul>' + prox.slice(0, 6).map(e => li(e, false)).join("") + "</ul></section>";
+  if (dec) {
+    html += '<section class="jg-sec"><h2>Balanço do FC Porto</h2><p>' + ESC("Em " + pl(dec, "jogo", "jogos") + " contra o " + g.nome + " nesta época: " +
+      pl(cont.Vitória, "vitória", "vitórias") + ", " + pl(cont.Empate, "empate", "empates") + " e " + pl(cont.Derrota, "derrota", "derrotas") + ".") + "</p>";
+    const mods = Object.keys(porMod);
+    if (mods.length > 1) html += "<ul>" + mods.map(k => '<li><span class="jg-m" style="padding:10px 0">' + ESC(emoji_(k) + " " + k + ": " + pl(porMod[k].n, "jogo", "jogos") + " — " +
+      porMod[k].Vitória + "V " + porMod[k].Empate + "E " + porMod[k].Derrota + "D") + "</span></li>").join("") + "</ul>";
+    html += "</section>";
+  }
+  if (feitos.length) html += '<section class="jg-sec"><h2>Resultados</h2><ul>' + feitos.slice(0, 12).map(e => li(e, true)).join("") + "</ul></section>";
+  const ld = prox.slice(0, 6).map(e => {
+    const t = teams_(e), s0 = startInfo_(e.day, e.t);
+    const o = { "@context": "https://schema.org", "@type": "SportsEvent", name: t.home + " vs " + t.away, sport: e.sport, url: link(e),
+      startDate: s0 ? e.day + "T" + String(e.t).padStart(5, "0") + ":00" + s0.offset : e.day, eventStatus: "https://schema.org/EventScheduled",
+      homeTeam: { "@type": "SportsTeam", name: t.home }, awayTeam: { "@type": "SportsTeam", name: t.away } };
+    if (e.venue) o.location = { "@type": "Place", name: e.venue };
+    return o;
+  });
+  const mods = Array.from(new Set(g.jogos.map(e => e.sport)));
+  const title = "FC Porto vs " + g.nome + ": resultados, histórico e próximos jogos | Dragão Stats";
+  const desc = "FC Porto contra " + g.nome + ": " + (dec ? cont.Vitória + "V " + cont.Empate + "E " + cont.Derrota + "D nesta época. " : "") +
+    (prox.length ? "Próximo jogo a " + dateLabel_(prox[0].day) + (prox[0].t ? " às " + prox[0].t : "") + " (" + prox[0].sport + "). " : "") + "Modalidades: " + mods.join(", ") + ".";
+  return { html, ld, title, desc, h1: "FC Porto vs <b>" + ESC(g.nome) + "</b>" };
+}
+function advIndiceConteudo_(grupos) {
+  const html = '<section class="jg-sec"><h2>Todos os adversários</h2><ul>' + grupos.map(g =>
+    '<li><a href="/adversario/' + ESC(g.slug) + '"><span><b>' + ESC(g.nome) + '</b><span class="jg-m">' + ESC(Array.from(new Set(g.jogos.map(e => e.sport))).join(", ")) +
+    '</span></span><span class="jg-t">' + g.jogos.length + (g.jogos.length === 1 ? " jogo" : " jogos") + "</span></a></li>").join("") + "</ul></section>";
+  return { html, ld: [], title: "Adversários do FC Porto: histórico e resultados por equipa | Dragão Stats",
+    desc: "Todos os adversários do FC Porto nesta época, em todas as modalidades: resultados, balanço e próximos jogos contra cada equipa.", h1: "Adversários do <b>FC Porto</b>" };
+}
+async function adversarioPage_(request, env, ctx, path) {
+  const data = await getData_(env, ctx);
+  if (!data) return null;
+  const grupos = advGrupos_(data.events);
+  const eIndice = path === "/adversarios";
+  let c, canon;
+  if (eIndice) { c = advIndiceConteudo_(grupos); canon = SITE + "/adversarios"; }
+  else {
+    const slug = path.replace("/adversario/", "").replace(/\/$/, "");
+    const g = grupos.find(x => x.slug === slug);
+    if (!g) return new Response("Adversário não encontrado", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8", "X-Robots-Tag": "noindex", "Cache-Control": "public, max-age=300" } });
+    c = adversarioConteudo_(g, Date.now()); canon = SITE + "/adversario/" + slug;
+  }
+  const res = await env.ASSETS.fetch(new Request(new URL("/hoje", request.url).toString(), { method: "GET", headers: request.headers }));
+  const out = new HTMLRewriter()
+    .on("title", { element(e) { e.setInnerContent(c.title); } })
+    .on('meta[name="description"]', { element(e) { e.setAttribute("content", c.desc); } })
+    .on('link[rel="canonical"]', { element(e) { e.setAttribute("href", canon); } })
+    .on('meta[property="og:url"]', { element(e) { e.setAttribute("content", canon); } })
+    .on('meta[property="og:title"]', { element(e) { e.setAttribute("content", c.title); } })
+    .on('meta[property="og:description"]', { element(e) { e.setAttribute("content", c.desc); } })
+    .on('meta[name="twitter:title"]', { element(e) { e.setAttribute("content", c.title); } })
+    .on('meta[name="twitter:description"]', { element(e) { e.setAttribute("content", c.desc); } })
+    .on("#hojeTitulo", { element(e) { e.setInnerContent(c.h1, { html: true }); } })
+    .on("#hojeIntro", { element(e) { e.setInnerContent(c.desc); } })
+    .on("#jogos-hoje", { element(e) { e.setInnerContent(c.html, { html: true }); } })
+    .on("a.cta", { element(e) { e.setAttribute("href", "/?src=adversario"); e.setInnerContent("Acompanha o FC Porto ao vivo →"); } })
+    .on("a.current", { element(e) { e.removeAttribute("class"); } })
+    .on("head", { element(e) { if (c.ld.length) e.append('<script type="application/ld+json">' + JSON.stringify(c.ld).replace(/</g, "\\u003c") + "</script>", { html: true }); } })
+    .transform(res);
+  const r = new Response(out.body, { status: 200, headers: out.headers });
+  r.headers.set("Cache-Control", "public, max-age=300");
+  return r;
+}
+
 // ---------- v280: /api/dados — os mesmos dados do Apps Script, só para a 1.ª carga do link «só ver»
 // O site tenta isto primeiro (com limite de tempo) e, se falhar de qualquer maneira, vai direto ao Apps Script como sempre.
 // As atualizações seguintes (de 6 em 6 s, ao vivo) NÃO passam por aqui: vão sempre direto, por isso o marcador nunca fica
@@ -465,7 +583,7 @@ async function dadosBrutos_(env, ctx) {
 
 // ---------- diagnóstico: /diag (texto simples; diz se o worker corre e se lê os dados)
 async function diagnostico_(env, ctx) {
-  const out = { worker: "v281.1", hora: new Date().toISOString() };
+  const out = { worker: "v305", hora: new Date().toISOString() };
   const t0 = Date.now();
   try {
     const cache = await caches.default.match(new Request(SITE + "/__cache/dados-v1"));

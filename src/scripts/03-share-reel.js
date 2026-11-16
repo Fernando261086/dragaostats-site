@@ -445,7 +445,7 @@ async function fetchAll(opts){
     // demora 5-7 s). Qualquer falha → segue para o pedido direto de sempre. As atualizações (syncPoll_) nunca passam por aqui.
     if(opts && opts.worker && typeof READONLY_MODE !== "undefined" && READONLY_MODE && location.protocol.indexOf("http") === 0){
       const cw = new AbortController();
-      const tw = setTimeout(()=> cw.abort(), 8000);
+      const tw = setTimeout(()=> cw.abort(), 6500); // v306: o worker espera no máx. 5 s; antes o limite (8 s) era menor do que o dele (9 s)
       try{
         const rw = await fetch("/api/dados", { cache: "no-store", signal: cw.signal });
         if(rw.ok){ r = rw; window.__viaWorkerAge_ = Number(rw.headers.get("X-DS-Age") || 0); try{ track_("dados_worker"); }catch(e){} }

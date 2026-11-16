@@ -75,6 +75,25 @@ const fs = require('fs'), path = require('path'), os = require('os');
   x = await get('/sitemap-jogos.xml');
   /\/adversario\/benfica/.test(x.t) && /\/adversarios</.test(x.t) ? ok('sitemap-jogos inclui as páginas de adversário') : bad('sitemap');
   /<script/i.test((await get('/adversario/benfica')).t.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '').match(/Sporting <b>/) || '') ? bad('HTML não escapado') : ok('nomes escapados (sem HTML injetado)');
+  { // v306: /api/dados — cópia antiga serve-se logo (até 6 h) e atualiza por trás; sem cópia espera no máx. ~5 s
+    const KEY = 'https://dragaostats.pt/__cache/dados-brutos-v2';
+    store.delete(KEY);
+    const real = globalThis.fetch;
+    let chamadas = 0, modo = 'ok';
+    globalThis.fetch = async u => { chamadas++; if (modo === 'pendurado') return new Promise(() => {}); return new Response(JSON.stringify(api), { status: 200 }); };
+    let t0 = Date.now(); x = await get('/api/dados');
+    x.r.status === 200 && x.r.headers.get('x-ds-age') === '0' && /"competitions"/.test(x.t) ? ok('/api/dados sem cópia: vai ao Apps Script e responde com idade 0') : bad('dados 1.ª: ' + x.r.status + ' ' + x.r.headers.get('x-ds-age'));
+    const antiga = store.get(KEY);
+    store.set(KEY, new Response(await antiga.clone().text(), { headers: { 'X-DS-At': String(Date.now() - 30 * 60000) } }));
+    modo = 'pendurado'; t0 = Date.now(); x = await get('/api/dados');
+    const dt = Date.now() - t0, idade = Number(x.r.headers.get('x-ds-age'));
+    x.r.status === 200 && dt < 1500 && idade >= 1790 && idade <= 1810 ? ok(`cópia de 30 min serve-se logo (${dt} ms, idade ${idade} s) mesmo com o Apps Script pendurado`) : bad(`cópia antiga: ${x.r.status} ${dt} ms idade ${idade}`);
+    store.set(KEY, new Response(await antiga.clone().text(), { headers: { 'X-DS-At': String(Date.now() - 7 * 3600000) } }));
+    t0 = Date.now(); x = await get('/api/dados');
+    const dt2 = Date.now() - t0;
+    x.r.status === 504 && dt2 >= 4500 && dt2 < 7500 ? ok(`sem cópia utilizável e Apps Script pendurado: 504 ao fim de ${Math.round(dt2 / 1000)} s (antes eram 9 s)`) : bad(`pendurado: ${x.r.status} ${dt2} ms`);
+    globalThis.fetch = real;
+  }
   fs.unlinkSync(tmp);
   console.log(fails ? `\n${fails} problema(s).` : '\nTudo ok.'); process.exit(fails ? 1 : 0);
 })();

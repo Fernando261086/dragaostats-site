@@ -459,6 +459,38 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
       }
     }
   }
+  { // v306: convite de avisos com o próximo jogo e botão «Avisa-me» (Android, público), claro/escuro, 360 px
+    for (const theme of ['dark', 'light']) {
+      const ctx = await browser.newContext({ viewport: { width: 360, height: 780 } });
+      const page = await ctx.newPage(); const errs = []; page.on('pageerror', e => errs.push(e.message));
+      await page.addInitScript(d => {
+        try { localStorage.setItem('dia22-viewer-name', 'Teste'); localStorage.setItem('dia22-live-intro-v1', '1'); Object.defineProperty(Notification, 'permission', { get: () => 'default', configurable: true }); } catch (e) {}
+        const f = window.fetch; window.fetch = (...a) => String(a[0]).includes('script.google.com')
+          ? Promise.resolve(new Response(JSON.stringify(d), {status:200, headers:{'content-type':'application/json'}})) : f.apply(window, a);
+      }, mock);
+      await page.route(/^https?:\/\/(?!localhost)/, r => r.abort());
+      await page.goto(`http://localhost:${port}/index.html?view=readonly`, { waitUntil: 'load' });
+      await page.waitForTimeout(2500);
+      await page.evaluate(t => { const o = document.getElementById('introOverlay'); if (o) o.style.display = 'none'; if (t === 'light') document.documentElement.classList.add('theme-light'); }, theme);
+      const tag = `convite ${theme}`;
+      await page.evaluate(() => {
+        const d = new Date(Date.now() + 86400000), iso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        EVENTS.length = 0; EVENTS.push({ id: 'zz1', sport: 'Andebol', day: iso, t: '20:00', athlete: 'Sporting', local: 'casa' });
+        window.__rem = []; window.toggleGameReminder_ = async (id) => { window.__rem.push(id); };
+        renderHomeView_(true);
+      });
+      await page.waitForTimeout(400);
+      const c = await page.evaluate(() => { const b = document.querySelector('.nc-card [data-ncremind]'); const card = document.querySelector('.nc-card'); return { btn: !!b, id: b && b.getAttribute('data-ncremind'), txt: card ? card.innerText : '' }; });
+      (c.btn && c.id === 'zz1' && /1 hora antes/.test(c.txt) && /FC Porto vs Sporting/.test(c.txt) && /amanhã às 20:00/.test(c.txt) && /Avisa-me/.test(c.txt)) ? ok(`${tag}: cartão com o próximo jogo e «Avisa-me»`) : bad(`${tag}: cartão → ${JSON.stringify(c)}`);
+      await page.evaluate(() => document.querySelector('.nc-card [data-ncremind]').click());
+      await page.waitForTimeout(300);
+      (await page.evaluate(() => window.__rem.join(','))) === 'zz1' ? ok(`${tag}: «Avisa-me» liga o Lembrar-me desse jogo`) : bad(`${tag}: toggleGameReminder_ não foi chamado`);
+      const ov = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      ov > 1 ? bad(`${tag}: deslize lateral de ${ov}px`) : ok(`${tag}: sem deslize lateral`);
+      errs.length ? bad(`${tag}: erros JS → ${errs.join(' | ')}`) : ok(`${tag}: sem erros JS`);
+      await ctx.close();
+    }
+  }
   await browser.close(); srv.close();
   console.log(fails ? `\n${fails} problema(s) — NÃO publicar.` : '\nTudo ok.'); process.exit(fails ? 1 : 0);
 })();

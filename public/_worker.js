@@ -540,7 +540,7 @@ async function adversarioPage_(request, env, ctx, path) {
 // As atualizações seguintes (de 6 em 6 s, ao vivo) NÃO passam por aqui: vão sempre direto, por isso o marcador nunca fica
 // mais atrasado do que já era. Cópia: fresca até 8 s; de 8 a 45 s serve já e atualiza em segundo plano; acima disso espera
 // pelo Apps Script (máx. 9 s) e, se este falhar, serve a cópia (até 10 min) ou deixa o site ir direto.
-const DADOS_FRESCOS_S = 8, DADOS_MORNOS_S = 45, DADOS_MAX_S = 600;
+const DADOS_FRESCOS_S = 8, DADOS_MAX_S = 21600, DADOS_ESPERA_MS = 5000; // v306: cópia antiga serve-se logo (até 6 h)
 let dadosEmCurso_ = null;
 function dadosResposta_(body, idadeS) {
   return new Response(body, { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex", "X-DS-Age": String(Math.max(0, Math.round(idadeS))) } });
@@ -567,7 +567,10 @@ async function dadosBrutos_(env, ctx) {
   const hit = await cache.match(key);
   const idade = hit ? (Date.now() - Number(hit.headers.get("X-DS-At") || 0)) / 1000 : Infinity;
   if (hit && idade < DADOS_FRESCOS_S) return dadosResposta_(hit.body, idade);
-  if (hit && idade < DADOS_MORNOS_S) {
+  // v306: com poucas visitas a cópia quase nunca estava fresca e a pessoa esperava pelo Apps Script (5–9 s, às vezes mais, e o site
+  // desistia aos 8 s). Agora qualquer cópia até 6 h serve-se já e atualiza-se por trás; o site pede logo os dados diretos (≈1 s) para
+  // corrigir o que mudou desde então. Só sem nenhuma cópia (1.ª visita num servidor) é que se espera, e no máximo 5 s.
+  if (hit && idade < DADOS_MAX_S) {
     ctx.waitUntil(dadosAtualizar_(env, cache, key, 25000));
     return dadosResposta_(hit.body, idade);
   }
@@ -575,15 +578,14 @@ async function dadosBrutos_(env, ctx) {
   // quem espera só espera 9 s (o site, nesse caso, pede os dados diretamente).
   const emCurso = dadosAtualizar_(env, cache, key, 25000);
   ctx.waitUntil(emCurso);
-  const novo = await Promise.race([emCurso, new Promise(res => setTimeout(() => res(null), 9000))]);
+  const novo = await Promise.race([emCurso, new Promise(res => setTimeout(() => res(null), DADOS_ESPERA_MS))]);
   if (novo) return dadosResposta_(novo, 0);
-  if (hit && idade < DADOS_MAX_S) return dadosResposta_(hit.body, idade);
   return new Response("", { status: 504, headers: { "Cache-Control": "no-store" } });
 }
 
 // ---------- diagnóstico: /diag (texto simples; diz se o worker corre e se lê os dados)
 async function diagnostico_(env, ctx) {
-  const out = { worker: "v305", hora: new Date().toISOString() };
+  const out = { worker: "v306", hora: new Date().toISOString() };
   const t0 = Date.now();
   try {
     const cache = await caches.default.match(new Request(SITE + "/__cache/dados-v1"));

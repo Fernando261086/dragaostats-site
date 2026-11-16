@@ -34,6 +34,30 @@ function notifyBlockedSheet_(){
   el.addEventListener("click", e=>{ if(e.target === el) close(); });
 }
 let ncSeen_ = false;
+// v306: próximo jogo marcado com hora e sem resultado, nos próximos 14 dias (só esses têm «aviso 1 hora antes»).
+function ncNextGame_(){
+  try{
+    if(typeof EVENTS === "undefined") return null;
+    const now = new Date(), lim = now.getTime() + 14 * 86400000;
+    const hoje = (typeof todayISO_ === "function") ? todayISO_() : "";
+    const amanha = (typeof shiftISODay_ === "function" && hoje) ? shiftISODay_(hoje, 1) : "";
+    let best = null;
+    EVENTS.forEach(ev=>{
+      if(!ev || !ev.sport || !ev.day || !/^\d{1,2}:\d{2}$/.test(String(ev.t || ""))) return;
+      const d = new Date(ev.day + "T" + String(ev.t).padStart(5, "0") + ":00");
+      if(isNaN(d) || d <= now || d.getTime() > lim) return;
+      const st = (typeof getEv === "function" && getEv(ev.id)) || {};
+      if(st.resultado && String(st.resultado).trim()) return;
+      if(typeof hasGameReminder_ === "function" && hasGameReminder_(ev.id)) return;
+      if(!best || d < best.d) best = { ev, d };
+    });
+    if(!best) return null;
+    const dias = ["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
+    const dia = best.ev.day === hoje ? "hoje" : best.ev.day === amanha ? "amanhã" : dias[best.d.getDay()] + ", " + best.d.getDate() + "/" + (best.d.getMonth() + 1);
+    best.quando = dia + " às " + String(best.ev.t).padStart(5, "0");
+    return best;
+  }catch(e){ return null; }
+}
 // v248: o texto muda com o momento (início, jogo ao vivo, antes do jogo, jogo terminado, link partilhado) e diz o que se recebe.
 // state (só na página do jogo): "vivo" | "antes" | "fim"
 function notifyCtaHtml_(ctx, state){
@@ -48,9 +72,23 @@ function notifyCtaHtml_(ctx, state){
     else if(state === "fim"){ titulo = "Queres saber o resultado do próximo jogo?"; txt = "Ativa os avisos e recebes quando o FC Porto começar a jogar e o resultado final."; }
     else { titulo = window.__linkedGame_ ? "Recebe o resultado deste jogo" : "Não percas este jogo"; txt = "Avisamos-te quando começar e quando houver resultado — mesmo com o site fechado."; }
   }
+  // v306: no Início o convite fala do PRÓXIMO jogo (com hora) e o botão «Avisa-me» liga logo o «Lembrar-me» desse jogo.
+  // Na semana anterior o cartão genérico teve 23 vistas e 0 toques, enquanto o «Lembrar-me» (pedido concreto) teve 3 toques e 3 permissões.
+  let btn = `<button type="button" class="hv-btn hv-btn-main nc-yes" data-ncyes="1">${ios ? "Como instalar" : "Ativar avisos"}</button>`;
+  if(ctx === "inicio"){
+    const ng = ncNextGame_();
+    if(ng){
+      const es = typeof homeEsc_ === "function" ? homeEsc_ : (x=>String(x));
+      const a = es(ng.ev.athlete || ""), fcp = "FC Porto";
+      const nome = ng.ev.local === "fora" ? `${a} vs ${fcp}` : `${fcp} vs ${a}`;
+      titulo = "Avisamos-te 1 hora antes do próximo jogo";
+      txt = `${es(typeof sportShow_ === "function" ? sportShow_(ng.ev.sport) : ng.ev.sport)}: ${nome} · ${ng.quando}. Recebes o aviso mesmo com o site fechado, e o resultado final.`;
+      if(!ios) btn = `<button type="button" class="hv-btn hv-btn-main nc-yes" data-ncremind="${es(ng.ev.id)}">Avisa-me</button>`;
+    }
+  }
   if(!ncSeen_){ ncSeen_ = true; try{ if(typeof track_ === "function") track_("nc_visto"); }catch(e){} }
   return `<div class="nc-card"><span class="nc-ico">🔔</span><div class="nc-body"><b class="nc-t">${titulo}</b><span class="nc-s">${txt}</span></div>
-    <div class="nc-btns"><button type="button" class="hv-btn hv-btn-main nc-yes" data-ncyes="1">${ios ? "Como instalar" : "Ativar avisos"}</button><button type="button" class="nc-no" data-ncno="1" aria-label="Agora não">Agora não</button></div></div>`;
+    <div class="nc-btns">${btn}<button type="button" class="nc-no" data-ncno="1" aria-label="Agora não">Agora não</button></div></div>`;
 }
 // iPhone/iPad: os avisos só funcionam com o site instalado no ecrã principal; explica-o num painel com 3 passos desenhados.
 // v261: se o site está aberto dentro do Instagram/Facebook (que não deixam instalar), avisa para abrir primeiro no Safari e dá «Copiar link».
@@ -120,6 +158,11 @@ function bindNotifyCta_(host, rerender){
     if(notifyCtaVariant_() === "ios"){ try{ track_("nc_ios_ajuda"); }catch(e){} iosInstallSheet_(); return; }
     try{ track_("nc_clique"); }catch(e){}
     await enableNotifications();
+    try{ rerender(); }catch(e){}
+  }; });
+  host.querySelectorAll("[data-ncremind]").forEach(b=>{ b.onclick = async ()=>{
+    try{ track_("nc_lembrar"); }catch(e){}
+    try{ await toggleGameReminder_(b.getAttribute("data-ncremind"), b); }catch(e){}
     try{ rerender(); }catch(e){}
   }; });
   host.querySelectorAll("[data-ncno]").forEach(b=>{ b.onclick = ()=>{

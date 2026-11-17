@@ -510,19 +510,28 @@ function computeDailyVisits(entries){
   return Object.keys(counts).sort().map(date=>({ date, ...counts[date], total: counts[date].visitas + counts[date].instalacoes }));
 }
 
+// v307: pedido comum do registo de acessos. Mostra o motivo REAL que o servidor dá (antes dizia sempre «Resposta inválida do servidor»)
+// e, se o servidor estiver ocupado ou a resposta falhar, repete uma vez ao fim de 2 s. O «[Diagnóstico: …]» do servidor (traz partes das passwords) nunca aparece.
+async function visitLogPost_(extra){
+  for(let t = 0; t < 2; t++){
+    let j = null, falhou = null;
+    try{
+      const r = await fetch(STORE_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ getFullVisitLog: true, adminPassword: getAdminPassword() }, extra || {})) });
+      j = await r.json();
+    }catch(e){ falhou = e; }
+    if(j && j.ok && Array.isArray(j.fullVisitLog)) return j.fullVisitLog;
+    const msg = j && j.error ? String(j.error).replace(/\s*\[Diagn[^\]]*\]?/i, "").trim() : "";
+    const ocupado = /Demasiadas grava/i.test(msg);
+    if(t === 0 && (falhou || !j || ocupado)){ await new Promise(r=>setTimeout(r, 2000)); continue; }
+    if(falhou) throw new Error("sem ligação ao servidor (" + (falhou.message || falhou) + ")");
+    throw new Error(msg || "o servidor respondeu sem a lista de acessos (confirma que o Apps Script colado é a versão mais recente e foi reimplantado)");
+  }
+}
+
 async function fetchFullVisitLogIfNeeded(forceRefresh){
   if(visitsFullLogCache && !forceRefresh) return visitsFullLogCache;
-  const r = await fetch(STORE_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ getFullVisitLog: true, adminPassword: getAdminPassword() })
-  });
-  const result = await r.json();
-  if(result && result.ok && Array.isArray(result.fullVisitLog)){
-    visitsFullLogCache = result.fullVisitLog;
-    return visitsFullLogCache;
-  }
-  throw new Error("Resposta inválida do servidor");
+  visitsFullLogCache = await visitLogPost_();
+  return visitsFullLogCache;
 }
 
 function visitsTabsHtml(){
@@ -611,10 +620,17 @@ function renderVisitsChartBody(fullLog){
 
 // v281.1: o GET público deixou de trazer o registo de acessos (Apps Script v183); a vista «Lista» pede a página atual com a password
 async function fetchCurrentVisitLog_(){
-  const r = await fetch(STORE_URL, { method:'POST', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify({ getFullVisitLog:true, onlyCurrent:true, adminPassword: getAdminPassword() }) });
-  const j = await r.json();
-  if(j && j.ok && Array.isArray(j.fullVisitLog)){ VISIT_LOG = j.fullVisitLog; return VISIT_LOG; }
-  throw new Error("Resposta inválida do servidor");
+  VISIT_LOG = await visitLogPost_({ onlyCurrent: true });
+  return VISIT_LOG;
+}
+
+// v307: aviso de erro com «Tentar outra vez»
+function visitsErrorPanel_(panel, tabsHtml, texto, mode){
+  panel.innerHTML = tabsHtml + `<div class="medal-empty">⚠️ ${texto}</div>
+    <div class="add-btn-row" style="margin-top:14px;"><button class="add-cancel" id="retryVisitsBtn">↻ Tentar outra vez</button> <button class="add-cancel" id="closeVisitsBtn">Fechar</button></div>`;
+  attachVisitsTabHandlers();
+  document.getElementById("closeVisitsBtn").onclick = ()=>{ panel.style.display = "none"; };
+  document.getElementById("retryVisitsBtn").onclick = ()=>{ visitsViewMode = mode; renderVisitsLogPanel(); };
 }
 
 function renderVisitsLogPanel(list){
@@ -628,10 +644,7 @@ function renderVisitsLogPanel(list){
       if(visitsViewMode === "lista" && panel.style.display !== "none") renderVisitsLogPanel(cur);
     }).catch(e=>{
       if(visitsViewMode !== "lista") return;
-      panel.innerHTML = tabsHtml + `<div class="medal-empty">⚠️ Erro ao ir buscar os acessos: ${e.message}</div>
-        <div class="add-btn-row" style="margin-top:14px;"><button class="add-cancel" id="closeVisitsBtn">Fechar</button></div>`;
-      attachVisitsTabHandlers();
-      document.getElementById("closeVisitsBtn").onclick = ()=>{ panel.style.display = "none"; };
+      visitsErrorPanel_(panel, tabsHtml, "Erro ao ir buscar os acessos: " + e.message, "lista");
     });
     return;
   }
@@ -649,10 +662,7 @@ function renderVisitsLogPanel(list){
       else renderVisitsChartBody(fullLog);
     }).catch(e=>{
       if(visitsViewMode !== modeAtRequest) return;
-      panel.innerHTML = tabsHtml + `<div class="medal-empty">⚠️ Erro de rede ao ir buscar o histórico: ${e.message}</div>
-        <div class="add-btn-row" style="margin-top:14px;"><button class="add-cancel" id="closeVisitsBtn">Fechar</button></div>`;
-      attachVisitsTabHandlers();
-      document.getElementById("closeVisitsBtn").onclick = ()=>{ panel.style.display = "none"; };
+      visitsErrorPanel_(panel, tabsHtml, "Erro ao ir buscar o histórico: " + e.message, modeAtRequest);
     });
     return;
   }

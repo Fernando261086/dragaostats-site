@@ -253,12 +253,18 @@ function shChanged_(){
 }
 
 // apanha o ficheiro que um gerador antigo entregaria (em vez de partilhar/descarregar já)
+// v307: uma de cada vez (a «Resultado guardado» pré-gera a imagem e o reel em segundo plano e o painel pode pedir outra coisa ao mesmo tempo;
+// só há um sítio para apanhar o ficheiro, por isso os pedidos esperam pela vez)
+let SH_CAP_CHAIN_ = Promise.resolve();
 function shCapture_(fn, ms){
-  return new Promise((res, rej)=>{
+  const run = ()=> new Promise((res, rej)=>{
     const t = setTimeout(()=>{ window.__shareCapture_ = null; rej(new Error("timeout")); }, ms || 300000);
     window.__shareCapture_ = (blob, name)=>{ clearTimeout(t); res({ blob, name }); };
     Promise.resolve().then(fn).catch(e=>{ clearTimeout(t); window.__shareCapture_ = null; rej(e); });
   });
+  const p = SH_CAP_CHAIN_.then(run, run);
+  SH_CAP_CHAIN_ = p.then(()=>{}, ()=>{});
+  return p;
 }
 
 async function shGenerate_(){

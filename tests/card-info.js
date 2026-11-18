@@ -46,6 +46,8 @@ let fails = 0; const bad = m => { fails++; console.log('❌', m); }; const ok = 
     r.ov <= 1 ? ok(`${tag}: sem deslize lateral`) : bad(`${tag}: deslize ${r.ov}px`);
     const wide = await page.evaluate(() => [...document.querySelectorAll('.match-row .mr-info')].every(x => x.getBoundingClientRect().right <= innerWidth + 0.5));
     wide ? ok(`${tag}: linha dentro do ecrã`) : bad(`${tag}: linha fora do ecrã`);
+    const al = await page.evaluate(() => { const c = document.getElementById('ev-card-a1'); const l = c.querySelector('.mr-i-line'); const cr = c.getBoundingClientRect(), lr = l.getBoundingClientRect(); const cs = getComputedStyle(c); return lr.left - cr.left - parseFloat(cs.paddingLeft) - parseFloat(cs.borderLeftWidth); });
+    Math.abs(al) <= 1 ? ok(`${tag}: informação encostada à esquerda do cartão`) : bad(`${tag}: informação com recuo de ${al}px`);
     // clique no botão Classificação abre a página da modalidade
     await page.evaluate(() => document.querySelector('#ev-card-a1 [data-mrtable="1"]').click()); await page.waitForTimeout(500);
     (await page.evaluate(() => window.__curView_)) === 'modalidade' ? ok(`${tag}: «Classificação» abre a página da modalidade`) : bad(`${tag}: «Classificação» não abriu (${await page.evaluate(() => window.__curView_)})`);

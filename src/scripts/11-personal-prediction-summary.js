@@ -4,7 +4,7 @@
 // essa pergunta em jogo nenhum.
 function renderPersonalPredictionBanner(matchesMode){
   const banner = document.getElementById("personalPredictionBanner");
-  if(!matchesMode){ banner.style.display = "none"; return; }
+  if(!matchesMode || !MATCH_PREDICTOR_ON_){ banner.style.display = "none"; return; }
   const usesPlacar = EVENTS.some(ev=> ev.predictionQuestion && (ev.predictionQuestion.type === "placar" || ev.predictionQuestion.type === "margem"));
   if(!usesPlacar){ banner.style.display = "none"; return; }
 

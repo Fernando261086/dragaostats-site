@@ -35,7 +35,7 @@
     [uiIco_("trophy", 20), "Marcadores", "viewLeaderboardBtn"],
     [uiIco_("grid", 20), "Calendário em grelha", "gridToggleBtn"],
     [uiIco_("book", 20), "A tua época", "myYearBtn"],
-    [uiIco_("target", 20), "Ranking de palpites", "predictionRankingBtn"],
+    ...(MATCH_PREDICTOR_ON_ ? [[uiIco_("target", 20), "Ranking de palpites", "predictionRankingBtn"]] : []),
     [uiIco_("brain", 20), "Quiz do Dragão", "quizBtn"],
     [uiIco_("cup", 20), "Apoiar o projeto", "supportBtn"],
     [uiIco_("megaphone", 20), "Convida um amigo adepto", "inviteFriendBtn"],

@@ -53,6 +53,34 @@ document.getElementById("installedListBtn").onclick = ()=>{
   if(opening) renderInstalledListPanel();
 };
 
+// v308: linha de informação do cartão do calendário (substitui o Match Predictor).
+// Esquerda: local + canal (só antes/durante o jogo). Direita: «Ver transmissão» (se há link) e «Classificação» (só jogos de campeonato).
+function mrHasStandings_(ev){
+  return !!((typeof STANDINGS === "object" && STANDINGS && STANDINGS[ev.sport] && (STANDINGS[ev.sport].rows || []).length && (typeof isLeagueGame_ !== "function" || isLeagueGame_(ev)))
+    || (typeof compStandingForGame_ === "function" && compStandingForGame_(ev)));
+}
+function mrInfoHtml_(ev, terminado){
+  const e = x => String(x == null ? "" : x).replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+  const pin = (typeof HERO_SVG_ === "function") ? HERO_SVG_('<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>') : "";
+  const tv = (typeof HERO_ICON_TV_ === "string") ? HERO_ICON_TV_ : "";
+  let left = "";
+  if(!terminado){
+    const place = ev.venue ? ev.venue : localLabel(ev.local);
+    const canal = (ev.watchName || ev.watchUrl) ? watchLabel_(ev) : "";
+    left = `<span class="mr-i-line">${pin}<span>${e(place)}</span></span>` + (canal ? `<span class="mr-i-line">${tv}<span>${e(canal)}</span></span>` : "");
+  }
+  let right = "";
+  if(!terminado && ev.watchUrl) right += `<a class="mr-i-btn" href="${e(ev.watchUrl)}" target="_blank" rel="noopener" data-mrwatch="1">Ver transmissão</a>`;
+  if(mrHasStandings_(ev)) right += `<button type="button" class="mr-i-btn" data-mrtable="1">Classificação</button>`;
+  if(!left && !right) return "";
+  return `<div class="mr-info"><div class="mr-i-l">${left}</div><div class="mr-i-r">${right}</div></div>`;
+}
+function mrInfoWire_(line, ev){
+  const w = line.querySelector('[data-mrwatch="1"]'); if(w) w.onclick = x=>x.stopPropagation();
+  const t = line.querySelector('[data-mrtable="1"]');
+  if(t) t.onclick = x=>{ x.stopPropagation(); if(typeof openSportPage_ === "function") openSportPage_(ev.sport, "classificacao"); window.scrollTo(0, 0); };
+}
+
 function wirePredictionBar(line, ev){
   line.querySelectorAll(".prediction-btn").forEach(btn=>{
     btn.onclick = (e)=>{
@@ -341,9 +369,11 @@ function renderTimeline(){
             <button type="button" class="mr-more mr-chev" data-mrmore="1" aria-label="Ver detalhes do jogo">›</button>
           </div>
           ${hasGameStats ? `<div class="mr-foot"><button type="button" class="mr-stats" data-mrstats="1">${playerStatsCardLabel(ev.sport)}</button></div>` : ""}
+          ${mrInfoHtml_(ev, !!result)}
           ${result ? renderReactionBar(ev.id) : ''}
           ${(ev.day && ev.t) ? renderPredictionBar(ev) : ''}
         `;
+        mrInfoWire_(line, ev);
         const mrStatsBtn = line.querySelector('[data-mrstats="1"]');
         if(mrStatsBtn) mrStatsBtn.onclick = (e)=>{ e.stopPropagation(); statsOpenedFromWeekView = false; openPlayerStatsPanel(ev); };
         const mrMoreBtn = line.querySelector('[data-mrmore="1"]');
@@ -439,7 +469,7 @@ function renderTimeline(){
               <button class="card-share-item" data-sharereel="1">🎬 ${st.resultado && st.resultado.trim() ? 'Reel do resultado' : 'Reel para promover'}</button>
             </div>
           </div>` : ''}
-          ${matchesMode && !READONLY_MODE ? '<button class="dup-btn" data-choosequestion="1" title="Escolher pergunta de prognóstico">🎯</button>' : ''}
+          ${matchesMode && !READONLY_MODE && MATCH_PREDICTOR_ON_ ? '<button class="dup-btn" data-choosequestion="1" title="Escolher pergunta de prognóstico">🎯</button>' : ''}
           <button class="dup-btn" data-dup="1" title="Duplicar prova">⧉</button>
           <button class="edit-btn" data-edit="1" title="Editar prova">✎</button>
           <button class="del-btn" data-del="1" title="Eliminar prova">✕</button>

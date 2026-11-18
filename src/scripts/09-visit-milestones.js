@@ -406,6 +406,7 @@ function placarGuessDisplay_(guess, local){
 }
 
 function renderPredictionBar(ev){
+  if(!MATCH_PREDICTOR_ON_) return "";
   const question = ev.predictionQuestion; // { type: "simnao"|"livre", text: "..." }
   if(!question) return "";
 

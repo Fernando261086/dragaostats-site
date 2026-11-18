@@ -1622,3 +1622,18 @@ html.theme-light .tn-crow{background:#f3f5f9}
 .rsp .rsp-btns{grid-template-columns:repeat(2,minmax(0,1fr))}
 html.theme-light .rsp .rsp-grid button{background:rgba(0,0,0,.04)}
 @media (prefers-reduced-motion:reduce){.rsp .rsp-grid button.rsp-wait small{animation:none}}
+
+/* v308: linha de informação do cartão do calendário (local + canal | Ver transmissão + Classificação) */
+.match-row .mr-info{ display:flex; align-items:center; justify-content:space-between; gap:8px 12px; flex-wrap:wrap; margin-top:2px; padding:8px 0 0 58px; border-top:1px solid var(--line); min-width:0; }
+.match-row .mr-i-l{ display:flex; flex-direction:column; gap:3px; min-width:0; flex:1 1 150px; }
+.match-row .mr-i-line{ display:flex; align-items:center; gap:6px; font-family:'Archivo',sans-serif; font-size:12px; color:var(--text-dim); min-width:0; }
+.match-row .mr-i-line span{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.match-row .mr-i-line .hero-ico{ flex:0 0 auto; width:14px; height:14px; opacity:.85; }
+.match-row .mr-i-r{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; margin-left:auto; }
+.match-row .mr-i-btn{ padding:6px 12px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--gold); font-family:'Archivo',sans-serif; font-size:12px; font-weight:700; text-decoration:none; cursor:pointer; white-space:nowrap; }
+.match-row .mr-i-btn:active{ background:var(--panel-2, rgba(91,180,240,.12)); }
+@media (max-width:520px){
+  .match-row .mr-info{ padding-left:0; }
+  .match-row .mr-i-r{ width:100%; justify-content:flex-start; margin-left:0; }
+  .match-row .mr-i-btn{ flex:1 1 0; text-align:center; }
+}

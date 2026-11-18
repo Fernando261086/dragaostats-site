@@ -138,3 +138,6 @@ function localLabel(local, style){
 // v263: nome a mostrar das equipas de futebol (o identificador interno continua «Equipa A»/«Equipa B»: dados, cores, avisos e ligações não mudam)
 const SPORT_SHOW_ = { "Equipa A": "Futebol - Equipa A", "Equipa B": "Futebol - Equipa B" };
 function sportShow_(s){ return SPORT_SHOW_[s] || s; }
+
+// v308: Match Predictor escondido (palpites, ranking e banner). Pôr true para voltar a mostrar; os palpites já guardados não se perdem.
+const MATCH_PREDICTOR_ON_ = false;

@@ -1097,7 +1097,7 @@ function updateModeVisibleTabs(){
   document.getElementById("summaryBtn").textContent = matches ? "📋 Resumo da semana (falado)" : "📋 Resumo do dia (falado)";
   document.getElementById("sportLinksBtn").style.display = matches ? "" : "none";
   document.getElementById("gridToggleBtn").style.display = matches ? "" : "none";
-  document.getElementById("predictionRankingBtn").style.display = matches ? "" : "none";
+  document.getElementById("predictionRankingBtn").style.display = (matches && MATCH_PREDICTOR_ON_) ? "" : "none";
   document.getElementById("hideCompletedBtn").style.display = matches ? "none" : "";
   const compactBtn_ = document.getElementById("compactToggleBtn");
   if(compactBtn_) compactBtn_.style.display = matches ? "none" : ""; // no Modo Modalidades a lista já é sempre compacta

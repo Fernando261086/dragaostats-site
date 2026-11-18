@@ -5,9 +5,9 @@
   "description": "Código fonte do site Dragão Stats (dragaostats.pt)",
   "scripts": {
     "build": "node build.js",
-    "test": "node tests/worker.js && node tests/smoke.js && node tests/tennis.js && node tests/tennis-mode.js && node tests/result-share.js",
+    "test": "node tests/worker.js && node tests/smoke.js && node tests/tennis.js && node tests/tennis-mode.js && node tests/result-share.js && node tests/card-info.js",
     "test:live": "node tests/live-sim.js && VIA_WORKER=1 node tests/live-sim.js",
-    "pack": "node build.js && node tests/worker.js && node tests/smoke.js && node tests/tennis.js && node tests/tennis-mode.js && node tests/result-share.js"
+    "pack": "node build.js && node tests/worker.js && node tests/smoke.js && node tests/tennis.js && node tests/tennis-mode.js && node tests/result-share.js && node tests/card-info.js"
   },
   "devDependencies": {
     "@sentry/browser": "^11.12.0",
